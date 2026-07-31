@@ -190,7 +190,7 @@ select.search{width:auto}
     <div class="brand">
       <h1>Big Data สายทาง</h1>
       <div class="sub">แขวงทางหลวงชนบทขอนแก่น<br>กรมทางหลวงชนบท</div>
-      <div class="ver">v19.4 · 31 ก.ค. 2569</div>
+      <div class="ver">v19.5 · 31 ก.ค. 2569</div>
     </div>
     <nav class="nav">
       <button data-page="overview" class="active"><span class="ico">▦</span> ภาพรวมโครงข่าย</button>
@@ -525,7 +525,7 @@ select.search{width:auto}
           <div style="font-size:12.5px;line-height:1.85;padding:8px 4px">
           อดีต → อนาคต ในภาพเดียว เรียงจากบนลงล่าง:<br>
           • <b>แถวสภาพผิว</b> (บนสุด ถ้ามีข้อมูล) = ผลสำรวจสภาพผิวทางจากชีทสภาพสายทาง<br>
-          • <b>แถวภาพรวม</b> = สภาพจริงปัจจุบันของสาย โดย "งานเดียวกันอยู่แนวเดียวกัน": <b>สีตามปี = ช่วงที่ยังติดค้ำประกันสัญญา</b> (ส่งงานงวดสุดท้าย + 2 ปี) · <b>สีเข้มเกือบดำ = ช่วงหมดค้ำ/นอกค้ำประกัน</b> — อุปกรณ์จากชีท Equipment (ไฟฟ้า/ระบายน้ำ/CCTV) จะถูกเทียบกับประวัติโครงการชนิดงานเดียวกัน: ช่วงที่ทับโครงการติดค้ำใช้สีปีของโครงการ ช่วงที่เหลือวาดสีเข้มพร้อมหักจำนวนที่ติดค้ำออก (เช่น ทั้งรายการ 33 ต้น ติดค้ำ 7 ต้น → นอกค้ำ 26 ต้น · ไม่กรอกจำนวน = ประมาณระยะ ÷ 30 ม.) · ไอคอน )( ฟ้า = สะพานในสายทาง · วงกลม⚡ = หม้อแปลง (ส้ม = ติดค้ำ · เข้ม = นอกค้ำ)<br>
+          • <b>แถวภาพรวม</b> = สภาพจริงปัจจุบันของสาย โดย "งานเดียวกันอยู่แนวเดียวกัน": <b>สีตามปี = ช่วงที่ยังติดค้ำประกันสัญญา</b> (ส่งงานงวดสุดท้าย + 2 ปี) · <b>สีเทา = ช่วงหมดค้ำ/นอกค้ำประกัน</b> (สีเดียวกับแถวปีที่หมดค้ำ — หมดค้ำแล้วจึงไม่เด่น) — อุปกรณ์จากชีท Equipment (ไฟฟ้า/ระบายน้ำ/CCTV) จะถูกเทียบกับประวัติโครงการชนิดงานเดียวกัน: ช่วงที่ทับโครงการติดค้ำใช้สีปีของโครงการ ช่วงที่เหลือวาดสีเทาพร้อมหักจำนวนที่ติดค้ำออก (เช่น ทั้งรายการ 33 ต้น ติดค้ำ 7 ต้น → นอกค้ำ 26 ต้น · ไม่กรอกจำนวน = ประมาณระยะ ÷ 30 ม.) · ไอคอน )( ฟ้า = สะพานในสายทาง · วงกลม⚡ = หม้อแปลง (ส้ม = ติดค้ำ · เทา = นอกค้ำ)<br>
           • <b>เลนสีตามปีงบ</b> = งานที่ทำไปแล้วของแต่ละปี (ปีที่หมดค้ำแล้วเป็นสีเทา) — สัญลักษณ์ 9 ชนิดตาม legend ใต้ภาพ<br>
           • <b>เลนคำของบ</b> (ชมพู) = คำขอที่กำลังเสนอ จากชีทรวมแผน<br>
           • <b>เลน Zerobase</b> (แดง) = ความต้องการจริงจากพื้นที่ ทุกปีรวมกัน<br>
@@ -2346,7 +2346,7 @@ function renderHistRoad(code){
             tip:`<b>🛡 ติดค้ำประกันถึง ${p.pwe?thD(p.pwe):('~สิ้นปี '+((+p.py||0)+2))}</b><br>ปี ${p.py} · ${esc(px.budgetType||'')}${px.activity?` — ${esc(px.activity)}`:''}<br>${p.b!=null?`${kmLbl(p.a)} – ${kmLbl(p.b)}`:`กม. ${kmLbl(p.a)}`}${kind==='elec'&&p.b!=null?` · 💡 ≈ ${fmt(est30(p.a,p.b))} ต้น`:''}${px.delivered?` · ส่งงาน ${esc(px.delivered)}`:''}${px.contractor?`<br>${esc(px.contractor)}`:''}`};
         }
         // ช่วงนอกค้ำ -> ข้อมูลอุปกรณ์เฉยๆ: กม.ถึง กม. · จำนวน (หักและเว้นช่วงติดค้ำแล้ว)
-        return {kind, a:p.a, b:p.b, color:'#2b3036',
+        return {kind, a:p.a, b:p.b, color:'#a9b0ba',
           tip:`<b>🔌 ${esc(x.etype||x.dtype)}</b>${info}<br>${p.b!=null?`${kmLbl(p.a)} – ${kmLbl(p.b)}`:`กม. ${kmLbl(p.a)}`}`
             +(kind==='elec'&&total?` · 💡 ${wQty?'≈ ':''}<b>${fmt(rem)} ต้น</b>${wQty?' (หักช่วงติดค้ำแล้ว)':''}`
              :(kind==='drain'&&hasRange?` · ≈ ${fmt(Math.round(remLen*1000))} ม.`:(x.n?` · จำนวน ${fmt(x.n)}`:'')))
@@ -2355,7 +2355,7 @@ function renderHistRoad(code){
     });
     const eqOn=(eqR.length||eqTrans.length)?{marks:eqMarks, trans:eqTrans.map(t=>{
       const p=eqWarrSplit(list, t.km, null, 'elec')[0];
-      return {km:t.km, color:p.alive?null:'#2b3036',
+      return {km:t.km, color:p.alive?null:'#a9b0ba',
         tip:`<b>⚡ หม้อแปลงไฟฟ้า</b><br>กม. ${kmLbl(t.km)}${t.x.etype?` · ${esc(t.x.etype)}`:''}${t.x.cond?`<br>สภาพ: ${esc(t.x.cond)}`:''}${p.alive?`<br>🛡 อยู่ในค้ำประกันงานไฟฟ้าปี ${p.py}${p.pwe?` (ถึง ${thD(p.pwe)})`:''}`:`<br>⬛ นอกค้ำประกัน`}`};
     })}:null;
     drawStrip('hrStrip', roadLen, covered, list, YCOLOR, bOnRoad, extra, top, eqOn);
@@ -2458,7 +2458,7 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
   const today=new Date();
   const beNow=(today.getFullYear()+543)%100; // ปี พ.ศ. 2 หลักของวันนี้ (ตัดสิน "ปีที่หมดค้ำแล้ว" -> สีเทา)
   // แถว "ภาพรวม" (v18.9): ทุกโครงการ — ยังติดค้ำประกัน = สีตามปี · หมดค้ำแล้ว = สีเข้ม
-  const EXPIRED='#23272e';
+  const EXPIRED='#a9b0ba';
   const wProjAll=list.map(x=>({x, we:warrantyEnd(x)}));
   const aliveOf=o=>o.we?o.we>=today:(((+o.x.year)%100)+2>=beNow);
   const wSegs=wProjAll.flatMap(o=>{ const {x,we}=o, alive=aliveOf(o);
@@ -2637,12 +2637,11 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
       li(`<svg width="13" height="12" viewBox="0 0 13 12"><path d="M6.5,1 L12,11 L1,11 z" fill="${GC}"/></svg>`,'▲ = ป้าย/อุปกรณ์ (ต่ำกว่า 5 แสนบาท)')+
       li(`<svg width="16" height="15" viewBox="0 0 16 15"><rect x="1" y="1" width="13" height="7" rx="2" fill="${GC}"/><circle cx="11" cy="4.5" r="1.6" fill="#fff"/><line x1="7.5" y1="8.5" x2="7.5" y2="13" stroke="${GC}" stroke-width="1.8"/><line x1="4" y1="13.6" x2="11" y2="13.6" stroke="${GC}" stroke-width="1.8" stroke-linecap="round"/></svg>`,'กล้อง = ITS / CCTV')+
       li(`<svg width="12" height="14" viewBox="0 0 12 14"><path d="M6,0.5 L10,7 H2 z" fill="#2f9e57"/><rect x="5" y="7.5" width="2" height="3.6" fill="#8a6d4b"/></svg>`,'ต้นไม้ = ปรับปรุงภูมิทัศน์')+
-      li(`<svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#d97706"/><path d="M9.7,3.9 L6.1,8.5 h2.5 L7.1,12.2 l4,-5 h-2.5 z" fill="#fff"/></svg>`,'⚡ = หม้อแปลง (ส้ม ติดค้ำ · เข้ม นอกค้ำ)')+
+      li(`<svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#d97706"/><path d="M9.7,3.9 L6.1,8.5 h2.5 L7.1,12.2 l4,-5 h-2.5 z" fill="#fff"/></svg>`,'⚡ = หม้อแปลง (ส้ม ติดค้ำ · เทา นอกค้ำ)')+
       li(brSvg(GC),'สะพาน )( = งานก่อสร้างสะพาน')+
       li(brSvg('#7f93b8'),')( ฟ้า = สะพานในสายทางปัจจุบัน')+
       li(`<span style="display:inline-block;width:16px;height:8px;border-radius:2px;background:linear-gradient(90deg,#2a9d8f,#e9c46a,#e76f51)"></span>`,'สีตามปี = ช่วงยังติดค้ำประกัน')+
-      li(`<span style="display:inline-block;width:16px;height:8px;border-radius:2px;background:#23272e"></span>`,'สีเข้ม = นอกค้ำ/หมดค้ำ (หักจำนวนติดค้ำแล้ว)')+
-      li('<span style="display:inline-block;width:16px;height:8px;border-radius:2px;background:#a9b0ba"></span>','แถวปีสีเทา = หมดค้ำแล้วทั้งปี')+
+      li('<span style="display:inline-block;width:16px;height:8px;border-radius:2px;background:#a9b0ba"></span>','สีเทา = หมดค้ำ/นอกค้ำประกันแล้ว (อุปกรณ์หักจำนวนติดค้ำแล้ว)')+
     `</div>`;
   box.appendChild(lg);
 }
@@ -3200,8 +3199,8 @@ async function printOnePage(code){
   const eqTransP=[]; eqR.forEach(x=>String(x.trans||'').split(/[\n,;\/]+/).forEach(tk=>{ const v=kmVal(tk.trim()); if(v!=null) eqTransP.push({km:v}); }));
   const eqOnP=(eqR.length||eqTransP.length)?{marks:eqR.filter(x=>(x.etype||x.dtype)&&x.ka!=null).flatMap(x=>{
       const kind=eqCp.includes(x)?'cctv':(x.dtype&&!x.etype?'drain':'elec');
-      return eqWarrSplit(list,x.ka,x.kb,kind).map(p=>({kind, a:p.a, b:p.b, color:p.alive?(YCOLOR[String(p.py)]||null):'#2b3036', tip:''}));}),
-    trans:eqTransP.map(t=>({km:t.km, color:eqWarrSplit(list,t.km,null,'elec')[0].alive?null:'#2b3036', tip:''}))}:null;
+      return eqWarrSplit(list,x.ka,x.kb,kind).map(p=>({kind, a:p.a, b:p.b, color:p.alive?(YCOLOR[String(p.py)]||null):'#a9b0ba', tip:''}));}),
+    trans:eqTransP.map(t=>({km:t.km, color:eqWarrSplit(list,t.km,null,'elec')[0].alive?null:'#a9b0ba', tip:''}))}:null;
   // วาด strip ลงกล่องซ่อน แล้วคัดลอก SVG ไปหน้าพิมพ์
   let tmp=document.getElementById('printStripTmp');
   if(!tmp){ tmp=document.createElement('div'); tmp.id='printStripTmp';
