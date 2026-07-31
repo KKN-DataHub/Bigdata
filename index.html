@@ -190,7 +190,7 @@ select.search{width:auto}
     <div class="brand">
       <h1>Big Data สายทาง</h1>
       <div class="sub">แขวงทางหลวงชนบทขอนแก่น<br>กรมทางหลวงชนบท</div>
-      <div class="ver">v18.8 · 31 ก.ค. 2569</div>
+      <div class="ver">v19.4 · 31 ก.ค. 2569</div>
     </div>
     <nav class="nav">
       <button data-page="overview" class="active"><span class="ico">▦</span> ภาพรวมโครงข่าย</button>
@@ -203,7 +203,7 @@ select.search{width:auto}
       <button data-page="routine"><span class="ico">🔧</span> งานบำรุงปกติ</button>
       <button data-page="system"><span class="ico">⚙</span> ข้อมูลระบบ</button>
     </nav>
-    <div class="side-foot">ข้อมูล: DRR_KK_Master + Google Sheets (สด)<br>Snapshot Master: <span id="snapDate">22 ก.ค. 2569</span></div>
+    <div class="side-foot">แขวงทางหลวงชนบทขอนแก่น<br>ที่มาข้อมูล: ดูหน้า "ข้อมูลระบบ"</div>
   </aside>
 
   <main class="main">
@@ -401,6 +401,7 @@ select.search{width:auto}
             <tr><td>สะพานชุมชน / สะพานในสาย</td><td>ข้อมูลสายทางขอนแก่น.xlsx ชีท "สะพานชุมชน", "สะพานในสายทาง", "ถนน-สะพานถ่ายโอน" (snapshot)</td><td><span class="pill wait">แจ้ง Claude rebuild</span></td><td style="font-size:11.5px;color:var(--ink2)">วิชาการ (KORN) · เมื่อบัญชีเปลี่ยน</td></tr>
             <tr><td>เส้นทางบนแผนที่</td><td>PointDRRKhonkaen.csv (เว็บกรม) → Power Query ใน DRR KK GIS Road.xlsx (snapshot — ดูการ์ด 📍 ด้านล่าง)</td><td><span class="pill wait">วาง CSV ใหม่ + แจ้ง Claude rebuild</span></td><td style="font-size:11.5px;color:var(--ink2)">วิชาการ (KORN) · เมื่อสำรวจ GPS เพิ่ม</td></tr>
           </tbody></table>
+          <div class="footnote">📌 <b>ที่มาของตัวเลขในหน้า One-Page/สรุปรายสาย</b> (หน้าเหล่านั้นแสดงเฉพาะตัวเลข — คำอธิบายที่มารวมไว้ที่นี่ที่เดียว): ผิวทาง (AC/คสล./ลูกรัง) · ระยะทาง · สะพาน · PCU = บัญชี DRR_KK_Master (snapshot 22 ก.ค. 2569) — ไฟฟ้าแสงสว่าง · หม้อแปลง · ระบบระบายน้ำ · CCTV = ชีท Equipment (สด · ถ้ายังไม่กรอก ไฟฟ้าจะประมาณจากช่วงงานไฟฟ้าในประวัติ ~30 ม./ต้น) — จุดเสี่ยง = ชีทจุดเสี่ยง (สด) — ประวัติ/ค้ำประกัน/วงเงิน = ชีทประวัติโครงการ (สด) — คำของบ/Zerobase = ชีทรวมแผน/ZEROBASE (สด)</div>
           <div class="footnote">🔒 ไม่แสดงลิงก์ชีทต้นทางในหน้านี้ เพื่อป้องกันผู้เข้าชมแก้ไขข้อมูล — เจ้าหน้าที่ที่ต้องกรอกข้อมูล ขอลิงก์จากผู้ดูแลระบบ (วิชาการ) โดยตรง · รายละเอียดการปรับแต่ง ดูไฟล์ DRR_KK_Dashboard_คู่มือ.html ในโฟลเดอร์เดียวกัน</div>
         </div>
       </div>
@@ -523,11 +524,12 @@ select.search{width:auto}
         <details><summary style="cursor:pointer;font-weight:600;font-size:13px;color:var(--teal)">🗺 ความหมายใน Strip Map (หน้าสรุปรายสาย)</summary>
           <div style="font-size:12.5px;line-height:1.85;padding:8px 4px">
           อดีต → อนาคต ในภาพเดียว เรียงจากบนลงล่าง:<br>
-          • <b>ครอบคลุมรวม</b> (เทา) = ระยะที่เคยมีงานทับกันแล้วทั้งหมด<br>
-          • <b>เลนสีตามปีงบ</b> = งานที่ทำไปแล้วของแต่ละปี — แถบทึบ = งานถนน · จุด ● (แถวบนของเลน) = งานไฟฟ้า/แสงสว่าง<br>
+          • <b>แถวสภาพผิว</b> (บนสุด ถ้ามีข้อมูล) = ผลสำรวจสภาพผิวทางจากชีทสภาพสายทาง<br>
+          • <b>แถวภาพรวม</b> = สภาพจริงปัจจุบันของสาย โดย "งานเดียวกันอยู่แนวเดียวกัน": <b>สีตามปี = ช่วงที่ยังติดค้ำประกันสัญญา</b> (ส่งงานงวดสุดท้าย + 2 ปี) · <b>สีเข้มเกือบดำ = ช่วงหมดค้ำ/นอกค้ำประกัน</b> — อุปกรณ์จากชีท Equipment (ไฟฟ้า/ระบายน้ำ/CCTV) จะถูกเทียบกับประวัติโครงการชนิดงานเดียวกัน: ช่วงที่ทับโครงการติดค้ำใช้สีปีของโครงการ ช่วงที่เหลือวาดสีเข้มพร้อมหักจำนวนที่ติดค้ำออก (เช่น ทั้งรายการ 33 ต้น ติดค้ำ 7 ต้น → นอกค้ำ 26 ต้น · ไม่กรอกจำนวน = ประมาณระยะ ÷ 30 ม.) · ไอคอน )( ฟ้า = สะพานในสายทาง · วงกลม⚡ = หม้อแปลง (ส้ม = ติดค้ำ · เข้ม = นอกค้ำ)<br>
+          • <b>เลนสีตามปีงบ</b> = งานที่ทำไปแล้วของแต่ละปี (ปีที่หมดค้ำแล้วเป็นสีเทา) — สัญลักษณ์ 9 ชนิดตาม legend ใต้ภาพ<br>
           • <b>เลนคำของบ</b> (ชมพู) = คำขอที่กำลังเสนอ จากชีทรวมแผน<br>
           • <b>เลน Zerobase</b> (แดง) = ความต้องการจริงจากพื้นที่ ทุกปีรวมกัน<br>
-          • <b>▲ แถวสะพาน</b> = ตำแหน่งสะพานในสายทางตามบัญชี — ชี้ทุกอย่างเพื่อดูรายละเอียดเต็ม</div>
+          • <b>เลนจุดเสี่ยง</b> = แดง ยังไม่แก้ · เหลือง กำลังแก้ · เขียว แก้แล้ว — ชี้ทุกอย่างเพื่อดูรายละเอียดเต็ม</div>
         </details>
       </div>
 
@@ -562,6 +564,13 @@ select.search{width:auto}
           • ลิงก์ GitHub ขึ้น 404 → ไฟล์ใน repo ต้องชื่อ <code>index.html</code> ตัวพิมพ์เล็กทั้งหมด</div>
         </details>
         <div class="footnote">ฉบับเต็มอยู่ที่ไฟล์ DRR_KK_Dashboard_คู่มือ.html ในโฟลเดอร์ 01. Dash Board</div>
+      </div>
+
+      <div class="card" style="margin-top:14px;background:linear-gradient(135deg,#132743,#1f3f66);border:none;color:#eaf1fa;text-align:center;padding:24px 16px">
+        <div style="font-size:11.5px;letter-spacing:.6px;opacity:.72">BIG DATA DASHBOARD — โครงข่ายทางหลวงชนบทจังหวัดขอนแก่น</div>
+        <div style="font-size:16px;font-weight:700;margin-top:7px">คิดค้นและพัฒนาโดย นายสิษฐ์ชกรณ์ ซึ้งสัมปทาน</div>
+        <div style="font-size:13px;margin-top:4px;opacity:.92">กลุ่มวิชาการ แขวงทางหลวงชนบทขอนแก่น · กรมทางหลวงชนบท</div>
+        <div style="font-size:11.5px;margin-top:9px;opacity:.75">เริ่มพัฒนา กรกฎาคม 2569 · <span id="creditVer"></span></div>
       </div>
     </section>
   </main>
@@ -823,7 +832,9 @@ function gvizJSONP(sheetId, params){
       if(resp.status==='error') reject(new Error((resp.errors&&resp.errors[0]&&resp.errors[0].detailed_message)||'Google Sheets error'));
       else resolve(resp.table); };
     s.onerror=()=>{ cleanup(); reject(new Error('เชื่อมต่อ Google Sheets ไม่ได้')); };
-    s.src=`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json;responseHandler:${cb}&headers=1&${params}`;
+    // headers=N: ปกติ 1 · ชีทที่มีหัวตาราง 2 ชั้น (เช่น Equipment) ส่ง headers=2 มากับ params เองได้
+    const hdrs=/(^|&)headers=/.test(params||'')?'':'&headers=1';
+    s.src=`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json;responseHandler:${cb}${hdrs}&${params}`;
     document.head.appendChild(s);
   });
 }
@@ -1061,7 +1072,6 @@ function renderOverview(){
 
   // แถบสถานะบนหัวหน้า (คงพิลล์งบไว้ถ้าเคยโหลดแล้ว — จะถูกเติมโดย renderOverviewBudget)
   document.getElementById('ovPills').innerHTML =
-    `<span class="hpill"><span class="dot snap"></span> Snapshot Master · 22 ก.ค. 2569</span>`+
     `<span class="hpill">🛣 ${ALL_CODES.length} สาย · ${fmt(+totKm.toFixed(0))} กม.</span>`+
     `<span class="hpill">🌉 สะพานชุมชน ${Object.keys(EMB.bridges||{}).length} แห่ง</span>`+
     `<span class="hpill" id="ovBudPill" style="display:none"></span>`;
@@ -1074,7 +1084,7 @@ function renderOverview(){
     kico('🚧','#f0f0f2','ผิวลาดยาง', `${fmt(lat)} <small>กม.</small>`, `${(100*lat/totKm).toFixed(1)}% ของโครงข่าย`)+
     kico('🌉','#eaf2fc','สะพาน', `${fmt(bridges)} <small>แห่ง</small>`, 'ตามบัญชีโครงข่าย')+
     kico('📐','#f0ecfa','ความยาวสะพานรวม', `${fmt(bridgeLen)} <small>กม.</small>`, 'รวมทุกหมวด')+
-    `<div class="card kpi iko"><div class="kico" style="background:#e9f6ee">💰</div><div style="min-width:0" id="kpiBudget"><div class="lbl">งบสะสม (ตามสัญญา)</div><div class="val">…</div><div class="foot">จากประวัติโครงการทุกปี</div></div></div>`;
+    `<div class="card kpi iko"><div class="kico" style="background:#e9f6ee">💰</div><div style="min-width:0" id="kpiBudget"><div class="lbl">งบสะสม (ตามสัญญา)</div><div class="val">…</div><div class="foot">ทุกปีรวมกัน</div></div></div>`;
 
   // ---- สรุปรายหมวด (ตาราง) ----
   const byM={};
@@ -1154,6 +1164,11 @@ function renderOverviewBudget(){
 }
 
 function renderSystem(){
+  // เครดิตผู้พัฒนา: เติมเลขเวอร์ชันอัตโนมัติจากป้าย version มุมซ้ายบน
+  const _cv=document.getElementById('creditVer');
+  if(_cv){ const vt=(document.querySelector('.ver')?.textContent||'').trim();
+    const mj=(vt.match(/v(\d+)/)||[])[1];
+    _cv.textContent=`เวอร์ชันปัจจุบัน ${vt}${mj?` · พัฒนาต่อเนื่อง ${mj} เวอร์ชันหลัก (กว่า 200 รอบปรับปรุง)`:''}`; }
   const R = EMB.roads;
   const realGeo = new Set(EMB.geo.features.filter(f=>!f.properties.stub).map(f=>f.properties.code));
   const stubGeo = new Set(EMB.geo.features.filter(f=>f.properties.stub).map(f=>f.properties.code));
@@ -1791,7 +1806,7 @@ async function loadHistory(force){
       `<span class="hpill">🕐 ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})} น.</span>`;
     renderHistory();
     renderOverviewBudget();
-    if(document.getElementById('histRoadBody').style.display!=='none') renderHistRoad(histRoadCode);
+    refreshHistRoad();
     if(document.getElementById('pg-system').classList.contains('active')) renderSystem();
   }catch(err){
     document.getElementById('histPills').innerHTML=`<span class="hpill"><span class="dot err"></span> เชื่อมต่อ Google Sheets ไม่ได้</span>`;
@@ -2085,6 +2100,19 @@ function mergeSegs(segs){ // รวมช่วงซ้อนทับ -> ร�
     if(last&&x.a<=last.b) last.b=Math.max(last.b,x.b); else out.push({a:x.a,b:x.b}); });
   return out;
 }
+/* วาดหน้าสรุปรายสายใหม่เมื่อชีทโหลดเสร็จ — รวมหลายชีทเป็นวาดครั้งเดียว (debounce)
+   และ "ไม่วาดทับ" ระหว่างผู้ใช้กำลังกด dropdown เลือกสาย/พิมพ์ค้นหา (แก้อาการ dropdown เด้งหาย) */
+let _hrT=null;
+function refreshHistRoad(){
+  clearTimeout(_hrT);
+  _hrT=setTimeout(()=>{
+    const body=document.getElementById('histRoadBody');
+    if(!body||body.style.display==='none'||!histData) return;
+    const ae=document.activeElement;
+    if(ae&&(ae.id==='hrSel'||ae.id==='hrSearch')){ refreshHistRoad(); return; } // ผู้ใช้กำลังเลือกสายอยู่ — เลื่อนไปวาดทีหลัง
+    renderHistRoad(histRoadCode);
+  },400);
+}
 function renderHistRoad(code){
   const H=histData;
   const roadInfo=Object.fromEntries(EMB.roads.map(r=>[r.code,r]));
@@ -2126,7 +2154,19 @@ function renderHistRoad(code){
   const rk=(riskData||[]).filter(x=>x.code===code);
   const rq=(reqData||[]).filter(q=>q.code===code);
   const eqR=(eqData||[]).filter(x=>x.etype||x.dtype).filter(x=>x.code===code);
-  const eqE=eqR.filter(x=>x.etype), eqD=eqR.filter(x=>x.dtype&&!x.etype);
+  // แยกกลุ่มอุปกรณ์ + นับจำนวนจริงจากชีท (ไฟฟ้า=ต้น · ระบายน้ำ=ม./จุด · CCTV=ตัว · หม้อแปลง=จุด)
+  const eqC=eqR.filter(x=>/กล้อง|cctv/i.test((x.etype||'')+' '+(x.ekind||'')));
+  const eqE=eqR.filter(x=>x.etype&&!eqC.includes(x)), eqD=eqR.filter(x=>x.dtype&&!x.etype);
+  const eqPoles=eqE.reduce((a,x)=>a+(x.n||0),0);
+  // ชีทไม่กรอก "จำนวน" -> ประมาณจากระยะช่วง (30 ม./ต้น) ให้ยังตอบเป็น "ต้น" ได้
+  const eqPolesEst=eqE.reduce((a,x)=>a+(x.n||((x.ka!=null&&x.kb!=null&&x.kb>x.ka)?Math.max(1,Math.round((x.kb-x.ka)*1000/30)):0)),0);
+  // จำนวนต้นที่อยู่ในค้ำประกันงานไฟฟ้า (เทียบประวัติชนิดเดียวกัน) -> โชว์ "นอกค้ำ" = ทั้งหมด − ติดค้ำ
+  const eqPolesWarr=eqE.reduce((s,x)=>{ if(x.ka==null||!(x.kb>x.ka)) return s;
+    return s+eqWarrSplit(list,x.ka,x.kb,'elec').filter(p=>p.alive&&p.b!=null).reduce((q,p)=>q+Math.max(1,Math.round((p.b-p.a)*1000/30)),0); },0);
+  const eqCams=eqC.reduce((a,x)=>a+(x.n||0),0)||eqC.length;
+  const eqDrainM=Math.round(eqD.reduce((a,x)=>a+((x.ka!=null&&x.kb!=null&&x.kb>x.ka)?(x.kb-x.ka)*1000:0),0));
+  const eqDrainQ=eqD.reduce((a,x)=>a+(x.n||0),0);
+  const eqTrans=[]; eqR.forEach(x=>String(x.trans||'').split(/[\n,;\/]+/).forEach(tk=>{ const v=kmVal(tk.trim()); if(v!=null) eqTrans.push({km:v,x}); }));
   const cdR=(typeof condData!=='undefined'&&condData)?condData.filter(x=>x.code===code):[];
   const idx=roadsWith.findIndex(x=>x.c===code);
   document.getElementById('histRoadBody').innerHTML=`
@@ -2155,32 +2195,34 @@ function renderHistRoad(code){
           <span class="chip">ระยะทาง ${fmt(roadLen)} กม.</span>`}
       </div>
       ${(()=>{ const rb=EMB.roadBridges?.[code]||[]; const nB=rb.length||r?.bridges_acct||0; const mB=rb.reduce((a,b)=>a+(b.len||0),0);
-        const eqC=eqR.filter(x=>/กล้อง|cctv/i.test((x.etype||'')+' '+(x.ekind||'')));
-        const eqE2=eqE.filter(x=>!eqC.includes(x));
+        const hpAll=list.reduce((a,x)=>a+(poleCount(x)||0),0);
+        const pElec=kpill('💡','linear-gradient(160deg,#ffd76e,#e8a417)','#b7791f','ไฟฟ้าแสงสว่าง',
+          (eqPoles&&eqPoles===eqPolesEst)?`${fmt(eqPoles)} <small>ต้น</small>`:(eqPolesEst?`≈ ${fmt(eqPolesEst)} <small>ต้น</small>`:(eqE.length?`${eqE.length} <small>รายการ</small>`:(hpAll?`${fmt(hpAll)} <small>ต้น</small>`:'—'))),
+          eqE.length?`${eqE.length} รายการ${eqTrans.length?` · ⚡ หม้อแปลง ${eqTrans.length} จุด`:''}${eqPolesWarr?` · นอกค้ำ ≈ ${fmt(Math.max(0,eqPolesEst-eqPolesWarr))} ต้น`:''}`:(hpAll?'ประมาณจากช่วงงานไฟฟ้า':'ยังไม่มีข้อมูล'));
+        const pDrain=kpill('🕳️','linear-gradient(160deg,#4fc3b8,#0b7d72)','#0d9488','ระบบระบายน้ำ',
+          eqD.length?(eqDrainM?`${fmt(eqDrainM)} <small>ม.</small>`:(eqDrainQ?`${fmt(eqDrainQ)} <small>จุด</small>`:`${eqD.length} <small>รายการ</small>`)):'—',
+          eqD.length?`${eqD.length} รายการ${eqDrainM&&eqDrainQ?` · ${fmt(eqDrainQ)} จุด`:''}`:'ยังไม่มีข้อมูล');
+        const pCam=kpill('📹','linear-gradient(160deg,#9b8de0,#4a3aa7)','#4a3aa7','กล้องวงจรปิด (CCTV)',
+          eqC.length?`${fmt(eqCams)} <small>ตัว</small>`:'—', eqC.length?`${eqC.length} จุดติดตั้ง`:'ยังไม่มีข้อมูล');
+        const pRisk=kpill('⚠️','linear-gradient(160deg,#f59a6b,#d95a25)','#d95a25','จุดเสี่ยงอันตราย', rk.length?`${rk.length} <small>จุด</small>`:'—', rk.length?`แก้แล้ว ${rk.filter(riskFixed).length} · เหลือ ${rk.filter(x=>!riskFixed(x)).length}`:'ไม่มีจุดเสี่ยง');
         if(bridge) return `<div class="grid kpis" style="margin-top:12px;grid-template-columns:repeat(4,1fr)">
         ${kpill('🌉','linear-gradient(160deg,#7c9dd6,#3b5aa0)','#3b5aa0','ตัวสะพาน', `${fmt(bridge.len)} <small>ม.</small>`, `กว้าง ${fmt(bridge.width)} ม.${bridge.surface?` · ${esc(bridge.surface)}`:''}`)}
         ${kpill('🛣️','linear-gradient(160deg,#8b8f98,#52525b)','#52525b','ถนนเชิงลาด', `${fmt(bridge.roadlen||0)} <small>กม.</small>`, cdR.length?`สำรวจสภาพแล้ว ${cdR.length} ช่วง`:'นับเป็นสายเดียวกับสะพาน')}
-        ${kpill('🚗','linear-gradient(160deg,#6ea8ef,#1d5fb8)','#2a78d6','ปริมาณจราจร (PCU)', bridge.pcu?`${fmt(bridge.pcu)} <small>คัน/วัน</small>`:'—', bridge.pcu?'จากบัญชี Master':'ยังไม่มีข้อมูล')}
+        ${kpill('🚗','linear-gradient(160deg,#6ea8ef,#1d5fb8)','#2a78d6','ปริมาณจราจร (PCU)', bridge.pcu?`${fmt(bridge.pcu)} <small>คัน/วัน</small>`:'—', bridge.pcu?'':'ยังไม่มีข้อมูล')}
         ${kpill('📅','linear-gradient(160deg,#c9a97e,#8a6d4b)','#8a6d4b','ปีที่สร้าง', bridge.year?`${esc(bridge.year)}`:'—', bridge.year?`อายุ ≈ ${Math.max(0,(new Date().getFullYear()+543)-(+bridge.year||0))} ปี`:'ยังไม่มีข้อมูล')}
-        ${kpill('💡','linear-gradient(160deg,#ffd76e,#e8a417)','#b7791f','ไฟฟ้าแสงสว่าง', eqE2.length?`${eqE2.length} <small>รายการ</small>`:((v=>v?`${fmt(v)} <small>ต้น (จากประวัติ)</small>`:'—')(list.reduce((a,x)=>a+(poleCount(x)||0),0))), eqE2.length?'จากชีท Equipment':'รอข้อมูลชีท Equipment')}
-        ${kpill('🕳️','linear-gradient(160deg,#4fc3b8,#0b7d72)','#0d9488','ระบบระบายน้ำ', eqD.length?`${eqD.length} <small>รายการ</small>`:'—', eqD.length?'จากชีท Equipment':'รอข้อมูลชีท Equipment')}
-        ${kpill('📹','linear-gradient(160deg,#9b8de0,#4a3aa7)','#4a3aa7','กล้องวงจรปิด (CCTV)', eqC.length?`${eqC.length} <small>ตัว</small>`:'—', eqC.length?'จากชีท Equipment':'รอข้อมูลชีท Equipment')}
-        ${kpill('⚠️','linear-gradient(160deg,#f59a6b,#d95a25)','#d95a25','จุดเสี่ยงอันตราย', rk.length?`${rk.length} <small>จุด</small>`:'—', rk.length?`แก้แล้ว ${rk.filter(riskFixed).length} · เหลือ ${rk.filter(x=>!riskFixed(x)).length}`:'ไม่มีจุดเสี่ยงในชีท')}
+        ${pElec}${pDrain}${pCam}${pRisk}
         </div>`;
         return `<div class="grid kpis" style="margin-top:12px;grid-template-columns:repeat(4,1fr)">
-        ${kpill('🛣️','linear-gradient(160deg,#8b8f98,#52525b)','#52525b','ลาดยาง (AC)', `${fmt(r?.latyang||0)} <small>กม.</small>`, cdR.length?`สำรวจสภาพแล้ว ${cdR.length} ช่วง`:'จากบัญชี Master')}
-        ${kpill('🧱','linear-gradient(160deg,#6ea8ef,#1d5fb8)','#2a78d6','คอนกรีต (คสล.)', `${fmt(r?.concrete||0)} <small>กม.</small>`, (r?.concrete||0)?'จากบัญชี Master':'ไม่มีช่วงคอนกรีต')}
+        ${kpill('🛣️','linear-gradient(160deg,#8b8f98,#52525b)','#52525b','ลาดยาง (AC)', `${fmt(r?.latyang||0)} <small>กม.</small>`, cdR.length?`สำรวจสภาพแล้ว ${cdR.length} ช่วง`:'')}
+        ${kpill('🧱','linear-gradient(160deg,#6ea8ef,#1d5fb8)','#2a78d6','คอนกรีต (คสล.)', `${fmt(r?.concrete||0)} <small>กม.</small>`, (r?.concrete||0)?'':'ไม่มีช่วงคอนกรีต')}
         ${kpill('🪨','linear-gradient(160deg,#c9a97e,#8a6d4b)','#8a6d4b','ลูกรัง', `${fmt(r?.lukrang||0)} <small>กม.</small>`, (r?.lukrang||0)?'รอพัฒนาเป็นผิวถาวร':'ไม่มีช่วงลูกรัง')}
         ${kpill('🌉','linear-gradient(160deg,#7c9dd6,#3b5aa0)','#3b5aa0','สะพานในสายทาง', nB?`${nB} <small>แห่ง</small>`:'—', mB?`รวมยาว ${fmt(Math.round(mB))} ม.`:'ไม่มีสะพานในสาย')}
-        ${kpill('💡','linear-gradient(160deg,#ffd76e,#e8a417)','#b7791f','ไฟฟ้าแสงสว่าง', eqE2.length?`${eqE2.length} <small>รายการ</small>`:((v=>v?`${fmt(v)} <small>ต้น (จากประวัติ)</small>`:'—')(list.reduce((a,x)=>a+(poleCount(x)||0),0))), eqE2.length?'จากชีท Equipment':'รอข้อมูลชีท Equipment')}
-        ${kpill('🕳️','linear-gradient(160deg,#4fc3b8,#0b7d72)','#0d9488','ระบบระบายน้ำ', eqD.length?`${eqD.length} <small>รายการ</small>`:'—', eqD.length?'จากชีท Equipment':'รอข้อมูลชีท Equipment')}
-        ${kpill('📹','linear-gradient(160deg,#9b8de0,#4a3aa7)','#4a3aa7','กล้องวงจรปิด (CCTV)', eqC.length?`${eqC.length} <small>ตัว</small>`:'—', eqC.length?'จากชีท Equipment':'รอข้อมูลชีท Equipment')}
-        ${kpill('⚠️','linear-gradient(160deg,#f59a6b,#d95a25)','#d95a25','จุดเสี่ยงอันตราย', rk.length?`${rk.length} <small>จุด</small>`:'—', rk.length?`แก้แล้ว ${rk.filter(riskFixed).length} · เหลือ ${rk.filter(x=>!riskFixed(x)).length}`:'ไม่มีจุดเสี่ยงในชีท')}
+        ${pElec}${pDrain}${pCam}${pRisk}
         </div>`;})()}
     </div>
     <div class="grid kpis" style="margin-top:14px">
-      <div class="card kpi"><div class="lbl">โครงการของ${bridge?'สะพาน':'สาย'}นี้</div><div class="val">${list.length} <small>โครงการ</small></div><div class="foot">${list.length?'ปี '+[...new Set(list.map(x=>x.year))].join(', '):'ยังไม่มีประวัติโครงการ'}</div></div>
-      <div class="card kpi"><div class="lbl">วงเงินรวม</div><div class="val">${fmtM(tot)}</div><div class="foot">ตามสัญญาทุกปีรวมกัน</div></div>
+      <div class="card kpi"><div class="lbl">โครงการของ${bridge?'สะพาน':'สาย'}นี้</div><div class="val">${list.length} <small>โครงการ</small></div><div class="foot">${list.length?'':'ยังไม่มีประวัติโครงการ'}</div></div>
+      <div class="card kpi"><div class="lbl">วงเงินรวม</div><div class="val">${fmtM(tot)}</div><div class="foot">${list.length?`เฉลี่ยปีละ ${fmtM(tot/Math.max(1,new Set(list.map(x=>x.year)).size))}`:''}</div></div>
       ${(()=>{ const he=list.filter(x=>poleCount(x)>0||(isElectric(x)&&!x.segs.length)), hp=list.reduce((a,x)=>a+(poleCount(x)||0),0);
       return `
       <div class="card kpi"><div class="lbl">ระยะดำเนินการรวม</div><div class="val">${fmt(+covKm.toFixed(2))} <small>กม.</small></div><div class="foot">รวมช่วงที่ซ้อนทับกันแล้ว</div></div>
@@ -2201,7 +2243,7 @@ function renderHistRoad(code){
         <div class="card kpi" style="border-left:4px solid #e34948"><div class="lbl">ครอบคลุมความยาวสาย</div><div class="val">${roadLen?Math.min(100,100*zcov/roadLen).toFixed(0):0}<small>%</small></div><div class="foot">ระยะครอบคลุมจริง ${fmt(+zcov.toFixed(2))} กม.</div></div>
       </div>`; })():''}
     <div class="card" style="margin-top:14px">
-      <h3>แผนภาพบูรณาการ (Strip Map) — ${bridge?'ถนนเชิงลาด + ตัวสะพาน':'สภาพผิว'} · ค้ำประกัน · รายปี · สะพาน · จุดเสี่ยง · อนาคต</h3>
+      <h3>แผนภาพบูรณาการ (Strip Map)${bridge?' — ถนนเชิงลาด + ตัวสะพาน':''}</h3>
       <div class="note">ชี้ที่แถบเพื่อดูรายละเอียด${bridge?' · ตำแหน่งสะพานประมาณกึ่งกลางระยะเชิงลาด':''}${noSeg?` · ⚠ ${noSeg} โครงการไม่ได้ระบุช่วง กม. (ดูในตาราง)`:''}</div>
       <div class="stripwrap" id="hrStrip"></div>
     </div>
@@ -2275,14 +2317,48 @@ function renderHistRoad(code){
           color:riskFixed(x)?'#0a7a2f':(/กำลัง|ระหว่าง/.test(x.status||'')?'#d9a441':'#e34948'),
           tip:`<b>⚠ ${esc(x.rtype||'จุดเสี่ยง')}</b> · ${esc(x.level||'')}<br>${esc(x.a)}${x.b?' – '+esc(x.b):''}<br>สถานะ: ${esc(x.status||'ยังไม่แก้ไข')}${x.fix?'<br>วิธีแก้: '+esc(x.fix):''}`}))});
     } else if(RISK_ID) loadRisk().catch(()=>{});
-    if(!eqData) loadEquip().catch(()=>{});
+    if(!eqData) loadEquip().then(()=>{ if(eqData) refreshHistRoad(); }).catch(()=>{});
     // เลนบนสุด: สภาพผิวทางจากชีทสำรวจ (ชี้ดู กว้าง/ผิว/สภาพ)
     let top=null;
     if(condData){ const cl=condLaneFor(code); if(cl) top=[cl]; }
     else loadCond().catch(()=>{});
     // สะพานชุมชน: ปักไอคอนตัวสะพานกึ่งกลางระยะเชิงลาด (ไม่มีข้อมูล กม. ตำแหน่งจริง)
     const bOnRoad=bridge?[{km:kmLbl(roadLen/2), name:bridge.name, river:bridge.river, len:bridge.len, width:bridge.width, year:bridge.year}]:(EMB.roadBridges?.[code]||[]);
-    drawStrip('hrStrip', roadLen, covered, list, YCOLOR, bOnRoad, extra, top);
+    // อุปกรณ์ปัจจุบันจากชีท Equipment -> แถวภาพรวม โดย "งานเดียวกันอยู่แนวเดียวกัน":
+    // ช่วงที่ทับโครงการชนิดเดียวกันที่ยังติดค้ำ -> ไม่วาดซ้ำ (แถบ/จุดสีปีของโครงการแสดงอยู่แล้ว)
+    // วาดเฉพาะช่วง "นอกค้ำประกัน" เป็นสีเกือบดำ + หักจำนวนช่วงติดค้ำออก (เช่น 33 − 7 = 26 ต้น)
+    const est30=(a,b)=>Math.max(1,Math.round((b-a)*1000/30));
+    const eqMarks=eqR.filter(x=>x.ka!=null).flatMap(x=>{
+      const kind=eqC.includes(x)?'cctv':(x.dtype&&!x.etype?'drain':'elec');
+      const parts=eqWarrSplit(list, x.ka, x.kb, kind);
+      const hasRange=x.kb!=null&&x.kb>x.ka;
+      const wParts=parts.filter(p=>p.alive&&p.b!=null);
+      const total=x.n||(hasRange&&kind==='elec'?est30(x.ka,x.kb):0);            // จำนวนไม่ชัวร์ -> หาร 30
+      const wQty=kind==='elec'?wParts.reduce((s,p)=>s+est30(p.a,p.b),0):0;      // จำนวนที่อยู่ในค้ำ (ประมาณจากช่วง)
+      const rem=Math.max(0,total-wQty);
+      const wLen=wParts.reduce((s,p)=>s+(p.b-p.a),0);
+      const remLen=hasRange?Math.max(0,(x.kb-x.ka)-wLen):0;
+      const info=`${x.ekind?' · '+esc(x.ekind):''}${x.dsize?' · '+esc(x.dsize):''}`;
+      return parts.map(p=>{
+        if(p.alive){ // ช่วงติดค้ำ -> หัวข้อแยกของตัวเอง สีตามปี รายงานแพทเทิร์นเดียวกับแถบค้ำประกันเดิม
+          const px=p.px||{};
+          return {kind, a:p.a, b:p.b, color:YCOLOR[String(p.py)]||C.teal,
+            tip:`<b>🛡 ติดค้ำประกันถึง ${p.pwe?thD(p.pwe):('~สิ้นปี '+((+p.py||0)+2))}</b><br>ปี ${p.py} · ${esc(px.budgetType||'')}${px.activity?` — ${esc(px.activity)}`:''}<br>${p.b!=null?`${kmLbl(p.a)} – ${kmLbl(p.b)}`:`กม. ${kmLbl(p.a)}`}${kind==='elec'&&p.b!=null?` · 💡 ≈ ${fmt(est30(p.a,p.b))} ต้น`:''}${px.delivered?` · ส่งงาน ${esc(px.delivered)}`:''}${px.contractor?`<br>${esc(px.contractor)}`:''}`};
+        }
+        // ช่วงนอกค้ำ -> ข้อมูลอุปกรณ์เฉยๆ: กม.ถึง กม. · จำนวน (หักและเว้นช่วงติดค้ำแล้ว)
+        return {kind, a:p.a, b:p.b, color:'#2b3036',
+          tip:`<b>🔌 ${esc(x.etype||x.dtype)}</b>${info}<br>${p.b!=null?`${kmLbl(p.a)} – ${kmLbl(p.b)}`:`กม. ${kmLbl(p.a)}`}`
+            +(kind==='elec'&&total?` · 💡 ${wQty?'≈ ':''}<b>${fmt(rem)} ต้น</b>${wQty?' (หักช่วงติดค้ำแล้ว)':''}`
+             :(kind==='drain'&&hasRange?` · ≈ ${fmt(Math.round(remLen*1000))} ม.`:(x.n?` · จำนวน ${fmt(x.n)}`:'')))
+            +`${x.yr?` · ติดตั้งปี ${esc(x.yr)}`:''}${x.cond?`<br>สภาพ: ${esc(x.cond)}`:''}`};
+      });
+    });
+    const eqOn=(eqR.length||eqTrans.length)?{marks:eqMarks, trans:eqTrans.map(t=>{
+      const p=eqWarrSplit(list, t.km, null, 'elec')[0];
+      return {km:t.km, color:p.alive?null:'#2b3036',
+        tip:`<b>⚡ หม้อแปลงไฟฟ้า</b><br>กม. ${kmLbl(t.km)}${t.x.etype?` · ${esc(t.x.etype)}`:''}${t.x.cond?`<br>สภาพ: ${esc(t.x.cond)}`:''}${p.alive?`<br>🛡 อยู่ในค้ำประกันงานไฟฟ้าปี ${p.py}${p.pwe?` (ถึง ${thD(p.pwe)})`:''}`:`<br>⬛ นอกค้ำประกัน`}`};
+    })}:null;
+    drawStrip('hrStrip', roadLen, covered, list, YCOLOR, bOnRoad, extra, top, eqOn);
   }
   // dropdown + ค้นหา (พิมพ์แล้วกรองตัวเลือก)
   const optHtml=arr=>arr.map(x=>{
@@ -2301,6 +2377,34 @@ function renderHistRoad(code){
   document.getElementById('hrPrint').addEventListener('click',()=>printOnePage(code));
   document.getElementById('hrPrev').addEventListener('click',()=>renderHistRoad(roadsWith[(idx-1+roadsWith.length)%roadsWith.length].c));
   document.getElementById('hrNext').addEventListener('click',()=>renderHistRoad(roadsWith[(idx+1)%roadsWith.length].c));
+}
+/* สถานะค้ำประกันของ "อุปกรณ์" — เทียบเฉพาะโครงการ "ชนิดงานเดียวกัน" (kind) ที่ทับช่วง กม. เดียวกัน แล้ว "ตัดช่วง":
+   คืนรายการช่วงย่อย [{a,b,alive,py,pwe}] — เฉพาะส่วนที่ทับโครงการชนิดเดียวกันที่ยังติดค้ำเท่านั้นที่ alive
+   เช่น อุปกรณ์ไฟฟ้า 5+000–6+000 ทับงานไฟฟ้าติดค้ำ 5+500–5+700 -> [5.0–5.5 นอกค้ำ][5.5–5.7 ติดค้ำ][5.7–6.0 นอกค้ำ] */
+function eqWarrSplit(list, a, b, kind){
+  const today=new Date(), beNow=(today.getFullYear()+543)%100;
+  const isAlive=x=>{ const we=warrantyEnd(x); return we?we>=today:(((+x.year)%100)+2>=beNow); };
+  const pt=!(b!=null&&b>a);
+  const bb=pt?a+0.0001:b;
+  const cov=[];
+  (list||[]).forEach(x=>{ if(!isAlive(x)) return;
+    (x.segs||[]).forEach(sg=>{ if(kind&&segMark(x,sg)!==kind) return; // งานเดียวกันเท่านั้น (ไฟฟ้าเทียบไฟฟ้า ฯลฯ)
+      const s=Math.max(a,sg.a), e=Math.min(bb,sg.b);
+      if(e>s) cov.push({s,e,x}); }); });
+  if(pt){ const h=cov[0];
+    return [{a, b:null, alive:!!h, py:h?.x.year, pwe:h?warrantyEnd(h.x):null, px:h?.x}]; }
+  if(!cov.length) return [{a, b, alive:false}];
+  cov.sort((p,q)=>p.s-q.s);
+  const merged=[]; cov.forEach(c=>{ const m=merged[merged.length-1];
+    if(m&&c.s<=m.e+0.005){ m.e=Math.max(m.e,c.e); if((+c.x.year||0)>(+m.x.year||0)) m.x=c.x; }
+    else merged.push({s:c.s, e:c.e, x:c.x}); });
+  const out=[]; let cur=a;
+  merged.forEach(m=>{
+    if(m.s>cur+0.005) out.push({a:cur, b:m.s, alive:false});
+    out.push({a:Math.max(a,m.s), b:Math.min(b,m.e), alive:true, py:m.x.year, pwe:warrantyEnd(m.x), px:m.x});
+    cur=Math.max(cur,m.e); });
+  if(b>cur+0.005) out.push({a:cur, b, alive:false});
+  return out;
 }
 /* งานไฟฟ้า/แสงสว่าง: แสดงเป็นจุด (dot) และคำนวณจำนวนต้น = ระยะ(ม.) ÷ 30 */
 const isElectric=x=>/ไฟฟ้า|แสงสว่าง|ไฟกระพริบ|ไฟสัญญาณ/.test((x.activity||'')+(x.budgetType||''));
@@ -2348,16 +2452,23 @@ const segMark=(x,sg)=>{
   }
   return m;
 };
-function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, extraLanes, topLanes){
+function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, extraLanes, topLanes, eqOnRoad){
   const box=document.getElementById(container); box.innerHTML='';
   const yearsHere=[...new Set(list.map(x=>x.year))].sort(); // ทุกปีที่มีโครงการ แม้ไม่ระบุช่วง (แถวเว้นว่าง)
   const today=new Date();
-  // แถว "ภาพรวม": เฉพาะช่วงที่ยังติดค้ำประกันสัญญา (ส่งงานงวดสุดท้าย + 2 ปี)
-  const wProj=list.map(x=>({x, we:warrantyEnd(x)})).filter(o=>o.we&&o.we>=today);
-  const wSegs=wProj.flatMap(({x,we})=>x.segs.map(sg=>({...sg, mk:segMark(x,sg),
-      tip:`<b>🛡 ติดค้ำประกันถึง ${we.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'})}</b><br>ปี ${x.year} · ${esc(x.budgetType)} — ${esc(x.activity)||''}<br>${kmLbl(sg.a)} – ${kmLbl(sg.b)}${(sg.t||'r')==='e'?` · 💡 ≈ ${fmt(Math.max(1,Math.round((sg.b-sg.a)*1000/30)))} ต้น`:''} · ส่งงาน ${esc(x.delivered)}<br>${esc(x.contractor)||''}`})));
-  const wNo=wProj.filter(({x})=>!x.segs.length).length;
   const beNow=(today.getFullYear()+543)%100; // ปี พ.ศ. 2 หลักของวันนี้ (ตัดสิน "ปีที่หมดค้ำแล้ว" -> สีเทา)
+  // แถว "ภาพรวม" (v18.9): ทุกโครงการ — ยังติดค้ำประกัน = สีตามปี · หมดค้ำแล้ว = สีเข้ม
+  const EXPIRED='#23272e';
+  const wProjAll=list.map(x=>({x, we:warrantyEnd(x)}));
+  const aliveOf=o=>o.we?o.we>=today:(((+o.x.year)%100)+2>=beNow);
+  const wSegs=wProjAll.flatMap(o=>{ const {x,we}=o, alive=aliveOf(o);
+    return x.segs.map(sg=>({...sg, mk:segMark(x,sg), zAlive:alive?1:0,
+      color:alive?(YCOLOR[String(x.year)]||C.navy):EXPIRED,
+      tip: alive
+        ? `<b>🛡 ติดค้ำประกันถึง ${we?we.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'}):('~สิ้นปี '+((+x.year||0)+2))}</b><br>ปี ${x.year} · ${esc(x.budgetType)} — ${esc(x.activity)||''}<br>${kmLbl(sg.a)} – ${kmLbl(sg.b)}${(sg.t||'r')==='e'?` · 💡 ≈ ${fmt(Math.max(1,Math.round((sg.b-sg.a)*1000/30)))} ต้น`:''}${x.delivered?` · ส่งงาน ${esc(x.delivered)}`:''}<br>${esc(x.contractor)||''}`
+        : `<b>ปี ${x.year} — หมดค้ำประกันแล้ว</b><br>${esc(x.budgetType)} — ${esc(x.activity)||''}<br>${kmLbl(sg.a)} – ${kmLbl(sg.b)}`}));
+  });
+  const wNo=wProjAll.filter(o=>aliveOf(o)&&!o.x.segs.length).length;
   const lanes=[{label:'ภาพรวม', color:C.navy, over:true, segs:wSegs, noSegN:wNo,
     noSegTxt:`🛡 ติดค้ำ ${wNo} โครงการ (ไม่ระบุช่วง กม. — ดูป้ายในตาราง)`},
     ...yearsHere.map(y=>{
@@ -2414,7 +2525,7 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
     // ลำดับวาด: แถบก่อน -> สัญลักษณ์ทับ (จุด/เส้นประ/ต้นไม้/▲/กล้อง/สะพาน)
     const mkOf=sg=>sg.mk||(sg.dot?'elec':(sg.pt?'sign':(sg.cls==='บำรุง'?'thin':'full')));
     const ORD={full:0,thin:1,drain:2,elec:3,tree:4,sign:5,cctv:6,bridge:7};
-    [...ln.segs].sort((a,b2)=>(ORD[mkOf(a)]||0)-(ORD[mkOf(b2)]||0)).forEach(sg=>{
+    [...ln.segs].sort((a,b2)=>(ORD[mkOf(a)]||0)-(ORD[mkOf(b2)]||0)||((a.zAlive||0)-(b2.zAlive||0))).forEach(sg=>{
       const xa=X(sg.a), xb=X(Math.min(sg.b,roadLen));
       const col=sg.color||ln.color, mid=(xa+xb)/2, mk=mkOf(sg);
       const g=el('g',{class:'seg'},svg); g.style.cursor='help';
@@ -2473,6 +2584,42 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
         g.addEventListener('mouseleave',hideTip);
       });
     }
+    // 🔌 อุปกรณ์ปัจจุบัน (ชีท Equipment) — "งานเดียวกันอยู่แนวเดียวกัน" กับสัญลักษณ์โครงการ:
+    // วาดเฉพาะช่วงนอกค้ำประกัน (สีเกือบดำ) — ช่วงติดค้ำมีแถบ/จุดสีปีของโครงการแสดงอยู่แล้ว
+    if(ln.over&&eqOnRoad){
+      const EQC={elec:'#e8a417',drain:'#0d9488',cctv:'#6d28d9'};
+      (eqOnRoad.marks||[]).forEach(mq=>{
+        const hasB=mq.b!=null&&mq.b>mq.a;
+        const xa=X(mq.a), xb=X(Math.min(hasB?mq.b:mq.a, roadLen));
+        const col=mq.color||EQC[mq.kind], g=el('g',{class:'seg'},svg); g.style.cursor='help';
+        if(mq.kind==='elec'){
+          // จุดแนวเดียวกับงานไฟฟ้าโครงการ (บน-ล่างแถบ) · hover เฉพาะแนวจุด ไม่คลุมตัวแถบ
+          [[by-8,8],[by+bh,8]].forEach(([yy,hh])=>el('rect',{x:xa-4,y:yy,width:Math.max(10,xb-xa+8),height:hh,fill:'transparent'},g));
+          const n=hasB?Math.max(2,Math.min(30,Math.floor((xb-xa)/12)+2)):1;
+          [by-4, by+bh+4].forEach(cy=>{ for(let k=0;k<n;k++){
+            const dx=xa+(n===1?0:(xb-xa)*k/(n-1));
+            el('circle',{cx:dx,cy,r:2,fill:col,stroke:'#fcfcfb','stroke-width':0.9,'pointer-events':'none'},g); }});
+        }else if(mq.kind==='drain'){
+          // เส้นประแนวเดียวกับงานรางระบายน้ำโครงการ (ชิดขอบแถบ) · hover เฉพาะแนวเส้น
+          [[by+2,by-1],[by+bh-2,by+bh-5]].forEach(([yy,hy])=>{
+            el('rect',{x:xa-2,y:hy,width:Math.max(9,xb-xa+4),height:6,fill:'transparent'},g);
+            el('line',{x1:xa,y1:yy,x2:Math.max(xa+7,xb),y2:yy,stroke:col,'stroke-width':2,'stroke-dasharray':'4 3','stroke-linecap':'round','pointer-events':'none'},g); });
+        }else{ const mid=(xa+xb)/2;
+          el('rect',{x:mid-8,y:by-2,width:16,height:bh+4,fill:'transparent'},g);
+          camIcon(mid,by+bh/2,col,g);
+        }
+        g.addEventListener('mousemove',e=>showTip(mq.tip,e.clientX,e.clientY));
+        g.addEventListener('mouseleave',hideTip);
+      });
+      (eqOnRoad.trans||[]).forEach(t=>{
+        const bx=X(Math.min(t.km,roadLen)), cy=by+bh/2, g=el('g',{class:'seg'},svg); g.style.cursor='help';
+        el('rect',{x:bx-7,y:by-2,width:14,height:bh+4,fill:'transparent'},g);
+        el('circle',{cx:bx,cy,r:6,fill:t.color||'#d97706',stroke:'#fcfcfb','stroke-width':1.2,'pointer-events':'none'},g);
+        el('path',{d:`M${bx+1.7},${cy-4.1} l-3.6,4.6 h2.5 l-1.5,3.7 l4,-5 h-2.5 z`,fill:'#fff','pointer-events':'none'},g);
+        g.addEventListener('mousemove',e=>showTip(t.tip,e.clientX,e.clientY));
+        g.addEventListener('mouseleave',hideTip);
+      });
+    }
   });
   // legend ล่าง: ตาราง grid คอลัมน์ตรงกันทุกบรรทัด (ไอคอนกว้างคงที่ 20px)
   const lg=document.createElement('div'); lg.className='legendrow';
@@ -2480,22 +2627,22 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
   const GC='#94a3b8';
   const li=(ic,txt)=>`<span style="display:flex;align-items:center;gap:6px;white-space:nowrap"><span style="width:20px;flex:none;display:inline-flex;justify-content:center;align-items:center">${ic}</span><span>${txt}</span></span>`;
   const brSvg=c=>`<svg width="14" height="14" viewBox="0 0 16 16"><g stroke="${c}" stroke-width="1.9" stroke-linecap="round"><line x1="5" y1="4" x2="5" y2="12"/><line x1="5" y1="4" x2="2" y2="1.5"/><line x1="5" y1="12" x2="2" y2="14.5"/><line x1="11" y1="4" x2="11" y2="12"/><line x1="11" y1="4" x2="14" y2="1.5"/><line x1="11" y1="12" x2="14" y2="14.5"/></g></svg>`;
+  // legend รวมชุดเดียว — เรียงตามสัญลักษณ์ ไม่แยกหมวด อ่านไล่ซ้ายไปขวา
   lg.innerHTML=
-    `<div style="display:grid;grid-template-columns:56px repeat(4,minmax(150px,auto));gap:4px 12px;align-items:center">`+
-      `<span style="font-weight:700;color:var(--ink2);grid-row:span 2">ชนิดงาน:</span>`+
-      li(`<span style="display:inline-block;width:16px;height:11px;border-radius:3px;background:${GC}"></span>`,'แถบเต็ม — ก่อสร้าง/ขยายถนน')+
-      li(`<span style="display:inline-block;width:16px;height:5px;border-radius:2px;background:${GC}"></span>`,'แถบเล็ก — บำรุง (Hot In-Plant ฯลฯ)')+
-      li(`<svg width="18" height="14" viewBox="0 0 18 14"><g fill="${GC}"><circle cx="3" cy="2.5" r="2"/><circle cx="9" cy="2.5" r="2"/><circle cx="15" cy="2.5" r="2"/><circle cx="3" cy="11.5" r="2"/><circle cx="9" cy="11.5" r="2"/><circle cx="15" cy="11.5" r="2"/></g><rect x="0" y="6" width="18" height="2" rx="1" fill="#dcdfe4"/></svg>`,'จุดบน-ล่างแถบ — ไฟฟ้า/แสงสว่าง')+
-      li(`<svg width="18" height="14" viewBox="0 0 18 14"><g stroke="${GC}" stroke-width="2" stroke-dasharray="3 2.4" stroke-linecap="round"><line x1="1" y1="3" x2="17" y2="3"/><line x1="1" y1="11" x2="17" y2="11"/></g></svg>`,'เส้นประขอบแถบ — รางระบายน้ำ')+
-      li(`<svg width="13" height="12" viewBox="0 0 13 12"><path d="M6.5,1 L12,11 L1,11 z" fill="${GC}"/></svg>`,'▲ — ป้าย/อุปกรณ์ (ต่ำกว่า 5 แสนบาท)')+
-      li(`<svg width="16" height="15" viewBox="0 0 16 15"><rect x="1" y="1" width="13" height="7" rx="2" fill="${GC}"/><circle cx="11" cy="4.5" r="1.6" fill="#fff"/><line x1="7.5" y1="8.5" x2="7.5" y2="13" stroke="${GC}" stroke-width="1.8"/><line x1="4" y1="13.6" x2="11" y2="13.6" stroke="${GC}" stroke-width="1.8" stroke-linecap="round"/></svg>`,'กล้อง — ITS / CCTV')+
-      li(`<svg width="12" height="14" viewBox="0 0 12 14"><path d="M6,0.5 L10,7 H2 z" fill="#2f9e57"/><rect x="5" y="7.5" width="2" height="3.6" fill="#8a6d4b"/></svg>`,'ต้นไม้บน-ล่างแถบ — ปรับปรุงภูมิทัศน์')+
-      li(brSvg(GC),'สะพาน — งานก่อสร้างสะพาน')+
-      `<span style="font-weight:700;color:var(--ink2)">แถวพิเศษ:</span>`+
-      li(`<span style="display:inline-block;width:16px;height:8px;border-radius:2px;background:${C.navy}"></span>`,'ภาพรวม (น้ำเงิน) = ช่วงติดค้ำประกัน (+2 ปีจากส่งงาน)')+
-      li('<span style="display:inline-block;width:16px;height:8px;border-radius:2px;background:#a9b0ba"></span>','แถวปีสีเทา = หมดค้ำประกันแล้ว')+
-      li(brSvg('#7f93b8'),'สะพานในสายทาง (ตำแหน่งปัจจุบัน)')+
-      li('','สี = สีปีหน้าแถว · ชี้ทุกชิ้นดูรายละเอียด')+
+    `<div style="display:grid;grid-template-columns:repeat(4,minmax(180px,1fr));gap:6px 18px;align-items:center">`+
+      li(`<span style="display:inline-block;width:16px;height:11px;border-radius:3px;background:${GC}"></span>`,'แถบเต็ม = ก่อสร้าง/ขยายถนน')+
+      li(`<span style="display:inline-block;width:16px;height:5px;border-radius:2px;background:${GC}"></span>`,'แถบเล็ก = งานบำรุง (Hot In-Plant ฯลฯ)')+
+      li(`<svg width="18" height="14" viewBox="0 0 18 14"><g fill="${GC}"><circle cx="3" cy="2.5" r="2"/><circle cx="9" cy="2.5" r="2"/><circle cx="15" cy="2.5" r="2"/><circle cx="3" cy="11.5" r="2"/><circle cx="9" cy="11.5" r="2"/><circle cx="15" cy="11.5" r="2"/></g><rect x="0" y="6" width="18" height="2" rx="1" fill="#dcdfe4"/></svg>`,'จุดบน-ล่างแถบ = ไฟฟ้าแสงสว่าง')+
+      li(`<svg width="18" height="14" viewBox="0 0 18 14"><g stroke="${GC}" stroke-width="2" stroke-dasharray="3 2.4" stroke-linecap="round"><line x1="1" y1="3" x2="17" y2="3"/><line x1="1" y1="11" x2="17" y2="11"/></g></svg>`,'เส้นประขอบแถบ = รางระบายน้ำ')+
+      li(`<svg width="13" height="12" viewBox="0 0 13 12"><path d="M6.5,1 L12,11 L1,11 z" fill="${GC}"/></svg>`,'▲ = ป้าย/อุปกรณ์ (ต่ำกว่า 5 แสนบาท)')+
+      li(`<svg width="16" height="15" viewBox="0 0 16 15"><rect x="1" y="1" width="13" height="7" rx="2" fill="${GC}"/><circle cx="11" cy="4.5" r="1.6" fill="#fff"/><line x1="7.5" y1="8.5" x2="7.5" y2="13" stroke="${GC}" stroke-width="1.8"/><line x1="4" y1="13.6" x2="11" y2="13.6" stroke="${GC}" stroke-width="1.8" stroke-linecap="round"/></svg>`,'กล้อง = ITS / CCTV')+
+      li(`<svg width="12" height="14" viewBox="0 0 12 14"><path d="M6,0.5 L10,7 H2 z" fill="#2f9e57"/><rect x="5" y="7.5" width="2" height="3.6" fill="#8a6d4b"/></svg>`,'ต้นไม้ = ปรับปรุงภูมิทัศน์')+
+      li(`<svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#d97706"/><path d="M9.7,3.9 L6.1,8.5 h2.5 L7.1,12.2 l4,-5 h-2.5 z" fill="#fff"/></svg>`,'⚡ = หม้อแปลง (ส้ม ติดค้ำ · เข้ม นอกค้ำ)')+
+      li(brSvg(GC),'สะพาน )( = งานก่อสร้างสะพาน')+
+      li(brSvg('#7f93b8'),')( ฟ้า = สะพานในสายทางปัจจุบัน')+
+      li(`<span style="display:inline-block;width:16px;height:8px;border-radius:2px;background:linear-gradient(90deg,#2a9d8f,#e9c46a,#e76f51)"></span>`,'สีตามปี = ช่วงยังติดค้ำประกัน')+
+      li(`<span style="display:inline-block;width:16px;height:8px;border-radius:2px;background:#23272e"></span>`,'สีเข้ม = นอกค้ำ/หมดค้ำ (หักจำนวนติดค้ำแล้ว)')+
+      li('<span style="display:inline-block;width:16px;height:8px;border-radius:2px;background:#a9b0ba"></span>','แถวปีสีเทา = หมดค้ำแล้วทั้งปี')+
     `</div>`;
   box.appendChild(lg);
 }
@@ -2560,7 +2707,7 @@ async function loadRequests(force){
       `<span class="hpill">🕐 ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})} น.</span>`;
     renderRequests();
     // เติมเลน "คำของบ" ใน strip map หน้าประวัติ ถ้าเปิดค้างอยู่
-    if(document.getElementById('histRoadBody').style.display!=='none'&&histData) renderHistRoad(histRoadCode);
+    refreshHistRoad();
   }catch(err){
     document.getElementById('reqPills').innerHTML=`<span class="hpill"><span class="dot err"></span> เชื่อมต่อ Google Sheets ไม่ได้</span>`;
     body.innerHTML=`<div class="banner err" style="display:block">ดึงข้อมูลไม่สำเร็จ (${esc(err.message)}) — ต้องเปิดผ่านอินเทอร์เน็ต และ Google Sheet ต้องแชร์แบบ "ทุกคนที่มีลิงก์"</div>`;
@@ -2773,7 +2920,7 @@ async function loadZerobase(force){
       `<span class="hpill">🕐 ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})} น.</span>`;
     renderZerobase();
     // เติมเลน Zerobase ใน strip map หน้าประวัติ ถ้าเปิดค้างอยู่
-    if(document.getElementById('histRoadBody').style.display!=='none'&&histData) renderHistRoad(histRoadCode);
+    refreshHistRoad();
   }catch(err){
     document.getElementById('zbPills').innerHTML=`<span class="hpill"><span class="dot err"></span> เชื่อมต่อ Google Sheets ไม่ได้</span>`;
     body.innerHTML=`<div class="banner err" style="display:block">ดึงข้อมูล Zerobase ไม่สำเร็จ (${esc(err.message)})</div>`;
@@ -3043,6 +3190,18 @@ async function printOnePage(code){
   const rb=brC?[{km:kmLbl(roadLen/2), name:brC.name, river:brC.river, len:brC.len, width:brC.width, year:brC.year}]:(EMB.roadBridges?.[code]||[]);
   const rq=(reqData||[]).filter(q=>q.code===code);
   const hp=list.reduce((a,x)=>a+(poleCount(x)||0),0);
+  // Equipment: จำนวนจริง + ตำแหน่งลง Strip Map (เหมือนหน้าสรุปรายสาย)
+  const eqCp=eqR.filter(x=>/กล้อง|cctv/i.test((x.etype||'')+' '+(x.ekind||'')));
+  const eqEp=eqR.filter(x=>x.etype&&!eqCp.includes(x)), eqDp=eqR.filter(x=>x.dtype&&!x.etype);
+  const eqPolesP=eqEp.reduce((a,x)=>a+(x.n||0),0);
+  const eqPolesEstP=eqEp.reduce((a,x)=>a+(x.n||((x.ka!=null&&x.kb!=null&&x.kb>x.ka)?Math.max(1,Math.round((x.kb-x.ka)*1000/30)):0)),0);
+  const eqCamsP=eqCp.reduce((a,x)=>a+(x.n||0),0)||eqCp.length;
+  const eqDrainMP=Math.round(eqDp.reduce((a,x)=>a+((x.ka!=null&&x.kb!=null&&x.kb>x.ka)?(x.kb-x.ka)*1000:0),0));
+  const eqTransP=[]; eqR.forEach(x=>String(x.trans||'').split(/[\n,;\/]+/).forEach(tk=>{ const v=kmVal(tk.trim()); if(v!=null) eqTransP.push({km:v}); }));
+  const eqOnP=(eqR.length||eqTransP.length)?{marks:eqR.filter(x=>(x.etype||x.dtype)&&x.ka!=null).flatMap(x=>{
+      const kind=eqCp.includes(x)?'cctv':(x.dtype&&!x.etype?'drain':'elec');
+      return eqWarrSplit(list,x.ka,x.kb,kind).map(p=>({kind, a:p.a, b:p.b, color:p.alive?(YCOLOR[String(p.py)]||null):'#2b3036', tip:''}));}),
+    trans:eqTransP.map(t=>({km:t.km, color:eqWarrSplit(list,t.km,null,'elec')[0].alive?null:'#2b3036', tip:''}))}:null;
   // วาด strip ลงกล่องซ่อน แล้วคัดลอก SVG ไปหน้าพิมพ์
   let tmp=document.getElementById('printStripTmp');
   if(!tmp){ tmp=document.createElement('div'); tmp.id='printStripTmp';
@@ -3060,7 +3219,7 @@ async function printOnePage(code){
       if(rl2.length) extra.push({label:'จุดเสี่ยง', color:'#e34948',
         segs:rl2.map(x=>({a:x.ka,b:(x.kb!=null&&x.kb>x.ka)?x.kb:x.ka+0.03,color:riskFixed(x)?'#0a7a2f':'#e34948',tip:''}))}); }
     let top=null; if(condData){ const cl=condLaneFor(code); if(cl) top=[cl]; }
-    drawStrip('printStripBox', roadLen, covered, list, YCOLOR, rb, extra, top);
+    drawStrip('printStripBox', roadLen, covered, list, YCOLOR, rb, extra, top, eqOnP);
   }catch(e){}
   const stripHTML=tmp.querySelector('#printStripBox')?tmp.querySelector('#printStripBox').innerHTML:'';
   tmp.innerHTML='';
@@ -3073,26 +3232,27 @@ async function printOnePage(code){
     <div class="hd"><div>
       <h1>One-Page บูรณาการ${brC?'สะพานชุมชน':'สายทาง'} <span style="font-size:26px">${code}</span></h1>
       <div class="sub">${esc(r?.name||brC?.name||'')}</div>
-      <div class="chips"><span class="chip">อำเภอ${esc(r?.amphoe||brC?.amphoe||'-')}</span><span class="chip">หมวด${esc(r?.muad||brC?.muad||'-')}</span><span class="chip">${brC?`สะพานยาว ${fmt(brC.len)} ม. · เชิงลาด ${fmt(roadLen)} กม.`:`ระยะทาง ${fmt(roadLen)} กม.`}</span><span class="chip">PCU/มาตรฐาน: ตามบัญชี Master</span></div></div>
+      <div class="chips"><span class="chip">อำเภอ${esc(r?.amphoe||brC?.amphoe||'-')}</span><span class="chip">หมวด${esc(r?.muad||brC?.muad||'-')}</span><span class="chip">${brC?`สะพานยาว ${fmt(brC.len)} ม. · เชิงลาด ${fmt(roadLen)} กม.`:`ระยะทาง ${fmt(roadLen)} กม.`}</span></div></div>
       <div style="text-align:right;font-size:11.5px">แขวงทางหลวงชนบทขอนแก่น<br>${new Date().toLocaleDateString('th-TH',{dateStyle:'long'})}<br>${esc(document.querySelector('.brand .ver')?.textContent||'')}</div></div>
-    <div class="kgrid" style="grid-template-columns:repeat(8,1fr)">
+    <div class="kgrid" style="grid-template-columns:repeat(9,1fr)">
       ${kb('🛣️','#ececee',fmt(r?.latyang||0)+' <small>กม.</small>','ลาดยาง (AC)')}
       ${kb('🧱','#e6f0fb',fmt(r?.concrete||0)+' <small>กม.</small>','คอนกรีต (คสล.)')}
       ${kb('🪨','#f2ece4',fmt(r?.lukrang||0)+' <small>กม.</small>','ลูกรัง')}
       ${kb('🌉','#eaf2fc',(rb.length||r?.bridges_acct||0)+' <small>แห่ง</small>','สะพานในสายทาง')}
-      ${kb('💡','#fbf3df',(eqR.filter(x=>x.etype).length||hp||'—')+(eqR.filter(x=>x.etype).length?' <small>รายการ</small>':(hp?' <small>ต้น</small>':'')),'ไฟฟ้าแสงสว่าง')}
-      ${kb('🕳️','#e8f1f0',(eqR.filter(x=>x.dtype&&!x.etype).length||'—'),'ระบายน้ำ')}
+      ${kb('💡','#fbf3df',((eqPolesP&&eqPolesP===eqPolesEstP)?fmt(eqPolesP)+' <small>ต้น</small>':(eqPolesEstP?'≈ '+fmt(eqPolesEstP)+' <small>ต้น</small>':(hp?fmt(hp)+' <small>ต้น</small>':'—'))),'ไฟฟ้าแสงสว่าง'+(eqTransP.length?' · ⚡หม้อแปลง '+eqTransP.length:''))}
+      ${kb('🕳️','#e8f1f0',(eqDp.length?(eqDrainMP?fmt(eqDrainMP)+' <small>ม.</small>':eqDp.length+' <small>รายการ</small>'):'—'),'ระบายน้ำ')}
+      ${kb('📹','#f0ecfa',(eqCp.length?fmt(eqCamsP)+' <small>ตัว</small>':'—'),'กล้อง CCTV')}
       ${kb('⚠️','#fdeeee',(rk.length||'—')+(rk.length?' <small>จุด</small>':''),'จุดเสี่ยง · แก้แล้ว '+rk.filter(riskFixed).length)}
       ${kb('📈','#e6f4f2',cdR.length?cdR.length+' <small>ช่วง</small>':'—','สำรวจสภาพผิวแล้ว')}
     </div>
     <div class="kgrid" style="grid-template-columns:repeat(5,1fr);margin-top:8px">
-      ${kb('📋','#edf2fa',list.length+' <small>โครงการ</small>','ประวัติปี '+([...new Set(list.map(x=>x.year))].join(', ')||'-'))}
+      ${kb('📋','#edf2fa',list.length+' <small>โครงการ</small>','โครงการในประวัติ')}
       ${kb('💰','#e9f6ee',fmtM(tot),'วงเงินรวมตามสัญญา')}
       ${kb('📏','#e6f4f2',fmt(+covKm.toFixed(1))+' <small>กม.</small>','ระยะดำเนินการรวม ('+(roadLen?Math.min(100,100*covKm/roadLen).toFixed(0):0)+'% ของสาย)')}
       ${kb('🛡️','#f0ecfa',wl.length+' <small>โครงการ</small>','ติดค้ำประกัน · '+fmtM(wl.reduce((a,o)=>a+(o.x.amount||0),0)))}
       ${kb('🔮','#fdeeee',zl.length?zl.length+' <small>ช่วง</small>':'—','ความต้องการ Zerobase')}
     </div>
-    <h2>แผนภาพบูรณาการ — สภาพผิว · ค้ำประกัน · รายปี · สะพาน · จุดเสี่ยง · อนาคต</h2>
+    <h2>แผนภาพบูรณาการ (Strip Map)</h2>
     <div class="strip">${stripHTML}</div>
     <div class="cols" style="margin-top:4px">
       <div>
@@ -3248,7 +3408,7 @@ async function loadCond(force){
       ['สภาพปัจจุบัน','cond'],['ผู้สำรวจ','surveyor']])||[];
     condData=objs.map(o=>({...o, code:extractRoadCode(o.code), ka:kmVal(o.a), kb:kmVal(o.b)}))
       .filter(o=>o.code&&o.ka!=null&&o.kb!=null&&o.kb>o.ka);
-    if(document.getElementById('histRoadBody').style.display!=='none'&&histData) renderHistRoad(histRoadCode);
+    refreshHistRoad();
   }catch(e){ condData=condData||[]; }
 }
 function condLaneFor(code){
@@ -3296,7 +3456,9 @@ async function loadEquip(force){
   const body=document.getElementById('eqBody');
   body.innerHTML='<div class="loading"><span class="spin"></span>กำลังดึงข้อมูล Equipment…</div>';
   try{
-    const t=await gvizJSONP(EQP_ID,'gid='+EQP_GID);
+    // headers=2: ชีท Equipment มีหัวตาราง 2 ชั้น (แถวหมวดสี + แถวชื่อคอลัมน์) — ถ้าอ่านแบบหัวแถวเดียว
+    // แถวชื่อคอลัมน์จะกลายเป็นข้อมูล แล้วคอลัมน์ตัวเลข (จำนวน) จะตีค่าหัวเป็น null ทำให้จับคู่คอลัมน์ไม่ได้
+    const t=await gvizJSONP(EQP_ID,'gid='+EQP_GID+'&headers=2');
     const objs=scanObjects(t, [['รหัสสายทาง','code'],['กม.เริ่ม','a'],['กม.จบ','b'],['ประเภทอุปกรณ์','etype'],
       ['ชนิดระบบระบายน้ำ','dtype'],['ชนิด','ekind'],['จำนวน','qty'],['ตำแหน่งหม้อแปลง','trans'],
       ['ปีที่ติดตั้ง','yr'],['ขนาด','dsize'],['รายละเอียดเพิ่ม','note'],['วันเดือนปีสำรวจ','sdate'],
@@ -3684,8 +3846,7 @@ window.addEventListener('resize',()=>{
   _rsT=setTimeout(()=>{
     const pg=document.querySelector('.page.active')?.id;
     if(pg==='pg-overview'){ renderOverview(); renderOverviewBudget(); }
-    else if(pg==='pg-history'&&histData){ renderHistory();
-      if(document.getElementById('histRoadBody').style.display!=='none') renderHistRoad(histRoadCode); }
+    else if(pg==='pg-history'&&histData){ renderHistory(); refreshHistRoad(); }
     else if(pg==='pg-requests'&&reqData) renderRequests();
     else if(pg==='pg-zerobase'&&zbData) renderZerobase();
     else if(pg==='pg-risk'&&riskData) renderRisk();
