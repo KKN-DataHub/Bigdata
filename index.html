@@ -142,7 +142,8 @@ select.search{width:auto}
 .zoomctl button:first-child{border-bottom:1px solid var(--grid)}
 .mappopup{position:absolute;z-index:950;background:#fff;border-radius:9px;box-shadow:0 4px 14px rgba(0,0,0,.28);padding:10px 13px;font-size:12.5px;line-height:1.55;max-width:260px;transform:translate(-50%,-100%);margin-top:-10px}
 .mappopup b{color:var(--navy)}
-.mappopup .x{position:absolute;top:2px;right:7px;cursor:pointer;color:var(--muted);font-size:14px}
+.mappopup .x{position:absolute;top:0;right:2px;cursor:pointer;color:var(--muted);font-size:14px;padding:3px 6px}
+.mappopup .x:hover{color:var(--navy)}
 .attrib{position:absolute;bottom:2px;right:6px;z-index:900;font-size:10px;color:#333;background:rgba(255,255,255,.75);padding:1px 5px;border-radius:4px}
 .legendbox{background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:12px 14px;font-size:11.5px;line-height:1.75;align-self:start;max-height:640px;overflow-y:auto;box-shadow:0 1px 4px rgba(16,24,40,.06)}
 .lg{display:flex;align-items:center;gap:7px}
@@ -189,7 +190,7 @@ select.search{width:auto}
     <div class="brand">
       <h1>Big Data สายทาง</h1>
       <div class="sub">แขวงทางหลวงชนบทขอนแก่น<br>กรมทางหลวงชนบท</div>
-      <div class="ver">v18.7 · 23 ก.ค. 2569</div>
+      <div class="ver">v18.8 · 31 ก.ค. 2569</div>
     </div>
     <nav class="nav">
       <button data-page="overview" class="active"><span class="ico">▦</span> ภาพรวมโครงข่าย</button>
@@ -1468,17 +1469,22 @@ function initMap(){
   renderMapLegend();
   // interactions
   let drag=null;
-  div.addEventListener('pointerdown',e=>{ drag={x:e.clientX,y:e.clientY,moved:false}; div.classList.add('dragging'); div.setPointerCapture(e.pointerId); });
+  // หมายเหตุ v18.8: ห้าม setPointerCapture ตั้งแต่ pointerdown — Chrome รุ่นใหม่จะ retarget เหตุการณ์ click
+  // ไปที่ตัวแผนที่แทนปุ่มใน popup ทำให้ปุ่ม "คัดลอกพิกัด"/✕ กดไม่ติด จึง capture เฉพาะเมื่อเริ่มลากจริง
+  div.addEventListener('pointerdown',e=>{ if(e.target.closest('.mappopup')||e.target.closest('.zoomctl')) return;
+    drag={x:e.clientX,y:e.clientY,moved:false,id:e.pointerId,t:e.target}; div.classList.add('dragging'); });
   div.addEventListener('pointermove',e=>{ if(!drag) return;
     const dx=e.clientX-drag.x, dy=e.clientY-drag.y;
-    if(Math.abs(dx)+Math.abs(dy)>3) drag.moved=true;
-    M.cx-=dx; M.cy-=dy; drag={x:e.clientX,y:e.clientY,moved:drag.moved}; redrawMap(); });
+    if(!drag.moved && Math.abs(dx)+Math.abs(dy)>3){ drag.moved=true; try{ div.setPointerCapture(drag.id); }catch(_){} }
+    M.cx-=dx; M.cy-=dy; drag.x=e.clientX; drag.y=e.clientY; redrawMap(); });
   div.addEventListener('pointerup',e=>{
-    const wasClick=drag&&!drag.moved;
+    const wasClick=drag&&!drag.moved, t=drag&&drag.t;
     drag=null; div.classList.remove('dragging');
-    if(wasClick && (e.target.tagName!=='path' || e.target.dataset.zn) && !e.target.closest('.mappopup') && !e.target.closest('.zoomctl'))
+    if(wasClick && t && (t.tagName!=='path' || t.dataset.zn) && !t.closest('.mappopup') && !t.closest('.zoomctl'))
       showCoordPopup(e); // พื้นเขตเลือกตั้งถือเป็นพื้นที่ว่าง — คลิกแล้วยังโชว์พิกัดได้
   });
+  div.addEventListener('pointercancel',()=>{ drag=null; div.classList.remove('dragging'); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') closePopup(); });
   div.addEventListener('wheel',e=>{ e.preventDefault(); zoomAt(e.deltaY<0?1:-1, e.offsetX, e.offsetY); },{passive:false});
   div.addEventListener('dblclick',e=>zoomAt(1,e.offsetX,e.offsetY));
   document.getElementById('zin').addEventListener('click',()=>zoomAt(1, div.clientWidth/2, div.clientHeight/2));
