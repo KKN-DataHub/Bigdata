@@ -312,6 +312,17 @@ select.search{width:auto}
   .mappopup.mobdock .gmrow{gap:8px;margin-top:10px}
   .mappopup.mobdock .gmrow a.btn{padding:9px 14px!important;font-size:12.5px!important;margin-top:0!important}
 }
+
+/* v20.8 — หัวข้อคั่นกลุ่มในแถบรายชื่อสายทาง (ใช้กับบล็อกสะพานชุมชน) */
+.roadlist .listhead{margin:12px 2px 5px;padding-top:9px;border-top:1px dashed var(--grid);
+  font-size:11.5px;font-weight:700;color:var(--navy);letter-spacing:.2px}
+
+/* v20.9 — บรรทัดบอกว่าปุ่มลิงก์อ้างอิงจุดไหน */
+.mappopup .gmnote{margin-top:9px;padding-top:8px;border-top:1px dashed var(--grid);
+  font-size:10.5px;line-height:1.45;color:var(--muted)}
+.mappopup .gmnote b{color:var(--ink2)}
+.mappopup .gmnote+.gmrow{margin-top:6px;padding-top:0;border-top:none}
+@media(max-width:900px){.mappopup.mobdock .gmnote{font-size:11.5px}}
 </style>
 </head>
 <body>
@@ -321,7 +332,7 @@ select.search{width:auto}
     <div class="brand">
       <h1>Big Data สายทาง</h1>
       <div class="sub">แขวงทางหลวงชนบทขอนแก่น<br>กรมทางหลวงชนบท</div>
-      <div class="ver">v20.7 · 16 ส.ค. 2569</div>
+      <div class="ver">v20.9 · 16 ส.ค. 2569</div>
     </div>
     <nav class="nav">
       <button data-page="overview" class="active"><span class="ico">▦</span> ภาพรวมโครงข่าย</button>
@@ -1547,7 +1558,7 @@ function initMap(){
     p.addEventListener('mousemove',e=>{ if(code!==activeCode){p.setAttribute('stroke-width',5);p.setAttribute('stroke-opacity',1);}
       showTip(`<b>${code}</b> ${esc(r?.name||'')}<br>หมวด${esc(r?.muad||'-')} · ${fmt(r?.len_acct)} กม.${stub?'<br>◌ แนวประมาณ (ลากตรงจุดเริ่ม-จุดจบ) — รอสำรวจ GPS จริง':''}`,e.clientX,e.clientY); });
     p.addEventListener('mouseleave',()=>{ hideTip(); if(code!==activeCode){ restoreStyle(code); } });
-    p.addEventListener('click',e=>{ e.stopPropagation(); selectRoad(code); });
+    p.addEventListener('click',e=>{ e.stopPropagation(); selectRoad(code, llFromEvent(e)); });
   });
   // ---- หลัก กม. ทุก 1 กม. บนทุกสาย (จุดเล็ก โผล่เมื่อซูม ≥ 12 — ชี้แล้วบอก กม.) ----
   M.kmDots=[];
@@ -1576,7 +1587,7 @@ function initMap(){
   }
   // ---- ชั้นสะพาน (ไอคอน )( เดียวกับ Strip Map) — ชุมชน + ในสายทาง ----
   M.bridges=[];
-  const addBrMarker=(lat,lon,tip,pop,muad,zone)=>{
+  const addBrMarker=(lat,lon,tip,pop,muad,zone,meta)=>{
     if(lat==null||lon==null||isNaN(lat)||isNaN(lon)) return;
     const g=el('g',{class:'brmk'},M.svg); g.style.cursor='pointer';
     el('circle',{cx:0,cy:0,r:8.5,fill:'#fff','fill-opacity':.9,stroke:C.navy,'stroke-width':1},g);
@@ -1585,7 +1596,7 @@ function initMap(){
       el('line',{x1:o,y1:-4,x2:o+(o<0?-2.6:2.6),y2:-6.6,stroke:C.navy,'stroke-width':1.7,'stroke-linecap':'round'},g);
       el('line',{x1:o,y1:4,x2:o+(o<0?-2.6:2.6),y2:6.6,stroke:C.navy,'stroke-width':1.7,'stroke-linecap':'round'},g);
     });
-    const br={g,lat,lon,muad,zone};
+    const br=Object.assign({g,lat,lon,muad,zone},meta||{});
     g.addEventListener('mousemove',e=>showTip(tip,e.clientX,e.clientY));
     g.addEventListener('mouseleave',hideTip);
     g.addEventListener('click',e=>{ e.stopPropagation(); hideTip(); closePopup();
@@ -1604,7 +1615,7 @@ function initMap(){
     addBrMarker(+m[1], +m[2],
       `<b>)( ${esc(b.name||b.code)}</b> [สะพานชุมชน]<br>${b.code} · ข้าม${esc(b.river||'-')}<br>ยาว ${fmt(b.len)} ม. · กว้าง ${fmt(b.width)} ม.`,
       {code:b.code, html:`<b style="font-size:13.5px">)( ${esc(b.name||b.code)}</b><br><span style="font-size:11.5px">สะพานชุมชน ${b.code} · ข้าม${esc(b.river||'-')}<br>ยาว ${fmt(b.len)} ม. · กว้าง ${fmt(b.width)} ม.${b.year?' · ปี '+esc(b.year):''}</span><br><button class="btn brOp" style="margin-top:6px;padding:4px 12px;font-size:12px">📄 เปิด One-Page</button>`},
-      b.muad, roadZone(b));
+      b.muad, roadZone(b), {comm:true, bcode:b.code, bname:b.name||b.code, river:b.river, blen:b.len, amphoe:b.amphoe});
   });
   // สะพานในสายทาง (พิกัดจากชีท — ตัวที่ไม่มีพิกัดคำนวณจากตำแหน่ง กม. บนเส้น)
   Object.entries(EMB.roadBridges||{}).forEach(([code,bl])=>{
@@ -1852,10 +1863,14 @@ const gmDir =(lat,lon)=>'https://www.google.com/maps/dir/?api=1&destination='+gm
 function gmButtons(lat,lon,opt){
   if(lat==null||lon==null||!isFinite(lat)||!isFinite(lon)) return '';
   const o=opt||{};
+  // sv = จุดที่ใช้เล็ง Street View/นำทาง (ถ้าไม่ส่งมาก็ใช้จุดเดียวกับหมุด)
+  const sLat=(o.svLat!=null&&isFinite(o.svLat))?o.svLat:lat;
+  const sLon=(o.svLon!=null&&isFinite(o.svLon))?o.svLon:lon;
+  const svTip=o.svNote||'ดู Street View ตรงจุดนี้ — ขึ้นกับว่า Google มีภาพถนนบริเวณนั้นหรือไม่';
   return `<div class="gmrow">
     <a class="btn ghost" target="_blank" rel="noopener" href="${gmLink(lat,lon)}" title="เปิดตำแหน่งนี้ใน Google Maps">🗺 Google Maps</a>
-    <a class="btn ghost" target="_blank" rel="noopener" href="${gmPano(lat,lon)}" title="ดู Street View ตรงจุดนี้">👁 Street View</a>
-    ${o.dir?`<a class="btn ghost" target="_blank" rel="noopener" href="${gmDir(lat,lon)}" title="นำทางไปยังจุดนี้">🧭 นำทาง</a>`:''}
+    <a class="btn ghost" target="_blank" rel="noopener" href="${gmPano(sLat,sLon)}" title="${svTip}">👁 Street View</a>
+    ${o.dir?`<a class="btn ghost" target="_blank" rel="noopener" href="${gmDir(sLat,sLon)}" title="${o.dirTip||'นำทางไปยังจุดนี้'}">🧭 นำทาง</a>`:''}
   </div>`;
 }
 function roadAnchor(L){
@@ -1878,7 +1893,59 @@ function roadAnchor(L){
   });
   return best ? best.pt : [(L.bounds[0]+L.bounds[2])/2, (L.bounds[1]+L.bounds[3])/2];
 }
-function openPopup(code){
+/* v20.7.1 — จุดเริ่มต้นสาย (ปลายเส้นที่ยาวที่สุด) ใช้เล็ง Street View/นำทาง
+   เพราะสาย ขก. เริ่มที่แยกทางหลวงเสมอ ซึ่งเป็นจุดที่ Google มีภาพถนนแทบทุกที่
+   ต่างจากกลางสายที่มักเป็นถนนชนบทและไม่มีภาพ */
+/* v20.9 — แปลงตำแหน่งที่คลิกบนจอเป็น lon/lat (Web Mercator ผกผัน) */
+function llFromEvent(e){
+  const rect=M.div.getBoundingClientRect();
+  const px=M.cx-M.div.clientWidth/2+(e.clientX-rect.left);
+  const py=M.cy-M.div.clientHeight/2+(e.clientY-rect.top);
+  const scale=Math.pow(2,M.z)*TILE;
+  const lon=px/scale*360-180;
+  const n=Math.PI-2*Math.PI*py/scale;
+  const lat=180/Math.PI*Math.atan(0.5*(Math.exp(n)-Math.exp(-n)));
+  return [lon,lat];
+}
+/* v20.9 — ดึงจุดที่คลิกให้มาอยู่ "บนเส้น" สายนั้นจริงๆ แล้วคืนระยะ กม. สะสมจากต้นสาย
+   ฉายจุดลงทุกช่วงเส้น เลือกช่วงที่ใกล้ที่สุด (คิดพิกัดแบบระนาบท้องถิ่น พอสำหรับระยะไม่กี่ กม.) */
+function snapToRoad(L,lon,lat){
+  const KX=111.32*Math.cos(lat*Math.PI/180), KY=110.57;
+  let best=null;
+  (L.coordsList||[]).forEach(cs=>{
+    if(!cs||cs.length<2) return;
+    let acc=0;
+    for(let i=1;i<cs.length;i++){
+      const a=cs[i-1], b=cs[i];
+      const ax=a[0]*KX, ay=a[1]*KY, bx=b[0]*KX, by=b[1]*KY, qx=lon*KX, qy=lat*KY;
+      const vx=bx-ax, vy=by-ay, seg=vx*vx+vy*vy;
+      let t = seg? ((qx-ax)*vx+(qy-ay)*vy)/seg : 0;
+      t=Math.max(0,Math.min(1,t));
+      const cx=ax+vx*t, cy=ay+vy*t;
+      const dist=Math.hypot(qx-cx,qy-cy), segLen=Math.sqrt(seg);
+      if(!best||dist<best.dist)
+        best={dist, km:acc+segLen*t, lon:a[0]+(b[0]-a[0])*t, lat:a[1]+(b[1]-a[1])*t};
+      acc+=segLen;
+    }
+  });
+  return best;
+}
+/* 23.45 กม. -> "23+450" ตามรูปแบบหลัก กม. ของกรม */
+const kmStamp=k=>{ const w=Math.floor(k); return w+'+'+String(Math.round((k-w)*1000)).padStart(3,'0'); };
+function roadStart(L){
+  let best=null;
+  (L.coordsList||[]).forEach(cs=>{
+    if(!cs||cs.length<2) return;
+    let tot=0;
+    for(let i=1;i<cs.length;i++){
+      const a=cs[i-1], b=cs[i];
+      tot+=Math.hypot((b[0]-a[0])*Math.cos((a[1]+b[1])*Math.PI/360), b[1]-a[1]);
+    }
+    if(!best||tot>best.tot) best={tot, pt:cs[0]};
+  });
+  return best?best.pt:null;
+}
+function openPopup(code, hitLL){
   closePopup();
   const L=M.layers[code]; if(!L) return;
   const r=L.road;
@@ -1889,11 +1956,28 @@ function openPopup(code){
     <button class="btn rmBtn" style="margin-top:7px;padding:4px 12px;font-size:12px">🗺 แผนที่รายสาย (A3)</button>`;
   d.querySelector('.x').addEventListener('click',closePopup);
   d.querySelector('.rmBtn').addEventListener('click',()=>openRoadMapA3(code));
-  const A=roadAnchor(L);
-  d.insertAdjacentHTML('beforeend', gmButtons(A[1],A[0],{dir:true}));  // ปักหมุดกึ่งกลางสาย
+  // ---- v20.9: ถ้าคลิกมาจากบนเส้น ให้ทุกปุ่มอ้างอิง "จุดที่คลิก" (ดึงลงเส้นให้ตรงก่อน)
+  //             ถ้าเปิดจากแถบรายชื่อ (ไม่มีจุดคลิก) ค่อยถอยไปใช้กึ่งกลางสาย/ต้นสายตามเดิม ----
+  const A=roadAnchor(L), S=roadStart(L);
+  const hit = hitLL ? snapToRoad(L, hitLL[0], hitLL[1]) : null;
+  let anchorLL, gmOpt, note;
+  if(hit){
+    anchorLL=[hit.lon,hit.lat];
+    gmOpt={dir:true, svNote:'Street View ตรงจุดที่คลิก — ขึ้นกับว่า Google มีภาพถนนบริเวณนั้น',
+           dirTip:'นำทางไปจุดที่คลิกบนสาย'};
+    note=`📌 อ้างอิง<b>จุดที่คลิก</b> · ≈ กม. ${kmStamp(hit.km)}`;
+  }else{
+    anchorLL=A;
+    gmOpt={dir:true, svLat:S?S[1]:null, svLon:S?S[0]:null,
+           svNote:'Street View ที่จุดเริ่มต้นสาย (แยกทางหลวง) — กลางสายชนบทมักไม่มีภาพถนน',
+           dirTip:'นำทางไปจุดเริ่มต้นสาย'};
+    note='📌 อ้างอิง<b>กึ่งกลางสาย</b> · Street View/นำทางใช้จุดเริ่มต้นสาย — คลิกบนเส้นเพื่อเจาะจุดที่ต้องการ';
+  }
+  d.insertAdjacentHTML('beforeend', `<div class="gmnote">${note}</div>`+
+    gmButtons(hit?hit.lat:A[1], hit?hit.lon:A[0], gmOpt));
   M.div.appendChild(d);
   makePopupDraggable(d);
-  M.popup={el:d, lon:A[0], lat:A[1]};
+  M.popup={el:d, lon:anchorLL[0], lat:anchorLL[1]};
   positionPopup();
 }
 /* คลิกพื้นที่ว่างบนแผนที่ -> โชว์พิกัด + ปุ่มคัดลอก */
@@ -2060,19 +2144,55 @@ function renderMapList(q){
       return `<div class="roaditem ${c===activeCode?'active':''} ${L&&!L.stub?'':'nogeo'}" data-code="${c}">
         <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${L?muadColor(r?.muad):'#c8c8c4'};margin-right:5px"></span><b>${c}</b> <span style="font-size:11px">${esc((r?.amphoe)?'· '+r.amphoe:'')}</span></span>
         <span class="km">${L?(L.stub?'◌ ประมาณ · ':'')+fmt(r?.len_acct)+' กม.':'ไม่มี GIS'}</span></div>`; }).join('');
-  el2.querySelectorAll('.roaditem').forEach(d=>d.addEventListener('click',()=>{
+  // ---- v20.8: ต่อท้ายด้วยสะพานชุมชน — เดิมมีแต่บนแผนที่ ไม่มีในแถบรายชื่อ ----
+  const comm=Object.values(EMB.bridges||{})
+    .filter(b=>{
+      if(M&&M.muadFilter && b.muad!==M.muadFilter) return false;
+      return (b.code+' '+(b.name||'')+' '+(b.river||'')+' '+(b.amphoe||'')+' สะพานชุมชน').toLowerCase().includes(q);
+    })
+    .sort((a,b)=>String(a.code).localeCompare(String(b.code),'th'));
+  if(comm.length){
+    el2.insertAdjacentHTML('beforeend',
+      `<div class="listhead">🌉 สะพานชุมชน · ${comm.length} แห่ง</div>`+
+      comm.map(b=>`<div class="roaditem britem" data-b="${esc(b.code)}">
+        <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${muadColor(b.muad)};margin-right:5px"></span><b>${esc(b.code)}</b> <span style="font-size:11px">· ${esc(b.name||'')}</span></span>
+        <span class="km">${fmt(b.len)} ม.</span></div>`).join(''));
+    el2.querySelectorAll('.britem').forEach(d=>d.addEventListener('click',()=>{
+      selectCommBridge(d.dataset.b);
+      if(M&&M.closeSheet) M.closeSheet();
+      if(typeof mobileMap==='function'&&mobileMap())
+        setTimeout(()=>document.getElementById('map').scrollIntoView({block:'start',behavior:'smooth'}),80);
+    }));
+  }
+  el2.querySelectorAll('.roaditem:not(.britem)').forEach(d=>d.addEventListener('click',()=>{
     selectRoad(d.dataset.code);
     if(M&&M.closeSheet) M.closeSheet();   // มือถือ: เลือกแล้วยุบแผงลง จะได้เห็นแผนที่ทันที
     if(typeof mobileMap==='function'&&mobileMap())
       setTimeout(()=>document.getElementById('map').scrollIntoView({block:'start',behavior:'smooth'}),80);
   }));
 }
+/* v20.8 — เลือกสะพานชุมชนจากแถบรายชื่อ: ซูมไปหา แล้วเปิดกล่องรายละเอียดของหมุดนั้นเลย */
+function selectCommBridge(bcode){
+  if(!M) initMap();
+  const b=(M.bridges||[]).find(x=>x.comm&&x.bcode===bcode);
+  if(!b) return;
+  if(activeCode&&M.layers[activeCode]) restoreStyle(activeCode);
+  if(M.selCasing){ M.selCasing.remove(); M.selCasing=null; }
+  activeCode=null;
+  M.z=Math.max(M.z,14);
+  M.cx=lon2x(b.lon,M.z); M.cy=lat2y(b.lat,M.z);
+  if(M.brShow===false){ M.brShow=true; const c=document.getElementById('mapBrChk'); if(c) c.checked=true; }
+  redrawMap();
+  renderMapList(document.getElementById('mapSearch')?.value.trim().toLowerCase()||'');
+  b.g.dispatchEvent(new MouseEvent('click',{bubbles:true}));   // ใช้ handler เดิมของหมุด จะได้ได้ปุ่มครบเหมือนคลิกบนแผนที่
+  document.querySelectorAll('.britem').forEach(d=>d.classList.toggle('active',d.dataset.b===bcode));
+}
 function restoreStyle(code){
   const L=M.layers[code]; if(!L) return;
   ['stroke','stroke-width','stroke-opacity','stroke-dasharray'].forEach(a=>L.path.removeAttribute(a));
   for(const k in L.base) L.path.setAttribute(k, L.base[k]);
 }
-function selectRoad(code){
+function selectRoad(code, hitLL){
   if(!M) initMap();
   if(activeCode && M.layers[activeCode]) restoreStyle(activeCode);
   if(M.selCasing){ M.selCasing.remove(); M.selCasing=null; }
@@ -2090,7 +2210,7 @@ function selectRoad(code){
     // ยกหลัก กม. ของสายที่เลือก + สะพาน ขึ้นเหนือเส้นไฮไลต์ (ไม่งั้นโดนเส้นหนาทับ)
     (M.kmDots||[]).forEach(d=>{ if(d.code===code) M.svg.appendChild(d.c); });
     (M.bridges||[]).forEach(b=>M.svg.appendChild(b.g));
-    redrawMap(); fitBounds(L.bounds); openPopup(code); }
+    redrawMap(); fitBounds(L.bounds); openPopup(code, hitLL); }
   else banner('err', code+' ยังไม่มีเส้น GPS จริง (รอสำรวจ — ดูสรุปที่หน้าข้อมูลระบบ)');
 }
 
