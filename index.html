@@ -43,7 +43,11 @@ body{font-family:'Sarabun',Tahoma,'Segoe UI',system-ui,sans-serif;background:var
 .nav .ico{width:18px;text-align:center;flex:none}
 .side-foot{padding:12px 16px;font-size:10.5px;color:#8d9cba;border-top:1px solid rgba(255,255,255,.12);line-height:1.5}
 /* ---------- main ---------- */
-.main{flex:1;margin-left:230px;padding:20px 24px 40px;max-width:1400px}
+/* v20.6.1 — เดิมตันที่ 1400px จอกว้างเลยเหลือที่ว่างข้างขวา ตอนนี้ยืดเต็มจอ
+   จอยิ่งกว้างยิ่งเพิ่มระยะขอบ เพื่อไม่ให้เนื้อหาชนขอบจอ */
+.main{flex:1;min-width:0;margin-left:230px;padding:20px 24px 40px;max-width:none}
+@media(min-width:1700px){.main{padding:22px 40px 44px}}
+@media(min-width:2200px){.main{padding:24px 72px 48px}}
 .pagehead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
 .pagehead h2{font-size:20px;font-weight:700;color:var(--navy)}
 .pagehead .desc{font-size:12.5px;color:var(--ink2);margin-top:2px}
@@ -120,7 +124,7 @@ body{font-family:'Sarabun',Tahoma,'Segoe UI',system-ui,sans-serif;background:var
   .nav button{width:auto;flex:none;white-space:nowrap;padding:8px 12px;margin-bottom:0;font-size:12.5px}
   .side-foot{display:none}
 }
-@media(max-width:760px){
+@media(max-width:900px){
   .main{padding:12px 10px 30px}
   .grid.kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important}
   .kpill{padding:10px 12px;gap:9px}
@@ -168,7 +172,7 @@ select.search{width:auto}
 .maplayout{display:grid;grid-template-columns:290px 1fr;gap:14px}
 .maplayout.nolist{grid-template-columns:1fr}
 .maplayout.nolist .roadlist{display:none}
-@media(max-width:980px){.maplayout{grid-template-columns:1fr}}
+@media(max-width:900px){.maplayout{grid-template-columns:1fr}}
 #map{height:calc(100vh - 210px);min-height:480px;border-radius:12px;border:1px solid var(--hairline);position:relative;overflow:hidden;background:#dfe8e6;cursor:grab;touch-action:none}
 #map.dragging{cursor:grabbing}
 #tilepane{position:absolute;top:0;left:0}
@@ -228,6 +232,76 @@ select.search{width:auto}
 .stripwrap .lanebg{fill:#eef0ee}
 .stripwrap .seg{cursor:pointer}
 .stripwrap .kmtick{fill:var(--muted);font-size:10.5px}
+
+/* ============================================================
+   v20.6 — โหมดมือถือเฉพาะหน้าแผนที่ (เดสก์ท็อปไม่กระทบเลย)
+   แนวคิด: แผนที่ต้องมาก่อน · ตัวกรองยุบเก็บ · รายชื่อสายเป็นแผงเลื่อนขึ้นจากล่าง
+   ============================================================ */
+.mflt-tg,.sheettg{display:none}
+@media(max-width:900px){
+  /* -- หัวเรื่องหน้าแผนที่: เหลือแค่ชื่อ + ป้ายสถิติเลื่อนแนวนอน -- */
+  /* แบรนด์ด้านบน: มือถือเหลือชื่อ + เวอร์ชันบรรทัดเดียว ประหยัดพื้นที่จอ ~90px */
+  .brand .sub{display:none}
+  .brand h1{font-size:14px}
+  .brand .ver{font-size:10.5px;padding:1px 8px}
+  #pg-map .pghero{padding:10px 12px;border-radius:12px;margin-bottom:8px}
+  #pg-map .pgh-ico,#pg-map .pghero .desc,#pg-map .pgh-right{display:none}
+  #pg-map .pghero h2{font-size:16px}
+  #pg-map .pillrow{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;
+    scrollbar-width:none;margin-top:5px;padding-bottom:2px}
+  #pg-map .pillrow::-webkit-scrollbar{display:none}
+  #pg-map .pillrow .pill{flex:none;font-size:10.5px}
+
+  /* -- แถบเครื่องมือ: โชว์แค่ช่องค้นหา + ปุ่มตัวกรอง ที่เหลือยุบไว้ -- */
+  #pg-map .actions{gap:7px;margin-bottom:8px!important;position:sticky;top:0;z-index:940;
+    background:var(--page);padding:6px 0}
+  #pg-map .actions>*{order:5}
+  #pg-map .actions #mapSearch{order:1;flex:1 1 auto;min-width:0}
+  #pg-map .actions .mflt-tg{order:2;display:inline-flex;align-items:center;gap:5px;flex:none}
+  /* ป้ายสวิตช์มี inline style อยู่ ต้องใช้ !important ถึงจะยุบได้จริง */
+  #pg-map .actions>:not(#mapSearch):not(.mflt-tg){display:none!important}
+  #pg-map .actions.fltopen{flex-wrap:wrap}
+  #pg-map .actions.fltopen>:not(#mapSearch):not(.mflt-tg){display:inline-flex!important}
+  #pg-map .actions.fltopen select.search{flex:1 1 100%;width:100%}
+  #pg-map .actions label{font-size:12px!important;padding:7px 10px!important}
+  #pg-map .actions input[type=checkbox]{width:17px;height:17px}
+
+  /* -- แผนที่: สูงเต็มจอ ปุ่มบนแผนที่นิ้วกดถูก -- */
+  .maplayout{gap:8px}
+  /* scroll-margin กันแถบค้นหาแบบ sticky บังปุ่มซูม/สลับชั้นตอนเลื่อนจอมาที่แผนที่ */
+  #map{height:calc(100vh - 132px);height:calc(100dvh - 132px);min-height:340px;border-radius:10px;
+    scroll-margin-top:66px}
+  .zoomctl button{width:42px;height:42px;font-size:21px}
+  .basectl button{padding:10px 14px;font-size:12.5px}
+  .listtg{display:none}
+  .attrib{bottom:4px;font-size:9px}
+  .legendbox{font-size:11px;gap:4px 14px;padding:9px 12px}
+
+  /* -- กล่องรายละเอียด: การ์ดเต็มความกว้างติดขอบล่างแผนที่ ไม่ต้องลากหนี -- */
+  /* ยึดกับขอบล่างของ "จอ" ไม่ใช่ขอบล่างของแผนที่ — แผนที่สูงกว่าจอ การ์ดจะได้ไม่หลุดไปอยู่ใต้ fold */
+  .mappopup.mobdock{position:fixed!important;left:8px!important;right:8px!important;
+    bottom:56px!important;top:auto!important;
+    transform:none!important;max-width:none;width:auto;margin:0;cursor:default;
+    border-radius:13px;padding:12px 14px 13px;font-size:13.5px;
+    box-shadow:0 2px 20px rgba(16,24,40,.32)}
+  .mappopup.mobdock .x{font-size:19px;padding:6px 9px;top:2px;right:4px}
+  .mappopup.mobdock .btn{padding:9px 16px!important;font-size:13px!important;margin-top:9px!important}
+
+  /* -- รายชื่อสายทาง: แผงเลื่อนขึ้นจากขอบล่าง -- */
+  .sheettg{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:975;
+    align-items:center;justify-content:center;gap:8px;height:48px;border:none;
+    border-top:1px solid rgba(255,255,255,.14);background:var(--navy);color:#fff;
+    font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;
+    box-shadow:0 -2px 12px rgba(16,24,40,.3)}
+  #mapRoadList{position:fixed;left:0;right:0;bottom:48px;z-index:970;margin:0;
+    max-height:min(58vh,58dvh);border-radius:14px 14px 0 0;
+    transform:translateY(115%);transition:transform .24s ease;
+    box-shadow:0 -6px 22px rgba(16,24,40,.24);padding:10px 12px 14px}
+  body.sheetup #mapRoadList{transform:translateY(0)}
+  .roaditem{padding:11px 10px;font-size:13px}
+  body.sheetup .mappopup.mobdock{display:none}   /* เปิดรายชื่ออยู่ ไม่ต้องซ้อนกัน */
+}
+@media(max-width:900px) and (display-mode:browser){}
 </style>
 </head>
 <body>
@@ -237,7 +311,7 @@ select.search{width:auto}
     <div class="brand">
       <h1>Big Data สายทาง</h1>
       <div class="sub">แขวงทางหลวงชนบทขอนแก่น<br>กรมทางหลวงชนบท</div>
-      <div class="ver">v20.5.1 · 16 ส.ค. 2569</div>
+      <div class="ver">v20.6.1 · 16 ส.ค. 2569</div>
     </div>
     <nav class="nav">
       <button data-page="overview" class="active"><span class="ico">▦</span> ภาพรวมโครงข่าย</button>
@@ -317,7 +391,8 @@ select.search{width:auto}
         <label style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2);cursor:pointer;background:#fff;border:1px solid var(--grid);border-radius:8px;padding:6px 12px"><input type="checkbox" id="mapElChk"> 🗳 เขตเลือกตั้ง</label>
         <label style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2);cursor:pointer;background:#fff;border:1px solid var(--grid);border-radius:8px;padding:6px 12px"><input type="checkbox" id="mapPvChk" checked> 🗺 ขอบจังหวัด</label><label style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2);cursor:pointer;background:#fff;border:1px solid var(--grid);border-radius:8px;padding:6px 12px"><input type="checkbox" id="mapBrChk" checked> 🌉 สะพาน</label>
         <label style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2);cursor:pointer;background:#fff;border:1px solid var(--grid);border-radius:8px;padding:6px 12px"><input type="checkbox" id="mapKmChk" checked> 📍 หลัก กม.</label>
-        <button class="btn ghost" id="mapReset" title="กลับมุมมองภาพรวมทั้งโครงข่าย">⛶ ภาพรวม</button></div>
+        <button class="btn ghost mflt-tg" id="mapFltTg" title="ตัวกรองและชั้นข้อมูล">⚙ ตัวกรอง</button><button class="btn ghost" id="mapReset" title="กลับมุมมองภาพรวมทั้งโครงข่าย">⛶ ภาพรวม</button></div>
+      <button class="sheettg" id="mapSheetTg">▲ รายชื่อสายทาง</button>
       <div class="maplayout">
         <div class="card roadlist" id="mapRoadList"></div>
         <div style="position:relative">
@@ -1537,6 +1612,18 @@ function initMap(){
         r?.muad, roadZone(r));
     });
   });
+  // ---- v20.6: ปุ่มเฉพาะมือถือ — ยุบ/กางตัวกรอง และแผงรายชื่อสายเลื่อนขึ้นจากล่าง ----
+  const fltTg=document.getElementById('mapFltTg'), actions=document.querySelector('#pg-map .actions');
+  fltTg.addEventListener('click',()=>{
+    const on=actions.classList.toggle('fltopen');
+    fltTg.textContent=on?'⚙ ปิดตัวกรอง':'⚙ ตัวกรอง';
+    setTimeout(redrawMap,60);
+  });
+  const sheetTg=document.getElementById('mapSheetTg');
+  const setSheet=on=>{ document.body.classList.toggle('sheetup',on);
+    sheetTg.textContent=on?'▼ ปิดรายชื่อ':'▲ รายชื่อสายทาง'; };
+  sheetTg.addEventListener('click',()=>setSheet(!document.body.classList.contains('sheetup')));
+  M.closeSheet=()=>setSheet(false);
   document.getElementById('mapPvChk').addEventListener('change',e=>{ M.provShow=e.target.checked; renderMapLegend(); redrawMap(); });
   document.getElementById('mapBrChk').addEventListener('change',e=>{ M.brShow=e.target.checked; redrawMap(); });
   M.brShow=true;
@@ -1589,19 +1676,56 @@ function initMap(){
   let drag=null;
   // หมายเหตุ v18.8: ห้าม setPointerCapture ตั้งแต่ pointerdown — Chrome รุ่นใหม่จะ retarget เหตุการณ์ click
   // ไปที่ตัวแผนที่แทนปุ่มใน popup ทำให้ปุ่ม "คัดลอกพิกัด"/✕ กดไม่ติด จึง capture เฉพาะเมื่อเริ่มลากจริง
-  div.addEventListener('pointerdown',e=>{ if(e.target.closest('.mappopup')||e.target.closest('.zoomctl')||e.target.closest('.basectl')) return;
+  // v20.6: รองรับสัมผัส — บีบสองนิ้วซูม · แตะสองครั้งซูมเข้า
+  const ptrs=new Map();            // นิ้วที่แตะอยู่ตอนนี้
+  let pinch=null, lastTap=0, lastTapPos=null;
+  const rel=e=>{ const r=div.getBoundingClientRect(); return [e.clientX-r.left, e.clientY-r.top]; };
+  const skip=t=>t&&(t.closest('.mappopup')||t.closest('.zoomctl')||t.closest('.basectl'));
+  const pinchDist=()=>{ const a=[...ptrs.values()]; return Math.hypot(a[0].x-a[1].x, a[0].y-a[1].y); };
+  const pinchMid =()=>{ const a=[...ptrs.values()], r=div.getBoundingClientRect();
+    return [(a[0].x+a[1].x)/2-r.left, (a[0].y+a[1].y)/2-r.top]; };
+
+  div.addEventListener('pointerdown',e=>{ if(skip(e.target)) return;
+    ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(ptrs.size===2){                       // เริ่มบีบสองนิ้ว -> หยุดลากแผนที่
+      drag=null; div.classList.remove('dragging');
+      pinch={d0:pinchDist(), ref:1};
+      return;
+    }
+    if(ptrs.size>2) return;
     drag={x:e.clientX,y:e.clientY,moved:false,id:e.pointerId,t:e.target}; div.classList.add('dragging'); });
-  div.addEventListener('pointermove',e=>{ if(!drag) return;
+
+  div.addEventListener('pointermove',e=>{
+    if(ptrs.has(e.pointerId)) ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(pinch&&ptrs.size>=2){                 // ซูมทีละขั้นเมื่อระยะนิ้วเปลี่ยนถึงเกณฑ์
+      const k=pinchDist()/pinch.d0;
+      if(k>1.42){ const [mx,my]=pinchMid(); zoomAt(1,mx,my); pinch.d0=pinchDist(); }
+      else if(k<0.70){ const [mx,my]=pinchMid(); zoomAt(-1,mx,my); pinch.d0=pinchDist(); }
+      return;
+    }
+    if(!drag) return;
     const dx=e.clientX-drag.x, dy=e.clientY-drag.y;
     if(!drag.moved && Math.abs(dx)+Math.abs(dy)>3){ drag.moved=true; try{ div.setPointerCapture(drag.id); }catch(_){} }
     M.cx-=dx; M.cy-=dy; drag.x=e.clientX; drag.y=e.clientY; redrawMap(); });
+
   div.addEventListener('pointerup',e=>{
+    const wasPinch=!!pinch;
+    ptrs.delete(e.pointerId);
+    if(ptrs.size<2) pinch=null;
     const wasClick=drag&&!drag.moved, t=drag&&drag.t;
     drag=null; div.classList.remove('dragging');
-    if(wasClick && t && (t.tagName!=='path' || t.dataset.zn) && !t.closest('.mappopup') && !t.closest('.zoomctl') && !t.closest('.basectl'))
+    if(wasPinch||!wasClick||!t||skip(t)) return;
+    // แตะสองครั้งเร็วๆ ที่เดิม = ซูมเข้า (ไม่ต้องเปิดกล่องพิกัด)
+    const [px,py]=rel(e), now=Date.now();
+    if(now-lastTap<320 && lastTapPos && Math.hypot(px-lastTapPos[0],py-lastTapPos[1])<32){
+      lastTap=0; lastTapPos=null; closePopup(); zoomAt(1,px,py); return;
+    }
+    lastTap=now; lastTapPos=[px,py];
+    if(t.tagName!=='path' || t.dataset.zn)
       showCoordPopup(e); // พื้นเขตเลือกตั้งถือเป็นพื้นที่ว่าง — คลิกแล้วยังโชว์พิกัดได้
   });
-  div.addEventListener('pointercancel',()=>{ drag=null; div.classList.remove('dragging'); });
+  div.addEventListener('pointercancel',e=>{ ptrs.delete(e.pointerId); if(ptrs.size<2) pinch=null;
+    drag=null; div.classList.remove('dragging'); });
   document.addEventListener('keydown',e=>{ if(e.key==='Escape') closePopup(); });
   div.addEventListener('wheel',e=>{ e.preventDefault(); zoomAt(e.deltaY<0?1:-1, e.offsetX, e.offsetY); },{passive:false});
   div.addEventListener('dblclick',e=>zoomAt(1,e.offsetX,e.offsetY));
@@ -1617,7 +1741,7 @@ function zoomAt(dz, px, py){
   const k=Math.pow(2,z2-M.z);
   const w=M.div.clientWidth,h=M.div.clientHeight;
   M.cx=(M.cx-w/2+px)*k-px+w/2; M.cy=(M.cy-h/2+py)*k-py+h/2; M.z=z2;
-  closePopup(); redrawMap();
+  redrawMap();   // v20.6: ซูมแล้วกล่องรายละเอียดไม่ปิดอีกต่อไป (หมุดยึด lat/lon จึงตามได้ถูก)
 }
 function redrawMap(){
   const w=M.div.clientWidth||800, h=M.div.clientHeight||520, z=M.z;
@@ -1788,8 +1912,25 @@ function popupObstacles(){
   (M.bridges||[]).forEach(b=>{ if(b.g.style.display!=='none') push(b.lon,b.lat,4); });
   return pts;
 }
+const mobileMap=()=>window.matchMedia('(max-width:900px)').matches;
 function positionPopup(){ if(!M?.popup) return;
   const w=M.div.clientWidth, h=M.div.clientHeight, el_=M.popup.el;
+  // ---- มือถือ: ไม่ต้องคำนวณทิศ ให้เป็นการ์ดเต็มความกว้างติดขอบล่างแผนที่ (กดง่ายกว่ากล่องลอย) ----
+  if(mobileMap()){
+    el_.classList.add('mobdock');
+    const ax0=lon2x(M.popup.lon,M.z)-(M.cx-w/2), ay0=lat2y(M.popup.lat,M.z)-(M.cy-h/2);
+    if(!M.popLink){
+      M.popLink=el2('line',{stroke:'#1B2A4A','stroke-width':1.6,'stroke-opacity':.55,'stroke-dasharray':'4 3'},M.svg);
+      M.popDot =el2('circle',{r:5,stroke:'#fff','stroke-width':2},M.svg);
+      M.popDot.style.fill='#0d9488';
+    }
+    M.svg.appendChild(M.popLink); M.svg.appendChild(M.popDot);
+    M.popDot.setAttribute('cx',ax0); M.popDot.setAttribute('cy',ay0);
+    M.popLink.style.display='none';   // การ์ดเป็น fixed คนละระบบพิกัดกับ svg เลยไม่ลากเส้นโยง
+    M.popDot.style.display=(ax0>-20&&ax0<w+20&&ay0>-20&&ay0<h+20)?'':'none';
+    return;
+  }
+  el_.classList.remove('mobdock');
   const ew=el_.offsetWidth||250, eh=el_.offsetHeight||130;
   const ax=lon2x(M.popup.lon,M.z)-(M.cx-w/2);
   const ay=lat2y(M.popup.lat,M.z)-(M.cy-h/2);
@@ -1843,8 +1984,9 @@ function el2(t,a,par){ const n=document.createElementNS('http://www.w3.org/2000/
   for(const k in a) n.setAttribute(k,a[k]); if(par) par.appendChild(n); return n; }
 /* กล่องรายละเอียดลากย้ายได้ — เผื่อกล่องไปบังแนวสายที่อยากดู (ตำแหน่งที่ลากจะติดตามตอนแพน/ซูมด้วย) */
 function makePopupDraggable(d){
-  d.title='ลากกล่องเพื่อย้ายตำแหน่งได้';
+  if(!mobileMap()) d.title='ลากกล่องเพื่อย้ายตำแหน่งได้';
   d.addEventListener('pointerdown',e=>{
+    if(d.classList.contains('mobdock')) return;      // มือถือ: การ์ดติดขอบล่างอยู่แล้ว ไม่ต้องลาก
     if(e.target.closest('button,a,.x,input,select')) return;
     e.stopPropagation(); e.preventDefault();
     const sx=e.clientX, sy=e.clientY;
@@ -1890,7 +2032,12 @@ function renderMapList(q){
       return `<div class="roaditem ${c===activeCode?'active':''} ${L&&!L.stub?'':'nogeo'}" data-code="${c}">
         <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${L?muadColor(r?.muad):'#c8c8c4'};margin-right:5px"></span><b>${c}</b> <span style="font-size:11px">${esc((r?.amphoe)?'· '+r.amphoe:'')}</span></span>
         <span class="km">${L?(L.stub?'◌ ประมาณ · ':'')+fmt(r?.len_acct)+' กม.':'ไม่มี GIS'}</span></div>`; }).join('');
-  el2.querySelectorAll('.roaditem').forEach(d=>d.addEventListener('click',()=>selectRoad(d.dataset.code)));
+  el2.querySelectorAll('.roaditem').forEach(d=>d.addEventListener('click',()=>{
+    selectRoad(d.dataset.code);
+    if(M&&M.closeSheet) M.closeSheet();   // มือถือ: เลือกแล้วยุบแผงลง จะได้เห็นแผนที่ทันที
+    if(typeof mobileMap==='function'&&mobileMap())
+      setTimeout(()=>document.getElementById('map').scrollIntoView({block:'start',behavior:'smooth'}),80);
+  }));
 }
 function restoreStyle(code){
   const L=M.layers[code]; if(!L) return;
