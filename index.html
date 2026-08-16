@@ -302,6 +302,16 @@ select.search{width:auto}
   body.sheetup .mappopup.mobdock{display:none}   /* เปิดรายชื่ออยู่ ไม่ต้องซ้อนกัน */
 }
 @media(max-width:900px) and (display-mode:browser){}
+
+/* v20.7 — แถวปุ่มลิงก์ออก Google Maps ในกล่องรายละเอียดแผนที่ */
+.mappopup .gmrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px;padding-top:8px;border-top:1px dashed var(--grid)}
+.mappopup .gmrow a.btn{display:inline-flex;align-items:center;gap:5px;text-decoration:none;
+  padding:6px 11px;font-size:11.5px;line-height:1.2;white-space:nowrap}
+.mappopup .gmrow a.btn:hover{filter:brightness(.94)}
+@media(max-width:900px){
+  .mappopup.mobdock .gmrow{gap:8px;margin-top:10px}
+  .mappopup.mobdock .gmrow a.btn{padding:9px 14px!important;font-size:12.5px!important;margin-top:0!important}
+}
 </style>
 </head>
 <body>
@@ -311,7 +321,7 @@ select.search{width:auto}
     <div class="brand">
       <h1>Big Data สายทาง</h1>
       <div class="sub">แขวงทางหลวงชนบทขอนแก่น<br>กรมทางหลวงชนบท</div>
-      <div class="ver">v20.6.1 · 16 ส.ค. 2569</div>
+      <div class="ver">v20.7 · 16 ส.ค. 2569</div>
     </div>
     <nav class="nav">
       <button data-page="overview" class="active"><span class="ico">▦</span> ภาพรวมโครงข่าย</button>
@@ -1583,6 +1593,7 @@ function initMap(){
       d.innerHTML=`<span class="x">✕</span>`+pop.html;
       d.querySelector('.x').addEventListener('click',closePopup);
       const op=d.querySelector('.brOp'); if(op) op.addEventListener('click',()=>gotoOnePage(pop.code));
+      d.insertAdjacentHTML('beforeend', gmButtons(lat,lon,{dir:true}));   // สะพาน: ลงพื้นที่จริงต้องนำทางได้
       makePopupDraggable(d); M.div.appendChild(d); M.popup={el:d, lon, lat}; positionPopup();
     });
     M.bridges.push(br);
@@ -1832,6 +1843,21 @@ function fitBounds(b){
 /* v20.5.1 — จุดหมุดของกล่องต้องอยู่ "บนเส้นสายทางจริง" ไม่ใช่กลางกรอบสี่เหลี่ยม
    เดิมใช้กึ่งกลาง bounds ซึ่งพอซูมเข้าไปจะเห็นชัดว่าลอยอยู่นอกเส้น
    ตอนนี้ใช้จุดกึ่งกลางตามระยะทางจริงของเส้นที่ยาวที่สุดในสายนั้น */
+/* v20.7 — ลิงก์ออก Google Maps จากกล่องรายละเอียด (สายทาง / สะพาน / จุดที่คลิก)
+   ใช้ Google Maps URLs API แบบทางการ เปิดได้ทั้งเว็บและเด้งเข้าแอปบนมือถือ */
+const gmQ   =(lat,lon)=>(+lat).toFixed(6)+','+(+lon).toFixed(6);
+const gmLink=(lat,lon)=>'https://www.google.com/maps/search/?api=1&query='+gmQ(lat,lon);
+const gmPano=(lat,lon)=>'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint='+gmQ(lat,lon);
+const gmDir =(lat,lon)=>'https://www.google.com/maps/dir/?api=1&destination='+gmQ(lat,lon)+'&travelmode=driving';
+function gmButtons(lat,lon,opt){
+  if(lat==null||lon==null||!isFinite(lat)||!isFinite(lon)) return '';
+  const o=opt||{};
+  return `<div class="gmrow">
+    <a class="btn ghost" target="_blank" rel="noopener" href="${gmLink(lat,lon)}" title="เปิดตำแหน่งนี้ใน Google Maps">🗺 Google Maps</a>
+    <a class="btn ghost" target="_blank" rel="noopener" href="${gmPano(lat,lon)}" title="ดู Street View ตรงจุดนี้">👁 Street View</a>
+    ${o.dir?`<a class="btn ghost" target="_blank" rel="noopener" href="${gmDir(lat,lon)}" title="นำทางไปยังจุดนี้">🧭 นำทาง</a>`:''}
+  </div>`;
+}
 function roadAnchor(L){
   let best=null;
   (L.coordsList||[]).forEach(cs=>{
@@ -1863,9 +1889,10 @@ function openPopup(code){
     <button class="btn rmBtn" style="margin-top:7px;padding:4px 12px;font-size:12px">🗺 แผนที่รายสาย (A3)</button>`;
   d.querySelector('.x').addEventListener('click',closePopup);
   d.querySelector('.rmBtn').addEventListener('click',()=>openRoadMapA3(code));
+  const A=roadAnchor(L);
+  d.insertAdjacentHTML('beforeend', gmButtons(A[1],A[0],{dir:true}));  // ปักหมุดกึ่งกลางสาย
   M.div.appendChild(d);
   makePopupDraggable(d);
-  const A=roadAnchor(L);
   M.popup={el:d, lon:A[0], lat:A[1]};
   positionPopup();
 }
@@ -1885,6 +1912,7 @@ function showCoordPopup(e){
     <span style="font-variant-numeric:tabular-nums">${txt}</span><br>
     <button class="btn" style="margin-top:6px;padding:4px 12px;font-size:12px">📋 คัดลอกพิกัด</button>
     <span class="copied" style="display:none;color:#1a7a34;font-size:11.5px;font-weight:600;margin-left:6px">✓ คัดลอกแล้ว</span>`;
+  d.insertAdjacentHTML('beforeend', gmButtons(lat,lon,{dir:true}));
   d.querySelector('.x').addEventListener('click',closePopup);
   d.querySelector('button').addEventListener('click',async ()=>{
     try{ await navigator.clipboard.writeText(txt); }
