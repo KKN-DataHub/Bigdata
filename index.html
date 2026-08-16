@@ -237,7 +237,7 @@ select.search{width:auto}
     <div class="brand">
       <h1>Big Data สายทาง</h1>
       <div class="sub">แขวงทางหลวงชนบทขอนแก่น<br>กรมทางหลวงชนบท</div>
-      <div class="ver">v20.5 · 14 ส.ค. 2569</div>
+      <div class="ver">v20.5.1 · 16 ส.ค. 2569</div>
     </div>
     <nav class="nav">
       <button data-page="overview" class="active"><span class="ico">▦</span> ภาพรวมโครงข่าย</button>
@@ -1705,6 +1705,29 @@ function fitBounds(b){
   M.cx=(lon2x(b[0],M.z)+lon2x(b[2],M.z))/2; M.cy=(lat2y(b[1],M.z)+lat2y(b[3],M.z))/2;
   redrawMap();
 }
+/* v20.5.1 — จุดหมุดของกล่องต้องอยู่ "บนเส้นสายทางจริง" ไม่ใช่กลางกรอบสี่เหลี่ยม
+   เดิมใช้กึ่งกลาง bounds ซึ่งพอซูมเข้าไปจะเห็นชัดว่าลอยอยู่นอกเส้น
+   ตอนนี้ใช้จุดกึ่งกลางตามระยะทางจริงของเส้นที่ยาวที่สุดในสายนั้น */
+function roadAnchor(L){
+  let best=null;
+  (L.coordsList||[]).forEach(cs=>{
+    if(!cs||cs.length<2) return;
+    const cum=[0];
+    for(let i=1;i<cs.length;i++){
+      const a=cs[i-1], b=cs[i];
+      const dx=(b[0]-a[0])*Math.cos((a[1]+b[1])*Math.PI/360), dy=b[1]-a[1];
+      cum.push(cum[i-1]+Math.hypot(dx,dy));
+    }
+    const tot=cum[cum.length-1];
+    if(!tot) return;
+    if(best&&tot<=best.tot) return;
+    const half=tot/2;
+    let i=1; while(i<cum.length-1&&cum[i]<half) i++;
+    const t=(half-cum[i-1])/((cum[i]-cum[i-1])||1);
+    best={tot, pt:[cs[i-1][0]+(cs[i][0]-cs[i-1][0])*t, cs[i-1][1]+(cs[i][1]-cs[i-1][1])*t]};
+  });
+  return best ? best.pt : [(L.bounds[0]+L.bounds[2])/2, (L.bounds[1]+L.bounds[3])/2];
+}
 function openPopup(code){
   closePopup();
   const L=M.layers[code]; if(!L) return;
@@ -1718,7 +1741,8 @@ function openPopup(code){
   d.querySelector('.rmBtn').addEventListener('click',()=>openRoadMapA3(code));
   M.div.appendChild(d);
   makePopupDraggable(d);
-  M.popup={el:d, lon:(L.bounds[0]+L.bounds[2])/2, lat:L.bounds[3]};
+  const A=roadAnchor(L);
+  M.popup={el:d, lon:A[0], lat:A[1]};
   positionPopup();
 }
 /* คลิกพื้นที่ว่างบนแผนที่ -> โชว์พิกัด + ปุ่มคัดลอก */
