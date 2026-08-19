@@ -90,6 +90,15 @@ body{font-family:'Sarabun',Tahoma,'Segoe UI',system-ui,sans-serif;background:var
 .banner{border-radius:8px;padding:9px 13px;font-size:12.5px;margin-bottom:12px;display:none}
 .banner.err{display:block;background:#fdecec;color:#8f1d1d;border:1px solid #f3c8c8}
 .banner.info{display:block;background:var(--teal-soft);color:#0c5955;border:1px solid #bfe3e0}
+/* v23.2 — กล่องแทนวงหมุนที่ค้าง บอกเหตุ + ให้กดลองใหม่ได้ตรงนั้นเลย */
+.netfail{display:flex;align-items:flex-start;gap:11px;padding:14px 15px;border-radius:12px;
+  background:#fdf3f3;border:1px solid #f0cccc;color:#7d2222}
+.netfail .nf-ico{flex:none;width:24px;height:24px;border-radius:50%;background:#f3caca;color:#8f1d1d;
+  display:grid;place-items:center;font-weight:800;font-size:13px;line-height:1}
+.netfail .nf-txt{flex:1;min-width:0;font-size:12px;line-height:1.55}
+.netfail .nf-txt b{display:block;font-size:13px;color:#8f1d1d;margin-bottom:1px}
+.netfail .nf-retry{flex:none;white-space:nowrap;align-self:center}
+@media(max-width:640px){ .netfail{flex-wrap:wrap} .netfail .nf-retry{width:100%;margin-top:4px} }
 /* ---------- cards & grids ---------- */
 .grid{display:grid;gap:14px}
 .kpis{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-bottom:14px}
@@ -111,9 +120,22 @@ body{font-family:'Sarabun',Tahoma,'Segoe UI',system-ui,sans-serif;background:var
 .kpi .val small{font-size:13px;font-weight:500;color:var(--muted)}
 .kpi .foot{font-size:11.5px;color:var(--muted);margin-top:4px}
 .two{grid-template-columns:1fr 1fr}
+/* ---- v23.2: หน้าภาพรวมบนจอกว้าง — เห็นหลายมิติในหน้าเดียว ไม่ต้องเลื่อนยาว ----
+   ค่าเริ่มต้นยังเป็น 2 คอลัมน์เหมือนเดิม · จอ ≥1500px ถึงสลับเป็นตาราง 12 คอลัมน์
+   (มือถือไม่แตะเลย เพราะ media query ที่แคบกว่าบังคับเป็น 1 คอลัมน์อยู่แล้ว) */
+.ovgrid{grid-template-columns:1fr 1fr}
+.ovgrid>*{min-width:0}
+@media(min-width:1500px){
+  .ovgrid{grid-template-columns:repeat(12,minmax(0,1fr))}
+  .ovg-a{grid-column:span 5}  .ovg-b{grid-column:span 4}  .ovg-c{grid-column:span 3}
+  .ovg-d{grid-column:span 5}  .ovg-e{grid-column:span 7}
+  #pg-overview .kpis{grid-template-columns:repeat(6,minmax(0,1fr))}
+}
+/* ชื่อหมวดอย่าตัดบรรทัด ตารางจะได้ไม่สูงเก้งก้างตอนคอลัมน์แคบ */
+#muadTable td:first-child,#muadTable th:first-child{white-space:nowrap}
 .card h3{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:2px}
 .card .note{font-size:11.5px;color:var(--muted);margin-bottom:10px}
-@media(max-width:980px){.two{grid-template-columns:1fr}.main{margin-left:0;padding:16px}.sidebar{position:static;width:100%;height:auto}.app{flex-direction:column}}
+@media(max-width:980px){.two,.ovgrid{grid-template-columns:1fr}.main{margin-left:0;padding:16px}.sidebar{position:static;width:100%;height:auto}.app{flex-direction:column}}
 /* ---------- มือถือ (จอคอมไม่กระทบ — ทำงานเฉพาะจอแคบ) ---------- */
 @media(max-width:980px){
   .brand{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;padding:10px 14px}
@@ -174,6 +196,11 @@ select.search{width:auto}
 .maplayout.nolist .roadlist{display:none}
 @media(max-width:900px){.maplayout{grid-template-columns:1fr}}
 #map{height:calc(100vh - 210px);min-height:480px;border-radius:12px;border:1px solid var(--hairline);position:relative;overflow:hidden;background:#dfe8e6;cursor:grab;touch-action:none}
+/* v23.2 — ป้ายบอกวิธีใช้สองนิ้ว โผล่เมื่อพยายามลากแผนที่ด้วยนิ้วเดียวบนมือถือ */
+.maphint{position:absolute;inset:0;display:grid;place-items:center;z-index:60;pointer-events:none;
+  background:rgba(11,11,11,.42);color:#fff;font-size:13.5px;font-weight:600;text-align:center;padding:0 28px;
+  opacity:0;transition:opacity .18s;line-height:1.6}
+.maphint.show{opacity:1}
 #map.dragging{cursor:grabbing}
 #tilepane{position:absolute;top:0;left:0}
 #tilepane img{position:absolute;width:256px;height:256px;user-select:none;-webkit-user-drag:none}
@@ -269,8 +296,10 @@ select.search{width:auto}
   /* -- แผนที่: สูงเต็มจอ ปุ่มบนแผนที่นิ้วกดถูก -- */
   .maplayout{gap:8px}
   /* scroll-margin กันแถบค้นหาแบบ sticky บังปุ่มซูม/สลับชั้นตอนเลื่อนจอมาที่แผนที่ */
-  #map{height:calc(100vh - 132px);height:calc(100dvh - 132px);min-height:340px;border-radius:10px;
-    scroll-margin-top:66px}
+  /* v23.2 — pan-y: นิ้วเดียวลากขึ้นลง = เบราว์เซอร์เลื่อนหน้าให้เอง (เดิม touch-action:none จึงเลื่อนผ่านแผนที่ไม่ได้)
+     ส่วนสองนิ้ว เรารับ pointer event ไปเลื่อน/ซูมแผนที่เอง · แผนที่เตี้ยลงเหลือ ~62% ของจอ จะได้เห็นว่ามีอะไรอยู่ต่อข้างล่าง */
+  #map{height:62vh;height:62dvh;min-height:300px;max-height:560px;border-radius:10px;
+    scroll-margin-top:66px;touch-action:pan-y}
   .zoomctl button{width:42px;height:42px;font-size:21px}
   .basectl button{padding:10px 14px;font-size:12.5px}
   .listtg{display:none}
@@ -553,7 +582,7 @@ th.sortable:hover{background:var(--navy-d)}
 
 /* ============================================================
    v22.0 — แถบคำสั่งด่วน (กด Ctrl/⌘+K) — พิมพ์ชื่อสาย/หน้า แล้วกระโดดไปเลย
-   สีตามธีมเดิมทั้งหมด: กรมท่า/เขียวมรกต/กระดาษอุ่น
+   สีตามธีมเดิมทั้งหมด: น้ำเงินเข้ม/เขียวมรกต/กระดาษอุ่น
    ============================================================ */
 .cmdbd{position:fixed;inset:0;z-index:1500;background:rgba(11,11,11,.46);
   display:none;align-items:flex-start;justify-content:center;padding:12vh 16px 20px;
@@ -813,18 +842,18 @@ body.cmdopen .cmdbd{display:flex}
     <div class="brand">
       <h1>Big Data สายทาง</h1>
       <div class="sub">แขวงทางหลวงชนบทขอนแก่น<br>กรมทางหลวงชนบท</div>
-      <div class="ver">v23.1 · 19 ส.ค. 2569</div>
+      <div class="ver">v23.2 · 19 ส.ค. 2569</div>
     </div>
     <nav class="nav">
       <button data-page="overview" class="active"><span class="ico">▦</span> ภาพรวมโครงข่าย</button>
       <button data-page="map"><span class="ico">◈</span> แผนที่สายทาง</button>
       <button data-page="history"><span class="ico">▤</span> ประวัติสายทาง</button>
+      <button data-page="decide"><span class="ico">◎</span> วิเคราะห์ตัดสินใจ</button>
       <button data-page="requests"><span class="ico">▥</span> คำของบประมาณ</button>
       <button data-page="zerobase"><span class="ico">◪</span> Zerobase</button>
       <button data-page="risk"><span class="ico">⚠</span> จุดเสี่ยงอันตราย</button>
       <button data-page="equip"><span class="ico">🔌</span> Equipment</button>
       <button data-page="routine"><span class="ico">🔧</span> งานบำรุงปกติ</button>
-      <button data-page="decide"><span class="ico">◎</span> วิเคราะห์ตัดสินใจ</button>
       <button data-page="system"><span class="ico">⚙</span> ข้อมูลระบบ</button>
     </nav>
     <div class="side-foot">แขวงทางหลวงชนบทขอนแก่น<br>ที่มาข้อมูล: ดูหน้า "ข้อมูลระบบ"</div>
@@ -845,18 +874,18 @@ body.cmdopen .cmdbd{display:flex}
       </div>
       <div class="filterbar" id="ovFilter"></div>
       <div class="grid kpis" id="ovKpis"></div>
-      <div class="grid two">
-        <div class="card"><h3>สรุปรายหมวดบำรุงทาง</h3><div class="note">จำนวนสาย · ระยะทาง · สะพาน</div><div class="tblwrap" style="max-height:none;border:none"><table id="muadTable"><thead><tr>
+      <!-- v23.2 — จอกว้างจัดเป็นตาราง 12 คอลัมน์ เห็นหลายมิติในหน้าเดียวไม่ต้องเลื่อนยาว
+                    จอแคบ/มือถือยังเป็น 2 คอลัมน์ / 1 คอลัมน์ เหมือนเดิมทุกอย่าง -->
+      <div class="grid ovgrid">
+        <div class="card ovg-a"><h3>สรุปรายหมวดบำรุงทาง</h3><div class="note">จำนวนสาย · ระยะทาง · สะพาน</div><div class="tblwrap" style="max-height:none;border:none"><table id="muadTable"><thead><tr>
           <th>หมวด</th><th class="num">จำนวนสาย</th><th class="num">ระยะทาง (กม.)</th><th class="num">สะพาน (แห่ง)</th><th class="num">ยาวสะพาน (กม.)</th>
         </tr></thead><tbody></tbody></table></div></div>
-        <div class="card"><h3>สัดส่วนผิวจราจร — รายหมวด</h3><div class="note">กม. แยก ลาดยาง / คอนกรีต / ลูกรัง (ไม่รวมช่วงสะพาน) — ชี้ที่ท่อนเพื่อดู % ของหมวด</div><div id="chSurfaceMuad"></div></div>
-      </div>
-      <div class="grid two" style="margin-top:14px">
-        <div class="card"><h3>ระยะทางรวมตามหมวดบำรุงทาง (กม.)</h3><div class="note">เรียงจากมากไปน้อย — ระยะทางตามบัญชี</div><div id="chAmphoe"></div></div>
-        <div class="card"><h3>สัดส่วนผิวจราจร — รวมทั้งโครงข่าย</h3><div class="note" id="surfNote">กม. และ % ของระยะทางผิวทาง</div><div id="chSurface"></div></div>
-      </div>
-      <div class="card" style="margin-top:14px"><h3>งบประมาณสะสมจากประวัติโครงการ</h3><div class="note">วงเงินตามสัญญาทุกปีรวมกัน</div>
-        <div id="ovBudget"><div class="loading"><span class="spin"></span>กำลังดึงข้อมูลงบประมาณ…</div></div>
+        <div class="card ovg-b"><h3>สัดส่วนผิวจราจร — รายหมวด</h3><div class="note">กม. แยก ลาดยาง / คอนกรีต / ลูกรัง (ไม่รวมช่วงสะพาน) — ชี้ที่ท่อนเพื่อดู % ของหมวด</div><div id="chSurfaceMuad"></div></div>
+        <div class="card ovg-c"><h3>สัดส่วนผิวจราจร — รวมทั้งโครงข่าย</h3><div class="note" id="surfNote">กม. และ % ของระยะทางผิวทาง</div><div id="chSurface"></div></div>
+        <div class="card ovg-d"><h3>ระยะทางรวมตามหมวดบำรุงทาง (กม.)</h3><div class="note">เรียงจากมากไปน้อย — ระยะทางตามบัญชี</div><div id="chAmphoe"></div></div>
+        <div class="card ovg-e"><h3>งบประมาณสะสมจากประวัติโครงการ</h3><div class="note">วงเงินตามสัญญาทุกปีรวมกัน</div>
+          <div id="ovBudget"><div class="loading"><span class="spin"></span>กำลังดึงข้อมูลงบประมาณ…</div></div>
+        </div>
       </div>
       <div class="card" style="margin-top:14px">
         <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
@@ -1004,7 +1033,7 @@ body.cmdopen .cmdbd{display:flex}
       </div>
 
       <div class="card"><h3>① เป้าหมายโครงข่าย</h3>
-        <div class="note">ตัวเลขจริงเทียบเป้า — ขีดกรมท่าบนแถบคือเส้นเป้า</div>
+        <div class="note">ตัวเลขจริงเทียบเป้า — ขีดสีเข้มบนแถบคือเส้นเป้า</div>
         <div id="ovTargets"><div class="loading"><span class="spin"></span>กำลังดึงข้อมูลสภาพสายทาง / จุดเสี่ยง / Equipment…</div></div>
       </div>
 
@@ -2161,6 +2190,7 @@ function emptyGuard(root){
    เหลือง=กำลังดึง · เขียว=ข้อมูลสดมาแล้ว · แดง=ต่อชีตไม่ได้
    แตะเพื่อโหลดข้อมูลใหม่
    ============================================================ */
+var NETFAIL=new Map();   // ต้องประกาศก่อนที่ updAppStat() จะใช้ — กัน TDZ (typeof บน const ที่ยังไม่ถึงคิวจะโยน error)
 function buildAppStat(){
   const br=document.querySelector('.brand'); if(!br||document.getElementById('appStat')) return;
   const b=document.createElement('button');
@@ -2174,14 +2204,90 @@ function buildAppStat(){
 function updAppStat(){
   const el=document.getElementById('appStat'); if(!el) return;
   const nb=document.getElementById('netBanner');
-  const bad = nb && nb.classList.contains('err') && nb.offsetParent!==null;
+  const bad = (typeof NETFAIL!=='undefined' && NETFAIL.size>0) ||
+              (nb && nb.classList.contains('err') && nb.offsetParent!==null);
   const live = (typeof histData!=='undefined'&&histData) || (typeof reqData!=='undefined'&&reqData) ||
                (typeof zbData!=='undefined'&&zbData)   || (typeof riskData!=='undefined'&&riskData);
   el.classList.toggle('off', !!bad);
   el.classList.toggle('live', !bad && !!live);
-  el.querySelector('.stxt').textContent = bad ? 'ออฟไลน์' : (live ? 'ข้อมูลสด' : 'กำลังดึง');
+  el.querySelector('.stxt').textContent = bad ? (live?'ข้อมูลไม่ครบ':'ออฟไลน์') : (live ? 'ข้อมูลสด' : 'กำลังดึง');
 }
 setInterval(updAppStat, 2500);
+
+/* ============================================================
+   v23.2 — ห้ามหมุนค้างแบบไม่บอกอะไรเลย
+   อาการที่เจอ: เปิดหน้าภาพรวม การ์ด "งบประมาณ" หมุนค้างไม่มีวันจบ
+   ต้นเหตุ: loadHistory() ล้มเหลว (หรือ renderHistory() พังกลางทาง) แล้วเขียน error
+            ลง #histBody ซึ่งอยู่ "หน้าประวัติ" — คนที่ยืนอยู่หน้าภาพรวมไม่เห็นอะไรเลย
+   กันไว้ 3 ชั้น:
+     1) safeRun()   เรนเดอร์ทีละก้อน ก้อนหนึ่งพังต้องไม่ลากก้อนอื่นตายไปด้วย
+     2) netFail()   ล้มเหลวเมื่อไหร่ ประกาศให้เห็นทั้งจอ: แบนเนอร์ + ชิปสถานะ + การ์ดที่ค้าง
+     3) spinGuard() ยามเฝ้า — วงหมุนไหนอยู่เกิน 30 วิ เปลี่ยนเป็นข้อความบอกเหตุ + ปุ่มลองใหม่
+   ============================================================ */
+const NF_HINT='ต้องเปิดผ่านอินเทอร์เน็ต และชีทต้องแชร์แบบ "ทุกคนที่มีลิงก์"';
+const RETRY_OF={
+  ovBudget  :()=>loadHistory(true),  histBody :()=>loadHistory(true),
+  reqBody   :()=>loadRequests(true), zbBody   :()=>loadZerobase(true),
+  riskBody  :()=>loadRisk(true),     equipBody:()=>loadEquip(true),
+  routineBody:()=>loadRoutine(true), ovTargets:()=>{ if(typeof renderTargets==='function') renderTargets(); },
+  dcFunnel  :()=>loadDecide(true),   dcRank   :()=>loadDecide(true)
+};
+function safeRun(label, fn){
+  try{ fn(); return true; }
+  catch(e){ console.error('เรนเดอร์ '+label+' ไม่สำเร็จ:', e); return false; }
+}
+function failBox(id, title, msg){
+  const el=document.getElementById(id); if(!el) return false;
+  if(!el.querySelector('.spin')) return false;   // เขียนทับเฉพาะกล่องที่ยังหมุนอยู่จริงเท่านั้น
+  el.innerHTML=`<div class="netfail"><span class="nf-ico">!</span>`+
+    `<div class="nf-txt"><b>${esc(title)}</b><div>${esc(msg||'')}</div></div>`+
+    (RETRY_OF[id]?`<button class="btn ghost nf-retry" type="button">↻ ลองใหม่</button>`:'')+`</div>`;
+  const btn=el.querySelector('.nf-retry');
+  if(btn) btn.addEventListener('click',()=>{
+    el.innerHTML='<div class="loading"><span class="spin"></span>กำลังลองใหม่…</div>';
+    NETFAIL.delete(id); updAppStat();
+    try{ Promise.resolve(RETRY_OF[id]()).catch(()=>{}); }catch(e){}
+  });
+  return true;
+}
+function netFail(what, err, ids){
+  const msg=(err&&err.message)||'เชื่อมต่อไม่ได้';
+  (ids||[]).forEach(id=>{ NETFAIL.set(id,msg);
+    failBox(id, 'ยังไม่ได้ข้อมูล'+(what?(' '+what):''), msg+' — '+NF_HINT); });
+  // KPI งบสะสมที่ค้างเป็น "…" อ่านแล้วเหมือนกำลังโหลดอยู่ — เปลี่ยนเป็นขีดให้รู้ว่าไม่มีข้อมูล
+  if((ids||[]).indexOf('ovBudget')>=0){
+    const kb=document.getElementById('kpiBudget');
+    if(kb){ const v=kb.querySelector('.val'), f=kb.querySelector('.foot');
+      if(v && /^[….\s]*$/.test(v.textContent)) v.textContent='—';
+      if(f) f.textContent='ยังไม่ได้ข้อมูลจากชีท'; }
+  }
+  if(typeof banner==='function')
+    banner('err','ดึงข้อมูล'+(what||'')+'จาก Google Sheets ไม่ได้ ('+msg+') — ส่วนที่ต้องใช้ข้อมูลนี้จึงยังว่างอยู่ · '+NF_HINT);
+  updAppStat();
+}
+function netOk(ids){
+  (ids||[]).forEach(id=>NETFAIL.delete(id));
+  if(!NETFAIL.size){ const b=document.getElementById('netBanner');
+    if(b && b.classList.contains('err')){ b.className='banner'; b.innerHTML=''; } }
+  updAppStat();
+}
+/* ข้อมูลมาแล้วแต่กล่องยังหมุน = เรนเดอร์พัง ไม่ใช่เน็ตพัง — ต้องบอกคนละแบบ */
+function renderStuck(id, title){
+  return failBox(id, title||'แสดงผลส่วนนี้ไม่สำเร็จ', 'ข้อมูลมาถึงแล้ว แต่วาดไม่ผ่าน — กด "ลองใหม่" หรือโหลดหน้าใหม่อีกครั้ง');
+}
+const _spinSince=new WeakMap();
+setInterval(function spinGuard(){
+  document.querySelectorAll('.page.active .spin').forEach(sp=>{
+    if(!sp.getClientRects().length) return;
+    const t=_spinSince.get(sp);
+    if(t==null){ _spinSince.set(sp, Date.now()); return; }
+    if(Date.now()-t < 30000) return;
+    let n=sp;                                  // หา id ที่ใกล้ที่สุด แต่ห้ามไต่ไปถึงตัวหน้า
+    while(n && !n.id && !n.classList.contains('page')) n=n.parentElement;
+    if(n && n.id && !/^pg-/.test(n.id) && !n.classList.contains('page'))
+      failBox(n.id,'ยังโหลดข้อมูลส่วนนี้ไม่ได้','รอเกิน 30 วินาทีแล้วยังไม่มีข้อมูลกลับมา — '+NF_HINT);
+  });
+}, 5000);
 
 
 /* v22.5 — ปุ่มลัดบนแถบบนมือถือ: แชร์มุมมอง + รายงานสรุป (A3) */
@@ -3236,25 +3342,45 @@ function initMap(){
   const pinchMid =()=>{ const a=[...ptrs.values()], r=div.getBoundingClientRect();
     return [(a[0].x+a[1].x)/2-r.left, (a[0].y+a[1].y)/2-r.top]; };
 
+  /* v23.2 — มือถือ: นิ้วเดียว = เลื่อนหน้าเว็บ (เดิมนิ้วเดียวลากแผนที่ เลยเลื่อนผ่านแผนที่ไม่ได้เลย)
+     สองนิ้ว = เลื่อน + ซูมแผนที่ · แตะ/แตะสองครั้งยังทำงานเหมือนเดิม · เดสก์ท็อปไม่เปลี่ยนอะไร */
+  const twoFingerMode=()=>window.matchMedia('(max-width:900px)').matches;
+  let hintT=null;
+  const mapHint=()=>{ let h=div.querySelector('.maphint');
+    if(!h){ h=document.createElement('div'); h.className='maphint';
+      h.textContent='ใช้สองนิ้วเลื่อนและซูมแผนที่ · นิ้วเดียวคือเลื่อนหน้า'; div.appendChild(h); }
+    h.classList.add('show'); clearTimeout(hintT); hintT=setTimeout(()=>h.classList.remove('show'),1700); };
+
   div.addEventListener('pointerdown',e=>{ if(skip(e.target)) return;
     ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
-    if(ptrs.size===2){                       // เริ่มบีบสองนิ้ว -> หยุดลากแผนที่
+    if(ptrs.size===2){                       // สองนิ้ว -> เลื่อน + ซูมแผนที่
       drag=null; div.classList.remove('dragging');
-      pinch={d0:pinchDist(), ref:1};
+      const m=pinchMid();
+      pinch={d0:pinchDist(), mx:m[0], my:m[1]};
       return;
     }
     if(ptrs.size>2) return;
-    drag={x:e.clientX,y:e.clientY,moved:false,id:e.pointerId,t:e.target}; div.classList.add('dragging'); });
+    // นิ้วเดียวบนมือถือ: จำไว้เพื่อตรวจ "แตะ" แต่ห้ามลากแผนที่ ปล่อยให้หน้าเลื่อนไปตามปกติ
+    const noPan = twoFingerMode() && e.pointerType==='touch';
+    drag={x:e.clientX,y:e.clientY,moved:false,id:e.pointerId,t:e.target,noPan};
+    if(!noPan) div.classList.add('dragging'); });
 
   div.addEventListener('pointermove',e=>{
     if(ptrs.has(e.pointerId)) ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
-    if(pinch&&ptrs.size>=2){                 // ซูมทีละขั้นเมื่อระยะนิ้วเปลี่ยนถึงเกณฑ์
+    if(pinch&&ptrs.size>=2){                 // สองนิ้ว: เลื่อนตามจุดกึ่งกลาง + ซูมเมื่อระยะนิ้วเปลี่ยนถึงเกณฑ์
+      const m=pinchMid(), mx=m[0], my=m[1];
+      const ddx=mx-pinch.mx, ddy=my-pinch.my;
+      if(Math.abs(ddx)+Math.abs(ddy)>0.5){ M.cx-=ddx; M.cy-=ddy; pinch.mx=mx; pinch.my=my; redrawMap(); }
       const k=pinchDist()/pinch.d0;
-      if(k>1.42){ const [mx,my]=pinchMid(); zoomAt(1,mx,my); pinch.d0=pinchDist(); }
-      else if(k<0.70){ const [mx,my]=pinchMid(); zoomAt(-1,mx,my); pinch.d0=pinchDist(); }
+      if(k>1.42||k<0.70){ zoomAt(k>1?1:-1,mx,my); pinch.d0=pinchDist();
+        const m2=pinchMid(); pinch.mx=m2[0]; pinch.my=m2[1]; }
       return;
     }
     if(!drag) return;
+    if(drag.noPan){   // นิ้วเดียวบนมือถือ: ไม่ลากแผนที่ แค่บอกวิธีใช้สองนิ้วครั้งเดียวพอ
+      if(!drag.moved && Math.abs(e.clientX-drag.x)+Math.abs(e.clientY-drag.y)>10){ drag.moved=true; mapHint(); }
+      return;
+    }
     const dx=e.clientX-drag.x, dy=e.clientY-drag.y;
     if(!drag.moved && Math.abs(dx)+Math.abs(dy)>3){ drag.moved=true; try{ div.setPointerCapture(drag.id); }catch(_){} }
     M.cx-=dx; M.cy-=dy; drag.x=e.clientX; drag.y=e.clientY; redrawMap(); });
@@ -3649,7 +3775,7 @@ function applyMuadFilter(){
 }
 function renderMapLegend(){
   const brLg=`<div class="lg"><svg width="15" height="15" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.4" fill="#fff" stroke="${C.navy}"/><g stroke="${C.navy}" stroke-width="1.6" stroke-linecap="round"><line x1="5.6" y1="4.5" x2="5.6" y2="11.5"/><line x1="5.6" y1="4.5" x2="3.4" y2="2.6"/><line x1="5.6" y1="11.5" x2="3.4" y2="13.4"/><line x1="10.4" y1="4.5" x2="10.4" y2="11.5"/><line x1="10.4" y1="4.5" x2="12.6" y2="2.6"/><line x1="10.4" y1="11.5" x2="12.6" y2="13.4"/></g></svg> สะพาน (คลิกดูรายละเอียด)</div>`;
-  const selLg=`<div class="lg"><span class="sw" style="background:${C.teal};height:4px;box-shadow:0 0 0 2.5px ${C.navy}"></span> สายที่เลือก (ขอบกรมท่า)</div>`;
+  const selLg=`<div class="lg"><span class="sw" style="background:${C.teal};height:4px;box-shadow:0 0 0 2.5px ${C.navy}"></span> สายที่เลือก</div>`;
   const box=document.getElementById('mapLegend');
   const kmLg=`<div class="lg"><svg width="13" height="13" viewBox="0 0 14 14"><circle cx="7" cy="7" r="4" fill="#fff" stroke="${C.navy}" stroke-width="1.6"/></svg> หลัก กม. ทุก 1 กม. (โผล่เมื่อซูมเข้า · ปิดได้ที่สวิตช์ 📍)</div>`;
   const pvLg=M.provShow?`<div class="lg"><svg width="22" height="10" viewBox="0 0 22 10"><line x1="0" y1="5" x2="22" y2="5" stroke="#6b5d4a" stroke-width="2.2" stroke-dasharray="9 4 2 4"/></svg> ขอบเขตจังหวัดขอนแก่น</div>`:'';
@@ -3730,7 +3856,7 @@ function selectRoad(code, hitLL){
   renderMapList(document.getElementById('mapSearch')?.value.trim().toLowerCase()||'');
   const L=M.layers[code];
   if(L){
-    // casing สีกรมท่าใต้เส้น + เส้นสีหมวดหนาขึ้น -> เห็นชัดโดยไม่ชนสีหมวดไหน
+    // casing สีน้ำเงินเข้มใต้เส้น + เส้นสีหมวดหนาขึ้น -> เห็นชัดโดยไม่ชนสีหมวดไหน
     M.selCasing=el('path',{stroke:C.navy,'stroke-width':9,'stroke-opacity':1,fill:'none',
       'stroke-linecap':'round','stroke-linejoin':'round','pointer-events':'none'});
     M.svg.appendChild(M.selCasing);
@@ -3845,13 +3971,19 @@ async function loadHistory(force){
       `<span class="hpill">▤ ${kept.length} โครงการ · ${new Set(kept.map(x=>x.code).filter(Boolean)).size} สาย</span>`+
       `<span class="hpill">📅 พบ ${okTabs} แท็บ · ปี ${yrsFound[0]}–${yrsFound[yrsFound.length-1]}</span>`+
       `<span class="hpill">🕐 ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})} น.</span>`;
-    renderHistory();
-    renderOverviewBudget();
-    refreshHistRoad();
-    if(document.getElementById('pg-system').classList.contains('active')) renderSystem();
+    // v23.2 — แยก try/catch ทีละก้อน: เดิมถ้า renderHistory() พัง จะกระโดดไป catch ทันที
+    //          renderOverviewBudget() ไม่ถูกเรียก การ์ดงบบนหน้าภาพรวมเลยหมุนค้างตลอดไป
+    safeRun('ตารางประวัติ', renderHistory);
+    safeRun('งบประมาณหน้าภาพรวม', renderOverviewBudget);
+    safeRun('One-Page รายสาย', refreshHistRoad);
+    netOk(['histBody','ovBudget']);
+    renderStuck('ovBudget');   // ข้อมูลมาแล้วแต่ยังหมุน = วาดไม่ผ่าน ต้องบอกให้รู้ ไม่ใช่ปล่อยหมุน
+    renderStuck('histBody');
+    if(document.getElementById('pg-system').classList.contains('active')) safeRun('หน้าระบบ', renderSystem);
   }catch(err){
     document.getElementById('histPills').innerHTML=`<span class="hpill"><span class="dot err"></span> เชื่อมต่อ Google Sheets ไม่ได้</span>`;
     body.innerHTML=`<div class="banner err" style="display:block">ดึงข้อมูลไม่สำเร็จ (${esc(err.message)}) — ต้องเปิดผ่านอินเทอร์เน็ต และ Google Sheet ต้องแชร์แบบ "ทุกคนที่มีลิงก์"</div>`;
+    netFail('ประวัติโครงการ', err, ['histBody','ovBudget']);   // การ์ดงบบนหน้าภาพรวมต้องหยุดหมุนด้วย
   }
 }
 function renderHistory(){
@@ -4755,6 +4887,7 @@ async function loadRequests(force){
   }catch(err){
     document.getElementById('reqPills').innerHTML=`<span class="hpill"><span class="dot err"></span> เชื่อมต่อ Google Sheets ไม่ได้</span>`;
     body.innerHTML=`<div class="banner err" style="display:block">ดึงข้อมูลไม่สำเร็จ (${esc(err.message)}) — ต้องเปิดผ่านอินเทอร์เน็ต และ Google Sheet ต้องแชร์แบบ "ทุกคนที่มีลิงก์"</div>`;
+    netFail('คำของบประมาณ', err, ['reqBody']);
   }
 }
 const reqFiltered=()=>reqYearPick==='all'?reqData:reqData.filter(r=>String(r.year)===String(reqYearPick));
@@ -4968,6 +5101,7 @@ async function loadZerobase(force){
   }catch(err){
     document.getElementById('zbPills').innerHTML=`<span class="hpill"><span class="dot err"></span> เชื่อมต่อ Google Sheets ไม่ได้</span>`;
     body.innerHTML=`<div class="banner err" style="display:block">ดึงข้อมูล Zerobase ไม่สำเร็จ (${esc(err.message)})</div>`;
+    netFail('Zerobase', err, ['zbBody']);
   }
 }
 const zbFiltered=()=>zbYearPick==='all'?zbData:zbData.filter(r=>String(r.year)===String(zbYearPick));
@@ -5524,6 +5658,7 @@ async function loadEquip(force){
   }catch(err){
     document.getElementById('eqPills').innerHTML=`<span class="hpill"><span class="dot err"></span> เชื่อมต่อ Google Sheets ไม่ได้</span>`;
     body.innerHTML=`<div class="banner err" style="display:block">ดึงข้อมูลไม่สำเร็จ (${esc(err.message)})</div>`;
+    netFail('Equipment', err, ['equipBody']);
   }
 }
 function renderEquip(){
@@ -5714,6 +5849,7 @@ async function loadRisk(force){
   }catch(err){
     document.getElementById('riskPills').innerHTML=`<span class="hpill"><span class="dot err"></span> เชื่อมต่อ Google Sheets ไม่ได้</span>`;
     body.innerHTML=`<div class="banner err" style="display:block">ดึงข้อมูลไม่สำเร็จ (${esc(err.message)})</div>`;
+    netFail('จุดเสี่ยง', err, ['riskBody']);
   }
 }
 function renderRisk(){
