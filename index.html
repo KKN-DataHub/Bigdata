@@ -928,7 +928,7 @@ body.cmdopen .cmdbd{display:flex}
     <div class="brand">
       <h1>Big Data สายทาง</h1>
       <div class="sub">แขวงทางหลวงชนบทขอนแก่น<br>กรมทางหลวงชนบท</div>
-      <div class="ver">v24.5 · 20 ส.ค. 2569</div>
+      <div class="ver">v24.6 · 20 ส.ค. 2569</div>
     </div>
     <nav class="nav">
       <button data-page="overview" class="active"><span class="ico">▦</span> ภาพรวมโครงข่าย</button>
@@ -960,8 +960,6 @@ body.cmdopen .cmdbd{display:flex}
       </div>
       <div class="filterbar" id="ovFilter"></div>
       <div class="grid kpis" id="ovKpis"></div>
-      <!-- v24.1 — แถบสรุปผู้บริหาร: 4 เรื่องที่ต้อง "ทำอะไรสักอย่าง" คำนวณสดจากชีทประวัติ -->
-      <div class="card execbar" id="ovExec" style="display:none"></div>
       <!-- v23.2 — จอกว้างจัดเป็นตาราง 12 คอลัมน์ เห็นหลายมิติในหน้าเดียวไม่ต้องเลื่อนยาว
                     จอแคบ/มือถือยังเป็น 2 คอลัมน์ / 1 คอลัมน์ เหมือนเดิมทุกอย่าง -->
       <div class="grid ovgrid">
@@ -979,6 +977,9 @@ body.cmdopen .cmdbd{display:flex}
           <div id="ovBudget"><div class="loading"><span class="spin"></span>กำลังดึงข้อมูลงบประมาณ…</div></div>
         </div>
       </div>
+      <!-- v24.6 — "ต้องจับตาตอนนี้" ย้ายลงมาอยู่ติดกับ "สายทางที่ควรได้งบก่อน"
+                    สองอันนี้เป็นเรื่องเดียวกัน (ต้องลงมือทำอะไร) วางคู่กันอ่านต่อเนื่องกว่าอยู่บนสุด -->
+      <div class="card execbar" id="ovExec" style="display:none;margin-top:14px"></div>
       <!-- v24.4 — สรุปการตัดสินใจแบบย่อ วางก่อนทะเบียนสายทาง · รายละเอียดเต็ม (สไลเดอร์ถ่วงน้ำหนัก, 20 อันดับ,
                     quadrant, alerts ครบ) ยังอยู่หน้า "วิเคราะห์ตัดสินใจ" เพราะเป็นพื้นที่ทำงาน ไม่ใช่พื้นที่กวาดตา -->
       <div class="card decsum" id="ovDecide" style="margin-top:14px"></div>
@@ -1488,7 +1489,8 @@ function scatter(container, pts, {xLab='', yLab='', height=290, refY=null, refLa
 }
 
 /* ⑥ Pareto — แท่งเรียงมาก->น้อย + เส้นสะสม ตอบ "ของกระจุกอยู่ที่ไหน" ในภาพเดียว */
-function pareto(container, items, {unit='', height=250, cutPct=80, onClick=null}={}){
+/* กฎ 7 — noun/items คือคำที่ผู้เรียกกำหนด กราฟไม่รู้ว่ากำลังวาดงบ ระยะทาง หรืออะไร */
+function pareto(container, items, {unit='', height=250, cutPct=80, onClick=null, noun='ค่า', unitName='รายการ'}={}){
   const box=document.getElementById(container); if(!box) return; box.innerHTML='';
   if(!items.length){ box.innerHTML='<div class="note" style="padding:22px 4px;text-align:center">ไม่มีข้อมูล</div>'; return; }
   const W=box.clientWidth||460, H=height, padL=46, padB=34, padT=14, padR=42;
@@ -1522,12 +1524,18 @@ function pareto(container, items, {unit='', height=250, cutPct=80, onClick=null}
     el('line',{x1:xc,y1:padT,x2:xc,y2:padT+ph,stroke:C.crit,'stroke-width':1.5,'stroke-dasharray':'5 4'},svg);
     el('text',{x:Math.min(xc+6,W-padR-4),y:padT+16,'font-size':10.5,'font-weight':700,fill:C.crit},svg)
       .textContent=`${cut+1} รายการแรก = ${cutPct}%`;
-  } else if(cut>=arr.length){   // จุดตัดอยู่นอกช่วงที่แสดง — บอกไปตรงๆ ว่าต้องนับถึงอันดับเท่าไร
-    const msg=W<430 ? `ครบ ${cutPct}% ที่อันดับ ${cut+1}` : `ต้องนับถึงอันดับ ${cut+1} ถึงจะครบ ${cutPct}% — งบกระจายตัว ไม่ได้กระจุก`;
-    el('text',{x:padL+6,y:padT+16,'font-size':10.5,'font-weight':700,fill:C.crit},svg).textContent=msg; }
+  }   // จุดตัดอยู่นอกช่วงที่แสดง -> ไปเขียนไว้เชิงอรรถใต้กราฟแทน ไม่วางทับแท่ง
   el('text',{class:'ticktext',x:W-padR+6,y:padT+6},svg).textContent='100%';
   el('text',{class:'ticktext',x:padL,y:H-4},svg).textContent=
     full.length>CAP ? `แสดง ${CAP} จาก ${full.length} รายการ · เส้นทอง = สะสม %` : 'เรียงมาก→น้อย · เส้นทอง = สะสม %';
+  // v24.6 — เชิงอรรถใต้กราฟ (เดิมเขียนทับบนแท่ง อ่านไม่ออก)
+  const fn=document.createElement('div'); fn.className='footnote'; fn.style.marginTop='6px';
+  fn.innerHTML = (cut>=0 && cut<arr.length)
+    ? `<b style="color:var(--crit)">${cut+1} ${esc(unitName)}แรกกินไป ${cutPct}%</b> ของทั้งหมด — ${esc(noun)}กระจุกตัวชัดเจน`
+    : (cut>=arr.length
+        ? `ต้องนับถึง<b> อันดับ ${cut+1}</b> ถึงจะครบ ${cutPct}% — ${esc(noun)}<b>กระจายตัว</b> ไม่ได้กระจุกที่ไม่กี่${esc(unitName)}`
+        : `ยอดสะสมยังไม่ถึง ${cutPct}% ในชุดนี้`);
+  box.appendChild(fn);
   return svg;
 }
 
@@ -1601,10 +1609,29 @@ function smallmult(container, groups, {unit='', height=92, onClick=null}={}){
 /* ⑨ Line — เวลาคือความต่อเนื่อง ต้องเป็นเส้น · กฎ: แกน Y เริ่ม 0 · ไม่เกิน 4 เส้น · เส้นทึบ · ป้ายที่ปลายเส้น */
 /* ⑩ Sankey — เงินไหลจาก "ชนิดงบ" ไปลงที่ "หมวดบำรุงทาง" ในภาพเดียว
    ใช้เฉพาะข้อมูลฐานเวลาเดียวกัน (ประวัติสัญญาที่เกิดขึ้นจริง) จึงไม่ติดกับดักแบบเอา Zerobase มาต่อ */
-function sankey(container, links, {unit='ลบ.', height=null, fmtV=fmt, onClick=null}={}){
+/* กฎ 7 — colorOf ส่งมาจากผู้เรียก กราฟไม่รู้จักคำว่า "หมวด" หรือสีประจำหมวด */
+function sankey(container, links, {unit='ลบ.', height=null, fmtV=fmt, onClick=null, colorOf=null}={}){
   const box=document.getElementById(container); if(!box) return; box.innerHTML='';
   if(!links.length){ box.innerHTML='<div class="note" style="padding:22px 4px;text-align:center">ไม่มีข้อมูลพอจะวาด</div>'; return; }
-  const L=[...links].filter(l=>l.v>0);
+  /* v24.6 — ก้อนเล็กมากๆ ทำให้ป้ายซ้อนกันจนอ่านไม่ออก ยุบเป็น "อื่นๆ" ตามกฎ 8 ซีรีส์
+     (เกินเพดานเมื่อไหร่ ให้ยุบหาง ไม่ใช่เพิ่มสีหรือเพิ่มบรรทัด) */
+  const MAXN=7;
+  let L=[...links].filter(l=>l.v>0);
+  const tot0=L.reduce((a,l)=>a+l.v,0)||1;
+  const fold=side=>{
+    const sum={}; L.forEach(l=>sum[l[side]]=(sum[l[side]]||0)+l.v);
+    const keys=Object.keys(sum).sort((a,b)=>sum[b]-sum[a]);
+    // ยุบทั้งที่เกินอันดับ 7 และที่เล็กกว่า 1.5% ของทั้งหมด
+    const keep=new Set(keys.filter((k,i)=>i<MAXN && sum[k]/tot0>=0.015));
+    if(keep.size===keys.length) return;
+    const m={};
+    L.forEach(l=>{ const f=keep.has(l.from)?l.from:(side==='from'?'อื่นๆ':l.from);
+      const t=keep.has(l.to)?l.to:(side==='to'?'อื่นๆ':l.to);
+      const k=(side==='from'?(keep.has(l.from)?l.from:'อื่นๆ'):l.from)+'\u0000'+(side==='to'?(keep.has(l.to)?l.to:'อื่นๆ'):l.to);
+      m[k]=(m[k]||0)+l.v; });
+    L=Object.entries(m).map(([k,v])=>{ const [f,t]=k.split('\u0000'); return {from:f,to:t,v}; });
+  };
+  fold('from'); fold('to');
   const srcs=[...new Set(L.map(l=>l.from))], dsts=[...new Set(L.map(l=>l.to))];
   const sum=(k,side)=>L.filter(l=>l[side]===k).reduce((a,l)=>a+l.v,0);
   srcs.sort((a,b)=>sum(b,'from')-sum(a,'from')); dsts.sort((a,b)=>sum(b,'to')-sum(a,'to'));
@@ -1619,7 +1646,7 @@ function sankey(container, links, {unit='ลบ.', height=null, fmtV=fmt, onClic
   const place=(keys,side)=>{ const m={}; let y=padT;
     keys.forEach(k=>{ const h=Math.max(3,sum(k,side)*scale); m[k]={y,h,cur:y}; y+=h+gap; }); return m; };
   const S=place(srcs,'from'), D=place(dsts,'to');
-  const colOf=(k,i)=>MUAD_COLOR[k]||MUAD_COLOR[String(k).replace(/^หมวด/,'')]||CAT8[i%CAT8.length];
+  const colOf=(k,i)=>(colorOf&&colorOf(k,i))||CAT8[i%CAT8.length];
   // ริบบิ้น
   [...L].sort((a,b)=>b.v-a.v).forEach(l=>{
     const a=S[l.from], b=D[l.to]; if(!a||!b) return;
@@ -1644,8 +1671,12 @@ function sankey(container, links, {unit='ลบ.', height=null, fmtV=fmt, onClic
     const mc=Math.max(5,Math.floor((room-12)/7.4));
     const v=sum(k,side), lab=k.length>mc?k.slice(0,mc-1)+'…':k;
     const tx=anchor==='end'?x-7:x+colW+7;
-    el('text',{class:'cattext',x:tx,y:m.y+m.h/2-1,'text-anchor':anchor},svg).textContent=lab;
-    el('text',{class:'ticktext',x:tx,y:m.y+m.h/2+11,'text-anchor':anchor},svg).textContent=fmtV(v)+' '+unit;
+    // แท่งเตี้ยกว่า 22px ใส่ป้าย 2 บรรทัดไม่ได้ -> เหลือบรรทัดเดียว · เตี้ยกว่า 11px ไม่ใส่เลย (ดูจาก tooltip)
+    if(m.h>=11){
+      const two=m.h>=22;
+      el('text',{class:'cattext',x:tx,y:m.y+m.h/2+(two?-1:4),'text-anchor':anchor},svg).textContent=lab;
+      if(two) el('text',{class:'ticktext',x:tx,y:m.y+m.h/2+11,'text-anchor':anchor},svg).textContent=fmtV(v)+' '+unit;
+    }
   });
   drawCol(srcs,S,x0,'from','end');
   drawCol(dsts,D,x1,'to','start');
@@ -2250,6 +2281,192 @@ const NAV_SVG={
   report:   SVGI('<path d="M6.2 2.9h8L19 7.7V20a1.3 1.3 0 0 1-1.3 1.3H6.2A1.3 1.3 0 0 1 4.9 20V4.2a1.3 1.3 0 0 1 1.3-1.3Z"/><path d="M14.2 2.9v4.9H19"/><path d="M8.8 17.4v-3"/><path d="M12 17.4v-5.4"/><path d="M15.2 17.4v-2"/>')
 };
 
+/* ══════════════════════════════════════════════════════════════════════════
+   ทะเบียนหน้า (PAGE REGISTRY) — v25.0   « กฎข้อ 1 : หน้าใหม่ เพิ่มที่เดียว »
+   ─────────────────────────────────────────────────────────────────────────
+   ปัญหาเดิม: เพิ่มหน้า 1 หน้า ต้องแก้มือ 6 จุดที่กระจายคนละที่ในไฟล์
+     ① ปุ่มเมนู <button data-page>  ② ไอคอน NAV_SVG   ③ โซ่ if ตอนกดเมนู
+     ④ RETRY_OF (ปุ่มลองใหม่)       ⑤ ensureRendered  ⑥ รายชื่อหน้าในชุดทดสอบ
+   ลืมจุดใดจุดหนึ่ง = พังเงียบ ไม่มีสัญญาณเตือน
+     เคสจริง v23.0 — หน้า "วิเคราะห์ตัดสินใจ" ออกไปโดยไม่มีไอคอน เพราะลืม ②
+     เคสจริง v23.2 — RETRY_OF เขียน 'equipBody' แต่กล่องจริงชื่อ 'eqBody'
+                     ปุ่ม "↻ ลองใหม่" ของหน้า Equipment จึงไม่เคยทำงานเลย
+   ตั้งแต่ v25.0: ③④⑤ อ่านจากตารางนี้ตารางเดียว และมีด่านตรวจ archCheck()
+   วิ่งตอนเปิดไฟล์ ยืนยันว่า ①②③④⑤ ตรงกันจริงทุกช่อง ไม่ตรงจะร้องทันที
+
+   ความหมายของแต่ละช่อง
+     id     รหัสหน้า — ต้องตรงกับ <button data-page="…"> และ <section id="pg-…">
+     enter  ทำอะไรเมื่อ "เข้า" หน้านี้ (โหลดข้อมูล/เริ่มแผนที่) — ไม่ใส่ = ไม่ต้องทำ
+     body   id กล่องเนื้อหาหลัก — ใช้ขึ้นวงหมุน / กล่องแจ้งพัง / ปุ่ม "↻ ลองใหม่"
+     needs  «ตารางปฏิกิริยา» — v26.0 กฎข้อ 3 · หัวใจของทั้งไฟล์
+            เขียนว่า "ถ้าข้อมูลชุดนี้มาถึง หน้านี้ต้องวาดอะไรใหม่" เป็นคู่ๆ
+            เดิมความรู้นี้กระจายอยู่ในตัว loadX() ทำให้ loadX ต้องรู้จักทุกหน้า
+            และเวลาสองตัวสั่งวาดทับกัน ตัวหลังลบงานตัวแรก (= บั๊ก KPI งบสะสม)
+            ตอนนี้ loadX แค่บอกว่า "ข้อมูลมาแล้ว" ตารางนี้เป็นคนตัดสินว่าใครต้องวาด
+     retry  ทำอะไรเมื่อผู้ใช้กด "↻ ลองใหม่" ในกล่องที่พัง
+     redraw วาดใหม่ตอนย่อ/ขยายจอ (ไม่ใส่ = วาดทุกอย่างใน needs ที่มีข้อมูลแล้ว)
+     reload ทำอะไรเมื่อกดปุ่ม "⟳ โหลดข้อมูลใหม่" ที่หัวเพจ (ไม่ใส่ = ใช้ retry)
+     msg    ข้อความแจ้งหลังกดโหลดใหม่ (ไม่ใส่ = ไม่ต้องแจ้ง)
+     csv    [id ตาราง, ชื่อไฟล์] สำหรับปุ่มส่งออก CSV (ไม่ใส่ = หน้านี้ไม่มีตารางให้ส่งออก)
+   ══════════════════════════════════════════════════════════════════════════ */
+const PAGES=[
+  {id:'overview',                            body:'ovBudget',                                     retry:()=>loadHistory(true),
+   needs:{ history:()=>renderOverviewBudget(),
+           /* สภาพผิวทางพา PCU มาด้วย ต้องคิด KPI ใหม่ — แต่ renderOverview() สร้างแถว KPI ใหม่ทั้งแถว
+              จึงต้องวาดการ์ดงบตามทันที ไม่งั้น KPI งบสะสมกลับไปเป็น "…" (บั๊กจริง v23.3) */
+           cond:()=>{ renderOverview(); renderOverviewBudget(); } },
+                                             redraw:()=>{ renderOverview(); renderOverviewBudget(); },
+                                             reload:()=>{ renderOverview(); loadHistory(true); },
+                                             msg:'โหลดข้อมูลใหม่แล้ว — ส่วนงบประมาณกำลังดึงจาก Google Sheets…',
+                                             csv:['roadTable','ทะเบียนสายทาง']},
+  {id:'map',      enter:()=>initMap(),                                                            reload:()=>initMap(),
+                                             msg:'วาดแผนที่ใหม่แล้ว (เส้นทางเป็น snapshot — อัปเดตด้วยการ rebuild)'},
+  {id:'history',  enter:()=>loadHistory(),   body:'histBody',                                     retry:()=>loadHistory(true),
+   /* แถบ One-Page รายสายรวมทุกแหล่งไว้ในภาพเดียว แหล่งไหนมาก็เติมเลนนั้น */
+   needs:{ history :()=>{ renderHistory(); refreshHistRoad(); },
+           requests:()=>refreshHistRoad(),  zerobase:()=>refreshHistRoad(),
+           risk    :()=>refreshHistRoad(),  cond    :()=>refreshHistRoad(),
+           equip   :()=>refreshHistRoad() },
+                                             redraw:()=>{ if(histData&&histData.length){ renderHistory(); refreshHistRoad(); } },
+                                             csv:['histTable','ประวัติรายสาย']},
+  {id:'decide',   enter:()=>loadDecide(),    body:'dcRank',                                        retry:()=>loadDecide(true),
+   needs:{ history:()=>renderDecide(), requests:()=>renderDecide(), zerobase:()=>renderDecide(),
+           risk   :()=>renderDecide(), cond    :()=>renderDecide() },
+                                             redraw:()=>renderDecide(),
+                                             csv:['dcRankTable','สายทางที่ควรได้งบก่อน']},
+  {id:'requests', enter:()=>loadRequests(),  body:'reqBody',                                       retry:()=>loadRequests(true),
+   needs:{ requests:()=>renderRequests() },  csv:['reqRoadTable','คำของบรายสาย']},
+  {id:'zerobase', enter:()=>loadZerobase(),  body:'zbBody',                                        retry:()=>loadZerobase(true),
+   needs:{ zerobase:()=>renderZerobase() },  csv:['zbRoadTable','Zerobase รายสาย']},
+  {id:'risk',     enter:()=>loadRisk(),      body:'riskBody',                                      retry:()=>loadRisk(true),
+   needs:{ risk:()=>renderRisk() },          reload:()=>{ riskData=null; loadRisk(true); },
+                                             csv:['riskRoadTable','จุดเสี่ยงรายสาย']},
+  {id:'equip',    enter:()=>loadEquip(),     body:'eqBody',                                        retry:()=>loadEquip(true),
+   needs:{ equip:()=>renderEquip() },        csv:['eqTable','Equipment']},
+  {id:'routine',  enter:()=>loadRoutine(),   body:'routineBody',                                   retry:()=>loadRoutine(),
+                                             msg:'หน้างานบำรุงปกติพร้อมแล้ว — รอผูกชีทคำตอบฟอร์ม'},
+  {id:'system',   enter:()=>renderSystem(),                                                        redraw:()=>renderSystem(),
+   needs:{ history:()=>renderSystem() },     reload:()=>{ renderSystem(); if(!histData) loadHistory(true); },
+                                             msg:'โหลดสถานะระบบใหม่แล้ว'}
+];
+const PAGE_BY={}; PAGES.forEach(p=>PAGE_BY[p.id]=p);
+const PAGE=id=>PAGE_BY[id]||null;
+const PAGE_IDS=PAGES.map(p=>p.id);
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ชั้นสถานะ + เจ้าของการวาดคนเดียว — v26.0  « กฎข้อ 2 : ข้อมูลไหลทางเดียว »
+                                              « กฎข้อ 3 : การวาดมีเจ้าของคนเดียว »
+   ─────────────────────────────────────────────────────────────────────────
+   ปัญหาเดิม: เมื่อข้อมูลชุดหนึ่งมาถึง ตัว loadX() เป็นคนตัดสินเองว่าต้องสั่งวาดอะไร
+   ผลคือฟังก์ชันวาด 9 ตัวมีคนสั่ง 2 คนขึ้นไป และ "ใครสั่งทีหลังลบงานคนก่อน"
+     บั๊กจริง v23.2 — loadHistory() พังตรงกลาง renderOverviewBudget() เลยไม่ถูกเรียก
+                      การ์ดงบบนหน้าภาพรวมหมุนค้างตลอดไป
+     บั๊กจริง v23.3 — loadCond() เรียก renderOverview() ซึ่งสร้างแถว KPI ใหม่ทั้งแถว
+                      ไม่มีใครเติมตัวเลขงบกลับ KPI งบสะสมจึงค้างเป็น "…"
+
+   วิธีใหม่: แหล่งข้อมูลพูดได้ประโยคเดียวคือ dataArrived('ชื่อแหล่ง')
+   แล้ว "ตารางปฏิกิริยา" (ช่อง needs ในทะเบียนหน้า) เป็นคนตัดสินว่าใครต้องวาดใหม่
+   ─────────────────────────────────────────────────────────────────────────
+   ST.ready[แหล่ง] = เลขรุ่นข้อมูล เพิ่มขึ้น 1 ทุกครั้งที่ข้อมูลชุดนั้นมาใหม่
+   ST.drawn[หน้า][แหล่ง] = เลขรุ่นตอนที่หน้านั้นวาดด้วยข้อมูลชุดนั้นครั้งล่าสุด
+   สองเลขไม่ตรงกัน = หน้านั้นล้าสมัย ต้องวาดใหม่  ← คำตอบเดียวของคำถาม "ต้องวาดไหม"
+   ══════════════════════════════════════════════════════════════════════════ */
+const ST={ ready:{}, drawn:{} };
+const srcVer=s=>ST.ready[s]||0;
+function activePage(){
+  const id=(document.querySelector('.page.active')||{}).id||'';
+  return PAGE(id.replace(/^pg-/,''));
+}
+function pageStale(p){
+  if(!p||!p.needs) return false;
+  const d=ST.drawn[p.id]||{};
+  return Object.keys(p.needs).some(s=>srcVer(s)>0 && srcVer(s)!==(d[s]||0));
+}
+/* วาดเฉพาะส่วนที่ล้าสมัยจริง — ส่วนที่ทันสมัยอยู่แล้วไม่ต้องแตะ (เร็วกว่าและไม่ลบงานกันเอง) */
+function pageDraw(p){
+  if(!p||!p.needs) return false;
+  const d=ST.drawn[p.id]||(ST.drawn[p.id]={});
+  let any=false;
+  Object.keys(p.needs).forEach(s=>{
+    const v=srcVer(s);
+    if(v===0 || v===(d[s]||0)) return;          // ยังไม่มีข้อมูล หรือวาดไปแล้วด้วยรุ่นนี้
+    if(safeRun(p.id+' ← '+s, p.needs[s])){ d[s]=v; any=true; }
+  });
+  return any;
+}
+/* วาดใหม่ทั้งหน้าโดยไม่สนเลขรุ่น — ใช้ตอนย่อ/ขยายจอ ที่ต้องคำนวณความกว้างใหม่หมด */
+function pageRedraw(p){
+  if(!p) return false;
+  if(p.redraw) return safeRun('หน้า '+p.id, p.redraw);
+  let any=false;
+  Object.keys(p.needs||{}).forEach(s=>{ if(srcVer(s)>0 && safeRun(p.id+' ← '+s, p.needs[s])) any=true; });
+  return any;
+}
+/* ★ จุดเดียวในระบบที่ตัดสินว่า "ข้อมูลมาแล้ว ต้องวาดอะไรใหม่บ้าง" ★
+   แหล่งข้อมูลห้ามเรียก renderX() เองเด็ดขาด ให้เรียกฟังก์ชันนี้แทน */
+function dataArrived(key){
+  ST.ready[key]=srcVer(key)+1;
+  pageDraw(activePage());                       // หน้าที่ผู้ใช้กำลังดูอยู่ วาดทันที
+  if(typeof updAppStat==='function') updAppStat();  // หน้าอื่นค่อยวาดตอนเปิด (ดูใน ensureRendered)
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ด่านตรวจตัวเอง (archCheck) — v25.0   « กฎข้อ 6 : ผิดต้องดัง ห้ามเงียบ »
+   ตรวจตอนเปิดไฟล์ว่าทะเบียนหน้ากับของจริงใน DOM ตรงกันครบทุกช่อง
+   บั๊กประเภท "ลืมไปจุดหนึ่ง" จะโผล่ตั้งแต่วินาทีแรก แทนที่จะไปโผล่หน้างาน
+   ผลเก็บไว้ที่ window.__arch เพื่อให้ชุดทดสอบอ่านได้ · ใส่ #arch ท้าย URL เพื่อดูบนจอ
+   ══════════════════════════════════════════════════════════════════════════ */
+function archCheck(){
+  const bad=[], warn=[];
+  const btnPages=[...document.querySelectorAll('.nav button[data-page]')].map(b=>b.dataset.page);
+  PAGES.forEach(p=>{
+    if(btnPages.indexOf(p.id)<0)                       bad.push(`หน้า "${p.id}" อยู่ในทะเบียน แต่ไม่มีปุ่มเมนู`);
+    if(!document.getElementById('pg-'+p.id))           bad.push(`หน้า "${p.id}" ไม่มี <section id="pg-${p.id}">`);
+    if(!NAV_SVG[p.id])                                 bad.push(`หน้า "${p.id}" ไม่มีไอคอนใน NAV_SVG`);
+    if(p.body && !document.getElementById(p.body))     bad.push(`หน้า "${p.id}" ชี้กล่อง "${p.body}" ที่ไม่มีอยู่จริง`);
+    if(p.body && !p.retry)                             warn.push(`หน้า "${p.id}" มีกล่องแต่ไม่มีปุ่มลองใหม่`);
+    ['enter','retry','redraw','reload'].forEach(k=>{
+      if(p[k]!=null && typeof p[k]!=='function')       bad.push(`หน้า "${p.id}" ช่อง ${k} ต้องเป็นฟังก์ชัน`);
+    });
+    if(p.csv && (!Array.isArray(p.csv)||p.csv.length!==2))
+                                                       bad.push(`หน้า "${p.id}" ช่อง csv ต้องเป็น [id ตาราง, ชื่อไฟล์]`);
+    if(p.msg!=null && typeof p.msg!=='string')         bad.push(`หน้า "${p.id}" ช่อง msg ต้องเป็นข้อความ`);
+    /* v26.0 กฎ 3 — ทุกคู่ในตารางปฏิกิริยาต้องชี้แหล่งข้อมูลที่ประกาศไว้จริง และเป็นฟังก์ชัน */
+    Object.keys(p.needs||{}).forEach(s=>{
+      if(typeof p.needs[s]!=='function')               bad.push(`หน้า "${p.id}" ปฏิกิริยาต่อ "${s}" ต้องเป็นฟังก์ชัน`);
+      if(!SRC[s])                                      bad.push(`หน้า "${p.id}" รอข้อมูล "${s}" ที่ไม่มีแหล่งประกาศไว้`);
+    });
+  });
+  btnPages.forEach(id=>{ if(!PAGE(id))                 bad.push(`มีปุ่มเมนู "${id}" แต่ไม่ได้ลงทะเบียนใน PAGES`); });
+  Object.keys(RETRY_OF).forEach(id=>{
+    if(!document.getElementById(id))                   bad.push(`ปุ่มลองใหม่ผูกกับกล่อง "${id}" ที่ไม่มีอยู่จริง`);
+  });
+  /* v26.0 กฎ 5 — ทุกแหล่งข้อมูลต้องกรอกช่องบังคับครบ และกล่องที่อ้างถึงต้องมีจริง */
+  Object.keys(SRC).forEach(k=>{
+    const s=SRC[k];
+    if(typeof s.has!=='function')                      bad.push(`แหล่งข้อมูล "${k}" ไม่มีช่อง has`);
+    if(typeof s.read!=='function')                     bad.push(`แหล่งข้อมูล "${k}" ไม่มีช่อง read`);
+    (s.boxes||[]).forEach(id=>{ if(!document.getElementById(id))
+                                                       bad.push(`แหล่งข้อมูล "${k}" ชี้กล่อง "${id}" ที่ไม่มีอยู่จริง`); });
+    if(s.pills && !document.getElementById(s.pills))   bad.push(`แหล่งข้อมูล "${k}" ชี้ป้ายสถานะ "${s.pills}" ที่ไม่มีอยู่จริง`);
+    if(!s.quiet && !(s.boxes||[]).length)              warn.push(`แหล่งข้อมูล "${k}" ไม่มีกล่องให้ขึ้นวงหมุน`);
+    if(!PAGES.some(p=>Object.keys(p.needs||{}).indexOf(k)>=0))
+                                                       warn.push(`แหล่งข้อมูล "${k}" ไม่มีหน้าไหนรอใช้เลย`);
+  });
+  const res={ok:!bad.length, bad, warn, pages:PAGES.length, sources:Object.keys(SRC).length, at:new Date().toISOString()};
+  window.__arch=res;
+  if(bad.length){
+    console.error('%c⛔ ด่านตรวจโครงสร้างไม่ผ่าน '+bad.length+' ข้อ','font-weight:700');
+    bad.forEach(m=>console.error('   • '+m));
+    if(/(^|[#&?])arch\b/.test(location.hash+location.search) && typeof banner==='function')
+      banner('err','ด่านตรวจโครงสร้างไม่ผ่าน '+bad.length+' ข้อ — '+bad[0]);
+  } else {
+    console.log('%c✓ ด่านตรวจโครงสร้างผ่าน — '+PAGES.length+' หน้า ครบทุกช่อง','color:#0d9488');
+  }
+  if(warn.length) warn.forEach(m=>console.warn('   ⚠ '+m));
+  return res;
+}
+
 const TAB_MAIN=[['overview','ภาพรวม'],['map','แผนที่'],['history','ประวัติ'],['requests','คำของบ']];
 const TAB_ICON=NAV_SVG;
 function navBtn(page){ return document.querySelector(`.nav button[data-page="${page}"]`); }
@@ -2744,16 +2961,76 @@ setInterval(updAppStat, 2500);
      3) spinGuard() ยามเฝ้า — วงหมุนไหนอยู่เกิน 30 วิ เปลี่ยนเป็นข้อความบอกเหตุ + ปุ่มลองใหม่
    ============================================================ */
 const NF_HINT='ต้องเปิดผ่านอินเทอร์เน็ต และชีทต้องแชร์แบบ "ทุกคนที่มีลิงก์"';
-const RETRY_OF={
-  ovBudget  :()=>loadHistory(true),  histBody :()=>loadHistory(true),
-  reqBody   :()=>loadRequests(true), zbBody   :()=>loadZerobase(true),
-  riskBody  :()=>loadRisk(true),     equipBody:()=>loadEquip(true),
-  routineBody:()=>loadRoutine(true), ovTargets:()=>{ if(typeof renderTargets==='function') renderTargets(); },
-  dcFunnel  :()=>loadDecide(true),   dcRank   :()=>loadDecide(true)
-};
+/* กฎข้อ 1 — ปุ่ม "↻ ลองใหม่" ไม่เขียนชื่อกล่องด้วยมืออีกแล้ว แต่งอกจากทะเบียนหน้า
+   (นี่คือจุดที่เคยพิมพ์ 'equipBody' ผิดเป็นเวลาหลายเวอร์ชันโดยไม่มีใครรู้)
+   กล่องที่ไม่ได้ผูกกับ "หน้า" ตรงๆ ใส่เพิ่มไว้ด้านล่างเป็นข้อยกเว้นที่มองเห็นได้ */
+const RETRY_OF=(()=>{
+  const m={};
+  PAGES.forEach(p=>{ if(p.body && p.retry) m[p.body]=p.retry; });
+  m.ovTargets=()=>{ if(typeof renderTargets==='function') renderTargets(); };
+  m.dcFunnel =()=>loadDecide(true);
+  return m;
+})();
 function safeRun(label, fn){
   try{ fn(); return true; }
   catch(e){ console.error('เรนเดอร์ '+label+' ไม่สำเร็จ:', e); return false; }
+}
+/* ══════════════════════════════════════════════════════════════════════════
+   แม่พิมพ์โหลดข้อมูล — v26.0   « กฎข้อ 5 : โหลดข้อมูลใช้แม่พิมพ์เดียว »
+   ─────────────────────────────────────────────────────────────────────────
+   ปัญหาเดิม: แหล่งข้อมูล 6 ชุด (ประวัติ · คำของบ · Zerobase · สภาพผิว · Equipment ·
+   จุดเสี่ยง) ต่างคนต่างเขียน "เปลือก" ชุดเดียวกันซ้ำๆ — กันโหลดซ้ำ · ขึ้นวงหมุน ·
+   จับ error · ป้ายสถานะ · ปุ่มลองใหม่ · บอกว่าข้อมูลมาแล้ว
+   แก้เปลือกที่เดียว ต้องตามแก้อีก 5 ที่ ลืมที่ไหน ที่นั่นหมุนค้าง = บั๊กทั้งตระกูล
+
+   ตั้งแต่ v26.0 เปลือกอยู่ที่นี่ที่เดียว แต่ละแหล่งเหลือแค่ "วิธีอ่านชีทของตัวเอง"
+     key    ชื่อสั้นของแหล่ง — ใช้เป็นกุญแจใน needs ของทะเบียนหน้า (กฎ 3)
+     what   ชื่อที่คนอ่าน ใช้ในข้อความแจ้งเตือน
+     has    ()=>มีข้อมูลอยู่แล้วหรือยัง
+     boxes  กล่องที่ต้องขึ้นวงหมุน/แจ้งพัง (ตัวแรก = กล่องที่ขึ้นวงหมุน)
+     pills  id แถบป้ายสถานะหัวเพจ
+     spin   ข้อความตอนกำลังโหลด
+     read   async ()=>อ่าน+แปลง+เก็บลงตัวแปร แล้วคืน HTML ป้ายสถานะ
+     quiet  true = แหล่งเสริม ไม่ต้องขึ้นวงหมุนหรือแจ้งพัง
+   ══════════════════════════════════════════════════════════════════════════ */
+const SRC={};
+function defineSource(cfg){ SRC[cfg.key]=cfg; return cfg; }
+function loadSource(key, force){
+  const cfg=SRC[key];
+  if(!cfg){ console.error('ไม่รู้จักแหล่งข้อมูล '+key); return Promise.resolve(); }
+  if(cfg.has() && force!==true) return Promise.resolve();
+  if(cfg._busy) return cfg._busy;                      // กดรัวไม่ยิงซ้ำซ้อน
+  const boxes=cfg.boxes||[];
+  if(!cfg.quiet && boxes.length){
+    const el0=document.getElementById(boxes[0]);
+    if(el0) el0.innerHTML='<div class="loading"><span class="spin"></span>'+
+      esc(cfg.spin||('กำลังดึงข้อมูล'+(cfg.what||'')+'จาก Google Sheets…'))+'</div>';
+  }
+  const run=(async()=>{
+    try{
+      const pillHtml=await cfg.read();
+      if(cfg.pills && pillHtml){ const pe=document.getElementById(cfg.pills); if(pe) pe.innerHTML=pillHtml; }
+      netOk(boxes);
+      dataArrived(cfg.key);                            // กฎ 3 — พูดประโยคเดียว ไม่สั่งวาดเอง
+      if(!cfg.quiet) boxes.forEach(id=>renderStuck(id));  // ข้อมูลมาแล้วแต่ยังหมุน = วาดไม่ผ่าน
+    }catch(err){
+      if(cfg.quiet){ console.warn('แหล่งข้อมูล '+cfg.key+' ยังไม่มา:', (err&&err.message)||err); }
+      else if(err && err.empty){
+        /* กฎ 6 สถานะ "ไม่มีข้อมูล" — ชีทต่อติดแต่ว่าง ห้ามบอกว่าเน็ตล่ม และห้ามขึ้นแบนเนอร์แดง */
+        if(cfg.pills){ const pe=document.getElementById(cfg.pills);
+          if(pe) pe.innerHTML='<span class="hpill"><span class="dot wait"></span> ชีทต่อติดแล้ว — ยังไม่มีข้อมูล</span>'; }
+        netOk(boxes);
+        boxes.forEach(id=>emptyBox(id, cfg.what, err.message));
+      }
+      else{
+        if(cfg.pills){ const pe=document.getElementById(cfg.pills);
+          if(pe) pe.innerHTML='<span class="hpill"><span class="dot err"></span> เชื่อมต่อ Google Sheets ไม่ได้</span>'; }
+        netFail(cfg.what||cfg.key, err, boxes);
+      }
+    }finally{ cfg._busy=null; }
+  })();
+  cfg._busy=run;
+  return run;
 }
 function failBox(id, title, msg){
   const el=document.getElementById(id); if(!el) return false;
@@ -2790,9 +3067,36 @@ function netOk(ids){
     if(b && b.classList.contains('err')){ b.className='banner'; b.innerHTML=''; } }
   updAppStat();
 }
-/* ข้อมูลมาแล้วแต่กล่องยังหมุน = เรนเดอร์พัง ไม่ใช่เน็ตพัง — ต้องบอกคนละแบบ */
+/* ข้อมูลมาแล้วแต่กล่องยังหมุน = เรนเดอร์พัง ไม่ใช่เน็ตพัง — ต้องบอกคนละแบบ
+   v26.1 — ใช้ได้เฉพาะกล่องบน "หน้าที่เปิดอยู่" เท่านั้น
+   เพราะตั้งแต่ v26.0 ระบบวาดเฉพาะหน้าที่ผู้ใช้กำลังดู หน้าอื่นรอวาดตอนเปิด
+   ถ้าไม่กันตรงนี้ กล่องของหน้าที่ยังไม่ได้เปิดจะโดนตราหน้าว่า "วาดไม่ผ่าน" ทั้งที่ยังไม่ถึงคิววาด */
+const onActivePage=id=>{
+  const el=document.getElementById(id); if(!el) return false;
+  const pg=el.closest ? el.closest('.page') : null;
+  return !!(pg && pg.classList.contains('active'));
+};
 function renderStuck(id, title){
+  if(!onActivePage(id)) return false;
   return failBox(id, title||'แสดงผลส่วนนี้ไม่สำเร็จ', 'ข้อมูลมาถึงแล้ว แต่วาดไม่ผ่าน — กด "ลองใหม่" หรือโหลดหน้าใหม่อีกครั้ง');
+}
+/* v26.1 กฎ 6 — สถานะที่ 3: "ชีทต่อติด แต่ยังไม่มีข้อมูล"
+   เดิมเคสนี้ถูกโยนเป็น error ปนกับ "เชื่อมต่อไม่ได้" ทำให้ผู้ใช้เข้าใจผิดว่าเน็ตล่ม
+   ทั้งที่ความจริงคือชีทว่าง — คนละเรื่อง คนละวิธีแก้ */
+function noData(msg){ const e=new Error(msg||'ยังไม่มีข้อมูลในชีท'); e.empty=true; return e; }
+function emptyBox(id, what, msg){
+  const el=document.getElementById(id); if(!el) return false;
+  if(!el.querySelector('.spin')) return false;
+  el.innerHTML=`<div class="card"><h3>ชีท${esc(what||'')}ต่อติดแล้ว — แต่ยังไม่มีข้อมูล</h3>`+
+    `<div class="note">${esc(msg||'')}</div>`+
+    `<div class="footnote" style="margin-top:8px">กรอกข้อมูลในชีทแล้วกดปุ่มด้านล่าง หรือ "⟳ โหลดข้อมูลใหม่" ที่หัวหน้า</div>`+
+    (RETRY_OF[id]?`<button class="btn ghost nf-retry" type="button" style="margin-top:10px">↻ ลองใหม่</button>`:'')+`</div>`;
+  const btn=el.querySelector('.nf-retry');
+  if(btn) btn.addEventListener('click',()=>{
+    el.innerHTML='<div class="loading"><span class="spin"></span>กำลังลองใหม่…</div>';
+    try{ Promise.resolve(RETRY_OF[id]()).catch(()=>{}); }catch(e){}
+  });
+  return true;
 }
 const _spinSince=new WeakMap();
 setInterval(function spinGuard(){
@@ -3178,16 +3482,15 @@ document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',(
   document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x===b));
   document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='pg-'+b.dataset.page));
   hideTip();
-  if(b.dataset.page==='map') initMap();
-  if(b.dataset.page==='history') loadHistory();
-  if(b.dataset.page==='requests') loadRequests();
-  if(b.dataset.page==='zerobase') loadZerobase();
-  if(b.dataset.page==='risk') loadRisk();
-  if(b.dataset.page==='equip') loadEquip();
-  if(b.dataset.page==='routine') loadRoutine();
-  if(b.dataset.page==='decide') loadDecide();
-  if(b.dataset.page==='system') renderSystem();
-  setTimeout(()=>{ enhanceNow(); },60);
+  /* กฎข้อ 1 — เดิมตรงนี้เป็นโซ่ if 9 บรรทัด ต้องเพิ่มมือทุกครั้งที่มีหน้าใหม่
+     ลืมบรรทัดเดียว = กดเมนูแล้วหน้าว่างเปล่าโดยไม่มี error ให้เห็น
+     ตอนนี้ถามทะเบียนหน้าแทน หน้าใหม่จึงทำงานทันทีที่ลงทะเบียน */
+  const _pg=PAGE(b.dataset.page);
+  if(_pg && _pg.enter){
+    try{ Promise.resolve(_pg.enter()).catch(e=>console.error('เข้าหน้า '+_pg.id+' ไม่สำเร็จ:',e)); }
+    catch(e){ console.error('เข้าหน้า '+_pg.id+' ไม่สำเร็จ:',e); }
+  }
+  setTimeout(()=>{ try{ ensureRendered(); }catch(e){} enhanceNow(); },60);
   if(typeof syncTabBar==='function') syncTabBar();
   if(typeof ddClose==='function') ddClose();
   if(typeof cmdClose==='function') cmdClose();
@@ -3213,24 +3516,25 @@ function renderStaticPills(){
     `<span class="hpill">📡 ความครบถ้วน GPS ${(100*withGeo/ALL_CODES.length).toFixed(0)}%</span>`+
     `<span class="hpill"><span class="dot snap"></span> Snapshot · 22 ก.ค. 2569</span>`;
 }
+/* กฎข้อ 1 — เดิมเป็นโซ่ else-if ชุดที่สาม และ "ลืมหน้าวิเคราะห์ตัดสินใจ"
+   กดปุ่มโหลดใหม่บนหน้านั้นจึงไม่เกิดอะไรขึ้นเลยมาตลอด — ตอนนี้ถามทะเบียนหน้า */
 function reloadPage(){
   hideTip();
-  const pg=document.querySelector('.page.active')?.id;
-  if(pg==='pg-overview'){ renderOverview(); loadHistory(true); banner('info','โหลดข้อมูลใหม่แล้ว — ส่วนงบประมาณกำลังดึงจาก Google Sheets…'); }
-  else if(pg==='pg-history'){ loadHistory(true); }
-  else if(pg==='pg-requests'){ loadRequests(true); }
-  else if(pg==='pg-zerobase'){ loadZerobase(true); }
-  else if(pg==='pg-risk'){ riskData=null; loadRisk(true); }
-  else if(pg==='pg-equip'){ loadEquip(true); }
-  else if(pg==='pg-routine'){ loadRoutine(); banner('info','หน้างานบำรุงปกติพร้อมแล้ว — รอผูกชีทคำตอบฟอร์ม'); }
-  else if(pg==='pg-map'){ initMap(); banner('info','วาดแผนที่ใหม่แล้ว (เส้นทางเป็น snapshot — อัปเดตด้วยการ rebuild)'); }
-  else if(pg==='pg-system'){ renderSystem(); if(!histData) loadHistory(true); banner('info','โหลดสถานะระบบใหม่แล้ว'); }
+  const pg=(document.querySelector('.page.active')||{}).id||'';
+  const p=PAGE(pg.replace(/^pg-/,''));
+  if(!p) return;
+  const fn=p.reload||p.retry;
+  if(!fn){ banner('info','หน้านี้ไม่มีข้อมูลจากชีทให้โหลดใหม่'); return; }
+  try{ Promise.resolve(fn()).catch(e=>console.error('โหลดใหม่ '+p.id,e)); }
+  catch(e){ console.error('โหลดใหม่ '+p.id,e); }
+  if(p.msg) banner('info',p.msg);
 }
 function printPage(){ hideTip(); window.print(); }
+/* กฎข้อ 1 — ตารางที่ส่งออก CSV ได้ ก็อ่านจากทะเบียนหน้าเช่นกัน (ช่อง csv) */
 function exportCSV(){
-  const pg=document.querySelector('.page.active')?.id;
-  const mapT={'pg-overview':['roadTable','ทะเบียนสายทาง'],'pg-history':['histTable','ประวัติรายสาย'],'pg-requests':['reqRoadTable','คำของบรายสาย'],'pg-zerobase':['zbRoadTable','Zerobase รายสาย'],'pg-risk':['riskRoadTable','จุดเสี่ยงรายสาย'],'pg-equip':['eqTable','Equipment']};
-  const m=mapT[pg];
+  const pg=(document.querySelector('.page.active')||{}).id||'';
+  const p=PAGE(pg.replace(/^pg-/,''));
+  const m=p&&p.csv;
   const tbl=m&&document.getElementById(m[0]);
   if(!tbl){ banner('info','หน้านี้ยังไม่มีตารางให้ส่งออกเป็น CSV'); return; }
   const rows=[...tbl.querySelectorAll('tr')].filter(tr=>tr.style.display!=='none'&&!tr.querySelector('[colspan]'))
@@ -3529,6 +3833,24 @@ function renderOverview(){
    คัดเฉพาะเรื่องที่ "ต้องตัดสินใจ / ต้องตามงาน" ไม่ใช่ตัวเลขสวยๆ
    ทุกตัวคำนวณสดจากชีทประวัติ + บัญชีสายทาง ไม่มีค่าตายตัว
    ============================================================ */
+/* v24.6 — กันเคส "ข้อมูลอยู่ในตัวแปรแล้ว แต่กล่องยังหมุนอยู่"
+   เกิดได้เมื่อ loadX() คืนค่าเร็วเพราะมีข้อมูลแล้ว แต่ DOM ยังไม่เคยถูกวาด
+   (เช่น โหลดข้อมูลจากหน้าอื่น แล้วเพิ่งเปิดหน้านี้ครั้งแรก) — เจอจากชุดทดสอบ invariant */
+/* v26.0 กฎ 3 — "ข้อมูลมาถึงตอนเราอยู่หน้าอื่น" จบที่นี่
+   เข้าหน้าไหน ระบบเทียบเลขรุ่นข้อมูลกับที่หน้านั้นวาดไว้ล่าสุด ต่างกันเมื่อไหร่ก็วาดใหม่
+   ไม่ต้องเดาว่าใครต้องสั่งใครอีกต่อไป */
+function ensureRendered(){
+  const p=activePage();
+  if(p) pageDraw(p);
+  /* กันเหนียวชั้นสอง: กล่องที่ยังหมุนทั้งที่ข้อมูลมาแล้ว = วาดไม่ผ่าน ต้องบอกให้รู้ */
+  PAGES.forEach(q=>{
+    if(!q.body || !q.needs) return;
+    const el2=document.getElementById(q.body);
+    if(!el2 || !el2.querySelector('.spin')) return;
+    if(!Object.keys(q.needs).some(s=>srcVer(s)>0)) return;   // ยังไม่มีข้อมูลจริง ปล่อยหมุนต่อ
+    renderStuck(q.body);
+  });
+}
 function renderExecBar(){
   const box=document.getElementById('ovExec'); if(!box) return;
   if(typeof histData==='undefined' || !histData || !histData.length){ box.style.display='none'; return; }
@@ -3746,10 +4068,13 @@ function renderOverviewBudget(){
     const links=Object.entries(flow).map(([k,v])=>{ const [f,t]=k.split('\u0000');
       return {from:f, to:t, v:+(v/1e6).toFixed(2)}; }).filter(l=>l.v>0);
     sankey('chBudFlow', links, {unit:'ลบ.', height:Math.max(220, 34*Math.max(
-      new Set(links.map(l=>l.from)).size, new Set(links.map(l=>l.to)).size)+30)});
+      new Set(links.map(l=>l.from)).size, new Set(links.map(l=>l.to)).size)+30),
+      // กฎ 7 — ความรู้เรื่อง "หมวดบำรุงทาง" อยู่ที่นี่ ไม่ได้อยู่ในตัวกราฟ
+      colorOf:k=>MUAD_COLOR[k]||MUAD_COLOR[String(k).replace(/^หมวด/,'')]||null});
   }
   pareto('chBudPareto', Object.entries(bR).map(([c,v])=>({label:c, v:+(v/1e6).toFixed(2), color:muadColor(roadMuad[c])})),
-    {unit:'ลบ.', height:250, onClick:it=>{ const b=document.querySelector('.nav button[data-page="map"]');
+    {unit:'ลบ.', height:250, noun:'งบ', unitName:'สาย',
+     onClick:it=>{ const b=document.querySelector('.nav button[data-page="map"]');
       if(b) b.click(); setTimeout(()=>{ if(typeof selectRoad==='function') selectRoad(it.label); },320); }});
 }
 
@@ -4742,11 +5067,13 @@ function selectRoad(code, hitLL){
 const HIST_ID='1mBDAhvJFgharY2JTV8VHcKCbUyLYVz4RThhGdu_JPM8';
 const HIST_PROBE_YEARS=Array.from({length:26},(_,i)=>60+i); // ไล่หา tab ปี Y_60 … Y_85 อัตโนมัติ
 let histData=null, histDropped=null, histExcluded=0, histUnknown=[];
-async function loadHistory(force){
-  if(histData && force!==true) return;
-  const body=document.getElementById('histBody');
-  body.innerHTML='<div class="loading"><span class="spin"></span>กำลังดึงข้อมูลจาก Google Sheets…</div>';
-  try{
+async function loadHistory(force){ return loadSource('history', force); }
+defineSource({
+  key:'history', what:'ประวัติโครงการ',
+  boxes:['histBody','ovBudget'],   // การ์ดงบบนหน้าภาพรวมกินข้อมูลชุดเดียวกัน ต้องหยุดหมุนพร้อมกัน
+  pills:'histPills',
+  has:()=>!!histData,
+  read:async()=>{
     const all=[];
     const S=v=>String(v??'').trim();
     const FIELDS=[['เลขที่สัญญา','contract'],['ประเภทงบ','budgetClass'],['ชนิดงบ','budgetType'],['กิจกรรม','activity'],
@@ -4809,10 +5136,11 @@ async function loadHistory(force){
     // 2) ไล่หา tab ปีทั้งหมด Y_60 … Y_85 พร้อมกัน — เพิ่ม tab ปีใหม่ในชีทได้เลย ไม่ต้องแก้ไฟล์นี้
     const results = await Promise.allSettled(HIST_PROBE_YEARS.map(y=>
       sheetData(HIST_ID, 'sheet=Y_'+y).then(objs=>({y, objs}))));
-    let okTabs=0, lastErr=null;
+    let okTabs=0, lastErr=null, anyReply=false;   // anyReply = ชีทตอบกลับมาอย่างน้อย 1 ครั้ง
     const seenFingerprint=new Set();
     for(const res of results){
       if(res.status!=='fulfilled'){ lastErr=res.reason; continue; }
+      anyReply=true;
       const {y, objs} = res.value;
       if(!objs.length) continue;
       const fp=fpOf(objs);
@@ -4826,8 +5154,10 @@ async function loadHistory(force){
       const {recs, drop}=parseTab(sentinel, null);
       if(recs.length){ okTabs++; all.push(...recs); dropped+=drop; }
     }
-    if(!okTabs) throw lastErr||new Error('เชื่อมต่อ Google Sheets ไม่ได้');
-    if(!all.length) throw new Error('ไม่พบข้อมูล (tab ปีต้องชื่อ Y_64, Y_65, … และแชร์ "ทุกคนที่มีลิงก์")');
+    /* กฎ 6 — แยก "ต่อไม่ติด" ออกจาก "ต่อติดแต่ว่าง" ให้ชัด คนละอาการ คนละวิธีแก้
+       เดิมสองเคสนี้ถูกยุบเป็นข้อความเดียวว่า "เชื่อมต่อไม่ได้" ทำให้ผู้ใช้ไปไล่หาปัญหาผิดที่ */
+    if(!anyReply && !(sentinel&&sentinel.length)) throw lastErr||new Error('เชื่อมต่อ Google Sheets ไม่ได้');
+    if(!okTabs || !all.length) throw noData('ยังไม่พบแถวข้อมูลในชีท — tab ปีต้องชื่อ Y_64, Y_65, … และแชร์ "ทุกคนที่มีลิงก์"');
     // สะพานชุมชนที่รีรูทเป็นสายใหม่: ประวัติของรหัสเดิมย้ายไปนับใต้สายใหม่ (จำรหัสเดิมไว้แสดงหมายเหตุ)
     all.forEach(x=>{ if(x.code&&REROUTE[x.code]){ x.code0=x.code; x.code=REROUTE[x.code].to; } });
     // รหัสที่ไม่พบทั้งบัญชี Master และชีทถ่ายโอน (และไม่ใช่งานอาคาร) → ตัดออกจากสถิติทั้งหมด เก็บรายการไว้ที่หน้าข้อมูลระบบ
@@ -4835,26 +5165,15 @@ async function loadHistory(force){
     const kept=all.filter(x=>!x.code||muadByCode()[x.code]||TRANSFER[x.code]);
     histData=kept; histDropped=dropped;
     const yrsFound=[...new Set(kept.map(x=>x.year))].sort();
-    document.getElementById('histPills').innerHTML=
-      `<span class="hpill"><span class="dot live"></span> ข้อมูลสดจาก Google Sheets</span>`+
+    /* v26.0 กฎ 3 — เดิมตรงนี้สั่งวาด 3 ที่ด้วยมือ (ตารางประวัติ · การ์ดงบภาพรวม · One-Page)
+       และต้องจำเองว่าหน้าระบบก็ต้องวาดถ้าเปิดค้างอยู่ ลืมเมื่อไหร่ = การ์ดนั้นหมุนค้าง
+       ตอนนี้แค่คืนป้ายสถานะ แล้วแม่พิมพ์จะบอก dataArrived('history') ให้เอง */
+    return `<span class="hpill"><span class="dot live"></span> ข้อมูลสดจาก Google Sheets</span>`+
       `<span class="hpill">▤ ${kept.length} โครงการ · ${new Set(kept.map(x=>x.code).filter(Boolean)).size} สาย</span>`+
       `<span class="hpill">📅 พบ ${okTabs} แท็บ · ปี ${yrsFound[0]}–${yrsFound[yrsFound.length-1]}</span>`+
       `<span class="hpill">🕐 ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})} น.</span>`;
-    // v23.2 — แยก try/catch ทีละก้อน: เดิมถ้า renderHistory() พัง จะกระโดดไป catch ทันที
-    //          renderOverviewBudget() ไม่ถูกเรียก การ์ดงบบนหน้าภาพรวมเลยหมุนค้างตลอดไป
-    safeRun('ตารางประวัติ', renderHistory);
-    safeRun('งบประมาณหน้าภาพรวม', renderOverviewBudget);
-    safeRun('One-Page รายสาย', refreshHistRoad);
-    netOk(['histBody','ovBudget']);
-    renderStuck('ovBudget');   // ข้อมูลมาแล้วแต่ยังหมุน = วาดไม่ผ่าน ต้องบอกให้รู้ ไม่ใช่ปล่อยหมุน
-    renderStuck('histBody');
-    if(document.getElementById('pg-system').classList.contains('active')) safeRun('หน้าระบบ', renderSystem);
-  }catch(err){
-    document.getElementById('histPills').innerHTML=`<span class="hpill"><span class="dot err"></span> เชื่อมต่อ Google Sheets ไม่ได้</span>`;
-    body.innerHTML=`<div class="banner err" style="display:block">ดึงข้อมูลไม่สำเร็จ (${esc(err.message)}) — ต้องเปิดผ่านอินเทอร์เน็ต และ Google Sheet ต้องแชร์แบบ "ทุกคนที่มีลิงก์"</div>`;
-    netFail('ประวัติโครงการ', err, ['histBody','ovBudget']);   // การ์ดงบบนหน้าภาพรวมต้องหยุดหมุนด้วย
   }
-}
+});
 function renderHistory(){
   const H=histData;
   const tot=H.reduce((a,x)=>a+(x.amount||0),0);
@@ -4974,199 +5293,232 @@ function renderHistory(){
       </div>
       <div class="tblwrap" style="max-height:480px"><table id="histTable"><thead><tr><th>รหัส</th><th>ชื่อสายทาง</th><th>หมวด</th><th class="num">จำนวนโครงการ</th><th class="num">วงเงินรวม (บาท)</th><th>ปีที่มีงาน</th><th>กิจกรรมที่เคยทำ</th></tr></thead><tbody></tbody></table></div>
     </div>`;
-  // ---- หน่วยดำเนินการ: วงเงิน + จำนวน ----
-  (()=>{
-    const box=document.getElementById('chAgency'); if(!box) return;
-    const agencyOf=x=>{
-      const t=String(x.agency||'').trim();
-      if(!t) return 'ไม่ระบุ';
-      const m=MUAD_ORDER.find(mm=>t.includes(mm));
-      if(m) return 'หมวด'+m;
-      if(/แขวง/.test(t)) return 'แขวงฯ';
-      return t.slice(0,22);
-    };
-    const byA={};
-    H.forEach(x=>{ const u=agencyOf(x); byA[u]=byA[u]||{n:0,amt:0,y:{},c:{}}; byA[u].n++; byA[u].amt+=(x.amount||0);
-      byA[u].y[x.year]=(byA[u].y[x.year]||0)+(x.amount||0); byA[u].c[x.year]=(byA[u].c[x.year]||0)+1; });
-    const units=Object.entries(byA).sort((a,b)=>b[1].amt-a[1].amt).map(e=>e[0]);
-    let fb=0;
-    const uColor=u=>u==='แขวงฯ'?C.navy:(u.startsWith('หมวด')?muadColor(u.replace('หมวด','')):(u==='ไม่ระบุ'?'#9aa5a3':CAT8[(fb++)%8]));
-    const uc=Object.fromEntries(units.map(u=>[u,uColor(u)]));
-    hstack('chAgency', years.map(y=>({label:'ปี '+y,
-        segs:Object.fromEntries(units.map(u=>[u, +((byA[u].y[y]||0)/1e6).toFixed(1)])),
-        right:`รวม ${fmt(+(H.filter(x=>x.year===y).reduce((a,x)=>a+(x.amount||0),0)/1e6).toFixed(1))} ลบ. · ${H.filter(x=>x.year===y).length} โครงการ`})),
-      units.map(u=>({k:u, label:u, color:uc[u]})), {unit:'ลบ.', labelW:66});
-  })();
-  // ---- งานอาคาร แยกตามหน่วย (แขวงฯ / หมวด) ----
-  (()=>{
-    const box=document.getElementById('chBuilding'); if(!box) return;
-    const hBld=H.filter(histIsBuilding);
-    const unitOf=x=>{
-      // หน่วยอยู่ในช่อง "รหัสสายทาง" เช่น ขทช.ขก. (แขวงฯ) / บทช.น้ำพอง (หมวด)
-      const rf=x.roadFull||'';
-      const t=rf+' '+(x.agency||'')+' '+(x.activity||'');
-      if(/บทช/.test(rf)||/บทช/.test(t)){
-        const m=MUAD_ORDER.find(mm=>t.includes(mm));
-        if(m) return 'หมวด'+m;
-        if(/ขอนแก่น|ขก/.test(t)) return 'หมวดเมือง'; // บทช.ขอนแก่น = หมวดเมือง
-        return 'หมวด (บทช.)';
-      }
-      if(/ขทช|แขวง/.test(t)) return 'แขวงฯ';
-      const m=MUAD_ORDER.find(mm=>t.includes(mm));
-      if(m) return 'หมวด'+m;
-      return 'ไม่ระบุหน่วย';
-    };
-    const byU={};
-    hBld.forEach(x=>{ const u=unitOf(x); byU[u]=byU[u]||{n:0,amt:0,y:{},c:{}}; byU[u].n++; byU[u].amt+=(x.amount||0);
-      byU[u].y[x.year]=(byU[u].y[x.year]||0)+(x.amount||0); byU[u].c[x.year]=(byU[u].c[x.year]||0)+1; });
-    const bUnits=Object.entries(byU).sort((a,b)=>b[1].amt-a[1].amt).map(e=>e[0]);
-    const bYears=years.filter(y=>hBld.some(x=>x.year===y));
-    hstack('chBuilding', bYears.map(y=>({label:'ปี '+y,
-        segs:Object.fromEntries(bUnits.map(u=>[u, +((byU[u].y[y]||0)/1e6).toFixed(2)])),
-        right:`รวม ${fmt(+(hBld.filter(x=>x.year===y).reduce((a,x)=>a+(x.amount||0),0)/1e6).toFixed(2))} ลบ. · ${hBld.filter(x=>x.year===y).length} งาน`})),
-      bUnits.map(u=>({k:u, label:u, color:u==='แขวงฯ'?C.navy:(u.startsWith('หมวด')?muadColor(u.replace('หมวด','')):'#9aa5a3')})), {unit:'ลบ.', labelW:66});
-  })();
-  // ชี้ที่ช่อง "ปริมาณงานสะสม" -> โชว์รายชื่อโครงการที่ประกอบเป็นตัวเลข (ตรวจสอบย้อนกลับได้)
-  const tileTip=(items,fq,title)=>{
-    const list=items.slice(0,12).map(x=>`${x.year} · ${x.code} · ${esc((x.activity||'—').slice(0,34))} — <b>${fq(x)}</b>`).join('<br>');
-    return `<b>${title}</b><br>${list}${items.length>12?`<br>…อีก ${items.length-12} โครงการ`:''}`;
-  };
-  const workTips=[
-    ...['ก่อสร้าง','ขยาย','บำรุง'].map(k=>tileTip([...hRoadCls[k].list].sort((a,b)=>segKmType(b,'r')-segKmType(a,'r')), x=>fmt(+segKmType(x,'r').toFixed(2))+' กม.', `${k==='ก่อสร้าง'?'ก่อสร้างใหม่':(k==='ขยาย'?'ขยายผิวจราจร':'งานบำรุง')} ${hRoadCls[k].n} โครงการ`)),
-    tileTip([...hE].sort((a,b)=>poleCount(b)-poleCount(a)), x=>fmt(poleCount(x))+' ต้น', `งานไฟฟ้า ${hE.length} โครงการ`),
-    tileTip([...hB].sort((a,b)=>segKmType(b,'b')-segKmType(a,'b')), x=>fmt(bridgeM(x))+' ม.', `งานสะพาน ${hB.length} โครงการ`),
-    tileTip(hTr, x=>esc(String(TRANSFER[x.code]?.note||'ถ่ายโอน').slice(0,26)), `งานบนสาย/สะพานที่ถ่ายโอนแล้ว ${hTr.length} โครงการ`)
-  ];
-  document.querySelectorAll('#histBody .worktile').forEach((elx,i)=>{
-    elx.style.cursor='help';
-    elx.addEventListener('mousemove',e=>showTip(workTips[i],e.clientX,e.clientY));
-    elx.addEventListener('mouseleave',hideTip);
-  });
-  /* v24.0 — Gantt สัญญา: อ่านวันเริ่ม/สิ้นสุดจากชีท เอาเฉพาะที่เกี่ยวข้องกับ "ตอนนี้"
-     (ยังไม่จบ หรือเพิ่งจบไม่เกิน 120 วัน) เรียงตามวันสิ้นสุด แล้วตัดที่ 14 แถวกันยาวเกิน */
-  (()=>{
-    const box=document.getElementById('chGantt'); if(!box) return;
-    const now=Date.now(), DAY=864e5;
-    const all=H.map(x=>{ const a=parseThaiDate(x.start), b=parseThaiDate(x.end);
-        if(!a||!b||b<=a) return null;
-        const dv=parseThaiDate(x.delivered);
-        return {code:x.code, ta:a.getTime(), tb:b.getTime(), dv, x};
-      }).filter(Boolean);
-    /* v24.1 — เดิมเรียงตามวันสิ้นสุดจากน้อยไปมากแล้วตัด 14 ตัวแรก = ได้แต่สัญญาที่จบไปนานแล้ว
-       ตอนนี้จัดลำดับตาม "ต้องทำอะไรกับมัน":
-         ① เลยกำหนดแล้วยังไม่ส่งงาน (เร่งด่วนสุด)  ② กำลังดำเนินการอยู่  ③ เพิ่งจบใน 60 วัน (บริบท) */
-    const overdue=all.filter(g=>g.tb<now && !g.dv).sort((p,q)=>p.tb-q.tb);
-    const active =all.filter(g=>g.ta<=now && g.tb>=now).sort((p,q)=>p.tb-q.tb);
-    const recent =all.filter(g=>g.tb<now && g.dv && g.tb>=now-60*DAY).sort((p,q)=>q.tb-p.tb);
-    const gs=[...overdue, ...active, ...recent];
-    const cut=gs.slice(0,12);
-    const nOver=overdue.length, nAct=active.length;
-    if(!cut.length){ box.innerHTML='<div class="note" style="padding:20px 4px;text-align:center">'+
-      'ไม่มีสัญญาที่ยังดำเนินการอยู่ หรือชีทยังไม่ได้ระบุวันเริ่ม/สิ้นสุด</div>'; return; }
-    const hd=document.createElement('div'); hd.className='chips'; hd.style.margin='0 0 9px';
-    hd.innerHTML=(nOver?`<span class="pill bad">⚠ เลยกำหนด ${nOver} สัญญา</span>`:'<span class="pill ok">✓ ไม่มีสัญญาเลยกำหนด</span>')+
-      `<span class="pill info">กำลังดำเนินการ ${nAct}</span>`+
-      `<span class="chip">จากทั้งหมด ${all.length} สัญญาที่ระบุวันที่</span>`;
-    box.appendChild(hd);
-    const gbox=document.createElement('div'); gbox.id='chGanttPlot'; box.appendChild(gbox);
-    const mB=muadByCode();
-    gantt('chGanttPlot', cut.map(g=>({
-      label:(g.code||'ไม่ระบุสาย')+' · '+String(g.x.activity||g.x.contract||'').slice(0,16),
-      a:g.ta, b:g.tb, color:muadColor(mB[g.code]),
-      late:(g.tb<now && !g.dv),
-      tip:`<b>${esc(g.code||'ไม่ระบุสาย')}</b> ${esc(String(g.x.activity||'').slice(0,28))}`+
-          `<br>สัญญา ${esc(g.x.contract||'-')}<br>${esc(g.x.start||'')} – ${esc(g.x.end||'')}`+
-          `<br>วงเงิน ${g.x.amount?fmtM(g.x.amount):'-'}`+
-          (g.dv?`<br>ส่งงานงวดสุดท้าย ${esc(g.x.delivered)}`:(g.tb<now?'<br><b style="color:#ff9b9b">เลยกำหนดแล้ว ยังไม่มีวันส่งงาน</b>':'')),
-      code:g.code})), {onClick:r=>{ if(!r.code) return;
-        const b=document.querySelector('.nav button[data-page="map"]');
-        if(b) b.click(); setTimeout(()=>{ if(typeof selectRoad==='function') selectRoad(r.code); },320); }});
-    const fn=document.createElement('div'); fn.className='footnote'; fn.style.marginTop='6px';
-    fn.textContent=gs.length>cut.length
-      ? `แสดง ${cut.length} จาก ${gs.length} สัญญาที่ต้องติดตาม — เรียงจากเร่งด่วนที่สุด (เลยกำหนด → กำลังทำ → เพิ่งจบ)`
-      : `เรียงจากเร่งด่วนที่สุด (เลยกำหนด → กำลังทำ → เพิ่งจบใน 60 วัน)`;
-    box.appendChild(fn);
-  })();
-
-  /* v24.0 — เวลาคือความต่อเนื่อง ใช้เส้นแทนแท่ง · แกนเริ่ม 0 · ป้ายที่ปลายเส้น */
-  lineChart('chHistYear', years.map(String),
-    [{name:'วงเงิน', color:C.teal, vals:years.map(y=>+(H.filter(x=>x.year===y).reduce((a,x)=>a+(x.amount||0),0)/1e6).toFixed(1))}],
-    {unit:'ลบ.', height:300, area:true});
+  /* ══════════════════════════════════════════════════════════════════════
+     v27.0 กฎ 6 — วาดทีละการ์ด แต่ละใบมีชื่อและป้องกันตัวเอง
+     เดิมส่วนวาดของหน้านี้เป็นก้อนเดียวยาว 193 บรรทัด การ์ดใบใดใบหนึ่งพัง
+     (ข้อมูลแปลก · หารด้วยศูนย์ · คอลัมน์หาย) จะกระโดดออกทันที การ์ดที่เหลือไม่ถูกวาดเลย
+     — อาการเดียวกับบั๊ก v23.2 ที่ทำให้ทั้งหน้าหายไปทั้งหน้า
+     ตอนนี้แต่ละใบวิ่งผ่าน safeRun() ใบที่พังหายไปใบเดียว ที่เหลือยังอ่านได้ปกติ
+     และเพราะทุกใบมีชื่อ จึงเรียกวาดซ้ำเฉพาะใบที่ต้องการได้ (renderHistory.cards)
+     ══════════════════════════════════════════════════════════════════════ */
+  // ---- ค่าที่หลายการ์ดใช้ร่วมกัน คำนวณครั้งเดียว ----
   // วงเงินต่อปี แยกชนิดงบ — แสดงครบทุกชนิด (สีคงที่ตามลำดับวงเงินรวม)
   const typeAmt={}; H.forEach(x=>typeAmt[x.budgetType]=(typeAmt[x.budgetType]||0)+(x.amount||0));
   const allTypes=Object.entries(typeAmt).sort((a,b)=>b[1]-a[1]).map(e=>e[0]);
   const TCOLOR=btColorMap(allTypes); // สีตายตัวตามชนิดงบ
   const yearTot=years.map(y=>H.filter(x=>x.year===y).reduce((a,x)=>a+(x.amount||0),0));
-  vbar('chHistType', years.map(String),
-    allTypes.map(g=>{
-      const amts=years.map(y=>H.filter(x=>x.year===y&&x.budgetType===g).reduce((a,x)=>a+(x.amount||0),0));
-      return {label:g, color:TCOLOR[g],
-        data:amts.map(a=>+(a/1e6).toFixed(1)),
-        tips:years.map((y,yi)=>{
-          const n=H.filter(x=>x.year===y&&x.budgetType===g).length;
-          const pct=yearTot[yi]?(100*amts[yi]/yearTot[yi]).toFixed(1):'0';
-          return `<b>ปี ${y} · ${esc(g)}</b><br>วงเงิน ${fmt(amts[yi])} บาท<br>${n} โครงการ · ${pct}% ของวงเงินปีนี้`;
-        })};
-    }),
-    {unit:'ลบ.', stacked:true, height:330});
   // วงเงินแยกตามหมวด -> แถวละหมวด แท่งซ้อนรายปี (มาตรฐานเดียวกับคำขอแยกหมวด)
   const roadMuad={...Object.fromEntries(Object.values(EMB.bridges||{}).map(b=>[b.code,b.muad])),
     ...Object.fromEntries(EMB.roads.map(r=>[r.code,r.muad]))}; // สะพานชุมชนใช้หมวดจากบัญชีสะพาน
-  (()=>{
-    const muadsUsed=[...MUAD_ORDER,'แขวงฯ','ไม่ระบุ'].filter(m=>H.some(x=>recMuad(x)===m));
-    hstack('chHistMuad', years.map(y=>{
-        const inY=H.filter(x=>x.year===y);
-        return {label:'ปี '+y,
-          segs:Object.fromEntries(muadsUsed.map(m=>[m, +(inY.filter(x=>recMuad(x)===m).reduce((a,x)=>a+(x.amount||0),0)/1e6).toFixed(1)])),
-          right:`รวม ${fmt(+(inY.reduce((a,x)=>a+(x.amount||0),0)/1e6).toFixed(1))} ลบ. · ${inY.length} โครงการ`};}),
-      muadsUsed.map(m=>({k:m, label:recMuadLabel(m), color:recMuadColor(m)})), {unit:'ลบ.', labelW:66});
-  })();
   // กิจกรรมใช้งบมากสุด
   const byAct={}; H.forEach(x=>{ const k=x.activity||'ไม่ระบุ'; byAct[k]=byAct[k]||{amt:0,n:0,bt:{}}; byAct[k].amt+=(x.amount||0); byAct[k].n++; byAct[k].bt[x.budgetType]=(byAct[k].bt[x.budgetType]||0)+(x.amount||0); });
   const topAct=Object.entries(byAct).sort((a,b)=>b[1].amt-a[1].amt).slice(0,8);
-  hbar('chHistAct', topAct.map(e=>{
-    const domBt=Object.entries(e[1].bt).sort((a,b)=>b[1]-a[1])[0]?.[0]||'';
-    return {label:e[0], v:+(e[1].amt/1e6).toFixed(1), color:TCOLOR[domBt]||btColor(domBt)||C.teal,
-      tip:`${fmt(e[1].amt)} บาท · ${e[1].n} โครงการ · ชนิดงบหลัก: ${esc(domBt)||'-'}`};}), {unit:'ลบ.', labelW:230, height:330});
-  (()=>{ const box=document.getElementById('chHistAct'); const lg=document.createElement('div'); lg.className='legendrow';
-    const used=[...new Set(topAct.map(e=>Object.entries(e[1].bt).sort((a,b)=>b[1]-a[1])[0]?.[0]||''))].filter(Boolean);
-    lg.innerHTML=used.map(t=>`<span class="lg"><span class="sw" style="background:${TCOLOR[t]||btColor(t)||C.teal}"></span>${esc(t)}</span>`).join('');
-    box.appendChild(lg); })();
-  // สายทางได้งบสะสมสูงสุด
-  const byRd={}; H.forEach(x=>{ if(!x.code) return; byRd[x.code]=byRd[x.code]||{amt:0,n:0}; byRd[x.code].amt+=(x.amount||0); byRd[x.code].n++; });
-  const topRd=Object.entries(byRd).sort((a,b)=>b[1].amt-a[1].amt).slice(0,10);
-  lolli('chHistRoad', topRd.map(e=>({label:e[0], v:+(e[1].amt/1e6).toFixed(1), color:muadColor(roadMuad[e[0]]), tip:`${fmt(e[1].amt)} บาท · ${e[1].n} โครงการ · หมวด${roadMuad[e[0]]||'-'}`})), {unit:'ลบ.', labelW:76});
-  const byC={}; H.forEach(x=>{ if(x.contractor){ byC[x.contractor]=byC[x.contractor]||{amt:0,n:0}; byC[x.contractor].amt+=(x.amount||0); byC[x.contractor].n++; } });
-  const topC=Object.entries(byC).sort((a,b)=>b[1].amt-a[1].amt).slice(0,10);
-  /* ปลายแท่งโชว์เลขสั้นๆ พอ — จำนวนโครงการ/วงเงินเต็ม ดูจาก tooltip ตอนชี้ */
-  lolli('chContractor', topC.map(e=>({label:e[0], v:+(e[1].amt/1e6).toFixed(1),
-    tip:`${fmt(e[1].amt)} บาท · ${e[1].n} โครงการ`})), {unit:'ลบ.', labelW:230});
   // ตารางรายชื่อสายทาง (คลิก -> สรุปรายสาย)
   const roadInfoH=Object.fromEntries(EMB.roads.map(r=>[r.code,r]));
-  const renderTbl=()=>{
-    const q=(document.getElementById('histSearch').value||'').toLowerCase();
-    const byRoad={};
-    H.forEach(x=>{ if(x.code) (byRoad[x.code]=byRoad[x.code]||[]).push(x); });
-    document.querySelector('#histTable tbody').innerHTML = Object.entries(byRoad)
-      .map(([code,list])=>({code, list, amt:list.reduce((a,x)=>a+(x.amount||0),0)}))
-      .sort((a,b)=>((roadInfoH[a.code]?0:1)-(roadInfoH[b.code]?0:1))||SUF3(a.code)-SUF3(b.code)||a.code.localeCompare(b.code,'th'))
-      .filter(({code})=>{ const r=roadInfoH[code];
-        return (code+' '+(r?.name||'')).toLowerCase().includes(q); })
-      .map(({code,list,amt})=>{
-        const r=roadInfoH[code];
-        const b=!r&&(EMB.bridges||{})[code];
-        const yrs=[...new Set(list.map(x=>x.year))].sort();
-        const acts=[...new Set(list.map(x=>x.activity).filter(Boolean))];
-        return `<tr data-code="${code}" style="cursor:pointer">
-          <td><b>${code}</b>${b?' <span class="pill wait" style="font-size:10px">สะพาน</span>':''}</td><td>${esc(r?.name||b?.name||'—')}</td><td>${(r?.muad||b?.muad)?'หมวด'+esc(r?.muad||b.muad):'—'}</td>
-          <td class="num"><b>${list.length}</b></td><td class="num">${amt?fmt(amt):'–'}</td>
-          <td style="font-variant-numeric:tabular-nums;font-size:11.5px">${yrs.join(', ')}</td>
-          <td style="font-size:11.5px">${acts.slice(0,3).map(esc).join(' · ')}${acts.length>3?' · …':''}</td></tr>`;
-      }).join('');
-    document.querySelectorAll('#histTable tbody tr').forEach(tr=>tr.addEventListener('click',()=>openHistRoad(tr.dataset.code)));
+  const CARDS={
+   'หน่วยดำเนินการ': ()=>{
+      // ---- หน่วยดำเนินการ: วงเงิน + จำนวน ----
+      (()=>{
+        const box=document.getElementById('chAgency'); if(!box) return;
+        const agencyOf=x=>{
+          const t=String(x.agency||'').trim();
+          if(!t) return 'ไม่ระบุ';
+          const m=MUAD_ORDER.find(mm=>t.includes(mm));
+          if(m) return 'หมวด'+m;
+          if(/แขวง/.test(t)) return 'แขวงฯ';
+          return t.slice(0,22);
+        };
+        const byA={};
+        H.forEach(x=>{ const u=agencyOf(x); byA[u]=byA[u]||{n:0,amt:0,y:{},c:{}}; byA[u].n++; byA[u].amt+=(x.amount||0);
+          byA[u].y[x.year]=(byA[u].y[x.year]||0)+(x.amount||0); byA[u].c[x.year]=(byA[u].c[x.year]||0)+1; });
+        const units=Object.entries(byA).sort((a,b)=>b[1].amt-a[1].amt).map(e=>e[0]);
+        let fb=0;
+        const uColor=u=>u==='แขวงฯ'?C.navy:(u.startsWith('หมวด')?muadColor(u.replace('หมวด','')):(u==='ไม่ระบุ'?'#9aa5a3':CAT8[(fb++)%8]));
+        const uc=Object.fromEntries(units.map(u=>[u,uColor(u)]));
+        hstack('chAgency', years.map(y=>({label:'ปี '+y,
+            segs:Object.fromEntries(units.map(u=>[u, +((byA[u].y[y]||0)/1e6).toFixed(1)])),
+            right:`รวม ${fmt(+(H.filter(x=>x.year===y).reduce((a,x)=>a+(x.amount||0),0)/1e6).toFixed(1))} ลบ. · ${H.filter(x=>x.year===y).length} โครงการ`})),
+          units.map(u=>({k:u, label:u, color:uc[u]})), {unit:'ลบ.', labelW:66});
+      })();
+   },
+   'งานอาคาร': ()=>{
+      // ---- งานอาคาร แยกตามหน่วย (แขวงฯ / หมวด) ----
+      (()=>{
+        const box=document.getElementById('chBuilding'); if(!box) return;
+        const hBld=H.filter(histIsBuilding);
+        const unitOf=x=>{
+          // หน่วยอยู่ในช่อง "รหัสสายทาง" เช่น ขทช.ขก. (แขวงฯ) / บทช.น้ำพอง (หมวด)
+          const rf=x.roadFull||'';
+          const t=rf+' '+(x.agency||'')+' '+(x.activity||'');
+          if(/บทช/.test(rf)||/บทช/.test(t)){
+            const m=MUAD_ORDER.find(mm=>t.includes(mm));
+            if(m) return 'หมวด'+m;
+            if(/ขอนแก่น|ขก/.test(t)) return 'หมวดเมือง'; // บทช.ขอนแก่น = หมวดเมือง
+            return 'หมวด (บทช.)';
+          }
+          if(/ขทช|แขวง/.test(t)) return 'แขวงฯ';
+          const m=MUAD_ORDER.find(mm=>t.includes(mm));
+          if(m) return 'หมวด'+m;
+          return 'ไม่ระบุหน่วย';
+        };
+        const byU={};
+        hBld.forEach(x=>{ const u=unitOf(x); byU[u]=byU[u]||{n:0,amt:0,y:{},c:{}}; byU[u].n++; byU[u].amt+=(x.amount||0);
+          byU[u].y[x.year]=(byU[u].y[x.year]||0)+(x.amount||0); byU[u].c[x.year]=(byU[u].c[x.year]||0)+1; });
+        const bUnits=Object.entries(byU).sort((a,b)=>b[1].amt-a[1].amt).map(e=>e[0]);
+        const bYears=years.filter(y=>hBld.some(x=>x.year===y));
+        hstack('chBuilding', bYears.map(y=>({label:'ปี '+y,
+            segs:Object.fromEntries(bUnits.map(u=>[u, +((byU[u].y[y]||0)/1e6).toFixed(2)])),
+            right:`รวม ${fmt(+(hBld.filter(x=>x.year===y).reduce((a,x)=>a+(x.amount||0),0)/1e6).toFixed(2))} ลบ. · ${hBld.filter(x=>x.year===y).length} งาน`})),
+          bUnits.map(u=>({k:u, label:u, color:u==='แขวงฯ'?C.navy:(u.startsWith('หมวด')?muadColor(u.replace('หมวด','')):'#9aa5a3')})), {unit:'ลบ.', labelW:66});
+      })();
+   },
+   'ป้ายปริมาณงานสะสม': ()=>{
+      // ชี้ที่ช่อง "ปริมาณงานสะสม" -> โชว์รายชื่อโครงการที่ประกอบเป็นตัวเลข (ตรวจสอบย้อนกลับได้)
+      const tileTip=(items,fq,title)=>{
+        const list=items.slice(0,12).map(x=>`${x.year} · ${x.code} · ${esc((x.activity||'—').slice(0,34))} — <b>${fq(x)}</b>`).join('<br>');
+        return `<b>${title}</b><br>${list}${items.length>12?`<br>…อีก ${items.length-12} โครงการ`:''}`;
+      };
+      const workTips=[
+        ...['ก่อสร้าง','ขยาย','บำรุง'].map(k=>tileTip([...hRoadCls[k].list].sort((a,b)=>segKmType(b,'r')-segKmType(a,'r')), x=>fmt(+segKmType(x,'r').toFixed(2))+' กม.', `${k==='ก่อสร้าง'?'ก่อสร้างใหม่':(k==='ขยาย'?'ขยายผิวจราจร':'งานบำรุง')} ${hRoadCls[k].n} โครงการ`)),
+        tileTip([...hE].sort((a,b)=>poleCount(b)-poleCount(a)), x=>fmt(poleCount(x))+' ต้น', `งานไฟฟ้า ${hE.length} โครงการ`),
+        tileTip([...hB].sort((a,b)=>segKmType(b,'b')-segKmType(a,'b')), x=>fmt(bridgeM(x))+' ม.', `งานสะพาน ${hB.length} โครงการ`),
+        tileTip(hTr, x=>esc(String(TRANSFER[x.code]?.note||'ถ่ายโอน').slice(0,26)), `งานบนสาย/สะพานที่ถ่ายโอนแล้ว ${hTr.length} โครงการ`)
+      ];
+      document.querySelectorAll('#histBody .worktile').forEach((elx,i)=>{
+        elx.style.cursor='help';
+        elx.addEventListener('mousemove',e=>showTip(workTips[i],e.clientX,e.clientY));
+        elx.addEventListener('mouseleave',hideTip);
+      });
+      /* v24.0 — Gantt สัญญา: อ่านวันเริ่ม/สิ้นสุดจากชีท เอาเฉพาะที่เกี่ยวข้องกับ "ตอนนี้"
+         (ยังไม่จบ หรือเพิ่งจบไม่เกิน 120 วัน) เรียงตามวันสิ้นสุด แล้วตัดที่ 14 แถวกันยาวเกิน */
+   },
+   'สัญญาที่กำลังดำเนินการ': ()=>{
+      (()=>{
+        const box=document.getElementById('chGantt'); if(!box) return;
+        const now=Date.now(), DAY=864e5;
+        const all=H.map(x=>{ const a=parseThaiDate(x.start), b=parseThaiDate(x.end);
+            if(!a||!b||b<=a) return null;
+            const dv=parseThaiDate(x.delivered);
+            return {code:x.code, ta:a.getTime(), tb:b.getTime(), dv, x};
+          }).filter(Boolean);
+        /* v24.1 — เดิมเรียงตามวันสิ้นสุดจากน้อยไปมากแล้วตัด 14 ตัวแรก = ได้แต่สัญญาที่จบไปนานแล้ว
+           ตอนนี้จัดลำดับตาม "ต้องทำอะไรกับมัน":
+             ① เลยกำหนดแล้วยังไม่ส่งงาน (เร่งด่วนสุด)  ② กำลังดำเนินการอยู่  ③ เพิ่งจบใน 60 วัน (บริบท) */
+        const overdue=all.filter(g=>g.tb<now && !g.dv).sort((p,q)=>p.tb-q.tb);
+        const active =all.filter(g=>g.ta<=now && g.tb>=now).sort((p,q)=>p.tb-q.tb);
+        const recent =all.filter(g=>g.tb<now && g.dv && g.tb>=now-60*DAY).sort((p,q)=>q.tb-p.tb);
+        const gs=[...overdue, ...active, ...recent];
+        const cut=gs.slice(0,12);
+        const nOver=overdue.length, nAct=active.length;
+        if(!cut.length){ box.innerHTML='<div class="note" style="padding:20px 4px;text-align:center">'+
+          'ไม่มีสัญญาที่ยังดำเนินการอยู่ หรือชีทยังไม่ได้ระบุวันเริ่ม/สิ้นสุด</div>'; return; }
+        const hd=document.createElement('div'); hd.className='chips'; hd.style.margin='0 0 9px';
+        hd.innerHTML=(nOver?`<span class="pill bad">⚠ เลยกำหนด ${nOver} สัญญา</span>`:'<span class="pill ok">✓ ไม่มีสัญญาเลยกำหนด</span>')+
+          `<span class="pill info">กำลังดำเนินการ ${nAct}</span>`+
+          `<span class="chip">จากทั้งหมด ${all.length} สัญญาที่ระบุวันที่</span>`;
+        box.appendChild(hd);
+        const gbox=document.createElement('div'); gbox.id='chGanttPlot'; box.appendChild(gbox);
+        const mB=muadByCode();
+        gantt('chGanttPlot', cut.map(g=>({
+          label:(g.code||'ไม่ระบุสาย')+' · '+String(g.x.activity||g.x.contract||'').slice(0,16),
+          a:g.ta, b:g.tb, color:muadColor(mB[g.code]),
+          late:(g.tb<now && !g.dv),
+          tip:`<b>${esc(g.code||'ไม่ระบุสาย')}</b> ${esc(String(g.x.activity||'').slice(0,28))}`+
+              `<br>สัญญา ${esc(g.x.contract||'-')}<br>${esc(g.x.start||'')} – ${esc(g.x.end||'')}`+
+              `<br>วงเงิน ${g.x.amount?fmtM(g.x.amount):'-'}`+
+              (g.dv?`<br>ส่งงานงวดสุดท้าย ${esc(g.x.delivered)}`:(g.tb<now?'<br><b style="color:#ff9b9b">เลยกำหนดแล้ว ยังไม่มีวันส่งงาน</b>':'')),
+          code:g.code})), {onClick:r=>{ if(!r.code) return;
+            const b=document.querySelector('.nav button[data-page="map"]');
+            if(b) b.click(); setTimeout(()=>{ if(typeof selectRoad==='function') selectRoad(r.code); },320); }});
+        const fn=document.createElement('div'); fn.className='footnote'; fn.style.marginTop='6px';
+        fn.textContent=gs.length>cut.length
+          ? `แสดง ${cut.length} จาก ${gs.length} สัญญาที่ต้องติดตาม — เรียงจากเร่งด่วนที่สุด (เลยกำหนด → กำลังทำ → เพิ่งจบ)`
+          : `เรียงจากเร่งด่วนที่สุด (เลยกำหนด → กำลังทำ → เพิ่งจบใน 60 วัน)`;
+        box.appendChild(fn);
+      })();
+   },
+   'วงเงินรายปี': ()=>{
+      /* v24.0 — เวลาคือความต่อเนื่อง ใช้เส้นแทนแท่ง · แกนเริ่ม 0 · ป้ายที่ปลายเส้น */
+      lineChart('chHistYear', years.map(String),
+        [{name:'วงเงิน', color:C.teal, vals:years.map(y=>+(H.filter(x=>x.year===y).reduce((a,x)=>a+(x.amount||0),0)/1e6).toFixed(1))}],
+        {unit:'ลบ.', height:300, area:true});
+   },
+   'วงเงินรายปีแยกชนิดงบ': ()=>{
+      vbar('chHistType', years.map(String),
+        allTypes.map(g=>{
+          const amts=years.map(y=>H.filter(x=>x.year===y&&x.budgetType===g).reduce((a,x)=>a+(x.amount||0),0));
+          return {label:g, color:TCOLOR[g],
+            data:amts.map(a=>+(a/1e6).toFixed(1)),
+            tips:years.map((y,yi)=>{
+              const n=H.filter(x=>x.year===y&&x.budgetType===g).length;
+              const pct=yearTot[yi]?(100*amts[yi]/yearTot[yi]).toFixed(1):'0';
+              return `<b>ปี ${y} · ${esc(g)}</b><br>วงเงิน ${fmt(amts[yi])} บาท<br>${n} โครงการ · ${pct}% ของวงเงินปีนี้`;
+            })};
+        }),
+        {unit:'ลบ.', stacked:true, height:330});
+   },
+   'วงเงินแยกหมวด': ()=>{
+      (()=>{
+        const muadsUsed=[...MUAD_ORDER,'แขวงฯ','ไม่ระบุ'].filter(m=>H.some(x=>recMuad(x)===m));
+        hstack('chHistMuad', years.map(y=>{
+            const inY=H.filter(x=>x.year===y);
+            return {label:'ปี '+y,
+              segs:Object.fromEntries(muadsUsed.map(m=>[m, +(inY.filter(x=>recMuad(x)===m).reduce((a,x)=>a+(x.amount||0),0)/1e6).toFixed(1)])),
+              right:`รวม ${fmt(+(inY.reduce((a,x)=>a+(x.amount||0),0)/1e6).toFixed(1))} ลบ. · ${inY.length} โครงการ`};}),
+          muadsUsed.map(m=>({k:m, label:recMuadLabel(m), color:recMuadColor(m)})), {unit:'ลบ.', labelW:66});
+      })();
+   },
+   'กิจกรรมใช้งบสูงสุด': ()=>{
+      hbar('chHistAct', topAct.map(e=>{
+        const domBt=Object.entries(e[1].bt).sort((a,b)=>b[1]-a[1])[0]?.[0]||'';
+        return {label:e[0], v:+(e[1].amt/1e6).toFixed(1), color:TCOLOR[domBt]||btColor(domBt)||C.teal,
+          tip:`${fmt(e[1].amt)} บาท · ${e[1].n} โครงการ · ชนิดงบหลัก: ${esc(domBt)||'-'}`};}), {unit:'ลบ.', labelW:230, height:330});
+      (()=>{ const box=document.getElementById('chHistAct'); const lg=document.createElement('div'); lg.className='legendrow';
+        const used=[...new Set(topAct.map(e=>Object.entries(e[1].bt).sort((a,b)=>b[1]-a[1])[0]?.[0]||''))].filter(Boolean);
+        lg.innerHTML=used.map(t=>`<span class="lg"><span class="sw" style="background:${TCOLOR[t]||btColor(t)||C.teal}"></span>${esc(t)}</span>`).join('');
+        box.appendChild(lg); })();
+   },
+   'สายทางได้งบสูงสุด': ()=>{
+      const byRd={}; H.forEach(x=>{ if(!x.code) return; byRd[x.code]=byRd[x.code]||{amt:0,n:0}; byRd[x.code].amt+=(x.amount||0); byRd[x.code].n++; });
+      const topRd=Object.entries(byRd).sort((a,b)=>b[1].amt-a[1].amt).slice(0,10);
+      lolli('chHistRoad', topRd.map(e=>({label:e[0], v:+(e[1].amt/1e6).toFixed(1), color:muadColor(roadMuad[e[0]]), tip:`${fmt(e[1].amt)} บาท · ${e[1].n} โครงการ · หมวด${roadMuad[e[0]]||'-'}`})), {unit:'ลบ.', labelW:76});
+   },
+   'ผู้รับจ้างสูงสุด': ()=>{
+      const byC={}; H.forEach(x=>{ if(x.contractor){ byC[x.contractor]=byC[x.contractor]||{amt:0,n:0}; byC[x.contractor].amt+=(x.amount||0); byC[x.contractor].n++; } });
+      const topC=Object.entries(byC).sort((a,b)=>b[1].amt-a[1].amt).slice(0,10);
+      /* ปลายแท่งโชว์เลขสั้นๆ พอ — จำนวนโครงการ/วงเงินเต็ม ดูจาก tooltip ตอนชี้ */
+      lolli('chContractor', topC.map(e=>({label:e[0], v:+(e[1].amt/1e6).toFixed(1),
+        tip:`${fmt(e[1].amt)} บาท · ${e[1].n} โครงการ`})), {unit:'ลบ.', labelW:230});
+   },
+   'ตารางรายสาย': ()=>{
+      const renderTbl=()=>{
+        const q=(document.getElementById('histSearch').value||'').toLowerCase();
+        const byRoad={};
+        H.forEach(x=>{ if(x.code) (byRoad[x.code]=byRoad[x.code]||[]).push(x); });
+        document.querySelector('#histTable tbody').innerHTML = Object.entries(byRoad)
+          .map(([code,list])=>({code, list, amt:list.reduce((a,x)=>a+(x.amount||0),0)}))
+          .sort((a,b)=>((roadInfoH[a.code]?0:1)-(roadInfoH[b.code]?0:1))||SUF3(a.code)-SUF3(b.code)||a.code.localeCompare(b.code,'th'))
+          .filter(({code})=>{ const r=roadInfoH[code];
+            return (code+' '+(r?.name||'')).toLowerCase().includes(q); })
+          .map(({code,list,amt})=>{
+            const r=roadInfoH[code];
+            const b=!r&&(EMB.bridges||{})[code];
+            const yrs=[...new Set(list.map(x=>x.year))].sort();
+            const acts=[...new Set(list.map(x=>x.activity).filter(Boolean))];
+            return `<tr data-code="${code}" style="cursor:pointer">
+              <td><b>${code}</b>${b?' <span class="pill wait" style="font-size:10px">สะพาน</span>':''}</td><td>${esc(r?.name||b?.name||'—')}</td><td>${(r?.muad||b?.muad)?'หมวด'+esc(r?.muad||b.muad):'—'}</td>
+              <td class="num"><b>${list.length}</b></td><td class="num">${amt?fmt(amt):'–'}</td>
+              <td style="font-variant-numeric:tabular-nums;font-size:11.5px">${yrs.join(', ')}</td>
+              <td style="font-size:11.5px">${acts.slice(0,3).map(esc).join(' · ')}${acts.length>3?' · …':''}</td></tr>`;
+          }).join('');
+        document.querySelectorAll('#histTable tbody tr').forEach(tr=>tr.addEventListener('click',()=>openHistRoad(tr.dataset.code)));
+      };
+      document.getElementById('histSearch').addEventListener('input',renderTbl);
+      renderTbl();
+   },
   };
-  document.getElementById('histSearch').addEventListener('input',renderTbl);
-  renderTbl();
+  renderHistory.cards=CARDS;   // เปิดทางให้เรียกวาดซ้ำทีละใบในอนาคต
+  Object.keys(CARDS).forEach(k=>safeRun('ประวัติ · '+k, CARDS[k]));
 }
 
 /* ================= สรุปรายสาย (แท็บ ②) ================= */
@@ -5375,107 +5727,124 @@ function renderHistRoad(code){
           <td style="font-size:12px;color:var(--ink2)">${esc(x.note)||''}</td></tr>`).join('')}
       </tbody></table></div>
     </div>`:''}`;
-  // ป้าย 🛡 ติดค้ำ: ชี้แล้วโชว์วันหมดค้ำประกัน
-  document.querySelectorAll('#histRoadBody .warrTag').forEach(t=>{ t.style.cursor='help';
-    t.addEventListener('mousemove',e=>showTip(`🛡 ติดค้ำประกันถึง <b>${esc(t.dataset.w)}</b><br>(ส่งงานงวดสุดท้าย + 2 ปี)`,e.clientX,e.clientY));
-    t.addEventListener('mouseleave',hideTip); });
-  // strip map — อดีต (ปีงบ) + อนาคต (คำของบ + Zerobase) · สะพานชุมชนใช้ระยะถนนเชิงลาดเป็นแกน
-  {
-    const extra=[];
-    // เลน "คำของบ" จากหน้าคำของบประมาณ
-    if(reqData){
-      const rl=reqData.filter(r=>r.code===code);
-      if(rl.length){
-        const segs=rl.flatMap(r=>{
-          const mk=segMarkTxt((r.cat||'')+' '+(r.act||'')+' '+(r.proj||''), r.amt); // สัญลักษณ์เดียวกับเลนปี
-          const e=mk==='elec';
-          return r.segs
-            .map(s=>({a:kmVal(s.a), b:kmVal(s.b)}))
-            .filter(s=>s.a!=null&&s.b!=null&&s.b>s.a)
-            .map(s=>({a:s.a, b:s.b, mk,
-              tip:`<b>คำของบปี ${r.year} · ${esc(r.cat)}</b><br>${esc(r.act||r.proj)||''}<br>${kmLbl(s.a)} – ${kmLbl(s.b)} (${fmt(+(s.b-s.a).toFixed(2))} กม.)${e?`<br>💡 ≈ ${fmt(Math.max(1,Math.round((s.b-s.a)*1000/30)))} ต้น`:''}<br>งบ ${r.amt!=null?fmt(r.amt)+' บาท':'⏳ รอประเมิน'}`}));
+  /* ══════════════════════════════════════════════════════════════════════
+     v27.0 กฎ 6 — One-Page รายสาย: แยกเป็นชิ้นที่มีชื่อ แต่ละชิ้นป้องกันตัวเอง
+     เดิมส่วนหลัง innerHTML เป็นก้อนเดียว 101 บรรทัด ถ้าแถบ One-Page วาดพลาด
+     (สายไม่มีระยะทาง · ชีทอุปกรณ์รูปแบบแปลก) โค้ดจะกระโดดออกก่อนถึงดรอปดาวน์
+     ผลคือ "เลือกสายอื่นไม่ได้อีกเลย" ต้องรีเฟรชหน้า
+     ตอนนี้ชิ้นที่พังหายไปชิ้นเดียว ดรอปดาวน์กับปุ่มยังทำงาน เปลี่ยนไปดูสายอื่นได้
+     ══════════════════════════════════════════════════════════════════════ */
+  const PARTS={
+   'ป้ายติดค้ำประกัน': ()=>{
+      // ป้าย 🛡 ติดค้ำ: ชี้แล้วโชว์วันหมดค้ำประกัน
+      document.querySelectorAll('#histRoadBody .warrTag').forEach(t=>{ t.style.cursor='help';
+        t.addEventListener('mousemove',e=>showTip(`🛡 ติดค้ำประกันถึง <b>${esc(t.dataset.w)}</b><br>(ส่งงานงวดสุดท้าย + 2 ปี)`,e.clientX,e.clientY));
+        t.addEventListener('mouseleave',hideTip); });
+   },
+   'แถบ One-Page รายสาย': ()=>{
+      // strip map — อดีต (ปีงบ) + อนาคต (คำของบ + Zerobase) · สะพานชุมชนใช้ระยะถนนเชิงลาดเป็นแกน
+      {
+        const extra=[];
+        // เลน "คำของบ" จากหน้าคำของบประมาณ
+        if(reqData){
+          const rl=reqData.filter(r=>r.code===code);
+          if(rl.length){
+            const segs=rl.flatMap(r=>{
+              const mk=segMarkTxt((r.cat||'')+' '+(r.act||'')+' '+(r.proj||''), r.amt); // สัญลักษณ์เดียวกับเลนปี
+              const e=mk==='elec';
+              return r.segs
+                .map(s=>({a:kmVal(s.a), b:kmVal(s.b)}))
+                .filter(s=>s.a!=null&&s.b!=null&&s.b>s.a)
+                .map(s=>({a:s.a, b:s.b, mk,
+                  tip:`<b>คำของบปี ${r.year} · ${esc(r.cat)}</b><br>${esc(r.act||r.proj)||''}<br>${kmLbl(s.a)} – ${kmLbl(s.b)} (${fmt(+(s.b-s.a).toFixed(2))} กม.)${e?`<br>💡 ≈ ${fmt(Math.max(1,Math.round((s.b-s.a)*1000/30)))} ต้น`:''}<br>งบ ${r.amt!=null?fmt(r.amt)+' บาท':'⏳ รอประเมิน'}`}));
+            });
+            const noSegN=rl.filter(r=>!r.segs.some(s=>{const a=kmVal(s.a),b=kmVal(s.b);return a!=null&&b!=null&&b>a;})).length;
+            extra.push({label:'คำของบ', color:'#e87ba4', segs, noSegN});
+          }
+        } else loadRequests().catch(()=>{});
+        // เลน "Zerobase" ความต้องการจริง (รวมทุกปีที่พบ)
+        if(zbData){
+          const zl=zbData.filter(r=>r.code===code);
+          if(zl.length){
+            const segs=zl.filter(r=>r.len!=null).map(r=>({a:r.d1, b:r.d2,
+              mk:segMarkTxt((r.g.k||'')+' '+(r.act||''), null), // สัญลักษณ์เดียวกับเลนปี (ระบบระบายน้ำ = รางระบายน้ำ)
+              tip:`<b>Zerobase · ${esc(r.g.k)}</b><br>${esc(r.act)}<br>${kmLbl(r.d1)} – ${kmLbl(r.d2)} (${fmt(+(r.d2-r.d1).toFixed(2))} กม.)${r.g.k==='ไฟฟ้าแสงสว่าง'?`<br>💡 ≈ ${fmt(zbPoles(r))} ต้น`:''}${r.note?`<br>📝 ${esc(r.note)}`:''}`}));
+            extra.push({label:'Zerobase', color:'#e34948', segs, noSegN:zl.filter(r=>r.len==null).length});
+          }
+        } else loadZerobase().catch(()=>{});
+        // เลน "จุดเสี่ยง" (สีตามสถานะ: แดง=ยังไม่แก้ · เหลือง=กำลังแก้ · เขียว=แก้แล้ว)
+        if(riskData){
+          const rl2=rk.filter(x=>x.ka!=null);
+          if(rl2.length) extra.push({label:'จุดเสี่ยง', color:'#e34948', noSegN:rk.length-rl2.length,
+            segs:rl2.map(x=>({a:x.ka, b:(x.kb!=null&&x.kb>x.ka)?x.kb:x.ka+0.03,
+              color:riskFixed(x)?'#0a7a2f':(/กำลัง|ระหว่าง/.test(x.status||'')?'#d9a441':'#e34948'),
+              tip:`<b>⚠ ${esc(x.rtype||'จุดเสี่ยง')}</b> · ${esc(x.level||'')}<br>${esc(x.a)}${x.b?' – '+esc(x.b):''}<br>สถานะ: ${esc(x.status||'ยังไม่แก้ไข')}${x.fix?'<br>วิธีแก้: '+esc(x.fix):''}`}))});
+        } else if(RISK_ID) loadRisk().catch(()=>{});
+        if(!eqData) loadEquip().then(()=>{ if(eqData) refreshHistRoad(); }).catch(()=>{});
+        // เลนบนสุด: สภาพผิวทางจากชีทสำรวจ (ชี้ดู กว้าง/ผิว/สภาพ)
+        let top=null;
+        if(condData){ const cl=condLaneFor(code); if(cl) top=[cl]; }
+        else loadCond().catch(()=>{});
+        // สะพานชุมชน: ปักไอคอนตัวสะพานกึ่งกลางระยะเชิงลาด (ไม่มีข้อมูล กม. ตำแหน่งจริง)
+        const bOnRoad=bridge?[{km:kmLbl(roadLen/2), name:bridge.name, river:bridge.river, len:bridge.len, width:bridge.width, year:bridge.year}]:(EMB.roadBridges?.[code]||[]);
+        // อุปกรณ์ปัจจุบันจากชีท Equipment -> แถวภาพรวม โดย "งานเดียวกันอยู่แนวเดียวกัน":
+        // ช่วงที่ทับโครงการชนิดเดียวกันที่ยังติดค้ำ -> ไม่วาดซ้ำ (แถบ/จุดสีปีของโครงการแสดงอยู่แล้ว)
+        // วาดเฉพาะช่วง "นอกค้ำประกัน" เป็นสีเกือบดำ + หักจำนวนช่วงติดค้ำออก (เช่น 33 − 7 = 26 ต้น)
+        const est30=(a,b)=>Math.max(1,Math.round((b-a)*1000/30));
+        const eqMarks=eqR.filter(x=>x.ka!=null).flatMap(x=>{
+          const kind=eqC.includes(x)?'cctv':(x.dtype&&!x.etype?'drain':'elec');
+          const parts=eqWarrSplit(list, x.ka, x.kb, kind);
+          const hasRange=x.kb!=null&&x.kb>x.ka;
+          const wParts=parts.filter(p=>p.alive&&p.b!=null);
+          const total=x.n||(hasRange&&kind==='elec'?est30(x.ka,x.kb):0);            // จำนวนไม่ชัวร์ -> หาร 30
+          const wQty=kind==='elec'?wParts.reduce((s,p)=>s+est30(p.a,p.b),0):0;      // จำนวนที่อยู่ในค้ำ (ประมาณจากช่วง)
+          const rem=Math.max(0,total-wQty);
+          const wLen=wParts.reduce((s,p)=>s+(p.b-p.a),0);
+          const remLen=hasRange?Math.max(0,(x.kb-x.ka)-wLen):0;
+          const info=`${x.ekind?' · '+esc(x.ekind):''}${x.dsize?' · '+esc(x.dsize):''}`;
+          return parts.map(p=>{
+            if(p.alive){ // ช่วงติดค้ำ -> หัวข้อแยกของตัวเอง สีตามปี รายงานแพทเทิร์นเดียวกับแถบค้ำประกันเดิม
+              const px=p.px||{};
+              return {kind, a:p.a, b:p.b, color:YCOLOR[String(p.py)]||C.teal,
+                tip:`<b>🛡 ติดค้ำประกันถึง ${p.pwe?thD(p.pwe):('~สิ้นปี '+((+p.py||0)+2))}</b><br>ปี ${p.py} · ${esc(px.budgetType||'')}${px.activity?` — ${esc(px.activity)}`:''}<br>${p.b!=null?`${kmLbl(p.a)} – ${kmLbl(p.b)}`:`กม. ${kmLbl(p.a)}`}${kind==='elec'&&p.b!=null?` · 💡 ≈ ${fmt(est30(p.a,p.b))} ต้น`:''}${px.delivered?` · ส่งงาน ${esc(px.delivered)}`:''}${px.contractor?`<br>${esc(px.contractor)}`:''}`};
+            }
+            // ช่วงนอกค้ำ -> ข้อมูลอุปกรณ์เฉยๆ: กม.ถึง กม. · จำนวน (หักและเว้นช่วงติดค้ำแล้ว)
+            return {kind, a:p.a, b:p.b, color:'#a9b0ba',
+              tip:`<b>🔌 ${esc(x.etype||x.dtype)}</b>${info}<br>${p.b!=null?`${kmLbl(p.a)} – ${kmLbl(p.b)}`:`กม. ${kmLbl(p.a)}`}`
+                +(kind==='elec'&&total?` · 💡 ${wQty?'≈ ':''}<b>${fmt(rem)} ต้น</b>${wQty?' (หักช่วงติดค้ำแล้ว)':''}`
+                 :(kind==='drain'&&hasRange?` · ≈ ${fmt(Math.round(remLen*1000))} ม.`:(x.n?` · จำนวน ${fmt(x.n)}`:'')))
+                +`${x.yr?` · ติดตั้งปี ${esc(x.yr)}`:''}${x.cond?`<br>สภาพ: ${esc(x.cond)}`:''}`};
+          });
         });
-        const noSegN=rl.filter(r=>!r.segs.some(s=>{const a=kmVal(s.a),b=kmVal(s.b);return a!=null&&b!=null&&b>a;})).length;
-        extra.push({label:'คำของบ', color:'#e87ba4', segs, noSegN});
+        const eqOn=(eqR.length||eqTrans.length)?{marks:eqMarks, trans:eqTrans.map(t=>{
+          const p=eqWarrSplit(list, t.km, null, 'elec')[0];
+          return {km:t.km, color:p.alive?null:'#a9b0ba',
+            tip:`<b>⚡ หม้อแปลงไฟฟ้า</b><br>กม. ${kmLbl(t.km)}${t.x.etype?` · ${esc(t.x.etype)}`:''}${t.x.cond?`<br>สภาพ: ${esc(t.x.cond)}`:''}${p.alive?`<br>🛡 อยู่ในค้ำประกันงานไฟฟ้าปี ${p.py}${p.pwe?` (ถึง ${thD(p.pwe)})`:''}`:`<br>⬛ นอกค้ำประกัน`}`};
+        })}:null;
+        drawStrip('hrStrip', roadLen, covered, list, YCOLOR, bOnRoad, extra, top, eqOn);
       }
-    } else loadRequests().catch(()=>{});
-    // เลน "Zerobase" ความต้องการจริง (รวมทุกปีที่พบ)
-    if(zbData){
-      const zl=zbData.filter(r=>r.code===code);
-      if(zl.length){
-        const segs=zl.filter(r=>r.len!=null).map(r=>({a:r.d1, b:r.d2,
-          mk:segMarkTxt((r.g.k||'')+' '+(r.act||''), null), // สัญลักษณ์เดียวกับเลนปี (ระบบระบายน้ำ = รางระบายน้ำ)
-          tip:`<b>Zerobase · ${esc(r.g.k)}</b><br>${esc(r.act)}<br>${kmLbl(r.d1)} – ${kmLbl(r.d2)} (${fmt(+(r.d2-r.d1).toFixed(2))} กม.)${r.g.k==='ไฟฟ้าแสงสว่าง'?`<br>💡 ≈ ${fmt(zbPoles(r))} ต้น`:''}${r.note?`<br>📝 ${esc(r.note)}`:''}`}));
-        extra.push({label:'Zerobase', color:'#e34948', segs, noSegN:zl.filter(r=>r.len==null).length});
-      }
-    } else loadZerobase().catch(()=>{});
-    // เลน "จุดเสี่ยง" (สีตามสถานะ: แดง=ยังไม่แก้ · เหลือง=กำลังแก้ · เขียว=แก้แล้ว)
-    if(riskData){
-      const rl2=rk.filter(x=>x.ka!=null);
-      if(rl2.length) extra.push({label:'จุดเสี่ยง', color:'#e34948', noSegN:rk.length-rl2.length,
-        segs:rl2.map(x=>({a:x.ka, b:(x.kb!=null&&x.kb>x.ka)?x.kb:x.ka+0.03,
-          color:riskFixed(x)?'#0a7a2f':(/กำลัง|ระหว่าง/.test(x.status||'')?'#d9a441':'#e34948'),
-          tip:`<b>⚠ ${esc(x.rtype||'จุดเสี่ยง')}</b> · ${esc(x.level||'')}<br>${esc(x.a)}${x.b?' – '+esc(x.b):''}<br>สถานะ: ${esc(x.status||'ยังไม่แก้ไข')}${x.fix?'<br>วิธีแก้: '+esc(x.fix):''}`}))});
-    } else if(RISK_ID) loadRisk().catch(()=>{});
-    if(!eqData) loadEquip().then(()=>{ if(eqData) refreshHistRoad(); }).catch(()=>{});
-    // เลนบนสุด: สภาพผิวทางจากชีทสำรวจ (ชี้ดู กว้าง/ผิว/สภาพ)
-    let top=null;
-    if(condData){ const cl=condLaneFor(code); if(cl) top=[cl]; }
-    else loadCond().catch(()=>{});
-    // สะพานชุมชน: ปักไอคอนตัวสะพานกึ่งกลางระยะเชิงลาด (ไม่มีข้อมูล กม. ตำแหน่งจริง)
-    const bOnRoad=bridge?[{km:kmLbl(roadLen/2), name:bridge.name, river:bridge.river, len:bridge.len, width:bridge.width, year:bridge.year}]:(EMB.roadBridges?.[code]||[]);
-    // อุปกรณ์ปัจจุบันจากชีท Equipment -> แถวภาพรวม โดย "งานเดียวกันอยู่แนวเดียวกัน":
-    // ช่วงที่ทับโครงการชนิดเดียวกันที่ยังติดค้ำ -> ไม่วาดซ้ำ (แถบ/จุดสีปีของโครงการแสดงอยู่แล้ว)
-    // วาดเฉพาะช่วง "นอกค้ำประกัน" เป็นสีเกือบดำ + หักจำนวนช่วงติดค้ำออก (เช่น 33 − 7 = 26 ต้น)
-    const est30=(a,b)=>Math.max(1,Math.round((b-a)*1000/30));
-    const eqMarks=eqR.filter(x=>x.ka!=null).flatMap(x=>{
-      const kind=eqC.includes(x)?'cctv':(x.dtype&&!x.etype?'drain':'elec');
-      const parts=eqWarrSplit(list, x.ka, x.kb, kind);
-      const hasRange=x.kb!=null&&x.kb>x.ka;
-      const wParts=parts.filter(p=>p.alive&&p.b!=null);
-      const total=x.n||(hasRange&&kind==='elec'?est30(x.ka,x.kb):0);            // จำนวนไม่ชัวร์ -> หาร 30
-      const wQty=kind==='elec'?wParts.reduce((s,p)=>s+est30(p.a,p.b),0):0;      // จำนวนที่อยู่ในค้ำ (ประมาณจากช่วง)
-      const rem=Math.max(0,total-wQty);
-      const wLen=wParts.reduce((s,p)=>s+(p.b-p.a),0);
-      const remLen=hasRange?Math.max(0,(x.kb-x.ka)-wLen):0;
-      const info=`${x.ekind?' · '+esc(x.ekind):''}${x.dsize?' · '+esc(x.dsize):''}`;
-      return parts.map(p=>{
-        if(p.alive){ // ช่วงติดค้ำ -> หัวข้อแยกของตัวเอง สีตามปี รายงานแพทเทิร์นเดียวกับแถบค้ำประกันเดิม
-          const px=p.px||{};
-          return {kind, a:p.a, b:p.b, color:YCOLOR[String(p.py)]||C.teal,
-            tip:`<b>🛡 ติดค้ำประกันถึง ${p.pwe?thD(p.pwe):('~สิ้นปี '+((+p.py||0)+2))}</b><br>ปี ${p.py} · ${esc(px.budgetType||'')}${px.activity?` — ${esc(px.activity)}`:''}<br>${p.b!=null?`${kmLbl(p.a)} – ${kmLbl(p.b)}`:`กม. ${kmLbl(p.a)}`}${kind==='elec'&&p.b!=null?` · 💡 ≈ ${fmt(est30(p.a,p.b))} ต้น`:''}${px.delivered?` · ส่งงาน ${esc(px.delivered)}`:''}${px.contractor?`<br>${esc(px.contractor)}`:''}`};
-        }
-        // ช่วงนอกค้ำ -> ข้อมูลอุปกรณ์เฉยๆ: กม.ถึง กม. · จำนวน (หักและเว้นช่วงติดค้ำแล้ว)
-        return {kind, a:p.a, b:p.b, color:'#a9b0ba',
-          tip:`<b>🔌 ${esc(x.etype||x.dtype)}</b>${info}<br>${p.b!=null?`${kmLbl(p.a)} – ${kmLbl(p.b)}`:`กม. ${kmLbl(p.a)}`}`
-            +(kind==='elec'&&total?` · 💡 ${wQty?'≈ ':''}<b>${fmt(rem)} ต้น</b>${wQty?' (หักช่วงติดค้ำแล้ว)':''}`
-             :(kind==='drain'&&hasRange?` · ≈ ${fmt(Math.round(remLen*1000))} ม.`:(x.n?` · จำนวน ${fmt(x.n)}`:'')))
-            +`${x.yr?` · ติดตั้งปี ${esc(x.yr)}`:''}${x.cond?`<br>สภาพ: ${esc(x.cond)}`:''}`};
+   },
+   'ตัวเลือกสายทาง + ปุ่ม': ()=>{
+      // dropdown + ค้นหา (พิมพ์แล้วกรองตัวเลือก)
+      // v23.1 — ป้ายตัวเลือกเอาแค่ "รหัส — ชื่อ" · แยกกลุ่มสายทาง / สะพานชุมชน (ดู roadOptHtml)
+      const optName=roadOptName;
+      const optHtml=arr=>roadOptHtml(arr, code);
+      const sel=document.getElementById('hrSel');
+      sel.innerHTML=optHtml(roadsWith);
+      sel.addEventListener('change',e=>renderHistRoad(e.target.value));
+      document.getElementById('hrSearch').addEventListener('input',e=>{
+        const q=e.target.value.trim().toLowerCase();
+        const f=roadsWith.filter(x=>(x.c+' '+optName(x.c)).toLowerCase().includes(q));
+        sel.innerHTML=optHtml(f.length?f:roadsWith); // กรองตัวเลือกใน dropdown แล้วเลือกจากนั้นได้เลย
       });
-    });
-    const eqOn=(eqR.length||eqTrans.length)?{marks:eqMarks, trans:eqTrans.map(t=>{
-      const p=eqWarrSplit(list, t.km, null, 'elec')[0];
-      return {km:t.km, color:p.alive?null:'#a9b0ba',
-        tip:`<b>⚡ หม้อแปลงไฟฟ้า</b><br>กม. ${kmLbl(t.km)}${t.x.etype?` · ${esc(t.x.etype)}`:''}${t.x.cond?`<br>สภาพ: ${esc(t.x.cond)}`:''}${p.alive?`<br>🛡 อยู่ในค้ำประกันงานไฟฟ้าปี ${p.py}${p.pwe?` (ถึง ${thD(p.pwe)})`:''}`:`<br>⬛ นอกค้ำประกัน`}`};
-    })}:null;
-    drawStrip('hrStrip', roadLen, covered, list, YCOLOR, bOnRoad, extra, top, eqOn);
-  }
-  // dropdown + ค้นหา (พิมพ์แล้วกรองตัวเลือก)
-  // v23.1 — ป้ายตัวเลือกเอาแค่ "รหัส — ชื่อ" · แยกกลุ่มสายทาง / สะพานชุมชน (ดู roadOptHtml)
-  const optName=roadOptName;
-  const optHtml=arr=>roadOptHtml(arr, code);
-  const sel=document.getElementById('hrSel');
-  sel.innerHTML=optHtml(roadsWith);
-  sel.addEventListener('change',e=>renderHistRoad(e.target.value));
-  document.getElementById('hrSearch').addEventListener('input',e=>{
-    const q=e.target.value.trim().toLowerCase();
-    const f=roadsWith.filter(x=>(x.c+' '+optName(x.c)).toLowerCase().includes(q));
-    sel.innerHTML=optHtml(f.length?f:roadsWith); // กรองตัวเลือกใน dropdown แล้วเลือกจากนั้นได้เลย
-  });
-  document.getElementById('hrPrint').addEventListener('click',()=>printOnePage(code));
-  document.getElementById('hrMap').addEventListener('click',()=>openRoadMapA3(code));
-  document.getElementById('hrPrev').addEventListener('click',()=>renderHistRoad(roadsWith[(idx-1+roadsWith.length)%roadsWith.length].c));
-  document.getElementById('hrNext').addEventListener('click',()=>renderHistRoad(roadsWith[(idx+1)%roadsWith.length].c));
+      document.getElementById('hrPrint').addEventListener('click',()=>printOnePage(code));
+      document.getElementById('hrMap').addEventListener('click',()=>openRoadMapA3(code));
+      document.getElementById('hrPrev').addEventListener('click',()=>renderHistRoad(roadsWith[(idx-1+roadsWith.length)%roadsWith.length].c));
+      document.getElementById('hrNext').addEventListener('click',()=>renderHistRoad(roadsWith[(idx+1)%roadsWith.length].c));
+   },
+  };
+  renderHistRoad.parts=PARTS;
+  Object.keys(PARTS).forEach(k=>safeRun('One-Page · '+k, PARTS[k]));
 }
 /* สถานะค้ำประกันของ "อุปกรณ์" — เทียบเฉพาะโครงการ "ชนิดงานเดียวกัน" (kind) ที่ทับช่วง กม. เดียวกัน แล้ว "ตัดช่วง":
    คืนรายการช่วงย่อย [{a,b,alive,py,pwe}] — เฉพาะส่วนที่ทับโครงการชนิดเดียวกันที่ยังติดค้ำเท่านั้นที่ alive
@@ -5751,11 +6120,11 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
 const REQ_ID='1kCkIzb1veaqEnPK-fHMhY-mIbEs1LpVI9E5AdzwvfI8';
 const REQ_PROBE_YEARS=Array.from({length:15},(_,i)=>68+i); // ไล่หา Q_68 … Q_82
 let reqData=null, reqYears=[], reqYearPick=null;
-async function loadRequests(force){
-  if(reqData && force!==true) return;
-  const body=document.getElementById('reqBody');
-  body.innerHTML='<div class="loading"><span class="spin"></span>กำลังดึงข้อมูลจาก Google Sheets…</div>';
-  try{
+async function loadRequests(force){ return loadSource('requests', force); }
+defineSource({
+  key:'requests', what:'คำของบประมาณ', boxes:['reqBody'], pills:'reqPills',
+  has:()=>!!reqData,
+  read:async()=>{
     const S=v=>String(v??'').trim();
     // แปลง 1 tab -> รายการคำขอของปีนั้น (หัวคอลัมน์ยืดหยุ่น: กิจกรรม/ลักษณะงาน หรือ ชื่อโครงการ/กิจกรรมโดยสังเขป)
     const parseReq=(objs, year)=>{
@@ -5792,7 +6161,7 @@ async function loadRequests(force){
       const recs=parseReq(await sheetData(REQ_ID,'gid=0'), 2571);
       if(recs.length){ all=recs; yearsFound.push(2571); }
     }
-    if(!all.length) throw new Error('ไม่พบข้อมูล — ตรวจว่าชีทแชร์ "ทุกคนที่มีลิงก์" และมี tab ปี (Q_71, Q_72, …) หรือข้อมูลใน tab แรก');
+    if(!all.length) throw noData('ยังไม่พบแถวข้อมูลในชีท — ต้องมี tab ปี (Q_71, Q_72, …) หรือข้อมูลใน tab แรก และแชร์ "ทุกคนที่มีลิงก์"');
     yearsFound.sort((a,b)=>a-b);
     reqData=all; reqYears=yearsFound;
     // ตัวเลือกปี: ค่าเริ่มต้น = ปีล่าสุด (ตัวรวมแผนปีปัจจุบัน)
@@ -5800,20 +6169,12 @@ async function loadRequests(force){
     const ys=document.getElementById('reqYearSel');
     ys.innerHTML=`<option value="all" ${reqYearPick==='all'?'selected':''}>ทุกปีรวมกัน (${yearsFound.join(' · ')})</option>`+
       yearsFound.map(y=>`<option value="${y}" ${String(y)===reqYearPick?'selected':''}>ปี ${y}</option>`).join('');
-    document.getElementById('reqPills').innerHTML=
-      `<span class="hpill"><span class="dot live"></span> ข้อมูลสดจาก Google Sheets</span>`+
+    return `<span class="hpill"><span class="dot live"></span> ข้อมูลสดจาก Google Sheets</span>`+
       `<span class="hpill">▥ ${all.length} คำขอ · ${new Set(all.map(r=>r.code)).size} สาย</span>`+
       `<span class="hpill">📅 พบ ${yearsFound.length} ปี: ${yearsFound.join(' · ')}</span>`+
       `<span class="hpill">🕐 ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})} น.</span>`;
-    renderRequests();
-    // เติมเลน "คำของบ" ใน strip map หน้าประวัติ ถ้าเปิดค้างอยู่
-    refreshHistRoad();
-  }catch(err){
-    document.getElementById('reqPills').innerHTML=`<span class="hpill"><span class="dot err"></span> เชื่อมต่อ Google Sheets ไม่ได้</span>`;
-    body.innerHTML=`<div class="banner err" style="display:block">ดึงข้อมูลไม่สำเร็จ (${esc(err.message)}) — ต้องเปิดผ่านอินเทอร์เน็ต และ Google Sheet ต้องแชร์แบบ "ทุกคนที่มีลิงก์"</div>`;
-    netFail('คำของบประมาณ', err, ['reqBody']);
   }
-}
+});
 const reqFiltered=()=>reqYearPick==='all'?reqData:reqData.filter(r=>String(r.year)===String(reqYearPick));
 document.getElementById('reqYearSel').addEventListener('change',e=>{ reqYearPick=e.target.value; renderRequests(); });
 function renderRequests(){
@@ -5974,20 +6335,22 @@ function zbParse(rows, year){ // หาแถวหัวที่มี "รห
   }
   return null;
 }
-async function loadZerobase(force){
-  if(zbData && force!==true) return;
-  const body=document.getElementById('zbBody');
-  body.innerHTML='<div class="loading"><span class="spin"></span>กำลังดึงข้อมูล Zerobase…</div>';
-  try{
+async function loadZerobase(force){ return loadSource('zerobase', force); }
+defineSource({
+  key:'zerobase', what:'Zerobase', boxes:['zbBody'], pills:'zbPills',
+  spin:'กำลังดึงข้อมูล Zerobase…',
+  has:()=>!!zbData,
+  read:async()=>{
     // 1) sentinel: ชื่อ tab ที่ไม่มีจริง gviz จะส่ง "tab แรก" กลับมา -> จำลายนิ้วมือไว้กรองปีหลอก
     let sentinelFp=null;
     try{ sentinelFp=JSON.stringify(zbRawRows(await gvizJSONP(ZB_ID,'sheet=__ZB_PROBE_XX99__')).slice(0,25)); }catch(e){}
     // 2) ไล่หา tab ปีพร้อมกันทุกปี
     const probes=await Promise.allSettled(ZB_PROBE_YEARS.map(y=>
       gvizJSONP(ZB_ID,'sheet='+encodeURIComponent('Z_'+y)).then(t=>({y,t}))));
-    const seen=new Set(); let all=[]; const yearsFound=[];
+    const seen=new Set(); let all=[]; const yearsFound=[]; let anyReply=(sentinelFp!=null);
     for(const p of probes){
       if(p.status!=='fulfilled') continue;
+      anyReply=true;   // กฎ 6 — ชีทตอบกลับมาแล้ว ต่อให้ไม่มีแถวก็ไม่ใช่ "เน็ตล่ม"
       const rows=zbRawRows(p.value.t);
       const fp=JSON.stringify(rows.slice(0,25));
       if(fp===sentinelFp||seen.has(fp)) continue; // tab ไม่มีจริง / ซ้ำ
@@ -6001,6 +6364,7 @@ async function loadZerobase(force){
       const seenL=new Set(); let legacyAll=[];
       for(const p of legacy){
         if(p.status!=='fulfilled') continue;
+        anyReply=true;
         const rows=zbRawRows(p.value);
         const fp=JSON.stringify(rows.slice(0,25));
         if(seenL.has(fp)) continue; seenL.add(fp);
@@ -6009,25 +6373,18 @@ async function loadZerobase(force){
       }
       if(legacyAll.length){ all=all.concat(legacyAll); yearsFound.push(2571); }
     }
-    if(!all.length) throw new Error('ไม่พบข้อมูล — ตรวจว่าไฟล์ ZEROBASE แชร์ "ทุกคนที่มีลิงก์" และมี tab ปี (Z_71, Z_72, …) หรือ tab หมวดแบบเดิม');
+    if(!anyReply) throw new Error('เชื่อมต่อ Google Sheets ไม่ได้');
+    if(!all.length) throw noData('ยังไม่พบแถวข้อมูลในชีท — ต้องมี tab ปี (Z_71, Z_72, …) หรือ tab หมวดแบบเดิม และแชร์ "ทุกคนที่มีลิงก์"');
     yearsFound.sort((a,b)=>a-b);
     zbData=all; zbYears=yearsFound;
     // ตัวเลือกปี: ค่าเริ่มต้น = ปีล่าสุด
     zbYearPick='all'; // Zerobase = คลังความต้องการเหมารวม ไม่แยกปี (ได้รับงบแล้วค่อยถอดออกจากชีท)
-    document.getElementById('zbPills').innerHTML=
-      `<span class="hpill"><span class="dot live"></span> ข้อมูลสดจาก Google Sheets</span>`+
+    return `<span class="hpill"><span class="dot live"></span> ข้อมูลสดจาก Google Sheets</span>`+
       `<span class="hpill">◪ ${all.length} คำขอ · ${new Set(all.map(r=>r.code)).size} สาย</span>`+
       `<span class="hpill">♻ เหมารวมทุกรายการ — ได้รับงบแล้วถอดออกจากชีท</span>`+
       `<span class="hpill">🕐 ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})} น.</span>`;
-    renderZerobase();
-    // เติมเลน Zerobase ใน strip map หน้าประวัติ ถ้าเปิดค้างอยู่
-    refreshHistRoad();
-  }catch(err){
-    document.getElementById('zbPills').innerHTML=`<span class="hpill"><span class="dot err"></span> เชื่อมต่อ Google Sheets ไม่ได้</span>`;
-    body.innerHTML=`<div class="banner err" style="display:block">ดึงข้อมูล Zerobase ไม่สำเร็จ (${esc(err.message)})</div>`;
-    netFail('Zerobase', err, ['zbBody']);
   }
-}
+});
 const zbFiltered=()=>zbYearPick==='all'?zbData:zbData.filter(r=>String(r.year)===String(zbYearPick));
 const zbIsE=r=>r.g.k==='ไฟฟ้าแสงสว่าง', zbIsB=r=>r.g.k==='สะพาน', zbIsRd=r=>!zbIsE(r)&&!zbIsB(r);
 function renderZerobase(){ if(zbData) renderZbOverview(); }
@@ -6508,9 +6865,12 @@ function scanObjects(table, fields){
 const surfColor=t=>{const x=String(t||''); return /คอนกรีต|คสล/.test(x)?'#2a78d6':(/ลูกรัง/.test(x)?'#d9a441':(/ลาดยาง|แอสฟัล|AC|PARA|เคป|CAPE|สเลอ|ยาง/i.test(x)?'#52525b':'#0d9488'));};
 
 /* ---- สภาพสายทาง: ป้อนเลน "สภาพผิวทาง" ให้ Strip Map ---- */
-async function loadCond(force){
-  if(condData && force!==true) return;
-  try{
+/* กฎ 5 — เหลือแค่ "วิธีอ่านชีทของตัวเอง" เปลือกทั้งหมดอยู่ที่ loadSource()
+   quiet:true เพราะเป็นแหล่งเสริม (เติมเลนสภาพผิว + PCU) ไม่มีหน้าเป็นของตัวเอง */
+defineSource({
+  key:'cond', what:'สภาพผิวทาง', quiet:true,
+  has:()=>!!condData,
+  read:async()=>{
     const t=await gvizJSONP(COND_ID,'gid=0');
     const objs=scanObjects(t, [['รหัสสายทาง','code'],['กม.เริ่ม','a'],['กม.จบ','b'],['ประเภททาง','roadType'],
       ['จำนวนเลน','lanes'],['ความกว้างผิว','width'],['ความกว้างไหล่','shoulder'],['ชนิดผิวทาง','surf'],
@@ -6519,10 +6879,11 @@ async function loadCond(force){
       ['PCU','pcu'],['ปริมาณจราจร','pcu2']])||[];   // v23.3 — มีคอลัมน์ PCU เมื่อไหร่ ระบบหยิบมาใช้เอง
     condData=objs.map(o=>({...o, code:extractRoadCode(o.code), ka:kmVal(o.a), kb:kmVal(o.b)}))
       .filter(o=>o.code&&o.ka!=null&&o.kb!=null&&o.kb>o.ka);
-    refreshHistRoad();
-    // v23.3 — PCU มากับชีทนี้ KPI "PCU สูงสุด" บนหน้าภาพรวมจึงต้องคำนวณใหม่หลังข้อมูลถึง
-    if(condData.some(o=>pcuNum(o.pcu!=null?o.pcu:o.pcu2)!=null)) safeRun('ภาพรวม (PCU)', renderOverview);
-  }catch(e){ condData=condData||[]; }
+  }
+});
+async function loadCond(force){
+  try{ await loadSource('cond', force); }
+  finally{ condData=condData||[]; }              // ล้มเหลว = ถือว่าไม่มีข้อมูล ไม่ใช่ยังไม่ได้ลอง
 }
 function condLaneFor(code){
   if(!condData) return null;
@@ -6564,11 +6925,11 @@ function drawLanes(container, roadLen, laneDefs){
 }
 
 /* ---- EQUIPMENT ---- */
-async function loadEquip(force){
-  if(eqData && force!==true) return;
-  const body=document.getElementById('eqBody');
-  body.innerHTML='<div class="loading"><span class="spin"></span>กำลังดึงข้อมูล Equipment…</div>';
-  try{
+defineSource({
+  key:'equip', what:'Equipment', boxes:['eqBody'], pills:'eqPills',
+  spin:'กำลังดึงข้อมูล Equipment…',
+  has:()=>!!eqData,
+  read:async()=>{
     // headers=2: ชีท Equipment มีหัวตาราง 2 ชั้น (แถวหมวดสี + แถวชื่อคอลัมน์) — ถ้าอ่านแบบหัวแถวเดียว
     // แถวชื่อคอลัมน์จะกลายเป็นข้อมูล แล้วคอลัมน์ตัวเลข (จำนวน) จะตีค่าหัวเป็น null ทำให้จับคู่คอลัมน์ไม่ได้
     const t=await gvizJSONP(EQP_ID,'gid='+EQP_GID+'&headers=2');
@@ -6577,16 +6938,12 @@ async function loadEquip(force){
       ['ปีที่ติดตั้ง','yr'],['ขนาด','dsize'],['รายละเอียดเพิ่ม','note'],['วันเดือนปีสำรวจ','sdate'],
       ['สภาพปัจจุบัน','cond'],['ผู้สำรวจ','surveyor']])||[];
     eqData=objs.map(o=>({...o, code:extractRoadCode(o.code), ka:kmVal(o.a), kb:kmVal(o.b), n:num(o.qty)||0}));
-    document.getElementById('eqPills').innerHTML= eqData.length
+    return eqData.length
       ? `<span class="hpill"><span class="dot live"></span> ข้อมูลสดจาก Google Sheets</span><span class="hpill">🔌 ${eqData.length} รายการ · ${new Set(eqData.map(x=>x.code)).size} สาย</span><span class="hpill">🕐 ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})} น.</span>`
       : `<span class="hpill"><span class="dot wait"></span> โครงพร้อมแล้ว — รอกรอกข้อมูลในชีท</span>`;
-    renderEquip();
-  }catch(err){
-    document.getElementById('eqPills').innerHTML=`<span class="hpill"><span class="dot err"></span> เชื่อมต่อ Google Sheets ไม่ได้</span>`;
-    body.innerHTML=`<div class="banner err" style="display:block">ดึงข้อมูลไม่สำเร็จ (${esc(err.message)})</div>`;
-    netFail('Equipment', err, ['equipBody']);
   }
-}
+});
+async function loadEquip(force){ return loadSource('equip', force); }
 function renderEquip(){
   const E=eqData||[];
   const body=document.getElementById('eqBody');
@@ -6701,7 +7058,7 @@ function showPhoto(url,lbl){
 async function loadRisk(force){
   if(riskData && force!==true) return;
   const body=document.getElementById('riskBody');
-  if(!RISK_ID){
+  if(!RISK_ID){   // ยังไม่ได้ผูกชีท — แสดงโครงคำถามให้ไปสร้าง ไม่ถือว่าพัง จึงไม่ผ่านแม่พิมพ์
     document.getElementById('riskPills').innerHTML=`<span class="hpill"><span class="dot wait"></span> รอสร้างชีทจุดเสี่ยง</span>`;
     body.innerHTML=`<div class="card"><h3>โครงหน้านี้พร้อมแล้ว — เหลือสร้างชีทจุดเสี่ยง</h3>
       <div class="note">สร้าง Google Sheet ใหม่ วางหัวตารางตามนี้ (แถวเดียว) แล้วแชร์ "ทุกคนที่มีลิงก์" เสร็จแล้วส่งลิงก์มาให้ Claude ผูกเข้าระบบ</div>
@@ -6714,8 +7071,13 @@ async function loadRisk(force){
     document.getElementById('riskRoadBody').innerHTML='';
     return;
   }
-  body.innerHTML='<div class="loading"><span class="spin"></span>กำลังดึงข้อมูลจุดเสี่ยง (5 หมวด)…</div>';
-  try{
+  return loadSource('risk', force);
+}
+defineSource({
+  key:'risk', what:'จุดเสี่ยง', boxes:['riskBody'], pills:'riskPills',
+  spin:'กำลังดึงข้อมูลจุดเสี่ยง (5 หมวด)…',
+  has:()=>!!riskData,
+  read:async()=>{
     const fpR=t=>JSON.stringify(zbRawRows(t).slice(0,30));
     const parseT=(t,m)=>(scanObjects(t, RISK_FIELDS)||[]).map(o=>({...o, _m:m, code:extractRoadCode(o.code), ka:kmVal(o.a), kb:kmVal(o.b),
       img1:/^https?:/.test(o.img1||'')?o.img1:'', img2:/^https?:/.test(o.img2||'')?o.img2:''})); // กันข้อความ placeholder ในช่องรูป
@@ -6768,16 +7130,11 @@ async function loadRisk(force){
         if(p){ const f=im.kind==='หลัง'?'img2':'img1'; if(!p[f]||!driveId(p[f])) p[f]=im.url; } // ลิงก์โฟลเดอร์/ค่าแปลกในชีท → ใช้รูปจากฟอร์มแทน
       });
     });
-    document.getElementById('riskPills').innerHTML= riskData.length
+    return riskData.length
       ? `<span class="hpill"><span class="dot live"></span> ข้อมูลสดจาก Google Sheets</span><span class="hpill">📑 อ่าน ${tabs} แท็บ</span><span class="hpill">⚠ ${riskData.length} จุด · ${new Set(riskData.map(x=>x.code)).size} สาย</span><span class="hpill">✅ แก้แล้ว ${riskData.filter(riskFixed).length} · เหลือ ${riskData.filter(x=>!riskFixed(x)).length}</span><span class="hpill">🕐 ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})} น.</span>`
       : `<span class="hpill"><span class="dot wait"></span> โครงพร้อมแล้ว — รอกรอกข้อมูลในชีท (อ่านแล้ว ${tabs} แท็บ)</span>`;
-    renderRisk();
-  }catch(err){
-    document.getElementById('riskPills').innerHTML=`<span class="hpill"><span class="dot err"></span> เชื่อมต่อ Google Sheets ไม่ได้</span>`;
-    body.innerHTML=`<div class="banner err" style="display:block">ดึงข้อมูลไม่สำเร็จ (${esc(err.message)})</div>`;
-    netFail('จุดเสี่ยง', err, ['riskBody']);
   }
-}
+});
 function renderRisk(){
   const road=document.getElementById('riskRoadBody').style.display!=='none';
   if(road) renderRiskRoad(riskRoadCode); else renderRiskSum();
@@ -7319,20 +7676,18 @@ countUpAll(document);
 buildAppStat();
 buildTopActions();
 svgSidebarIcons();
+try{ archCheck(); }catch(e){ console.error('archCheck พัง:',e); }   // v25.0 ด่านตรวจโครงสร้าง
 if(location.hash) setTimeout(applyURL, 120);   // v21.0 เปิดจากลิงก์ที่แชร์มา -> เด้งไปมุมมองนั้นเลย
 /* วาดกราฟใหม่ตามขนาดจอ — ใช้พื้นที่เต็มเสมอ */
 let _rsT=null;
 window.addEventListener('resize',()=>{
   clearTimeout(_rsT);
   _rsT=setTimeout(()=>{
-    const pg=document.querySelector('.page.active')?.id;
-    if(pg==='pg-overview'){ renderOverview(); renderOverviewBudget(); }
-    else if(pg==='pg-history'&&histData){ renderHistory(); refreshHistRoad(); }
-    else if(pg==='pg-requests'&&reqData) renderRequests();
-    else if(pg==='pg-zerobase'&&zbData) renderZerobase();
-    else if(pg==='pg-risk'&&riskData) renderRisk();
-    else if(pg==='pg-equip'&&eqData) renderEquip();
-    else if(pg==='pg-system') renderSystem();
+    /* กฎข้อ 1 — เดิมตรงนี้เป็นโซ่ else-if อีกชุดหนึ่ง แยกจากโซ่ตอนกดเมนู
+       ผลคือหน้าที่ลืมใส่ (เช่น "วิเคราะห์ตัดสินใจ") ไม่วาดใหม่ตอนย่อ/ขยายจอ
+       กราฟจึงค้างความกว้างเดิมจนล้นกล่อง — ตอนนี้ถามทะเบียนหน้าเหมือนกันหมด */
+    const pg=(document.querySelector('.page.active')||{}).id||'';
+    pageRedraw(PAGE(pg.replace(/^pg-/,'')));
   },250);
 });
 </script>
