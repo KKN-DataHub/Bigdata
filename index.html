@@ -128,16 +128,16 @@ body{font-family:'Sarabun',Tahoma,'Segoe UI',system-ui,sans-serif;background:var
 @media(min-width:1500px){
   .ovgrid{grid-template-columns:repeat(12,minmax(0,1fr))}
   .ovg-a{grid-column:span 5}  .ovg-b{grid-column:span 4}  .ovg-c{grid-column:span 3}
-  .ovg-d{grid-column:span 5}  .ovg-e{grid-column:span 7}
-  #pg-overview .kpis{grid-template-columns:repeat(4,minmax(0,1fr))}   /* 7 ใบ -> 4+3 อ่านสบาย */
+  /* แถว 2: ระยะทางรายหมวด | Top10 ยาวที่สุด | Top10 PCU  ·  แถว 3: งบประมาณเต็มความกว้าง (อยู่ใต้ระยะทางตามที่สั่ง) */
+  .ovg-d{grid-column:span 4}  .ovg-f{grid-column:span 4}  .ovg-g{grid-column:span 4}
+  .ovg-e{grid-column:1 / -1}
+  #pg-overview .kpis{grid-template-columns:repeat(6,minmax(0,1fr))}
 }
-@media(min-width:1820px){ #pg-overview .kpis{grid-template-columns:repeat(7,minmax(0,1fr))} }
+/* จอกลาง: ระยะทาง+Top10 เรียง 2 คอลัมน์ แล้วงบเต็มแถว */
+@media(min-width:981px) and (max-width:1499px){ .ovg-e{grid-column:1 / -1} }
 /* ชื่อหมวดอย่าตัดบรรทัด ตารางจะได้ไม่สูงเก้งก้างตอนคอลัมน์แคบ */
 #muadTable td:first-child,#muadTable th:first-child{white-space:nowrap}
-/* v23.3 — หัวการ์ดงบ: ชื่อการ์ดซ้าย ตัวเลขงบสะสมขวา (ย้ายลงมาจากแถว KPI ด้านบน) */
-.budhead{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px}
-.budkpi{flex:none;min-width:230px;box-shadow:none;border-color:#cfe0f2}
-@media(max-width:640px){ .budkpi{width:100%} }
+
 .card h3{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:2px}
 .card .note{font-size:11.5px;color:var(--muted);margin-bottom:10px}
 @media(max-width:980px){.two,.ovgrid{grid-template-columns:1fr}.main{margin-left:0;padding:16px}.sidebar{position:static;width:100%;height:auto}.app{flex-direction:column}}
@@ -258,6 +258,86 @@ select.search{width:auto}
 .roadhead .code{font-size:26px;font-weight:700;color:var(--navy)}
 .roadhead .nm{font-size:14px;color:var(--ink2)}
 .chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+.rampbar{display:inline-block;width:120px;height:10px;border-radius:5px;border:1px solid var(--hairline);vertical-align:-1px}
+#mapColorNote{display:none;position:absolute;left:10px;bottom:10px;z-index:930;max-width:min(420px,calc(100% - 20px));
+  align-items:center;gap:7px;flex-wrap:wrap;font-size:11.5px;color:var(--ink2);
+  padding:7px 11px;background:rgba(252,252,251,.95);border:1px solid var(--grid);border-radius:9px;
+  box-shadow:0 2px 8px rgba(16,24,40,.16);backdrop-filter:blur(2px)}
+@media(max-width:900px){ #mapColorNote{font-size:10.5px;padding:6px 9px;gap:5px;left:8px;bottom:8px} }
+.decsum .dsh{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:11px}
+.decsum .dsh h3{margin:0}
+.dsgrid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:14px}
+@media(max-width:900px){ .dsgrid{grid-template-columns:1fr} }
+.dsrow{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--grid);border-radius:10px;
+  background:#fff;cursor:pointer;transition:box-shadow .12s,transform .12s;min-width:0}
+.dsrow+.dsrow{margin-top:6px}
+.dsrow:hover{box-shadow:0 2px 10px rgba(16,24,40,.10);transform:translateY(-1px)}
+.dsrow .rk{flex:none;width:22px;height:22px;border-radius:7px;background:var(--navy);color:#fff;
+  display:grid;place-items:center;font-size:11px;font-weight:700}
+.dsrow .rk.top{background:var(--crit)}
+.dsrow .nm{flex:1;min-width:0;font-size:12.5px}
+.dsrow .nm b{color:var(--navy)}
+.dsrow .nm .wy{display:flex;gap:5px;flex-wrap:wrap;margin-top:2px}
+.dsrow .nm .wy span{font-size:10px;padding:1px 7px;border-radius:99px;border:1px solid var(--grid);color:var(--ink2);white-space:nowrap}
+.dsrow .sc{flex:none;display:flex;align-items:center;gap:7px}
+.dsrow .sc .bar2{width:52px;height:7px;border-radius:4px;background:#eeede7;overflow:hidden}
+.dsrow .sc .bar2 span{display:block;height:100%;background:var(--teal);border-radius:4px}
+.dsrow .sc b{font-size:12px;font-variant-numeric:tabular-nums;color:var(--navy);min-width:22px;text-align:right}
+.dsnum{display:flex;gap:11px;align-items:flex-start;border:1px solid var(--grid);border-radius:10px;padding:10px 12px;background:#fff}
+.dsnum+.dsnum{margin-top:8px}
+.dsnum.crit{border-color:#f0cccc;background:#fdf6f6} .dsnum.warn{border-color:#efdcb4;background:#fdfaf2}
+.dsnum .v{font-size:19px;font-weight:700;color:var(--navy);line-height:1.15;font-variant-numeric:tabular-nums}
+.dsnum.crit .v{color:var(--crit)}
+.dsnum .t{font-size:11.5px;color:var(--ink2);line-height:1.45}
+.dsnum .f{font-size:10.5px;color:var(--muted);margin-top:2px}
+/* v24.1 — แถบสรุปผู้บริหาร */
+.execbar{margin-bottom:14px;padding:13px 16px}
+.execbar .eh{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.execbar .eh h3{margin:0;font-size:14px;color:var(--navy)}
+.execbar .eh .sub{font-size:11.5px;color:var(--muted)}
+.exgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+.exit{display:flex;gap:11px;align-items:flex-start;border:1px solid var(--grid);border-radius:11px;padding:11px 13px;background:#fff;min-width:0}
+.exit.crit{border-color:#f0cccc;background:#fdf6f6}
+.exit.warn{border-color:#efdcb4;background:#fdfaf2}
+.exit.ok{border-color:#c6e4c8;background:#f6fbf6}
+.exit .ei{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:15px;background:var(--teal-soft)}
+.exit.crit .ei{background:#f7dede} .exit.warn .ei{background:#f7ecd0} .exit.ok .ei{background:#dcefdd}
+.exit .en{font-size:20px;font-weight:700;line-height:1.15;color:var(--navy);font-variant-numeric:tabular-nums}
+.exit.crit .en{color:var(--crit)} .exit.ok .en{color:var(--good)}
+.exit .el{font-size:11.5px;color:var(--ink2);line-height:1.45}
+.exit .ef{font-size:10.5px;color:var(--muted);margin-top:2px}
+.exit.clickable{cursor:pointer;transition:box-shadow .12s,transform .12s}
+.exit.clickable:hover{box-shadow:0 2px 10px rgba(16,24,40,.10);transform:translateY(-1px)}
+/* ---- v24.0 รูปทรงกราฟใหม่ ---- */
+.lolli-track{stroke:#eeede7;stroke-width:1}
+.lolli-stem{stroke-width:2;opacity:.42;transition:opacity .12s}
+.lolli-dot{stroke:#fcfcfb;stroke-width:2;transition:r .12s,opacity .12s}
+.viz .lolli-dot:hover{r:7}
+.lolli-stem.dimmed,.lolli-dot.dimmed{opacity:.22}
+.heatcell{transition:opacity .12s} .heatcell:hover{opacity:.82}
+.skrib{transition:fill-opacity .12s} .skrib:hover{fill-opacity:.62}
+.bubble{transition:fill-opacity .12s} .bubble:hover{fill-opacity:.9}
+.smgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
+.smcell{border:1px solid var(--grid);border-radius:9px;padding:7px 8px 6px;background:#fbfaf8;min-width:0}
+.smcell .smlab{font-size:10.5px;color:var(--ink2);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.smcell .smval{font-size:12.5px;font-weight:700;text-align:center;font-variant-numeric:tabular-nums;color:var(--navy)}
+.smcell .smval small{font-size:9.5px;font-weight:400;color:var(--muted);margin-left:3px}
+/* แท่งในช่องตาราง — แทนกราฟแท่งแยกใบ */
+.ibar{display:flex;align-items:center;gap:8px;min-width:0}
+.ibar .trk{flex:1;height:9px;border-radius:5px;background:#eeede7;overflow:hidden;min-width:34px}
+.ibar .trk span{display:block;height:100%;border-radius:5px}
+.ibar b{font-variant-numeric:tabular-nums;font-size:12px;white-space:nowrap}
+.ibar .ipct{font-style:normal;font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:36px;text-align:right}
+.ibar:hover .ipct{color:var(--teal);font-weight:700}
+/* ตัวเลขใหญ่ + แถบสัดส่วนเดียว — แทนโดนัท */
+.heroblk{display:flex;align-items:center;gap:14px;margin-bottom:11px}
+.heroblk .hn{font-size:42px;font-weight:700;color:var(--navy);line-height:1}
+.heroblk .hn span{font-size:19px;color:var(--ink2)}
+.heroblk .hl{font-size:12.5px;color:var(--ink2);min-width:0}
+.heroblk .hl .mu{color:var(--muted);font-size:11.5px}
+.onebar{display:flex;height:22px;border-radius:6px;overflow:hidden;gap:2px}
+.onelg{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:9px;font-size:11.5px;color:var(--ink2)}
+.onelg i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
 .chip-none{color:var(--muted);border-style:dashed;background:transparent}
 .chip{font-size:11.5px;color:var(--ink2);border:1px solid var(--grid);border-radius:99px;padding:3px 11px;background:#fff}
 .roadnav{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -848,7 +928,7 @@ body.cmdopen .cmdbd{display:flex}
     <div class="brand">
       <h1>Big Data สายทาง</h1>
       <div class="sub">แขวงทางหลวงชนบทขอนแก่น<br>กรมทางหลวงชนบท</div>
-      <div class="ver">v23.4 · 19 ส.ค. 2569</div>
+      <div class="ver">v24.5 · 20 ส.ค. 2569</div>
     </div>
     <nav class="nav">
       <button data-page="overview" class="active"><span class="ico">▦</span> ภาพรวมโครงข่าย</button>
@@ -880,25 +960,28 @@ body.cmdopen .cmdbd{display:flex}
       </div>
       <div class="filterbar" id="ovFilter"></div>
       <div class="grid kpis" id="ovKpis"></div>
+      <!-- v24.1 — แถบสรุปผู้บริหาร: 4 เรื่องที่ต้อง "ทำอะไรสักอย่าง" คำนวณสดจากชีทประวัติ -->
+      <div class="card execbar" id="ovExec" style="display:none"></div>
       <!-- v23.2 — จอกว้างจัดเป็นตาราง 12 คอลัมน์ เห็นหลายมิติในหน้าเดียวไม่ต้องเลื่อนยาว
                     จอแคบ/มือถือยังเป็น 2 คอลัมน์ / 1 คอลัมน์ เหมือนเดิมทุกอย่าง -->
       <div class="grid ovgrid">
         <div class="card ovg-a"><h3>สรุปรายหมวดบำรุงทาง</h3><div class="note">จำนวนสาย · ระยะทาง · สะพาน</div><div class="tblwrap" style="max-height:none;border:none"><table id="muadTable"><thead><tr>
-          <th>หมวด</th><th class="num">จำนวนสาย</th><th class="num">ระยะทาง (กม.)</th><th class="num">สะพาน (แห่ง)</th><th class="num">ยาวสะพาน (กม.)</th>
+          <th>หมวด</th><th class="num">จำนวนสาย</th><th style="min-width:150px">ระยะทาง (กม.)</th><th class="num">สะพาน (แห่ง)</th><th class="num">ยาวสะพาน (กม.)</th>
         </tr></thead><tbody></tbody></table></div></div>
         <div class="card ovg-b"><h3>สัดส่วนผิวจราจร — รายหมวด</h3><div class="note">กม. แยก ลาดยาง / คอนกรีต / ลูกรัง (ไม่รวมช่วงสะพาน) — ชี้ที่ท่อนเพื่อดู % ของหมวด</div><div id="chSurfaceMuad"></div></div>
         <div class="card ovg-c"><h3>สัดส่วนผิวจราจร — รวมทั้งโครงข่าย</h3><div class="note" id="surfNote">กม. และ % ของระยะทางผิวทาง</div><div id="chSurface"></div></div>
-        <div class="card ovg-d"><h3>ระยะทางรวมตามหมวดบำรุงทาง (กม.)</h3><div class="note">เรียงจากมากไปน้อย — ระยะทางตามบัญชี</div><div id="chAmphoe"></div></div>
-        <div class="card ovg-e">
-          <div class="budhead">
-            <div><h3>งบประมาณสะสมจากประวัติโครงการ</h3><div class="note" style="margin:0">วงเงินตามสัญญาทุกปีรวมกัน</div></div>
-            <!-- v23.3 — KPI งบย้ายลงมาอยู่ตรงนี้ (เดิมอยู่แถวบน) แถวบนจะได้เหลือแต่มิติโครงข่าย -->
-            <div class="card kpi iko budkpi"><div class="kico" style="background:#e9f6ee">💰</div>
-              <div style="min-width:0" id="kpiBudget"><div class="lbl">งบสะสม (ตามสัญญา)</div><div class="val">…</div><div class="foot">ทุกปีรวมกัน</div></div></div>
-          </div>
+        <!-- v24.0 — กราฟ "ระยะทางรายหมวด" ถูกยุบเข้าไปเป็นแท่งในช่องตารางสรุปรายหมวดแล้ว (ข้อมูลซ้ำกัน)
+                      แถวนี้จึงเป็น: Top10 ยาวที่สุด | Top10 PCU | Heatmap งบหมวด×ปี — คนละรูปทรงทั้งสามใบ -->
+        <div class="card ovg-d"><h3>Top 10 สายทางที่ยาวที่สุด</h3><div class="note">หน่วย กม. · สีตามหมวดบำรุงทาง — คลิกเพื่อเปิดในแผนที่</div><div id="chTopLen"></div></div>
+        <div class="card ovg-f"><h3>Top 10 PCU สูงสุด</h3><div class="note" id="pcuNote">ปริมาณจราจร คัน/วัน · คลิกเพื่อเปิดในแผนที่</div><div id="chTopPcu"></div></div>
+        <div class="card ovg-g"><h3>งบรายหมวด × ปีงบ</h3><div class="note">ช่องเข้ม = ได้งบมาก · แถวจางยาวๆ คือหมวดที่ถูกข้ามหลายปี</div><div id="chBudHeat"></div></div>
+        <div class="card ovg-e"><h3>งบประมาณสะสมจากประวัติโครงการ</h3><div class="note">วงเงินตามสัญญาทุกปีรวมกัน</div>
           <div id="ovBudget"><div class="loading"><span class="spin"></span>กำลังดึงข้อมูลงบประมาณ…</div></div>
         </div>
       </div>
+      <!-- v24.4 — สรุปการตัดสินใจแบบย่อ วางก่อนทะเบียนสายทาง · รายละเอียดเต็ม (สไลเดอร์ถ่วงน้ำหนัก, 20 อันดับ,
+                    quadrant, alerts ครบ) ยังอยู่หน้า "วิเคราะห์ตัดสินใจ" เพราะเป็นพื้นที่ทำงาน ไม่ใช่พื้นที่กวาดตา -->
+      <div class="card decsum" id="ovDecide" style="margin-top:14px"></div>
       <div class="card" style="margin-top:14px">
         <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
           <div><h3>ทะเบียนสายทาง</h3><div class="note" style="margin:0">คลิกแถวเพื่อเปิดในแผนที่ · ระยะทาง = ลาดยาง + คอนกรีต + ลูกรัง + ยาวสะพาน</div></div>
@@ -931,6 +1014,13 @@ body.cmdopen .cmdbd{display:flex}
       </div>
       <div class="actions" style="margin-bottom:12px;align-items:center">
         <select class="search" id="mapMuadSel"><option value="">ทุกหมวด</option></select>
+        <select class="search" id="mapColorSel" title="ระบายสีเส้นทางตามค่า">
+          <option value="muad">สี: ตามหมวดบำรุงทาง</option>
+          <option value="pcu">สี: ปริมาณจราจร (PCU)</option>
+          <option value="last">สี: ปีที่ได้งบล่าสุด</option>
+          <option value="luk">สี: สัดส่วนผิวลูกรัง</option>
+          <option value="surf">สี: ชนิดผิวทางหลัก</option>
+        </select>
         <select class="search" id="mapZoneSel"></select>
         <input class="search" id="mapSearch" placeholder="ค้นหาสายทาง...">
         <label style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2);cursor:pointer;background:#fff;border:1px solid var(--grid);border-radius:8px;padding:6px 12px"><input type="checkbox" id="mapElChk"> 🗳 เขตเลือกตั้ง</label>
@@ -948,6 +1038,8 @@ body.cmdopen .cmdbd{display:flex}
             <div class="zoomctl"><button id="zin">+</button><button id="zout">−</button><button id="zfit" title="ภาพรวมทั้งโครงข่าย" style="font-size:14px;border-top:1px solid var(--grid)">⛶</button></div>
             <div class="basectl"><button data-b="osm" class="active">🗺 ถนน</button><button data-b="sat">🛰 ดาวเทียม</button></div>
             <div class="attrib" id="mapAttrib">© OpenStreetMap</div>
+            <!-- v24.3 — แถบอธิบายไล่เฉดสี ลอยในแผนที่มุมซ้ายล่าง โผล่เฉพาะตอนเลือกโหมดสีที่ไม่ใช่ "ตามหมวด" -->
+            <div id="mapColorNote"></div>
           </div>
         </div>
         <div class="legendbox" id="mapLegend"></div>
@@ -1052,6 +1144,12 @@ body.cmdopen .cmdbd{display:flex}
       <div class="card" style="margin-top:14px"><h3>② ช่องว่าง: ความต้องการคงเหลือ เทียบ คำขอที่ยื่นไป</h3>
         <div class="note">ส่วนต่างคือความต้องการที่สำรวจไว้แล้วแต่ยังไม่ได้ยื่นขอ — พร้อมผลงานสะสมย้อนหลังเป็นบริบท</div>
         <div id="dcFunnel"><div class="loading"><span class="spin"></span>กำลังรวมข้อมูล 3 แหล่ง…</div></div>
+        <!-- v24.0 — Dumbbell: ช่องว่างกลายเป็นความยาวเส้น เห็นทันทีว่าหมวดไหนห่างสุด -->
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid)">
+          <h3 style="font-size:13px;margin:0 0 2px">ช่องว่างรายหมวด — ความต้องการ vs ที่ยื่นขอ</h3>
+          <div class="note">จุดทอง = ความต้องการคงเหลือ · จุดน้ำเงิน = ยื่นขอแล้ว · เส้นแดงยาว = ช่องว่างมาก</div>
+          <div id="dcGap"></div>
+        </div>
       </div>
 
       <div class="card" style="margin-top:14px">
@@ -1064,6 +1162,13 @@ body.cmdopen .cmdbd{display:flex}
         <div id="dcRank"><div class="loading"><span class="spin"></span>กำลังคำนวณ…</div></div>
       </div>
 
+      <!-- v24.0 — Scatter/Bubble: 3 มิติในภาพเดียว หา "สายที่รถเยอะแต่งบน้อย" ซึ่งกราฟแท่งบอกไม่ได้ -->
+      <div class="card" style="margin-top:14px">
+        <h3>③½ ความสำคัญ เทียบกับ เงินที่ลงไป</h3>
+        <div class="note">แกนตั้ง = PCU (คนใช้มากแค่ไหน) · แกนนอน = งบที่เคยได้ต่อ กม. (เราลงทุนไปเท่าไร)
+          · ขนาดฟอง = ระยะทาง · สีตามหมวด — <b>ช่องซ้ายบนที่แรเงาไว้ คือกลุ่มที่ควรได้งบก่อน</b> · คลิกฟองเพื่อเปิดในแผนที่</div>
+        <div id="dcScatter"></div>
+      </div>
       <div class="grid two" style="margin-top:14px">
         <div class="card"><h3>④ เรื่องที่ต้องจับตา</h3><div class="note">สร้างจากข้อมูลจริง ไม่ใช่ข้อความตายตัว</div><div id="dcAlerts"></div></div>
         <div class="card"><h3>⑤ ข้อเสนอแนะ</h3><div class="note">แปลตัวเลขเป็นสิ่งที่ทำได้จริง</div><div id="dcRecs"></div></div>
@@ -1157,6 +1262,10 @@ const yearColorMap=years=>{const s=[...new Set(years.map(String))].sort(); const
 
 const fmt = n => n==null||isNaN(n) ? '–' : Number(n).toLocaleString('th-TH', {maximumFractionDigits: 2});
 const fmtM = n => n==null||isNaN(n) ? '–' : (n>=1e6 ? (n/1e6).toLocaleString('th-TH',{maximumFractionDigits:1})+' ลบ.' : fmt(n));
+/* v24.1 — งบต่อ กม. ต้องใช้หน่วยเดียวกันทั้งบรรทัด (fmtM คืนเลขดิบเมื่อต่ำกว่า 1 ลบ. ทำให้อ่านสับสน) */
+const fmtPerKm = n => n==null||isNaN(n) ? '–'
+  : (n>=1e5 ? (n/1e6).toLocaleString('th-TH',{maximumFractionDigits:2})+' ลบ./กม.'
+            : Math.round(n).toLocaleString('th-TH')+' บาท/กม.');
 const esc = s => String(s??'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 /* ================= tooltip ================= */
@@ -1181,6 +1290,398 @@ function roundedTopRect(x,y,w,h,r){ r=Math.min(r,h,w/2);
   return `M${x},${y+h} v${-(h-r)} a${r},${r} 0 0 1 ${r},-${r} h${w-2*r} a${r},${r} 0 0 1 ${r},${r} v${h-r} z`; }
 
 /* horizontal bars */
+/* ============================================================
+   v24.0 — ชุดรูปทรงกราฟใหม่ (ตามข้อเสนอปรับดีไซน์ 19 ส.ค. 69)
+   ปัญหาเดิม: 24 กราฟทั้งระบบ แต่มีแค่ 3 รูปทรง (แท่งนอน 14 ใบ = 58%)
+              "จัดอันดับ / เทียบขนาด / สัดส่วน / เทียบเป้า" คนละหน้าที่ แต่หน้าตาเดียวกันหมด
+   กติกา: หน้าที่ของข้อมูล -> รูปทรง · ในหนึ่งแถวห้ามซ้ำรูปทรงเกิน 2 ใบติดกัน
+   สีธีมไม่เปลี่ยนแม้แต่สีเดียว (ผ่านการตรวจ CVD ทุกคู่แล้ว)
+   ============================================================ */
+
+/* ① Lollipop — ใช้แทนแท่งนอนในกราฟ "จัดอันดับ" ทุกใบ
+   อันดับอ่านที่ปลายอย่างเดียว แท่งทึบจึงเป็นหมึกส่วนเกิน */
+function lolli(container, items, {unit='', color=C.teal, labelW=86, onClick=null, valW=null, height=null}={}){
+  const box=document.getElementById(container); if(!box) return; box.innerHTML='';
+  if(!items.length){ box.innerHTML='<div class="note" style="padding:18px 4px;text-align:center">ไม่มีข้อมูล</div>'; return; }
+  const W=box.clientWidth||560, padT=8, padB=22, padR=valW||58;
+  const rowH=height?Math.max(20,(height-padT-padB)/items.length):24;
+  const H=height||items.length*rowH+padT+padB;
+  const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:'100%',height:H},box);
+  const max=Math.max(...items.map(i=>i.v),0.0001);
+  const plotW=W-labelW-padR, maxCh=Math.max(13,Math.floor(labelW/6.8));
+  niceTicks(max).forEach(t=>{ const x=labelW+plotW*t/max;
+    el('line',{class:'gridline',x1:x,y1:padT,x2:x,y2:H-padB},svg);
+    el('text',{class:'ticktext',x:x,y:H-padB+14,'text-anchor':'middle'},svg).textContent=fmt(t); });
+  el('line',{class:'axisline',x1:labelW,y1:padT,x2:labelW,y2:H-padB},svg);
+  items.forEach((it,i)=>{
+    const y=padT+i*rowH+rowH/2, x=labelW+plotW*it.v/max, col=it.color||color;
+    // hit rect วาดก่อน = อยู่ "ใต้" จุด · จุดจึงรับ hover/click ได้เอง ส่วนที่ว่างในแถวตกมาที่ rect
+    const hit=el('rect',{x:labelW,y:y-rowH/2,width:Math.max(1,W-padR-labelW),height:rowH,fill:'transparent'},svg);
+    el('line',{class:'lolli-track',x1:labelW,y1:y,x2:W-padR,y2:y},svg);
+    el('line',{class:'lolli-stem bar','data-i':i,x1:labelW,y1:y,x2:x,y2:y,stroke:col},svg);
+    const d=el('circle',{class:'lolli-dot bar','data-i':i,cx:x,cy:y,r:5.5,fill:col},svg);
+    const lt=el('text',{class:'cattext',x:labelW-7,y:y+4,'text-anchor':'end'},svg);
+    lt.textContent=it.label.length>maxCh?it.label.slice(0,maxCh)+'…':it.label;
+    const vtxt=it.valText??fmt(it.v), vest=String(vtxt).length*6.2;
+    const vflip=x+11+vest>W-2;
+    el('text',{class:'vallabel',x:vflip?x-11:x+11,y:y+4,'text-anchor':vflip?'end':'start'},svg).textContent=vtxt;
+    const tipf=e=>showTip(`<b>${esc(it.label)}</b><br>${it.tip??(fmt(it.v)+' '+unit)}`,e.clientX,e.clientY);
+    [d,hit].forEach(n=>{ n.addEventListener('mousemove',tipf); n.addEventListener('mouseleave',hideTip);
+      if(onClick){ n.style.cursor='pointer'; n.addEventListener('click',()=>onClick(it)); } });
+  });
+  return svg;
+}
+
+/* ② Heatmap — 2 มิติพร้อมกัน (เช่น หมวด × ปีงบ) ไล่เฉดสีเดียว เข้ม=มาก */
+function heat(container, rowLabels, colLabels, matrix, {unit='', fmtV=fmt, onClick=null, ramp=[13,148,136]}={}){
+  const box=document.getElementById(container); if(!box) return; box.innerHTML='';
+  const W=box.clientWidth||560, lw=Math.min(104,Math.max(58,W*0.22)), padR=8, padT=20, padB=4;
+  const cw=(W-lw-padR)/Math.max(1,colLabels.length), ch=Math.max(26,Math.min(38,(cw*0.62)));
+  const H=padT+rowLabels.length*ch+padB;
+  const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:'100%',height:H},box);
+  let mx=0; matrix.forEach(r=>r.forEach(v=>{ if(v>mx) mx=v; })); mx=mx||1;
+  colLabels.forEach((c,j)=>el('text',{class:'ticktext',x:lw+cw*(j+0.5),y:13,'text-anchor':'middle'},svg).textContent=c);
+  rowLabels.forEach((r,i)=>{
+    const y=padT+i*ch;
+    const mc=Math.max(5,Math.floor((lw-12)/7.8));
+    el('text',{class:'cattext',x:lw-8,y:y+ch/2+4,'text-anchor':'end'},svg)
+      .textContent=r.length>mc?r.slice(0,mc-1)+'…':r;
+    (matrix[i]||[]).forEach((v,j)=>{
+      const t=Math.max(0,Math.min(1,v/mx));
+      const col=`rgb(${Math.round(252-(252-ramp[0])*t)},${Math.round(252-(252-ramp[1])*t)},${Math.round(251-(251-ramp[2])*t)})`;
+      const rc=el('rect',{class:'heatcell',x:lw+cw*j+1.5,y:y+1.5,width:Math.max(1,cw-3),height:ch-3,rx:5,fill:col},svg);
+      if(cw>34) el('text',{x:lw+cw*(j+0.5),y:y+ch/2+4,'text-anchor':'middle','font-size':10.5,'font-weight':700,
+        fill:t>0.55?'#fff':C.ink2},svg).textContent=v?fmtV(v):'';
+      rc.addEventListener('mousemove',e=>showTip(`<b>${esc(r)} · ${esc(colLabels[j])}</b><br>${fmtV(v)} ${unit}`,e.clientX,e.clientY));
+      rc.addEventListener('mouseleave',hideTip);
+      if(onClick){ rc.style.cursor='pointer'; rc.addEventListener('click',()=>onClick(r,colLabels[j],v)); }
+    });
+  });
+  return svg;
+}
+
+/* ③ Bullet — ค่าจริงเทียบเป้า เห็นทันทีว่าถึงหรือไม่ถึง (แทนเกจวัด กินที่น้อยกว่า บอกมากกว่า) */
+function bullet(container, rows, {height=null}={}){
+  const box=document.getElementById(container); if(!box) return; box.innerHTML='';
+  const W=box.clientWidth||460, lw=Math.min(150,Math.max(96,W*0.30)), padR=70, rowH=height||46;
+  const H=rows.length*rowH+8, pw=W-lw-padR;
+  const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:'100%',height:H},box);
+  rows.forEach((r,i)=>{
+    const y=8+i*rowH, mx=r.max||100, ok=r.v>=r.target;
+    const col=ok?'#0ca30c':(r.v>=r.target*0.75?C.gold:C.crit);
+    el('text',{class:'cattext',x:0,y:y+9},svg).textContent=r.label;
+    el('rect',{x:lw,y:y+2,width:pw,height:16,rx:8,fill:'#eeede7'},svg);
+    el('rect',{x:lw,y:y+2,width:Math.max(2,pw*Math.min(r.v,mx)/mx),height:16,rx:8,fill:col},svg);
+    const tx=lw+pw*Math.min(r.target,mx)/mx;
+    el('line',{x1:tx,y1:y-2,x2:tx,y2:y+22,stroke:C.navy,'stroke-width':2.5},svg);
+    el('text',{class:'ticktext',x:tx,y:y+33,'text-anchor':'middle'},svg).textContent='เป้า '+fmt(r.target)+(r.unit||'%');
+    el('text',{x:W-padR+8,y:y+15,'font-size':13,'font-weight':700,fill:col},svg).textContent=fmt(r.v)+(r.unit||'%');
+    const hit=el('rect',{x:lw,y:y-2,width:pw,height:24,fill:'transparent'},svg);
+    hit.addEventListener('mousemove',e=>showTip(`<b>${esc(r.label)}</b><br>ผล ${fmt(r.v)}${r.unit||'%'} · เป้า ${fmt(r.target)}${r.unit||'%'}`+
+      (r.foot?`<br>${r.foot}`:''),e.clientX,e.clientY));
+    hit.addEventListener('mouseleave',hideTip);
+  });
+  return svg;
+}
+
+/* ④ Dumbbell — ช่องว่างระหว่าง 2 ค่า กลายเป็น "ความยาวเส้น" ที่มองปุ๊บเห็น */
+function dumbbell(container, rows, {unit='', c1=C.gold, c2=C.blue, l1='ค่า 1', l2='ค่า 2', gapLabel='ส่วนต่าง'}={}){
+  const box=document.getElementById(container); if(!box) return; box.innerHTML='';
+  if(!rows.length){ box.innerHTML='<div class="note" style="padding:18px 4px;text-align:center">ไม่มีข้อมูล</div>'; return; }
+  const W=box.clientWidth||460, lw=Math.min(112,Math.max(72,W*0.22)), padR=64, rowH=34, padT=10, legH=22;
+  const H=rows.length*rowH+padT+legH+8, pw=W-lw-padR;
+  const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:'100%',height:H},box);
+  const mx=Math.max(...rows.map(r=>Math.max(r.a,r.b)),0.0001);
+  rows.forEach((r,i)=>{
+    const y=padT+i*rowH+rowH/2-4, xa=lw+pw*r.a/mx, xb=lw+pw*r.b/mx;
+    const mc=Math.max(5,Math.floor((lw-12)/7.8));
+    el('text',{class:'cattext',x:lw-8,y:y+4,'text-anchor':'end'},svg)
+      .textContent=r.label.length>mc?r.label.slice(0,mc-1)+'…':r.label;
+    el('line',{x1:Math.min(xa,xb),y1:y,x2:Math.max(xa,xb),y2:y,stroke:C.crit,'stroke-width':3,opacity:.3,'stroke-linecap':'round'},svg);
+    el('circle',{cx:xb,cy:y,r:6,fill:c2,stroke:'#fcfcfb','stroke-width':2},svg);
+    el('circle',{cx:xa,cy:y,r:6,fill:c1,stroke:'#fcfcfb','stroke-width':2},svg);
+    const gap=r.a-r.b;
+    el('text',{x:W-padR+8,y:y+4,'font-size':11,'font-weight':700,fill:gap>0?C.crit:'#0ca30c'},svg)
+      .textContent=(gap>0?'−':'+')+fmt(Math.abs(+gap.toFixed(1)));
+    const hit=el('rect',{x:lw,y:y-rowH/2,width:pw,height:rowH,fill:'transparent'},svg);
+    hit.addEventListener('mousemove',e=>showTip(`<b>${esc(r.label)}</b><br>${esc(l1)} ${fmt(r.a)} ${unit}<br>${esc(l2)} ${fmt(r.b)} ${unit}`+
+      `<br><b style="color:#ff9b9b">${esc(gapLabel)} ${fmt(+Math.abs(gap).toFixed(1))} ${unit}</b>`,e.clientX,e.clientY));
+    hit.addEventListener('mouseleave',hideTip);
+  });
+  const ly=H-6;
+  el('circle',{cx:lw+6,cy:ly-4,r:5,fill:c1},svg); el('text',{class:'ticktext',x:lw+16,y:ly},svg).textContent=l1;
+  const off=lw+16+(l1.length*7)+22;
+  el('circle',{cx:off,cy:ly-4,r:5,fill:c2},svg); el('text',{class:'ticktext',x:off+10,y:ly},svg).textContent=l2;
+  return svg;
+}
+
+/* ⑤ Scatter / Bubble — 3 มิติในภาพเดียว หา "ของนอกกลุ่ม" ที่แท่งบอกไม่ได้ */
+function scatter(container, pts, {xLab='', yLab='', height=290, refY=null, refLab='', refX=null, refXLab='',
+    quad=null, onClick=null, sizeMax=null, xLog=false}={}){
+  const box=document.getElementById(container); if(!box) return; box.innerHTML='';
+  if(!pts.length){ box.innerHTML='<div class="note" style="padding:26px 4px;text-align:center">ไม่มีข้อมูลพอจะวาด</div>'; return; }
+  const W=box.clientWidth||460, H=height, padL=54, padB=38, padT=14, padR=18;
+  const pw=W-padL-padR, ph=H-padT-padB;
+  const mxX=Math.max(...pts.map(p=>p.x))*1.06||1, mxY=Math.max(...pts.map(p=>p.y))*1.10||1;
+  const mxR=sizeMax||Math.max(...pts.map(p=>p.r||0))||1;
+  /* v24.1 — งบต่อ กม. เบ้ขวารุนแรง (ส่วนใหญ่ใกล้ 0 มีไม่กี่สายพุ่งสูง) ถ้าใช้สเกลเส้นตรงฟองจะกองซ้ายหมด
+     ใช้ log1p แล้วแปลงกลับตอนทำป้ายแกน จะกระจายอ่านออก โดยไม่ต้องตัดข้อมูลทิ้ง */
+  const LG=v=>Math.log10(1+Math.max(0,v));
+  const mxL=LG(mxX)||1;
+  const X=xLog?(v=>padL+pw*LG(v)/mxL):(v=>padL+pw*v/mxX), Y=v=>padT+ph-ph*v/mxY;
+  const xTicks=xLog
+    ? (()=>{ const out=[0]; for(let e=-2;e<=6;e++) for(const m of [1,2,5]){ const v=m*Math.pow(10,e);
+        if(v<=mxX && LG(v)/mxL>0.06) out.push(v); } return out.slice(0,7); })()
+    : niceTicks(mxX);
+  const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:'100%',height:H},box);
+  niceTicks(mxY).forEach(t=>{ const y=Y(t);
+    el('line',{class:'gridline',x1:padL,y1:y,x2:W-padR,y2:y},svg);
+    el('text',{class:'ticktext',x:padL-7,y:y+4,'text-anchor':'end'},svg).textContent=fmt(t); });
+  xTicks.forEach(t=>{ if(xLog) el('line',{class:'gridline',x1:X(t),y1:padT,x2:X(t),y2:padT+ph,opacity:.5},svg);
+    el('text',{class:'ticktext',x:X(t),y:H-padB+15,'text-anchor':'middle'},svg).textContent=fmt(t); });
+  el('line',{class:'axisline',x1:padL,y1:padT,x2:padL,y2:padT+ph},svg);
+  /* v24.1 — โหมดควอดรันต์: แบ่ง 4 ช่องด้วยค่ากลางทั้งสองแกน แล้วแรเงาช่องที่ต้องลงมือ
+     เปลี่ยนกราฟสำรวจ ให้กลายเป็นเครื่องมือตัดสินใจ */
+  if(quad && refX!=null && refY!=null){
+    const qx=X(refX), qy=Y(refY);
+    const boxes=[['tl',padL,padT,qx-padL,qy-padT],['tr',qx,padT,W-padR-qx,qy-padT],
+                 ['bl',padL,qy,qx-padL,padT+ph-qy],['br',qx,qy,W-padR-qx,padT+ph-qy]];
+    boxes.forEach(([k,x,y,w,h])=>{ if(w<=0||h<=0) return;
+      if(quad.focus===k) el('rect',{x,y,width:w,height:h,fill:C.crit,opacity:.055},svg);
+      const t=quad[k]; if(!t) return;
+      const right=(k==='tr'||k==='br'), bottom=(k==='bl'||k==='br');
+      const tx=right?x+w-6:x+6, ty=bottom?y+h-7:y+13;
+      [true,false].forEach(halo=>el('text',{x:tx,y:ty,'text-anchor':right?'end':'start','font-size':9.5,
+        'font-weight':700,'pointer-events':'none',
+        ...(halo?{fill:'none',stroke:'#fcfcfb','stroke-width':3.5,'stroke-linejoin':'round'}
+                :{fill:quad.focus===k?C.crit:C.muted,opacity:quad.focus===k?1:.9})},svg).textContent=t);
+    });
+  }
+  if(refX!=null && refX<mxX){
+    el('line',{x1:X(refX),y1:padT,x2:X(refX),y2:padT+ph,stroke:C.muted,'stroke-width':1.2,'stroke-dasharray':'4 4',opacity:.8},svg);
+    if(refXLab) el('text',{x:X(refX),y:padT+ph+15,'text-anchor':'middle','font-size':9,fill:C.muted},svg).textContent=refXLab;
+  }
+  if(refY!=null && refY<mxY){
+    el('line',{x1:padL,y1:Y(refY),x2:W-padR,y2:Y(refY),stroke:C.crit,'stroke-width':1.5,'stroke-dasharray':'5 4',opacity:.75},svg);
+    if(refLab) el('text',{x:W-padR-2,y:Y(refY)-6,'text-anchor':'end','font-size':9.5,'font-weight':700,fill:C.crit},svg).textContent=refLab;
+  }
+  [...pts].sort((a,b)=>(b.r||0)-(a.r||0)).forEach(p=>{
+    const rr=4+Math.sqrt(Math.max(0,p.r||0)/mxR)*11;
+    const c=el('circle',{class:'bubble',cx:X(p.x),cy:Y(p.y),r:rr.toFixed(1),fill:p.color||C.teal,
+      'fill-opacity':.62,stroke:p.color||C.teal,'stroke-width':1.5},svg);
+    c.addEventListener('mousemove',e=>showTip(p.tip||`<b>${esc(p.label||'')}</b>`,e.clientX,e.clientY));
+    c.addEventListener('mouseleave',hideTip);
+    if(onClick){ c.style.cursor='pointer'; c.addEventListener('click',()=>onClick(p)); }
+  });
+  // ป้ายชื่อ 3 จุดสูงสุด — ถ้าชิดขอบขวาให้พลิกไปอยู่ซ้ายของฟอง กันข้อความโดนตัด
+  pts.slice().sort((a,b)=>b.y-a.y).slice(0,3).forEach(p=>{
+    const px=X(p.x), est=String(p.label||'').length*6.4, flip=px+13+est>W-padR;
+    [true,false].forEach(halo=>el('text',{x:flip?px-13:px+13,y:Y(p.y)+4,'text-anchor':flip?'end':'start',
+      'font-size':10,'font-weight':700,'pointer-events':'none',
+      ...(halo?{fill:'none',stroke:'#fcfcfb','stroke-width':3,'stroke-linejoin':'round'}:{fill:'#0b0b0b'})},svg)
+      .textContent=p.label||'');});
+  el('text',{class:'ticktext',x:padL+pw/2,y:H-4,'text-anchor':'middle'},svg).textContent=xLab;
+  if(yLab) el('text',{class:'ticktext',x:14,y:padT+ph/2,'text-anchor':'middle',
+    transform:`rotate(-90 14 ${padT+ph/2})`,textLength:Math.min(ph-8, yLab.length*6.4),
+    lengthAdjust:'spacingAndGlyphs'},svg).textContent=yLab;
+  return svg;
+}
+
+/* ⑥ Pareto — แท่งเรียงมาก->น้อย + เส้นสะสม ตอบ "ของกระจุกอยู่ที่ไหน" ในภาพเดียว */
+function pareto(container, items, {unit='', height=250, cutPct=80, onClick=null}={}){
+  const box=document.getElementById(container); if(!box) return; box.innerHTML='';
+  if(!items.length){ box.innerHTML='<div class="note" style="padding:22px 4px;text-align:center">ไม่มีข้อมูล</div>'; return; }
+  const W=box.clientWidth||460, H=height, padL=46, padB=34, padT=14, padR=42;
+  const pw=W-padL-padR, ph=H-padT-padB;
+  const full=[...items].sort((a,b)=>b.v-a.v), tot=full.reduce((a,x)=>a+x.v,0)||1;
+  const CAP=40, arr=full.slice(0,CAP);   // v24.3 — เกิน 40 แท่งอ่านไม่ออก ตัดแล้วบอกไว้ใต้กราฟ
+  const mx=arr[0].v||1, bw=pw/arr.length;
+  const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:'100%',height:H},box);
+  niceTicks(mx).forEach(t=>{ const y=padT+ph-ph*t/mx;
+    el('line',{class:'gridline',x1:padL,y1:y,x2:W-padR,y2:y},svg);
+    el('text',{class:'ticktext',x:padL-6,y:y+4,'text-anchor':'end'},svg).textContent=fmt(t); });
+  /* v24.4 — จุดตัด 80% ต้องหาจาก "ทั้งชุด" ไม่ใช่แค่ 40 ตัวที่โชว์
+     ไม่งั้นถ้าข้อมูลกระจายเท่าๆ กัน ยอดสะสมใน 40 ตัวแรกไม่ถึง 80% -> ไม่มีแท่งไหนถูกไฮไลต์เลย */
+  let cumF=0, cutFull=-1;
+  full.forEach((it,i)=>{ cumF+=it.v; if(cutFull<0 && 100*cumF/tot>=cutPct) cutFull=i; });
+  let cum=0; const pts=[];
+  arr.forEach((it,i)=>{ cum+=it.v; pts.push([padL+bw*(i+0.5), padT+ph-ph*(100*cum/tot)/100]); });
+  const cut=cutFull;
+  arr.forEach((it,i)=>{
+    const h=ph*it.v/mx, x=padL+bw*i+1;
+    const r=el('rect',{class:'bar','data-i':i,x:x,y:padT+ph-h,width:Math.max(1,bw-2),height:h,rx:2,
+      fill:i<=cut?(it.color||C.teal):'#cdcbc4'},svg);
+    r.addEventListener('mousemove',e=>showTip(`<b>${esc(it.label)}</b><br>${fmt(it.v)} ${unit}`+
+      `<br>อันดับ ${i+1} · สะสมถึงตัวนี้ ${(100*arr.slice(0,i+1).reduce((a,x)=>a+x.v,0)/tot).toFixed(1)}% ของทั้งหมด`,e.clientX,e.clientY));
+    r.addEventListener('mouseleave',hideTip);
+    if(onClick){ r.style.cursor='pointer'; r.addEventListener('click',()=>onClick(it)); }
+  });
+  el('polyline',{points:pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' '),fill:'none',
+    stroke:C.gold,'stroke-width':2.5,'stroke-linejoin':'round'},svg);
+  if(cut>=0 && cut<arr.length){ const xc=padL+bw*(cut+1);
+    el('line',{x1:xc,y1:padT,x2:xc,y2:padT+ph,stroke:C.crit,'stroke-width':1.5,'stroke-dasharray':'5 4'},svg);
+    el('text',{x:Math.min(xc+6,W-padR-4),y:padT+16,'font-size':10.5,'font-weight':700,fill:C.crit},svg)
+      .textContent=`${cut+1} รายการแรก = ${cutPct}%`;
+  } else if(cut>=arr.length){   // จุดตัดอยู่นอกช่วงที่แสดง — บอกไปตรงๆ ว่าต้องนับถึงอันดับเท่าไร
+    const msg=W<430 ? `ครบ ${cutPct}% ที่อันดับ ${cut+1}` : `ต้องนับถึงอันดับ ${cut+1} ถึงจะครบ ${cutPct}% — งบกระจายตัว ไม่ได้กระจุก`;
+    el('text',{x:padL+6,y:padT+16,'font-size':10.5,'font-weight':700,fill:C.crit},svg).textContent=msg; }
+  el('text',{class:'ticktext',x:W-padR+6,y:padT+6},svg).textContent='100%';
+  el('text',{class:'ticktext',x:padL,y:H-4},svg).textContent=
+    full.length>CAP ? `แสดง ${CAP} จาก ${full.length} รายการ · เส้นทอง = สะสม %` : 'เรียงมาก→น้อย · เส้นทอง = สะสม %';
+  return svg;
+}
+
+/* ⑦ Gantt — ใช้วันเริ่ม/สิ้นสุดสัญญาที่มีอยู่แล้วในชีท + เส้น "วันนี้" */
+function gantt(container, rows, {height=null, onClick=null}={}){
+  const box=document.getElementById(container); if(!box) return; box.innerHTML='';
+  if(!rows.length){ box.innerHTML='<div class="note" style="padding:22px 4px;text-align:center">ไม่มีสัญญาที่ระบุช่วงวันที่</div>'; return; }
+  const W=box.clientWidth||520, lw=Math.min(210,Math.max(118,W*0.26)), padR=30, padT=24, padB=22;
+  const rowH=height||22, H=rows.length*rowH+padT+padB, pw=W-lw-padR;
+  const t0=Math.min(...rows.map(r=>r.a)), t1=Math.max(...rows.map(r=>r.b));
+  const now=Date.now();
+  // v24.1 — เดิมยืดแกนไปถึง "วันนี้" เสมอ ถ้าสัญญาจบไปนานแล้วจะเหลือที่ว่างครึ่งจอ
+  //         ตอนนี้ยืดแค่พอให้เห็นวันนี้ (เผื่อขอบ 6%) ไม่ปล่อยว่างยาว
+  const pad0=(t1-t0)*0.06||864e5;
+  const lo=Math.min(t0-pad0, now), hi=Math.max(t1+pad0, now), span=(hi-lo)||1;
+  const X=t=>lw+pw*(t-lo)/span;
+  const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:'100%',height:H},box);
+  const D=n=>new Date(n), mons=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  const step=Math.max(1,Math.round(span/(1000*60*60*24*30)/4));
+  let cur=new Date(D(lo).getFullYear(), D(lo).getMonth(), 1);
+  while(cur.getTime()<=hi){
+    const x=X(cur.getTime());
+    if(x>=lw-1){ el('line',{class:'gridline',x1:x,y1:padT-6,x2:x,y2:H-padB},svg);
+      el('text',{class:'ticktext',x:x,y:padT-11,'text-anchor':'middle'},svg)
+        .textContent=mons[cur.getMonth()]+' '+String((cur.getFullYear()+543)%100).padStart(2,'0'); }
+    cur=new Date(cur.getFullYear(), cur.getMonth()+step, 1);
+  }
+  const xn=X(now);
+  el('line',{x1:xn,y1:padT-6,x2:xn,y2:H-padB,stroke:C.crit,'stroke-width':1.5},svg);
+  // ป้าย "วันนี้" ต้องไม่ล้นขอบขวา — ชิดขวาเมื่อเส้นอยู่ใกล้ขอบ
+  const nearR=xn>W-padR-26;
+  el('text',{x:nearR?xn-5:xn+5,y:H-padB+13,'font-size':9.5,'font-weight':700,fill:C.crit,
+    'text-anchor':nearR?'end':'start'},svg).textContent='วันนี้';
+  rows.forEach((r,i)=>{
+    const y=padT+i*rowH, bh=14, by=y+(rowH-bh)/2;
+    const x=X(r.a), w=Math.max(3,X(r.b)-X(r.a));
+    el('text',{class:'cattext',x:lw-7,y:by+11,'text-anchor':'end'},svg).textContent=r.label;
+    const b=el('rect',{class:'bar','data-i':i,x:x,y:by,width:w,height:bh,rx:4,fill:r.color||C.teal,opacity:.88},svg);
+    const done=Math.min(w,Math.max(0,xn-x));
+    if(done>2) el('rect',{x:x,y:by+4,width:done,height:bh-8,rx:3,fill:'#fff',opacity:.5},svg);
+    if(r.late) el('circle',{cx:X(r.b)+7,cy:by+bh/2,r:3.6,fill:C.crit},svg);
+    b.addEventListener('mousemove',e=>showTip(r.tip||`<b>${esc(r.label)}</b>`,e.clientX,e.clientY));
+    b.addEventListener('mouseleave',hideTip);
+    if(onClick){ b.style.cursor='pointer'; b.addEventListener('click',()=>onClick(r)); }
+  });
+  return svg;
+}
+
+/* ⑧ Small multiples — 5 หมวดแยกช่องเล็ก แกนเดียวกัน (ดีกว่ายัด 5 เส้นในกราฟเดียว) */
+function smallmult(container, groups, {unit='', height=92, onClick=null}={}){
+  const box=document.getElementById(container); if(!box) return; box.innerHTML='';
+  if(!groups.length){ box.innerHTML='<div class="note" style="padding:18px 4px;text-align:center">ไม่มีข้อมูล</div>'; return; }
+  const mx=Math.max(...groups.flatMap(g=>g.vals),0.0001);
+  box.className=(box.className||'').replace(/\bsmgrid\b/,'')+' smgrid';
+  groups.forEach(g=>{
+    const cell=document.createElement('div'); cell.className='smcell';
+    const w=140, h=height-34, pad=6;
+    const pts=g.vals.map((v,j)=>[pad+(w-pad*2)*(g.vals.length<2?0.5:j/(g.vals.length-1)), h-pad-(h-pad*2)*v/mx]);
+    const last=pts[pts.length-1];
+    cell.innerHTML=`<div class="smlab">${esc(g.label)}</div>`+
+      `<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" preserveAspectRatio="none" class="viz">`+
+        `<polyline points="${pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="${g.color||C.teal}" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>`+
+        `<circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="3" fill="${g.color||C.teal}"/></svg>`+
+      `<div class="smval">${fmt(g.vals[g.vals.length-1])}<small>${esc(unit)}</small></div>`;
+    cell.title=g.tip||'';
+    if(onClick){ cell.style.cursor='pointer'; cell.addEventListener('click',()=>onClick(g)); }
+    box.appendChild(cell);
+  });
+}
+
+/* ⑨ Line — เวลาคือความต่อเนื่อง ต้องเป็นเส้น · กฎ: แกน Y เริ่ม 0 · ไม่เกิน 4 เส้น · เส้นทึบ · ป้ายที่ปลายเส้น */
+/* ⑩ Sankey — เงินไหลจาก "ชนิดงบ" ไปลงที่ "หมวดบำรุงทาง" ในภาพเดียว
+   ใช้เฉพาะข้อมูลฐานเวลาเดียวกัน (ประวัติสัญญาที่เกิดขึ้นจริง) จึงไม่ติดกับดักแบบเอา Zerobase มาต่อ */
+function sankey(container, links, {unit='ลบ.', height=null, fmtV=fmt, onClick=null}={}){
+  const box=document.getElementById(container); if(!box) return; box.innerHTML='';
+  if(!links.length){ box.innerHTML='<div class="note" style="padding:22px 4px;text-align:center">ไม่มีข้อมูลพอจะวาด</div>'; return; }
+  const L=[...links].filter(l=>l.v>0);
+  const srcs=[...new Set(L.map(l=>l.from))], dsts=[...new Set(L.map(l=>l.to))];
+  const sum=(k,side)=>L.filter(l=>l[side]===k).reduce((a,l)=>a+l.v,0);
+  srcs.sort((a,b)=>sum(b,'from')-sum(a,'from')); dsts.sort((a,b)=>sum(b,'to')-sum(a,'to'));
+  const W=box.clientWidth||560, colW=13, padT=10, padB=8, gap=9;
+  const rows=Math.max(srcs.length,dsts.length);
+  const H=height||Math.max(190, rows*38+padT+padB);
+  const lw=Math.min(132,Math.max(80,W*0.22)), rw=Math.min(132,Math.max(80,W*0.22));
+  const x0=lw, x1=W-rw-colW;
+  const tot=L.reduce((a,l)=>a+l.v,0)||1;
+  const scale=(H-padT-padB-gap*(Math.max(srcs.length,dsts.length)-1))/tot;
+  const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:'100%',height:H},box);
+  const place=(keys,side)=>{ const m={}; let y=padT;
+    keys.forEach(k=>{ const h=Math.max(3,sum(k,side)*scale); m[k]={y,h,cur:y}; y+=h+gap; }); return m; };
+  const S=place(srcs,'from'), D=place(dsts,'to');
+  const colOf=(k,i)=>MUAD_COLOR[k]||MUAD_COLOR[String(k).replace(/^หมวด/,'')]||CAT8[i%CAT8.length];
+  // ริบบิ้น
+  [...L].sort((a,b)=>b.v-a.v).forEach(l=>{
+    const a=S[l.from], b=D[l.to]; if(!a||!b) return;
+    const h=Math.max(1.2,l.v*scale);
+    const y0=a.cur, y1=b.cur; a.cur+=h; b.cur+=h;
+    const cx=(x0+colW+x1)/2;
+    const d=`M${x0+colW},${y0} C${cx},${y0} ${cx},${y1} ${x1},${y1} `+
+            `L${x1},${y1+h} C${cx},${y1+h} ${cx},${y0+h} ${x0+colW},${y0+h} Z`;
+    const col=colOf(l.to, dsts.indexOf(l.to));
+    const pth=el('path',{class:'skrib',d,fill:col,'fill-opacity':.30},svg);
+    pth.addEventListener('mousemove',e=>showTip(`<b>${esc(l.from)} → ${esc(l.to)}</b><br>${fmtV(l.v)} ${unit}`+
+      `<br>${(100*l.v/tot).toFixed(1)}% ของทั้งหมด`,e.clientX,e.clientY));
+    pth.addEventListener('mouseleave',hideTip);
+    if(onClick){ pth.style.cursor='pointer'; pth.addEventListener('click',()=>onClick(l)); }
+  });
+  // แท่งซ้าย/ขวา + ป้าย
+  const drawCol=(keys,map,x,side,anchor)=>keys.forEach((k,i)=>{
+    const m=map[k]; const col=side==='to'?colOf(k,i):'#8d95a6';
+    el('rect',{x,y:m.y,width:colW,height:m.h,rx:3,fill:col},svg);
+    // ป้ายฝั่งขวาต้องไม่ล้นกรอบบนจอแคบ — ตัดตามที่ว่างจริง
+    const room=anchor==='end'?lw:rw;
+    const mc=Math.max(5,Math.floor((room-12)/7.4));
+    const v=sum(k,side), lab=k.length>mc?k.slice(0,mc-1)+'…':k;
+    const tx=anchor==='end'?x-7:x+colW+7;
+    el('text',{class:'cattext',x:tx,y:m.y+m.h/2-1,'text-anchor':anchor},svg).textContent=lab;
+    el('text',{class:'ticktext',x:tx,y:m.y+m.h/2+11,'text-anchor':anchor},svg).textContent=fmtV(v)+' '+unit;
+  });
+  drawCol(srcs,S,x0,'from','end');
+  drawCol(dsts,D,x1,'to','start');
+  return svg;
+}
+function lineChart(container, labels, series, {unit='', height=240, fmtVal=fmt, area=false}={}){
+  const box=document.getElementById(container); if(!box) return; box.innerHTML='';
+  if(!labels.length){ box.innerHTML='<div class="note" style="padding:22px 4px;text-align:center">ไม่มีข้อมูล</div>'; return; }
+  const ss=series.slice(0,4);
+  const W=box.clientWidth||460, H=height, padL=48, padB=30, padT=14;
+  const padR=Math.min(96,Math.max(48,W*0.16)), pw=W-padL-padR, ph=H-padT-padB;
+  const mx=Math.max(...ss.flatMap(s=>s.vals),0.0001);
+  const X=i=>padL+pw*(labels.length<2?0.5:i/(labels.length-1)), Y=v=>padT+ph-ph*v/mx;
+  const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:'100%',height:H},box);
+  niceTicks(mx).forEach(t=>{ const y=Y(t);
+    el('line',{class:'gridline',x1:padL,y1:y,x2:W-padR,y2:y},svg);
+    el('text',{class:'ticktext',x:padL-6,y:y+4,'text-anchor':'end'},svg).textContent=fmtVal(t); });
+  labels.forEach((lb,i)=>el('text',{class:'ticktext',x:X(i),y:H-padB+15,'text-anchor':'middle'},svg).textContent=lb);
+  ss.forEach((s,si)=>{
+    const col=s.color||CAT8[si%CAT8.length];
+    const pts=s.vals.map((v,i)=>[X(i),Y(v)]);
+    if(area&&ss.length===1)
+      el('path',{d:`M${padL},${padT+ph} `+pts.map(p=>`L${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ')+` L${X(labels.length-1)},${padT+ph} Z`,
+        fill:col,opacity:.12},svg);
+    el('polyline',{points:pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' '),fill:'none',stroke:col,
+      'stroke-width':2.5,'stroke-linejoin':'round','stroke-linecap':'round'},svg);
+    pts.forEach((p,i)=>{ const c=el('circle',{cx:p[0],cy:p[1],r:4.5,fill:col,stroke:'#fcfcfb','stroke-width':2},svg);
+      c.addEventListener('mousemove',e=>showTip(`<b>${esc(labels[i])}</b><br>${esc(s.name||'')} ${fmtVal(s.vals[i])} ${unit}`,e.clientX,e.clientY));
+      c.addEventListener('mouseleave',hideTip); });
+    const lp=pts[pts.length-1];
+    el('text',{x:lp[0]+9,y:lp[1]+4,'font-size':11.5,'font-weight':700,fill:col},svg)
+      .textContent=(ss.length>1?(s.name+' '):'')+fmtVal(s.vals[s.vals.length-1]);
+  });
+  return svg;
+}
+
 function hbar(container, items, {unit='', color=C.teal, labelW=86, showVal=true, onClick=null, height=null, valW=null}={}){
   const box=document.getElementById(container); box.innerHTML='';
   const W=box.clientWidth||560, padT=6, padB=22, padR=valW||(showVal?54:14);
@@ -1199,7 +1700,11 @@ function hbar(container, items, {unit='', color=C.teal, labelW=86, showVal=true,
     const t=el('text',{class:'cattext',x:labelW-7,y:by+bh/2+4,'text-anchor':'end'},svg);
     t.textContent=it.label.length>maxCh?it.label.slice(0,maxCh)+'…':it.label;
     const p=el('path',{class:'bar','data-i':i,d:roundedRightRect(labelW,by,bw,bh,4),fill:it.color||color},svg);
-    if(showVal) el('text',{class:'vallabel',x:labelW+bw+6,y:by+bh/2+4},svg).textContent=it.valText??fmt(it.v);
+    if(showVal){ const txt=it.valText??fmt(it.v);
+      const est=String(txt).length*6.2, xv=labelW+bw+6;
+      const flip=xv+est>W-2;   // ไม่มีที่ข้างขวา -> พลิกป้ายเข้ามาในแท่ง
+      el('text',{class:'vallabel',x:flip?labelW+bw-6:xv,y:by+bh/2+4,
+        'text-anchor':flip?'end':'start', fill:flip?'#fff':'currentColor'},svg).textContent=txt; }
     p.addEventListener('mousemove',e=>showTip(`<b>${esc(it.label)}</b><br>${it.tip??(fmt(it.v)+' '+unit)}`,e.clientX,e.clientY));
     p.addEventListener('mouseleave',hideTip);
     if(onClick) p.addEventListener('click',()=>onClick(it));
@@ -1257,9 +1762,11 @@ function vbar(container, labels, series, {unit='', height=270, stacked=false, fm
    รายละเอียดเต็ม (ค่า/หน่วย/%) ดูจาก tooltip ตอนชี้ — ไม่มีเส้นชี้ให้รก */
 function donut(container, slices, {unit='กม.', height=280}={}){
   const box=document.getElementById(container); box.innerHTML='';
-  const W=box.clientWidth||460, legH=Math.ceil(slices.length/3)*22+8, H=height-legH,
-        cx=W/2, cy=H/2;
-  const R=Math.max(50, Math.min(H/2-10, W/2-24)), r=R*0.63;
+  const W=box.clientWidth||460, legH=Math.ceil(slices.length/3)*22+8;
+  // v24.1 — เดิมบังคับ R ขั้นต่ำ 50 ทำให้วงใหญ่กว่ากรอบตอนการ์ดเตี้ย/แคบ ป้าย % เลยล้นออกนอก svg
+  let R=Math.min((height-legH)/2-10, W/2-24);
+  if(R<44){ R=Math.max(30, Math.min(44, W/2-24)); }
+  const H=Math.max(height-legH, 2*R+24), cx=W/2, cy=H/2, r=R*0.63;
   const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:'100%',height:H},box);
   const tot=slices.reduce((a,s)=>a+s.v,0)||1;
   let a0=-Math.PI/2;
@@ -2445,10 +2952,67 @@ function renderDecide(){
   const rows=dcBuild();
   const {act}=dcScore(rows);
   renderDcFunnel(rows);
+  renderDcGap(rows);        // v24.0 Dumbbell
+  renderDcScatter(rows);    // v24.0 Scatter/Bubble
   renderDcWeights();
   renderDcRank(rows,act);
   renderDcAlerts(rows,act);
 }
+/* v24.0 — ② ต่อ: ช่องว่างรายหมวดแบบ Dumbbell
+   2 แถบแยกบรรทัดต้องกวาดตาไปมาถึงจะรู้ว่าห่างเท่าไร · Dumbbell ทำให้ช่องว่างเป็น "ความยาวเส้น" */
+function renderDcGap(rows){
+  const box=document.getElementById('dcGap'); if(!box) return;
+  const haveZb=!!(typeof zbData!=='undefined'&&zbData&&zbData.length);
+  const haveReq=!!(typeof reqData!=='undefined'&&reqData&&reqData.length);
+  if(!haveZb||!haveReq){
+    box.innerHTML=`<div class="note" style="padding:16px 4px;text-align:center">ต้องมีทั้ง Zerobase และคำของบถึงจะเทียบได้`+
+      `${!haveZb?' — ยังไม่มี Zerobase':''}${!haveReq?' — ยังไม่มีคำของบ':''}</div>`; return; }
+  const byM={};
+  rows.forEach(r=>{ const m=r.muad||'ไม่ระบุ'; byM[m]=byM[m]||{need:0,req:0};
+    byM[m].need+=r.needKm||0; byM[m].req+=r.reqKm||0; });
+  const arr=Object.entries(byM).filter(([,v])=>v.need>0||v.req>0)
+    .map(([m,v])=>({label:'หมวด'+m, a:+v.need.toFixed(1), b:+v.req.toFixed(1)}))
+    .sort((x,y)=>(y.a-y.b)-(x.a-x.b));
+  dumbbell('dcGap', arr, {unit:'กม.', c1:C.gold, c2:C.blue,
+    l1:'ความต้องการคงเหลือ', l2:'ยื่นขอแล้ว', gapLabel:'ยังไม่ได้ยื่นขอ'});
+}
+/* v24.0 — ③½ Scatter/Bubble: PCU × ระยะทาง × งบที่เคยได้
+   ตอบคำถามที่กราฟแท่งตอบไม่ได้: "สายไหนรถเยอะแต่ยังไม่เคยได้งบ" */
+function renderDcScatter(rows){
+  const box=document.getElementById('dcScatter'); if(!box) return;
+  /* v24.1 — เปลี่ยนแกนนอนจาก "ระยะทาง" เป็น "งบที่เคยได้ต่อ กม." แล้วแบ่งเป็น 4 ช่อง
+     เพราะคำถามจริงคือ "สายที่คนใช้เยอะ แต่เราลงทุนน้อย อยู่ตรงไหน" ไม่ใช่ "สายไหนยาว"
+     ช่องบนซ้าย (รถเยอะ · ลงทุนน้อย) = กลุ่มที่ควรได้งบก่อน — แรเงาไว้ให้เห็นชัด */
+  const pts=rows.filter(r=>pcuOf(r.code)!=null&&(r.len||0)>0).map(r=>{
+    const perKm=(r.gotBaht||0)/1e6/Math.max(r.len,0.01);
+    return {x:+perKm.toFixed(3), y:pcuOf(r.code), r:r.len, label:r.code, color:muadColor(r.muad),
+      _got:r.gotBaht||0, _len:r.len, _yr:r.lastYear,
+      tip:`<b>${esc(r.code)}</b> ${esc((r.name||'').slice(0,30))}`+
+          `<br>PCU ${fmt(pcuOf(r.code))} คัน/วัน · ระยะทาง ${fmt(r.len)} กม.`+
+          `<br>งบสะสม ${r.gotBaht?fmtM(r.gotBaht):'ยังไม่เคยได้งบ'} = <b>${fmt(+perKm.toFixed(2))} ลบ./กม.</b>`+
+          `${r.lastYear?`<br>ได้งบล่าสุดปี ${r.lastYear}`:''}<br>หมวด${esc(r.muad||'-')}`};
+  });
+  if(pts.length<3){
+    box.innerHTML='<div class="note" style="padding:24px 4px;text-align:center">ต้องมีข้อมูล PCU อย่างน้อย 3 สายถึงจะวาดได้ '+
+      `(ตอนนี้ ${pts.length} สาย)</div>`; return; }
+  const med=a=>{ const v=[...a].sort((x,y)=>x-y); return v[Math.floor(v.length/2)]; };
+  const mY=med(pts.map(p=>p.y)), mX=med(pts.map(p=>p.x));
+  scatter('dcScatter', pts, {xLab:'งบที่เคยได้ ต่อ กม. (ลบ./กม.) →', yLab:'PCU (คัน/วัน)', height:340,
+    xLog:true, refY:mY, refLab:'ค่ากลาง PCU '+fmt(mY), refX:mX, refXLab:'ค่ากลาง '+fmt(+mX.toFixed(2)),
+    quad:{focus:'tl', tl:'▲ รถเยอะ · ลงทุนน้อย — ควรได้ก่อน', tr:'รถเยอะ · ลงทุนแล้ว',
+          bl:'รถน้อย · ลงทุนน้อย — รอได้', br:'รถน้อย · ลงทุนเยอะ — ควรทบทวน'},
+    onClick:pt=>{ const b=document.querySelector('.nav button[data-page="map"]');
+      if(b) b.click(); setTimeout(()=>{ if(typeof selectRoad==='function') selectRoad(pt.label); },320); }});
+  const hot=pts.filter(p=>p.y>=mY&&p.x<=mX).sort((a,b)=>b.y-a.y);
+  const n=document.createElement('div'); n.className='footnote'; n.style.marginTop='8px';
+  n.innerHTML=hot.length
+    ? `<b style="color:var(--crit)">${hot.length} สาย</b>อยู่ในช่องซ้ายบน (คนใช้มากกว่าค่ากลาง แต่ได้งบต่อ กม. น้อยกว่าค่ากลาง): `+
+      hot.slice(0,8).map(p=>`<b>${esc(p.label)}</b>`).join(' · ')+(hot.length>8?` และอีก ${hot.length-8} สาย`:'')+
+      `<br>ขนาดฟอง = ระยะทาง · เส้นแบ่งใช้ค่ากลางของชุดข้อมูลนี้ ไม่ใช่เกณฑ์มาตรฐานกลาง`
+    : 'ไม่มีสายที่ตกอยู่ในช่องซ้ายบน — การลงทุนสอดคล้องกับปริมาณจราจรอยู่แล้ว';
+  box.appendChild(n);
+}
+
 /* ② ช่องว่างความต้องการ
    ระวังกับดักฐานเวลา: Zerobase = ความต้องการ "คงเหลือ ณ ตอนนี้" (ได้งบแล้วลบแถวทิ้ง)
    ส่วนประวัติ = ผลงาน "สะสมย้อนหลังหลายปี" — เอามาต่อกันเป็นกรวยเดียวไม่ได้
@@ -2575,7 +3139,7 @@ function renderDcAlerts(rows,act){
       const [lo,hi]=[per[0],per[per.length-1]];
       if(lo[1]>0&&hi[1]/lo[1]>=1.5)
         push(A,'warn','⚖',`งบต่อ กม. ต่างกัน <b>${(hi[1]/lo[1]).toFixed(1)} เท่า</b> ระหว่างหมวด`,
-          `หมวด${esc(hi[0])} ${fmtM(hi[1])}/กม. · หมวด${esc(lo[0])} ${fmtM(lo[1])}/กม.`);
+          `หมวด${esc(hi[0])} ${fmtPerKm(hi[1])} · หมวด${esc(lo[0])} ${fmtPerKm(lo[1])}`);
       push(R,'info','⚖',`ทบทวนการจัดสรรงบรายหมวด — หมวด<b>${esc(lo[0])}</b>ได้งบต่อ กม. น้อยที่สุด`,
         'ถ้าไม่ได้ตั้งใจให้ต่างกัน ควรดูว่าเกิดจากจำนวนคำขอหรือการอนุมัติ');
     }
@@ -2781,25 +3345,16 @@ async function renderTargets(){
   if(riskData&&riskData.length) vals.riskFixed=100*riskData.filter(riskFixed).length/riskData.length;
   if(eqData&&eqData.length){ const bad=eqData.filter(x=>/ชำรุด|เสีย|ไม่ใช้งาน|เสื่อม/.test(x.cond||'')).length;
     vals.eqOk=100*(eqData.length-bad)/eqData.length; }
-  box.innerHTML=`<div class="grid kpis" style="grid-template-columns:repeat(4,1fr)">${TARGETS.map(t=>{
-    const v=vals[t.k];
-    const has=v!=null&&isFinite(v);
-    const ok=has&&v>=t.tgt;
-    const col=has?(ok?'#0a7a2f':(v>=t.tgt*0.8?'#b7791f':'#c22')):'#9aa5a3';
-    const pct=has?Math.min(100,v):0;
-    return `<div style="border:1.5px solid var(--line);border-radius:12px;padding:11px 13px">
-      <div style="font-size:12px;font-weight:700;color:var(--ink)">${t.lbl}</div>
-      <div style="display:flex;align-items:baseline;gap:7px;margin-top:3px">
-        <span style="font-size:21px;font-weight:800;color:${col}">${has?v.toFixed(0)+t.unit:'—'}</span>
-        <span style="font-size:11px;color:var(--muted)">เป้า ≥ ${t.tgt}${t.unit}</span>
-        ${has?`<span style="font-weight:800;color:${col}">${ok?'✓':'▲'}</span>`:''}
-      </div>
-      <div style="height:7px;background:#eef1f4;border-radius:4px;margin-top:7px;position:relative">
-        <div style="height:7px;width:${pct}%;background:${col};border-radius:4px"></div>
-        <div style="position:absolute;top:-2px;left:${Math.min(100,t.tgt)}%;width:2px;height:11px;background:#1B2A4A"></div>
-      </div>
-      <div style="font-size:10.5px;color:var(--muted);margin-top:5px">${has?t.src:'รอข้อมูลจากชีท — '+t.src}</div>
-    </div>`;}).join('')}</div>`;
+  /* v24.0 — เปลี่ยนจากการ์ด 4 ใบ + แถบเป้าจางๆ เป็น Bullet
+     Bullet มีเส้นเป้าคาดอยู่บนแถบ เห็นปุ๊บรู้ปั๊บว่าถึงหรือไม่ถึง · กินที่น้อยกว่าเดิมด้วย */
+  const rows=TARGETS.map(t=>({label:t.lbl, v:vals[t.k], target:t.tgt, max:100, unit:t.unit, foot:t.src}))
+    .filter(r=>r.v!=null&&isFinite(r.v));
+  const miss=TARGETS.filter(t=>vals[t.k]==null||!isFinite(vals[t.k]));
+  box.innerHTML=`<div id="tgtBullet"></div>`+
+    (miss.length?`<div class="footnote" style="margin-top:8px">ยังไม่มีข้อมูลสำหรับ: ${miss.map(t=>esc(t.lbl)).join(' · ')} — ${esc(miss[0].src)}</div>`:'');
+  if(rows.length) bullet('tgtBullet', rows);
+  else box.innerHTML=`<div class="note" style="padding:20px 4px;text-align:center">ยังไม่มีข้อมูลสภาพสายทาง / จุดเสี่ยง / Equipment จากชีท</div>`+
+    `<div class="footnote">เป้าหมายที่ตั้งไว้: ${TARGETS.map(t=>esc(t.lbl)+' ≥ '+t.tgt+t.unit).join(' · ')}</div>`;
 }
 /* ============================================================
    v21.0 — ชั้นโต้ตอบของหน้าภาพรวม
@@ -2875,20 +3430,15 @@ function renderOverview(){
     kico('🛣️','#e6f4f2','สายทางในบัญชี', `${nRoad} <small>สาย</small>`, (OVF.muad?'หมวด'+esc(OVF.muad):'บัญชีหลักของแขวงฯ')+share(nRoad,RALL.length),
       {go:'roadTable', title:'ไปที่ทะเบียนสายทาง'})+
     kico('📏','#edf2fa','ระยะทางรวม', `${fmt(totKm)} <small>กม.</small>`, `ตามบัญชี (รวมสะพาน ${fmt(+bridgeLen.toFixed(2))} กม.)`+share(totKm,totKmAll),
-      {go:'chAmphoe', title:'ดูระยะทางแยกรายหมวด'})+
+      {go:'muadTable', title:'ดูระยะทางแยกรายหมวดในตาราง'})+
     kico('🚧','#f0f0f2','ผิวลาดยาง', `${fmt(lat)} <small>กม.</small>`, `${(100*lat/Math.max(surfKm,1)).toFixed(1)}% ของผิวทาง`,
       {go:'chSurface', title:'ดูสัดส่วนผิวจราจร'})+
     kico('🌉','#eaf2fc','สะพาน', `${fmt(bridges)} <small>แห่ง</small>`, 'ตามบัญชีโครงข่าย'+share(bridges,brAll),
       {go:'page:map', title:'เปิดหน้าแผนที่เพื่อดูตำแหน่งสะพาน'})+
     kico('📐','#f0ecfa','ความยาวสะพานรวม', `${fmt(bridgeLen)} <small>กม.</small>`, 'รวมทุกหมวด'+share(bridgeLen,brKmAll),
       {go:'muadTable', title:'ดูความยาวสะพานแยกรายหมวด'})+
-    // v23.3 — ย้าย KPI งบไปอยู่ในการ์ดงบประมาณด้านล่าง แถวบนจะได้เหลือแต่มิติของโครงข่าย
-    kico('📍','#eaf7ef','สายที่ยาวที่สุด', longest?`${esc(longest.code)}`:'—',
-      longest?`${fmt(longest.len_acct)} กม. · ${esc((longest.name||'').slice(0,26))}`:'ไม่มีข้อมูล',
-      longest?{go:'roadTable', title:'ไปที่ทะเบียนสายทาง'}:null)+
-    kico('🚗','#eaf1fb','PCU สูงสุด', topPcu?`${esc(topPcu.code)}`:'—',
-      topPcu?`${fmt(topPcu.v)} PCU/วัน · ${esc((topPcu.name||'').slice(0,24))}`:'ไม่มีข้อมูล PCU',
-      topPcu?{go:'roadTable', title:'ไปที่ทะเบียนสายทาง'}:null);
+    // v23.5 — KPI งบสะสมกลับมาอยู่แถวบนตามเดิม · ส่วน "ยาวที่สุด/PCU สูงสุด" ไปเป็นกราฟ Top 10 ด้านล่างแทน
+    `<div class="card kpi iko"><div class="kico" style="background:#e9f6ee">💰</div><div style="min-width:0" id="kpiBudget"><div class="lbl">งบสะสม (ตามสัญญา)</div><div class="val">…</div><div class="foot">ทุกปีรวมกัน</div></div></div>`;
 
   // ---- สรุปรายหมวด (ตาราง) ----
   const byM={};
@@ -2897,10 +3447,13 @@ function renderOverview(){
     byM[m].n++; byM[m].km+=(r.len_acct||0); byM[m].br+=(r.bridges_acct||0); byM[m].brkm+=(r.bridge_len_acct||0);
     byM[m].lat+=(r.latyang||0); byM[m].con+=(r.concrete||0); byM[m].luk+=(r.lukrang||0); });
   const muads=[...MUAD_ORDER.filter(m=>byM[m]), ...Object.keys(byM).filter(m=>!MUAD_ORDER.includes(m)&&byM[m].km>0)];
+  const mxKm=Math.max(...muads.map(m=>byM[m].km),0.0001);   // v24.0 — สเกลแท่งในช่องตาราง (แทนกราฟ chAmphoe ที่ถอดออก)
   document.querySelector('#muadTable tbody').innerHTML = muads.map(m=>{
     const d=byM[m];
     return `<tr data-muad="${esc(m)}" class="${OVF.muad===m?'selrow':''}" title="คลิกเพื่อกรองทั้งหน้าด้วยหมวดนี้"><td><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${muadColor(m)};margin-right:7px"></span><b>หมวด${esc(m)}</b></td>
-      <td class="num">${d.n}</td><td class="num">${fmt(+d.km.toFixed(2))}</td><td class="num">${d.br}</td><td class="num">${fmt(+d.brkm.toFixed(3))}</td></tr>`;
+      <td class="num">${d.n}</td>
+      <td><div class="ibar" title="หมวด${esc(m)} · ${fmt(+d.km.toFixed(2))} กม. — ${(100*d.km/totKmAll).toFixed(1)}% ของโครงข่าย (${(100*d.km/mxKm).toFixed(0)}% ของหมวดที่ยาวที่สุด)"><div class="trk"><span style="width:${(100*d.km/mxKm).toFixed(1)}%;background:${muadColor(m)}"></span></div><b>${fmt(+d.km.toFixed(2))}</b><i class="ipct">${(100*d.km/totKmAll).toFixed(1)}%</i></div></td>
+      <td class="num">${d.br}</td><td class="num">${fmt(+d.brkm.toFixed(3))}</td></tr>`;
   }).join('') + `<tr style="background:var(--teal-soft);font-weight:700"><td>รวม</td><td class="num">${RALL.length}</td><td class="num">${fmt(+totKmAll.toFixed(2))}</td><td class="num">${brAll}</td><td class="num">${fmt(+brKmAll.toFixed(3))}</td></tr>`;
 
   document.querySelectorAll('#muadTable tbody tr[data-muad]').forEach(tr=>
@@ -2917,19 +3470,42 @@ function renderOverview(){
     {unit:'กม.', onClick:row=>setOvFilter(row.label.replace('หมวด',''))});
   dimViz('chSurfaceMuad', OVF.muad ? surfRows.indexOf(OVF.muad) : null);
 
-  const pairs = muads.map(m=>['หมวด'+m, byM[m].km]).filter(p=>p[1]>0).sort((a,b)=>b[1]-a[1]);
-  hbar('chAmphoe', pairs.map(p=>({label:p[0], v:+p[1].toFixed(2), color:muadColor(p[0].replace('หมวด','')),
-    tip:`${fmt(+p[1].toFixed(2))} กม. (${(100*p[1]/totKmAll).toFixed(1)}% ของโครงข่าย) — คลิกเพื่อกรองทั้งหน้า`})),
-    {unit:'กม.', height:300, showVal:false, onClick:it=>setOvFilter(it.label.replace('หมวด',''))});
-  dimViz('chAmphoe', OVF.muad ? pairs.findIndex(p=>p[0]==='หมวด'+OVF.muad) : null);
 
   const _sn=document.getElementById('surfNote');
-  if(_sn) _sn.innerHTML = `กม. และ % ของ<b>ระยะทางผิวทาง</b> — ไม่รวมช่วงที่เป็นสะพาน `
-    +`(${fmt(+totKm.toFixed(2))} − ${fmt(+bridgeLen.toFixed(2))} = <b>${fmt(+surfKm.toFixed(2))} กม.</b>)`;
-  donut('chSurface', [
-    {label:'ลาดยาง', v:+lat.toFixed(1), color:'#52525b'},
-    {label:'คอนกรีต', v:+con.toFixed(1), color:C.blue},
-    {label:'ลูกรัง', v:+luk.toFixed(1), color:C.gold}]);
+  if(_sn) _sn.innerHTML = `ฐาน ${fmt(+surfKm.toFixed(1))} กม. (ไม่รวมช่วงสะพาน)`;
+  /* v24.0 — เลิกใช้โดนัท (3 ชิ้น อ่านค่าจริงไม่ได้ ต้องไปไล่ legend)
+     สาระคือประโยคเดียว "ลาดยาง 90.7%" จึงเอาตัวเลขขึ้นนำ แล้วต่อแถบสัดส่วนแถบเดียวใต้ */
+  (()=>{ const box=document.getElementById('chSurface'); if(!box) return;
+    const segs=[['ลาดยาง',lat,'#52525b'],['คอนกรีต',con,C.blue],['ลูกรัง',luk,C.gold]];
+    const tt=lat+con+luk||1;
+    box.innerHTML=
+      `<div class="heroblk"><div class="hn">${(100*lat/tt).toFixed(1)}<span>%</span></div>`+
+      `<div class="hl">ของผิวทางเป็น<b>ลาดยาง</b><div class="mu">${fmt(+lat.toFixed(1))} จาก ${fmt(+tt.toFixed(1))} กม.</div></div></div>`+
+      `<div class="onebar">${segs.map(([l,v,c])=>
+        `<span style="width:${(100*v/tt).toFixed(3)}%;background:${c}" title="${l} ${fmt(+v.toFixed(1))} กม."></span>`).join('')}</div>`+
+      `<div class="onelg">${segs.map(([l,v,c])=>
+        `<span><i style="background:${c}"></i>${l} <b>${fmt(+v.toFixed(1))}</b> กม. · ${(100*v/tt).toFixed(1)}%</span>`).join('')}</div>`;
+  })();
+
+  /* v23.5 — Top 10 ยาวที่สุด / PCU สูงสุด: แพตเทิร์นเดียวกับ "งบรวมต่อสายทาง Top 10"
+     แท่งนอน · สีตามหมวด · ตัวเลขท้ายแท่ง · คลิกแล้วเปิดสายนั้นในแผนที่ · เคารพตัวกรองหมวด */
+  const goRoad=it=>{ const b=document.querySelector('.nav button[data-page="map"]'); if(b) b.click();
+    setTimeout(()=>{ if(typeof selectRoad==='function') selectRoad(it.label); },320); };
+  const topLen=R.filter(r=>(r.len_acct||0)>0).sort((a,b)=>b.len_acct-a.len_acct).slice(0,10);
+  lolli('chTopLen', topLen.map(r=>({label:r.code, v:+(r.len_acct||0).toFixed(2), color:muadColor(r.muad),
+      tip:`${esc(r.name||'')}<br>${fmt(r.len_acct)} กม. · หมวด${esc(r.muad||'-')}${pcuOf(r.code)!=null?`<br>PCU ${fmt(pcuOf(r.code))} คัน/วัน`:''}`})),
+    {unit:'กม.', labelW:70, onClick:goRoad});
+  const topP=pcuRows.slice(0,10);
+  if(topP.length)
+    lolli('chTopPcu', topP.map(r=>({label:r.code, v:r.v, color:muadColor((CI[r.code]||{}).muad),
+        tip:`${esc(r.name||'')}<br>${fmt(r.v)} คัน/วัน · หมวด${esc((CI[r.code]||{}).muad||'-')}`})),
+      {unit:'คัน/วัน', labelW:70, valW:76, onClick:goRoad});
+  else document.getElementById('chTopPcu').innerHTML=
+    `<div class="note" style="padding:22px 4px;text-align:center">ยังไม่มีข้อมูล PCU ในชุดที่เลือก</div>`;
+  const nP=Object.keys(PC).length;
+  const capP=document.querySelector('#chTopPcu')?.closest('.card')?.querySelector('.note');
+  if(capP) capP.innerHTML=`ปริมาณจราจร — สีตามหมวดบำรุงทาง · คลิกแท่งเพื่อเปิดในแผนที่`+
+    `<br><span style="color:var(--muted)">มีข้อมูล ${nP} จาก ${ALL_CODES.length} สาย — ที่เหลือยังไม่ได้สำรวจ</span>`;
 
   // KPI ที่กดได้ -> เลื่อนไปยังส่วนที่เกี่ยวข้อง หรือกระโดดข้ามหน้า
   document.querySelectorAll('#ovKpis .kpi.clickable').forEach(c=>c.addEventListener('click',()=>{
@@ -2942,10 +3518,122 @@ function renderOverview(){
   }));
 
   renderRoadTable();
+  try{ renderBudgetKpi(); }catch(e){ console.error('renderBudgetKpi', e); }
+  try{ renderOvDecide(); }catch(e){ console.error('renderOvDecide', e); }
   loadHistory().catch(()=>{}); // ดึงงบมาเติมส่วนงบประมาณ (เติมผ่าน renderOverviewBudget)
 }
 
 /* ---- ส่วนงบประมาณในหน้าภาพรวม (เรียกหลัง HISTORY โหลดเสร็จ) ---- */
+/* ============================================================
+   v24.1 — แถบสรุปผู้บริหาร (บนหน้าภาพรวม)
+   คัดเฉพาะเรื่องที่ "ต้องตัดสินใจ / ต้องตามงาน" ไม่ใช่ตัวเลขสวยๆ
+   ทุกตัวคำนวณสดจากชีทประวัติ + บัญชีสายทาง ไม่มีค่าตายตัว
+   ============================================================ */
+function renderExecBar(){
+  const box=document.getElementById('ovExec'); if(!box) return;
+  if(typeof histData==='undefined' || !histData || !histData.length){ box.style.display='none'; return; }
+  const H=histData, now=Date.now(), DAY=864e5;
+  const withDate=H.map(x=>{ const b=parseThaiDate(x.end);
+    return b?{amount:x.amount, tb:b.getTime(), dv:parseThaiDate(x.delivered)}:null; }).filter(Boolean);
+  const overdue=withDate.filter(x=>x.tb<now && !x.dv);
+  const due30 =withDate.filter(x=>x.tb>=now && x.tb<=now+30*DAY && !x.dv);
+  const done  =withDate.filter(x=>x.dv);
+  const onTime=done.filter(x=>x.dv.getTime()<=x.tb+DAY);
+  const onPct = done.length? 100*onTime.length/done.length : null;
+  const funded=new Set(H.map(x=>x.code).filter(Boolean));
+  const never=ALL_CODES.filter(c=>!funded.has(c));
+  const CI=codeInfo();
+  const neverKm=never.reduce((a,c)=>a+((CI[c]||{}).len_acct||0),0);
+  const ovAmt=overdue.reduce((a,x)=>a+(x.amount||0),0);
+  const it=(cls,ico,num,lab,foot,go)=>`<div class="exit ${cls}${go?' clickable':''}"${go?` data-go="${go}"`:''}>`+
+    `<div class="ei">${ico}</div><div style="min-width:0"><div class="en">${num}</div>`+
+    `<div class="el">${lab}</div><div class="ef">${foot}</div></div></div>`;
+  box.innerHTML=`<div class="eh"><h3>ต้องจับตาตอนนี้</h3>`+
+      `<span class="sub">คำนวณสดจากประวัติสัญญา ${fmt(H.length)} รายการ</span></div>`+
+    `<div class="exgrid">`+
+    it(overdue.length?'crit':'ok', overdue.length?'!':'✓', fmt(overdue.length),
+       overdue.length?'สัญญา<b>เลยกำหนด</b> ยังไม่ส่งงานงวดสุดท้าย':'ไม่มีสัญญาเลยกำหนด',
+       overdue.length?`วงเงินรวม ${fmtM(ovAmt)} — กดดูไทม์ไลน์`:'ทุกสัญญาส่งงานตามกำหนด', 'page:history')+
+    it(due30.length?'warn':'ok','◔', fmt(due30.length),
+       'สัญญา<b>ครบกำหนดใน 30 วัน</b>',
+       due30.length?`วงเงิน ${fmtM(due30.reduce((a,x)=>a+(x.amount||0),0))} — กดดูไทม์ไลน์`:'ยังไม่มีที่ครบกำหนดเร็วๆ นี้', 'page:history')+
+    it(onPct==null?'':(onPct>=80?'ok':(onPct>=60?'warn':'crit')),'⏱',
+       onPct==null?'—':onPct.toFixed(0)+'%', 'ส่งงาน<b>ตรงเวลา</b>',
+       done.length?`จาก ${fmt(done.length)} สัญญาที่ส่งงานแล้ว`:'ยังไม่มีสัญญาที่ระบุวันส่งงาน')+
+    it(never.length?'warn':'ok','◇', fmt(never.length),
+       'สายทาง<b>ไม่พบสัญญาในประวัติเลย</b>',
+       never.length?`รวม ${fmt(+neverKm.toFixed(1))} กม. — ไม่เคยได้งบ หรือรหัสไม่ตรงบัญชี`:'ทุกสายมีประวัติแล้ว', 'page:decide')+
+    `</div>`;
+  box.style.display='';
+  box.querySelectorAll('.exit.clickable').forEach(c=>c.addEventListener('click',()=>{
+    const g=c.dataset.go||''; if(!g.startsWith('page:')) return;
+    const btn=document.querySelector(`.nav button[data-page="${g.slice(5)}"]`); if(btn) btn.click(); }));
+}
+/* ============================================================
+   v24.4 — สรุปการตัดสินใจแบบย่อ บนหน้าภาพรวม (ก่อนทะเบียนสายทาง)
+   ใช้เครื่องคิดคะแนนตัวเดียวกับหน้าวิเคราะห์ตัดสินใจ (dcBuild/dcScore) ไม่ได้คำนวณซ้ำคนละสูตร
+   โชว์แค่ "5 สายแรก + 3 ตัวเลขที่ต้องรู้" ที่เหลือกดเข้าไปดูเต็มในหน้านั้น
+   เหตุผลที่ไม่ยกมาทั้งหน้า: สไลเดอร์ถ่วงน้ำหนัก + 20 อันดับ + quadrant เป็นพื้นที่ "ทำงาน"
+   ถ้ายัดมาหมด หน้าภาพรวมจะยาวเกิน 5,700px กลายเป็นลายตาแบบเดิม
+   ============================================================ */
+function renderOvDecide(){
+  const box=document.getElementById('ovDecide'); if(!box) return;
+  if(typeof dcBuild!=='function'||typeof dcScore!=='function'){ box.style.display='none'; return; }
+  let rows, act;
+  try{ rows=dcBuild(); ({act}=dcScore(rows)); }catch(e){ box.style.display='none'; return; }
+  if(!rows||!rows.length){ box.style.display='none'; return; }
+  if(OVF.muad) rows=rows.filter(r=>(r.muad||'ไม่ระบุ')===OVF.muad);
+  if(!rows.length){ box.style.display='none'; return; }
+  box.style.display='';
+  const top=rows.slice(0,5);
+
+  // ตัวเลขที่ต้องรู้ 3 ตัว
+  const haveZb=!!(typeof zbData!=='undefined'&&zbData&&zbData.length);
+  const haveReq=!!(typeof reqData!=='undefined'&&reqData&&reqData.length);
+  const needKm=rows.reduce((a,r)=>a+(r.needKm||0),0), reqKm=rows.reduce((a,r)=>a+(r.reqKm||0),0);
+  const gap=needKm-reqKm;
+  const PC=pcuByCode();
+  const withP=rows.filter(r=>PC[r.code]!=null&&(r.len||0)>0)
+    .map(r=>({...r, _p:PC[r.code], _k:(r.gotBaht||0)/1e6/Math.max(r.len,0.01)}));
+  const md=a=>{ const v=[...a].sort((x,y)=>x-y); return v.length?v[Math.floor(v.length/2)]:0; };
+  const mP=md(withP.map(x=>x._p)), mK=md(withP.map(x=>x._k));
+  const under=withP.filter(x=>x._p>=mP&&x._k<=mK);
+  const never=rows.filter(r=>act.age&&r.age>=90);
+
+  const num=(cls,v,t,f)=>`<div class="dsnum ${cls}"><div style="min-width:0"><div class="v">${v}</div>`+
+    `<div class="t">${t}</div><div class="f">${f}</div></div></div>`;
+  const nums=
+    (haveZb&&haveReq
+      ? num(gap>0.05?'warn':'', gap>0.05?fmt(+gap.toFixed(1))+' <small style="font-size:12px">กม.</small>':'ครบแล้ว',
+          gap>0.05?'ความต้องการที่<b>ยังไม่ได้ยื่นขอ</b>':'ยื่นขอครอบคลุมความต้องการคงเหลือแล้ว',
+          `Zerobase ${fmt(+needKm.toFixed(1))} กม. · ยื่นขอ ${fmt(+reqKm.toFixed(1))} กม.`)
+      : num('', '—', 'ความต้องการที่<b>ยังไม่ได้ยื่นขอ</b>', 'ต้องมีทั้ง Zerobase และคำของบ'))+
+    num(under.length?'crit':'', fmt(under.length)+' <small style="font-size:12px">สาย</small>',
+      '<b>คนใช้เยอะ แต่ลงทุนน้อย</b>', under.length?'สูงกว่าค่ากลาง PCU แต่ได้งบ/กม. ต่ำกว่าค่ากลาง':'การลงทุนสอดคล้องกับปริมาณจราจร')+
+    num(never.length?'warn':'', fmt(never.length)+' <small style="font-size:12px">สาย</small>',
+      '<b>ไม่พบสัญญาในประวัติเลย</b>', act.age?'ไม่เคยได้งบ หรือรหัสไม่ตรงบัญชี':'ยังไม่มีข้อมูลประวัติโครงการ');
+
+  box.innerHTML=
+    `<div class="dsh"><div><h3>สายทางที่ควรได้งบก่อน</h3>`+
+      `<div class="note" style="margin:0">คะแนนรวมจาก ${Object.values(act).filter(Boolean).length} ปัจจัย`+
+      `${OVF.muad?` · เฉพาะหมวด${esc(OVF.muad)}`:''} — ปรับน้ำหนักเองได้ในหน้าวิเคราะห์ตัดสินใจ</div></div>`+
+      `<button class="btn ghost" id="ovDecMore">ดูเต็ม + ปรับน้ำหนัก →</button></div>`+
+    `<div class="dsgrid"><div>`+
+      top.map((r,i)=>`<div class="dsrow" data-code="${esc(r.code)}" title="เปิด ${esc(r.code)} ในแผนที่">`+
+        `<span class="rk${i<3?' top':''}">${i+1}</span>`+
+        `<div class="nm"><b>${esc(r.code)}</b> ${esc((r.name||'').slice(0,34))}`+
+          `<div class="wy">${dcWhy(r,act).slice(0,3).map(([c,t])=>`<span>${esc(t)}</span>`).join('')}</div></div>`+
+        `<div class="sc"><div class="bar2"><span style="width:${Math.max(3,r.score).toFixed(0)}%"></span></div>`+
+          `<b>${r.score.toFixed(0)}</b></div></div>`).join('')+
+      `<div class="footnote" style="margin-top:7px">แสดง 5 อันดับแรกจาก ${fmt(rows.length)} สาย · คะแนนเทียบกันเองในชุดข้อมูลนี้ (0–100)</div>`+
+    `</div><div>${nums}</div></div>`;
+
+  box.querySelectorAll('.dsrow').forEach(el2=>el2.addEventListener('click',()=>{
+    const b=document.querySelector('.nav button[data-page="map"]'); if(b) b.click();
+    setTimeout(()=>{ if(typeof selectRoad==='function') selectRoad(el2.dataset.code); },320); }));
+  const more=document.getElementById('ovDecMore');
+  if(more) more.addEventListener('click',()=>{ const b=document.querySelector('.nav button[data-page="decide"]'); if(b) b.click(); });
+}
 function renderOverviewBudgetPill(){
   if(!histData) return;
   const bp=document.getElementById('ovBudPill'); if(!bp) return;
@@ -2953,30 +3641,41 @@ function renderOverviewBudgetPill(){
   bp.style.display='inline-flex';
   bp.innerHTML=`<span class="dot live"></span> งบสะสม ${fmtM(tot)} — สดจากชีต`;
 }
+/* v24.5 — แยก KPI "งบสะสม" ออกมาเป็นฟังก์ชันของตัวเอง
+   บั๊กที่เจอตอนทดสอบ end-to-end: renderOverview() สร้างแถว KPI ใหม่ทุกครั้ง (kpiBudget กลับเป็น "…")
+   แต่มีหลายจุดเรียก renderOverview() ทีหลัง เช่น loadCond() ตอนเจอคอลัมน์ PCU
+   ผลคือข้อมูลงบมาถึงแล้วแท้ๆ แต่ KPI ค้างเป็นจุดไข่ปลา */
+function renderBudgetKpi(){
+  const kb=document.getElementById('kpiBudget'); if(!kb) return;
+  if(typeof histData==='undefined'||!histData||!histData.length) return;
+  const H=histData.filter(x=>x.amount && (!OVF.muad || recMuad(x)===OVF.muad));
+  if(!H.length) return;
+  const tot=H.reduce((a,x)=>a+(x.amount||0),0);
+  // v21.0 — สปาร์กไลน์งบรายปี + ส่วนต่างจากปีก่อน (คิดจากสัญญาจริงในชีต)
+  const byY={}; H.forEach(x=>{ if(x.year) byY[x.year]=(byY[x.year]||0)+x.amount; });
+  const ys=Object.keys(byY).map(Number).sort((a,b)=>a-b);
+  const vals=ys.map(y=>byY[y]);
+  // ปีล่าสุดมักยังลงข้อมูลไม่ครบ จึงเทียบ "ปีที่ข้อมูลนิ่งแล้ว" คือปีรองสุดท้ายกับก่อนหน้า
+  let dHTML='', foot=`${H.length} สัญญา ปี ${ys[0]||'-'}–${ys[ys.length-1]||'-'}`;
+  if(ys.length>=3){
+  const a=vals[vals.length-3], b=vals[vals.length-2];
+  if(a>0) dHTML=deltaHTML(100*(b-a)/a, `ปี ${ys[ys.length-2]} เทียบ ${ys[ys.length-3]}`);
+  }
+  kb.innerHTML=`<div class="lbl">งบสะสม (ตามสัญญา)</div><div class="val">${fmtM(tot)}</div>`+
+  dHTML + sparkSVG(vals, '#0d9488', 104, 24) + `<div class="foot">${foot}</div>`;
+  const card=kb.closest('.kpi');
+  if(card && !card.dataset.b){ card.dataset.b='1'; card.classList.add('clickable');
+  card.title='ไปที่หน้าประวัติสายทาง (งบรายปี)';
+  card.addEventListener('click',()=>{ const b=document.querySelector('.nav button[data-page="history"]'); if(b) b.click(); }); }
+}
 function renderOverviewBudget(){
   if(!histData){ return; }
+  try{ renderExecBar(); }catch(e){ console.error('renderExecBar', e); }
+  try{ renderOvDecide(); }catch(e){ console.error('renderOvDecide', e); }
   renderOverviewBudgetPill();
   const H=histData.filter(x=>x.amount && (!OVF.muad || recMuad(x)===OVF.muad));   // v21.0 cross-filter
   const tot=H.reduce((a,x)=>a+x.amount,0);
-  const kb=document.getElementById('kpiBudget');
-  if(kb){
-    // v21.0 — สปาร์กไลน์งบรายปี + ส่วนต่างจากปีก่อน (คิดจากสัญญาจริงในชีต)
-    const byY={}; H.forEach(x=>{ if(x.year) byY[x.year]=(byY[x.year]||0)+x.amount; });
-    const ys=Object.keys(byY).map(Number).sort((a,b)=>a-b);
-    const vals=ys.map(y=>byY[y]);
-    // ปีล่าสุดมักยังลงข้อมูลไม่ครบ จึงเทียบ "ปีที่ข้อมูลนิ่งแล้ว" คือปีรองสุดท้ายกับก่อนหน้า
-    let dHTML='', foot=`${H.length} สัญญา ปี ${ys[0]||'-'}–${ys[ys.length-1]||'-'}`;
-    if(ys.length>=3){
-      const a=vals[vals.length-3], b=vals[vals.length-2];
-      if(a>0) dHTML=deltaHTML(100*(b-a)/a, `ปี ${ys[ys.length-2]} เทียบ ${ys[ys.length-3]}`);
-    }
-    kb.innerHTML=`<div class="lbl">งบสะสม (ตามสัญญา)</div><div class="val">${fmtM(tot)}</div>`+
-      dHTML + sparkSVG(vals, '#0d9488', 104, 24) + `<div class="foot">${foot}</div>`;
-    const card=kb.closest('.kpi');
-    if(card && !card.dataset.b){ card.dataset.b='1'; card.classList.add('clickable');
-      card.title='ไปที่หน้าประวัติสายทาง (งบรายปี)';
-      card.addEventListener('click',()=>{ const b=document.querySelector('.nav button[data-page="history"]'); if(b) b.click(); }); }
-  }
+      renderBudgetKpi();
   const roadMuad={...Object.fromEntries(Object.values(EMB.bridges||{}).map(b=>[b.code,b.muad])),
     ...Object.fromEntries(EMB.roads.map(r=>[r.code,r.muad]))}; // สะพานชุมชนใช้หมวดจากบัญชีสะพาน
   const bM={}, bR={}, bT={};
@@ -2986,22 +3685,72 @@ function renderOverviewBudget(){
     if(x.code) bR[x.code]=(bR[x.code]||0)+x.amount;
     bT[x.budgetType]=(bT[x.budgetType]||0)+x.amount;
   });
+  /* v24.0 — การ์ดงบ: 4 รูปทรงต่างกัน (เส้น / แท่ง / lollipop / โดนัท) ไม่ซ้ำแบบติดกัน */
   document.getElementById('ovBudget').innerHTML=`
-    <div class="grid" style="grid-template-columns:1fr 1fr 1fr;gap:14px">
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:14px">
+      <div><h3 style="font-size:13px">แนวโน้มงบรายปี (ลบ.)</h3>
+        <div class="note" style="margin-bottom:4px">แกนเริ่มที่ 0 · ป้ายที่ปลายเส้น</div><div id="chBudTrend"></div></div>
+      <div><h3 style="font-size:13px">งบรายปีแยกรายหมวด</h3>
+        <div class="note" style="margin-bottom:4px">กราฟจิ๋วแกนเดียวกัน เทียบรูปทรงได้ตรงๆ</div><div id="chBudSmall"></div></div>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:14px">
       <div><h3 style="font-size:13px">งบรวมต่อหมวด (ลบ.)</h3><div id="chBudMuad"></div></div>
       <div><h3 style="font-size:13px">งบรวมต่อสายทาง Top 10 (ลบ.)</h3><div id="chBudRoad"></div></div>
       <div><h3 style="font-size:13px">งบแยกตามชนิดงบ</h3><div id="chBudType"></div></div>
-    </div>`;
+    </div>
+    <div class="grid two" style="margin-top:14px">
+      <div><h3 style="font-size:13px">เงินไหลจากชนิดงบ ไปลงหมวดไหน</h3>
+        <div class="note" style="margin-bottom:4px">ความหนาของสาย = วงเงิน · ชี้ที่สายเพื่อดูตัวเลขและ %</div>
+        <div id="chBudFlow"></div></div>
+      <div><h3 style="font-size:13px">งบกระจุกอยู่ที่ไหน (Pareto)</h3>
+        <div class="note" style="margin-bottom:4px">เรียงสายทางจากงบมาก→น้อย · เส้นทองคือยอดสะสม</div>
+        <div id="chBudPareto"></div></div>
+    </div>
+`;
   const mPairs=Object.entries(bM).sort((a,b)=>b[1]-a[1]);
   const mTot=mPairs.reduce((a,p)=>a+p[1],0)||1;
   hbar('chBudMuad', mPairs.map(p=>({label:recMuadLabel(p[0]), v:+(p[1]/1e6).toFixed(1), color:recMuadColor(p[0]),
-    tip:`${fmt(p[1])} บาท (${(100*p[1]/mTot).toFixed(1)}%)`})), {labelW:96, showVal:false});
+    tip:`${fmt(p[1])} บาท (${(100*p[1]/mTot).toFixed(1)}%)`})), {labelW:96});   // v23.5 — โชว์ตัวเลขท้ายแท่งเหมือนกราฟ Top 10
   const rPairs=Object.entries(bR).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  hbar('chBudRoad', rPairs.map(p=>({label:p[0], v:+(p[1]/1e6).toFixed(1), color:muadColor(roadMuad[p[0]]),
+  lolli('chBudRoad', rPairs.map(p=>({label:p[0], v:+(p[1]/1e6).toFixed(1), color:muadColor(roadMuad[p[0]]),
     tip:`${fmt(p[1])} บาท · หมวด${roadMuad[p[0]]||'-'}`})), {labelW:70});
   const tPairs=Object.entries(bT).sort((a,b)=>b[1]-a[1]);
   const TC=btColorMap(tPairs.map(p=>p[0]));
   donut('chBudType', tPairs.map(p=>({label:p[0], v:+(p[1]/1e6).toFixed(1), color:TC[p[0]]})), {unit:'ลบ.', height:290});
+
+  /* v24.0 — เส้นแนวโน้มรายปี · small multiples รายหมวด · heatmap หมวด×ปี · Pareto */
+  const yrsAll=[...new Set(H.map(x=>x.year).filter(Boolean))].sort((a,b)=>a-b);
+  const byMY={};
+  H.forEach(x=>{ if(!x.year) return; const m=recMuad(x);
+    (byMY[m]=byMY[m]||{})[x.year]=(byMY[m][x.year]||0)+(x.amount||0); });
+  if(yrsAll.length>=2){
+    lineChart('chBudTrend', yrsAll.map(String),
+      [{name:'งบรวม', vals:yrsAll.map(y=>+(H.filter(x=>x.year===y).reduce((a,x)=>a+(x.amount||0),0)/1e6).toFixed(1)), color:C.teal}],
+      {unit:'ลบ.', height:230, area:true});
+    const mOrder=mPairs.map(p=>p[0]).slice(0,6);
+    smallmult('chBudSmall', mOrder.map(m=>({label:recMuadLabel(m), color:recMuadColor(m),
+      vals:yrsAll.map(y=>+(((byMY[m]||{})[y]||0)/1e6).toFixed(1))})), {unit:'ลบ.', height:96});
+    heat('chBudHeat', mOrder.map(m=>recMuadLabel(m)), yrsAll.map(String),
+      mOrder.map(m=>yrsAll.map(y=>+(((byMY[m]||{})[y]||0)/1e6).toFixed(1))),
+      {unit:'ลบ.', fmtV:v=>v?fmt(v):''});
+  } else {
+    ['chBudTrend','chBudSmall','chBudHeat'].forEach(id=>{ const e=document.getElementById(id);
+      if(e) e.innerHTML='<div class="note" style="padding:20px 4px;text-align:center">ต้องมีข้อมูลอย่างน้อย 2 ปีงบ</div>'; });
+  }
+  /* v24.3 — Sankey: ชนิดงบ -> หมวดบำรุงทาง (ข้อมูลจริงจากสัญญา ฐานเวลาเดียวกัน) */
+  {
+    const flow={};
+    H.forEach(x=>{ if(!x.amount) return;
+      const bt=x.budgetType||'ไม่ระบุ', m=recMuadLabel(recMuad(x));
+      const k=bt+'\u0000'+m; flow[k]=(flow[k]||0)+x.amount; });
+    const links=Object.entries(flow).map(([k,v])=>{ const [f,t]=k.split('\u0000');
+      return {from:f, to:t, v:+(v/1e6).toFixed(2)}; }).filter(l=>l.v>0);
+    sankey('chBudFlow', links, {unit:'ลบ.', height:Math.max(220, 34*Math.max(
+      new Set(links.map(l=>l.from)).size, new Set(links.map(l=>l.to)).size)+30)});
+  }
+  pareto('chBudPareto', Object.entries(bR).map(([c,v])=>({label:c, v:+(v/1e6).toFixed(2), color:muadColor(roadMuad[c])})),
+    {unit:'ลบ.', height:250, onClick:it=>{ const b=document.querySelector('.nav button[data-page="map"]');
+      if(b) b.click(); setTimeout(()=>{ if(typeof selectRoad==='function') selectRoad(it.label); },320); }});
 }
 
 function renderSystem(){
@@ -3371,8 +4120,12 @@ function initMap(){
     }
     renderMapLegend(); redrawMap(); syncURL();
   });
+  const csel=document.getElementById('mapColorSel');
+  if(csel){ csel.value=MAPCOLOR;
+    csel.addEventListener('change',e=>{ applyMapColor(e.target.value); redrawMap(); syncURL(); }); }
   document.getElementById('mapElChk').addEventListener('change',e=>{ M.elShow=e.target.checked;
     if(!M.elShow){ M.zoneSel=''; zsel.value=''; } renderMapLegend(); redrawMap(); });
+  applyMapColor(MAPCOLOR);
   renderMapLegend();
   // interactions
   let drag=null;
@@ -3887,6 +4640,77 @@ function selectCommBridge(bcode){
   b.g.dispatchEvent(new MouseEvent('click',{bubbles:true}));   // ใช้ handler เดิมของหมุด จะได้ได้ปุ่มครบเหมือนคลิกบนแผนที่
   document.querySelectorAll('.britem').forEach(d=>d.classList.toggle('active',d.dataset.b===bcode));
 }
+/* ============================================================
+   v24.3 — ระบายสีเส้นทางตามค่า (choropleth บน route map)
+   ใช้ของที่มีอยู่แล้ว: เส้น GIS จริง + PCU + ประวัติงบ + สัดส่วนผิว
+   สีหมวดยังเป็นค่าเริ่มต้น · โหมดอื่นใช้ไล่เฉดสีเดียว (เข้ม = มาก) ตามกฎ sequential
+   ============================================================ */
+let MAPCOLOR='muad';
+const RAMPS={
+  pcu :{from:[178,205,236], to:[16,58,116],  lab:'ปริมาณจราจร (คัน/วัน)'},
+  luk :{from:[240,225,192], to:[140,84,8],   lab:'สัดส่วนผิวลูกรัง (%)'},
+  last:{from:[228,214,214], to:[150,30,30],  lab:'ไม่ได้รับงบมากี่ปี'}
+};
+const rampColor=(k,t)=>{ const R=RAMPS[k]; t=Math.max(0,Math.min(1,t));
+  return `rgb(${R.from.map((v,i)=>Math.round(v+(R.to[i]-v)*t)).join(',')})`; };
+const SURF_COLOR={'ลาดยาง':'#52525b','คอนกรีต':'#2a78d6','ลูกรัง':'#d9a441'};
+function mapColorStats(){
+  const st={pcu:{}, luk:{}, last:{}, surf:{}};
+  const PC=pcuByCode(), yr=(new Date().getFullYear()+543);
+  const lastY={};
+  if(typeof histData!=='undefined' && histData) histData.forEach(x=>{
+    if(!x.code||!x.year) return; if(!lastY[x.code]||x.year>lastY[x.code]) lastY[x.code]=x.year; });
+  for(const code in (M?M.layers:{})){
+    const r=(M.layers[code]||{}).road;
+    st.pcu[code]=PC[code]!=null?PC[code]:null;
+    const tot=(r?.latyang||0)+(r?.concrete||0)+(r?.lukrang||0);
+    st.luk[code]=tot>0?100*(r?.lukrang||0)/tot:null;
+    st.last[code]=lastY[code]?Math.max(0,yr-lastY[code]):(Object.keys(lastY).length?99:null);
+    st.surf[code]=tot>0?(['ลาดยาง','คอนกรีต','ลูกรัง'].map(k=>[k,{'ลาดยาง':r.latyang||0,'คอนกรีต':r.concrete||0,'ลูกรัง':r.lukrang||0}[k]])
+      .sort((a,b)=>b[1]-a[1])[0][0]):null;
+  }
+  return st;
+}
+function applyMapColor(mode){
+  if(!M) return;
+  MAPCOLOR=mode||'muad';
+  const st=mapColorStats();
+  let vmax=1, vals=[];
+  if(MAPCOLOR==='pcu'||MAPCOLOR==='luk'||MAPCOLOR==='last'){
+    // เฉพาะโหมด last เท่านั้นที่ 99 = "ไม่พบประวัติเลย" (ค่าสมมติ ไม่ใช่ค่าจริง) ต้องตัดออกจากการหาค่าสูงสุด
+    vals=Object.values(st[MAPCOLOR]).filter(v=>v!=null && (MAPCOLOR!=='last'||v<90));
+    vmax=Math.max(...vals, 0.0001);
+  }
+  for(const code in M.layers){
+    const L=M.layers[code];
+    let col;
+    if(MAPCOLOR==='muad') col=muadColor(L.muad);
+    else if(MAPCOLOR==='surf') col=SURF_COLOR[st.surf[code]]||'#c8c6c0';
+    else { const v=st[MAPCOLOR][code];
+      // ค่า 99 = "ไม่พบประวัติเลย" ใช้เฉพาะโหมด last · โหมดอื่น 90 เป็นค่าจริง ห้ามตีเป็น sentinel
+      const never = (MAPCOLOR==='last' && v!=null && v>=90);
+      col = (v==null) ? '#d4d2cc' : (never ? '#7a1414' : rampColor(MAPCOLOR, v/vmax)); }
+    L.base.stroke=col;
+    if(code!==activeCode) L.path.setAttribute('stroke',col);
+  }
+  renderMapLegend();
+  const box=document.getElementById('mapColorNote');
+  if(box){
+    if(MAPCOLOR==='muad'){ box.style.display='none'; }
+    else if(MAPCOLOR==='surf'){ box.style.display='flex'; box.innerHTML='ระบายตาม<b>ชนิดผิวที่ยาวที่สุด</b>ของแต่ละสาย · เทา = ไม่มีข้อมูลผิวทาง'; }
+    else {
+      const R=RAMPS[MAPCOLOR];
+      const grad=`linear-gradient(90deg, rgb(${R.from.join(',')}), rgb(${R.to.join(',')}))`;
+      const nMiss=Object.values(st[MAPCOLOR]).filter(v=>v==null).length;
+      box.style.display='flex';
+      box.innerHTML=`<span style="font-weight:700;color:var(--navy)">${R.lab}</span>`+
+        `<span class="rampbar" style="background:${grad}"></span>`+
+        `<span style="color:var(--muted)">0 ถึง ${fmt(Math.round(vmax))}${MAPCOLOR==='luk'?'%':(MAPCOLOR==='last'?' ปี':'')}</span>`+
+        (MAPCOLOR==='last'?`<span class="chip" style="border-color:#7a1414;color:#7a1414">แดงเข้ม = ไม่พบประวัติเลย</span>`:'')+
+        (nMiss?`<span class="chip">เทา = ไม่มีข้อมูล ${nMiss} สาย</span>`:'');
+    }
+  }
+}
 function restoreStyle(code){
   const L=M.layers[code]; if(!L) return;
   ['stroke','stroke-width','stroke-opacity','stroke-dasharray'].forEach(a=>L.path.removeAttribute(a));
@@ -4125,6 +4949,12 @@ function renderHistory(){
         </div>
       </div>`:'';
       return `<div class="grid ${bldCard?'two':''}" style="margin-bottom:14px">${agencyCard}${bldCard}</div>`; })()}
+    <!-- v24.0 — Gantt: ใช้วันเริ่ม/สิ้นสุดสัญญาที่มีในชีทอยู่แล้ว แต่ไม่เคยเอามาวาด -->
+    <div class="card" style="margin-bottom:14px">
+      <h3>สัญญาที่กำลังดำเนินการ / เพิ่งสิ้นสุด</h3>
+      <div class="note">แถบ = ช่วงสัญญา · ส่วนที่จางคือผ่านมาแล้ว · เส้นแดงคือวันนี้ · จุดแดงท้ายแถบ = เลยกำหนดแต่ยังไม่ส่งงานงวดสุดท้าย</div>
+      <div id="chGantt"></div>
+    </div>
     <div class="grid two">
       <div class="card"><h3>วงเงินตามสัญญาต่อปีงบประมาณ</h3><div class="note">ล้านบาท</div><div id="chHistYear"></div></div>
       <div class="card"><h3>วงเงินต่อปี แยกตามชนิดงบ (ครบทุกชนิด)</h3><div class="note">ล้านบาท — ชี้ที่แท่งเพื่อดูจำนวนโครงการและ % ของปีนั้น</div><div id="chHistType"></div></div>
@@ -4212,9 +5042,56 @@ function renderHistory(){
     elx.addEventListener('mousemove',e=>showTip(workTips[i],e.clientX,e.clientY));
     elx.addEventListener('mouseleave',hideTip);
   });
-  vbar('chHistYear', years.map(String),
-    [{label:'วงเงิน', color:C.teal, data:years.map(y=>+(H.filter(x=>x.year===y).reduce((a,x)=>a+(x.amount||0),0)/1e6).toFixed(1))}],
-    {unit:'ลบ.', height:330});
+  /* v24.0 — Gantt สัญญา: อ่านวันเริ่ม/สิ้นสุดจากชีท เอาเฉพาะที่เกี่ยวข้องกับ "ตอนนี้"
+     (ยังไม่จบ หรือเพิ่งจบไม่เกิน 120 วัน) เรียงตามวันสิ้นสุด แล้วตัดที่ 14 แถวกันยาวเกิน */
+  (()=>{
+    const box=document.getElementById('chGantt'); if(!box) return;
+    const now=Date.now(), DAY=864e5;
+    const all=H.map(x=>{ const a=parseThaiDate(x.start), b=parseThaiDate(x.end);
+        if(!a||!b||b<=a) return null;
+        const dv=parseThaiDate(x.delivered);
+        return {code:x.code, ta:a.getTime(), tb:b.getTime(), dv, x};
+      }).filter(Boolean);
+    /* v24.1 — เดิมเรียงตามวันสิ้นสุดจากน้อยไปมากแล้วตัด 14 ตัวแรก = ได้แต่สัญญาที่จบไปนานแล้ว
+       ตอนนี้จัดลำดับตาม "ต้องทำอะไรกับมัน":
+         ① เลยกำหนดแล้วยังไม่ส่งงาน (เร่งด่วนสุด)  ② กำลังดำเนินการอยู่  ③ เพิ่งจบใน 60 วัน (บริบท) */
+    const overdue=all.filter(g=>g.tb<now && !g.dv).sort((p,q)=>p.tb-q.tb);
+    const active =all.filter(g=>g.ta<=now && g.tb>=now).sort((p,q)=>p.tb-q.tb);
+    const recent =all.filter(g=>g.tb<now && g.dv && g.tb>=now-60*DAY).sort((p,q)=>q.tb-p.tb);
+    const gs=[...overdue, ...active, ...recent];
+    const cut=gs.slice(0,12);
+    const nOver=overdue.length, nAct=active.length;
+    if(!cut.length){ box.innerHTML='<div class="note" style="padding:20px 4px;text-align:center">'+
+      'ไม่มีสัญญาที่ยังดำเนินการอยู่ หรือชีทยังไม่ได้ระบุวันเริ่ม/สิ้นสุด</div>'; return; }
+    const hd=document.createElement('div'); hd.className='chips'; hd.style.margin='0 0 9px';
+    hd.innerHTML=(nOver?`<span class="pill bad">⚠ เลยกำหนด ${nOver} สัญญา</span>`:'<span class="pill ok">✓ ไม่มีสัญญาเลยกำหนด</span>')+
+      `<span class="pill info">กำลังดำเนินการ ${nAct}</span>`+
+      `<span class="chip">จากทั้งหมด ${all.length} สัญญาที่ระบุวันที่</span>`;
+    box.appendChild(hd);
+    const gbox=document.createElement('div'); gbox.id='chGanttPlot'; box.appendChild(gbox);
+    const mB=muadByCode();
+    gantt('chGanttPlot', cut.map(g=>({
+      label:(g.code||'ไม่ระบุสาย')+' · '+String(g.x.activity||g.x.contract||'').slice(0,16),
+      a:g.ta, b:g.tb, color:muadColor(mB[g.code]),
+      late:(g.tb<now && !g.dv),
+      tip:`<b>${esc(g.code||'ไม่ระบุสาย')}</b> ${esc(String(g.x.activity||'').slice(0,28))}`+
+          `<br>สัญญา ${esc(g.x.contract||'-')}<br>${esc(g.x.start||'')} – ${esc(g.x.end||'')}`+
+          `<br>วงเงิน ${g.x.amount?fmtM(g.x.amount):'-'}`+
+          (g.dv?`<br>ส่งงานงวดสุดท้าย ${esc(g.x.delivered)}`:(g.tb<now?'<br><b style="color:#ff9b9b">เลยกำหนดแล้ว ยังไม่มีวันส่งงาน</b>':'')),
+      code:g.code})), {onClick:r=>{ if(!r.code) return;
+        const b=document.querySelector('.nav button[data-page="map"]');
+        if(b) b.click(); setTimeout(()=>{ if(typeof selectRoad==='function') selectRoad(r.code); },320); }});
+    const fn=document.createElement('div'); fn.className='footnote'; fn.style.marginTop='6px';
+    fn.textContent=gs.length>cut.length
+      ? `แสดง ${cut.length} จาก ${gs.length} สัญญาที่ต้องติดตาม — เรียงจากเร่งด่วนที่สุด (เลยกำหนด → กำลังทำ → เพิ่งจบ)`
+      : `เรียงจากเร่งด่วนที่สุด (เลยกำหนด → กำลังทำ → เพิ่งจบใน 60 วัน)`;
+    box.appendChild(fn);
+  })();
+
+  /* v24.0 — เวลาคือความต่อเนื่อง ใช้เส้นแทนแท่ง · แกนเริ่ม 0 · ป้ายที่ปลายเส้น */
+  lineChart('chHistYear', years.map(String),
+    [{name:'วงเงิน', color:C.teal, vals:years.map(y=>+(H.filter(x=>x.year===y).reduce((a,x)=>a+(x.amount||0),0)/1e6).toFixed(1))}],
+    {unit:'ลบ.', height:300, area:true});
   // วงเงินต่อปี แยกชนิดงบ — แสดงครบทุกชนิด (สีคงที่ตามลำดับวงเงินรวม)
   const typeAmt={}; H.forEach(x=>typeAmt[x.budgetType]=(typeAmt[x.budgetType]||0)+(x.amount||0));
   const allTypes=Object.entries(typeAmt).sort((a,b)=>b[1]-a[1]).map(e=>e[0]);
@@ -4258,11 +5135,11 @@ function renderHistory(){
   // สายทางได้งบสะสมสูงสุด
   const byRd={}; H.forEach(x=>{ if(!x.code) return; byRd[x.code]=byRd[x.code]||{amt:0,n:0}; byRd[x.code].amt+=(x.amount||0); byRd[x.code].n++; });
   const topRd=Object.entries(byRd).sort((a,b)=>b[1].amt-a[1].amt).slice(0,10);
-  hbar('chHistRoad', topRd.map(e=>({label:e[0], v:+(e[1].amt/1e6).toFixed(1), color:muadColor(roadMuad[e[0]]), tip:`${fmt(e[1].amt)} บาท · ${e[1].n} โครงการ · หมวด${roadMuad[e[0]]||'-'}`})), {unit:'ลบ.', labelW:76});
+  lolli('chHistRoad', topRd.map(e=>({label:e[0], v:+(e[1].amt/1e6).toFixed(1), color:muadColor(roadMuad[e[0]]), tip:`${fmt(e[1].amt)} บาท · ${e[1].n} โครงการ · หมวด${roadMuad[e[0]]||'-'}`})), {unit:'ลบ.', labelW:76});
   const byC={}; H.forEach(x=>{ if(x.contractor){ byC[x.contractor]=byC[x.contractor]||{amt:0,n:0}; byC[x.contractor].amt+=(x.amount||0); byC[x.contractor].n++; } });
   const topC=Object.entries(byC).sort((a,b)=>b[1].amt-a[1].amt).slice(0,10);
   /* ปลายแท่งโชว์เลขสั้นๆ พอ — จำนวนโครงการ/วงเงินเต็ม ดูจาก tooltip ตอนชี้ */
-  hbar('chContractor', topC.map(e=>({label:e[0], v:+(e[1].amt/1e6).toFixed(1),
+  lolli('chContractor', topC.map(e=>({label:e[0], v:+(e[1].amt/1e6).toFixed(1),
     tip:`${fmt(e[1].amt)} บาท · ${e[1].n} โครงการ`})), {unit:'ลบ.', labelW:230});
   // ตารางรายชื่อสายทาง (คลิก -> สรุปรายสาย)
   const roadInfoH=Object.fromEntries(EMB.roads.map(r=>[r.code,r]));
@@ -4984,7 +5861,7 @@ function renderRequests(){
     </div>`;
   const top10=counts.slice(0,10);
   /* สีแท่ง = สีหมวดของสาย · ปลายแท่งโชว์แค่จำนวน — งบดูจาก tooltip */
-  hbar('chTopReq', top10.map(e=>{
+  lolli('chTopReq', top10.map(e=>{
       const amt=byRoad[e[0]].reduce((a,x)=>a+(x.amt||0),0);
       const m=roadInfo[e[0]]?.muad;
       return {label:e[0], v:e[1], color:muadColor(m),
@@ -5211,7 +6088,7 @@ function renderZbOverview(){
   // Top 10 สาย
   const byRoad={}; R.forEach(r=>{ (byRoad[r.code]=byRoad[r.code]||[]).push(r); });
   const counts=Object.entries(byRoad).map(([c,l])=>[c,l.length]).sort((a,b)=>b[1]-a[1]);
-  hbar('chZbTop', counts.slice(0,10).map(e=>{
+  lolli('chZbTop', counts.slice(0,10).map(e=>{
       const m=roadInfo[e[0]]?.muad;
       return {label:e[0], v:e[1], color:muadColor(m), tip:`${e[1]} คำขอ · หมวด${m||'-'}`};}),
     {unit:'คำขอ', height:300, onClick:it=>openZbRoad(it.label)});
@@ -5576,10 +6453,9 @@ async function renderVisits(){
         <div class="card kpi"><div class="lbl">30 วันหลังสุด</div><div class="val">${fmt(in30.length)} <small>ครั้ง</small></div><div class="foot">เฉลี่ย ${(in30.length/30).toFixed(1)} ครั้ง/วัน</div></div>
         <div class="card kpi"><div class="lbl">ช่องทาง</div><div class="val" style="font-size:15px;line-height:1.6">${Object.entries(bySrc).sort((a,b)=>b[1]-a[1]).map(([s,n])=>`${esc(s)} <b>${fmt(n)}</b>`).join('<br>')}</div><div class="foot">ไฟล์ในเครื่อง / เว็บ · รวมยอดจากโดเมนเดิมก่อนย้ายไว้แล้ว</div></div>
       </div><div id="chVisits"></div>`;
-    vbar('chVisits', days.map(k=>k.slice(8,10)+'/'+k.slice(5,7)),
-      [{label:'ครั้ง', color:C.teal, data:days.map(k=>cnt[k]),
-        tips:days.map(k=>`<b>${k.slice(8,10)}/${k.slice(5,7)}</b><br>${cnt[k]} ครั้ง`)}],
-      {unit:'ครั้ง', height:190, fmtVal:v=>fmt(Math.round(v))});
+    lineChart('chVisits', days.map(k=>k.slice(8,10)+'/'+k.slice(5,7)),
+      [{name:'ครั้ง', color:C.teal, vals:days.map(k=>cnt[k])}],
+      {unit:'ครั้ง', height:190, fmtVal:v=>fmt(Math.round(v)), area:true});
   }catch(err){
     box.innerHTML=`<div class="banner err" style="display:block">ดึงสถิติไม่สำเร็จ (${esc(err.message)}) — ตรวจว่าชีทแชร์ "ทุกคนที่มีลิงก์" และมี tab ชื่อ log</div>`;
   }
@@ -5966,7 +6842,7 @@ function renderRiskSum(){
   hstack('chRiskMuad', Object.entries(byMd).sort((a,b)=>b[1].n-a[1].n).map(([m,d])=>({label:recMuadLabel(m), segs:d.segs, right:`${d.n} จุด · แก้แล้ว ${d.f}`})),
     types.map(t=>({k:t,label:t,color:TC[t]})), {unit:'จุด'});
   // Top 10 สาย (สีตามหมวด · คลิกไปรายสาย)
-  hbar('chRiskRoad', Object.entries(byR0).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([c,n])=>({
+  lolli('chRiskRoad', Object.entries(byR0).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([c,n])=>({
       label:c, v:n, color:recMuadColor(muadByCode()[c]||R.find(x=>x.code===c)?._m||'ไม่ระบุ'),
       tip:`${n} จุด · แก้แล้ว ${R.filter(x=>x.code===c&&riskFixed(x)).length} · ${esc((roadInfo[c]?.name||'').slice(0,30))}`})),
     {unit:'จุด', showVal:false, height:300, onClick:it=>{ riskRoadCode=it.label;
