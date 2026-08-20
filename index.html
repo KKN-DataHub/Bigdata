@@ -171,7 +171,11 @@ body{font-family:'Sarabun',Tahoma,'Segoe UI',system-ui,sans-serif;background:var
   .mappopup{max-width:78vw}
 }
 /* ---------- svg charts ---------- */
-.viz text{font-family:inherit}
+/* v27.1 — ตัวอักษรบนกราฟห้ามบังเมาส์
+   เดิมป้ายตัวเลขที่วาดทับกลางช่อง (เช่น heatmap) กินคลิก/การชี้ไปหมด
+   ทำให้ชี้ตรงกลางช่องแล้วไม่ขึ้นข้อมูล ต้องเล็งขอบช่องเท่านั้นถึงจะติด
+   แก้ที่เดียวได้ผลกับกราฟทุกแบบ — ตัวอักษรที่ต้องรับเมาส์จริงๆ สั่ง auto กลับเป็นรายตัว */
+.viz text{font-family:inherit;pointer-events:none}
 .viz .bar{cursor:pointer}
 .viz .gridline{stroke:var(--grid);stroke-width:1}
 .viz .axisline{stroke:#c3c2b7;stroke-width:1}
@@ -1334,9 +1338,10 @@ function lolli(container, items, {unit='', color=C.teal, labelW=86, onClick=null
 }
 
 /* ② Heatmap — 2 มิติพร้อมกัน (เช่น หมวด × ปีงบ) ไล่เฉดสีเดียว เข้ม=มาก */
-function heat(container, rowLabels, colLabels, matrix, {unit='', fmtV=fmt, onClick=null, ramp=[13,148,136]}={}){
+/* rowFull = ชื่อเต็มของแต่ละแถว ใช้ตอนชี้ดู (แกนซ้ายที่แคบใช้ชื่อย่อได้ ไม่ต้องเสียข้อมูล) */
+function heat(container, rowLabels, colLabels, matrix, {unit='', fmtV=fmt, onClick=null, ramp=[13,148,136], rowFull=null, zeroText='ไม่มีค่า'}={}){
   const box=document.getElementById(container); if(!box) return; box.innerHTML='';
-  const W=box.clientWidth||560, lw=Math.min(104,Math.max(58,W*0.22)), padR=8, padT=20, padB=4;
+  const W=box.clientWidth||560, lw=Math.min(126,Math.max(64,W*0.25)), padR=8, padT=20, padB=4;
   const cw=(W-lw-padR)/Math.max(1,colLabels.length), ch=Math.max(26,Math.min(38,(cw*0.62)));
   const H=padT+rowLabels.length*ch+padB;
   const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:'100%',height:H},box);
@@ -1344,16 +1349,19 @@ function heat(container, rowLabels, colLabels, matrix, {unit='', fmtV=fmt, onCli
   colLabels.forEach((c,j)=>el('text',{class:'ticktext',x:lw+cw*(j+0.5),y:13,'text-anchor':'middle'},svg).textContent=c);
   rowLabels.forEach((r,i)=>{
     const y=padT+i*ch;
-    const mc=Math.max(5,Math.floor((lw-12)/7.8));
+    // v27.1 — ตัวไทยแคบกว่าที่ประมาณไว้เดิม (7.8px) ทำให้ตัดชื่อทิ้งเร็วเกินจำเป็น
+    const mc=Math.max(6,Math.floor((lw-10)/6.6));
     el('text',{class:'cattext',x:lw-8,y:y+ch/2+4,'text-anchor':'end'},svg)
       .textContent=r.length>mc?r.slice(0,mc-1)+'…':r;
     (matrix[i]||[]).forEach((v,j)=>{
       const t=Math.max(0,Math.min(1,v/mx));
       const col=`rgb(${Math.round(252-(252-ramp[0])*t)},${Math.round(252-(252-ramp[1])*t)},${Math.round(251-(251-ramp[2])*t)})`;
       const rc=el('rect',{class:'heatcell',x:lw+cw*j+1.5,y:y+1.5,width:Math.max(1,cw-3),height:ch-3,rx:5,fill:col},svg);
+      rc.style.cursor='help';   // v27.1 — บอกให้รู้ว่าช่องนี้ชี้ดูรายละเอียดได้
       if(cw>34) el('text',{x:lw+cw*(j+0.5),y:y+ch/2+4,'text-anchor':'middle','font-size':10.5,'font-weight':700,
         fill:t>0.55?'#fff':C.ink2},svg).textContent=v?fmtV(v):'';
-      rc.addEventListener('mousemove',e=>showTip(`<b>${esc(r)} · ${esc(colLabels[j])}</b><br>${fmtV(v)} ${unit}`,e.clientX,e.clientY));
+      const rTip=(rowFull&&rowFull[i])||r;
+      rc.addEventListener('mousemove',e=>showTip(`<b>${esc(rTip)} · ${esc(colLabels[j])}</b><br>${v?(fmt(v)+' '+unit):esc(zeroText)}`,e.clientX,e.clientY));
       rc.addEventListener('mouseleave',hideTip);
       if(onClick){ rc.style.cursor='pointer'; rc.addEventListener('click',()=>onClick(r,colLabels[j],v)); }
     });
@@ -3624,6 +3632,10 @@ function recMuad(x){
 }
 const recMuadColor=m=>m==='แขวงฯ'?'#1B2A4A':(m==='ถ่ายโอน'?'#8a6d4b':(m==='ไม่ระบุ'?'#9aa5a3':muadColor(m)));
 const recMuadLabel=m=>(m==='แขวงฯ'||m==='ไม่ระบุ')?m:(m==='ถ่ายโอน'?'ถนน/สะพานถ่ายโอน':'หมวด'+m);
+/* v27.1 — ชื่อย่อสำหรับที่แคบ (แกนตาราง/heatmap) — "หมวดมัญจาคีรี" ยาวเกินจนโดนตัดทิ้ง
+   ใช้ตัวย่อราชการ บทช. (หมวดบำรุงทางชนบท) แทน ชื่อยาวยังอยู่ครบใน tooltip */
+const MUAD_ABBR={'มัญจาคีรี':'มัญจาฯ'};
+const recMuadShort=m=>(m==='แขวงฯ'||m==='ไม่ระบุ')?m:(m==='ถ่ายโอน'?'ถ่ายโอน':'บทช.'+(MUAD_ABBR[m]||m));
 const PROVINCE = {'ขก':'ขอนแก่น','กส':'กาฬสินธุ์','ชย':'ชัยภูมิ','รอ':'ร้อยเอ็ด'};
 
 /* ---- เป้าหมายโครงข่าย (แก้ตัวเลขเป้าได้ที่นี่) ---- */
@@ -4052,9 +4064,10 @@ function renderOverviewBudget(){
     const mOrder=mPairs.map(p=>p[0]).slice(0,6);
     smallmult('chBudSmall', mOrder.map(m=>({label:recMuadLabel(m), color:recMuadColor(m),
       vals:yrsAll.map(y=>+(((byMY[m]||{})[y]||0)/1e6).toFixed(1))})), {unit:'ลบ.', height:96});
-    heat('chBudHeat', mOrder.map(m=>recMuadLabel(m)), yrsAll.map(String),
+    heat('chBudHeat', mOrder.map(m=>recMuadShort(m)), yrsAll.map(String),
       mOrder.map(m=>yrsAll.map(y=>+(((byMY[m]||{})[y]||0)/1e6).toFixed(1))),
-      {unit:'ลบ.', fmtV:v=>v?fmt(v):''});
+      {unit:'ลบ.', fmtV:v=>v?fmt(v):'', rowFull:mOrder.map(m=>recMuadLabel(m)),
+       zeroText:'ปีนี้ไม่ได้รับงบ'});   // กฎ 7 — คำเฉพาะงานทางอยู่ที่ผู้เรียก ไม่ใช่ในตัวกราฟ
   } else {
     ['chBudTrend','chBudSmall','chBudHeat'].forEach(id=>{ const e=document.getElementById(id);
       if(e) e.innerHTML='<div class="note" style="padding:20px 4px;text-align:center">ต้องมีข้อมูลอย่างน้อย 2 ปีงบ</div>'; });
@@ -5988,7 +6001,7 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
       el('text',{class:'kmtick',x:x0+8,y:by+bh/2+4,'font-style':'italic'},svg).textContent=ln.noSegTxt||`${ln.noSegN} โครงการ (ไม่ระบุช่วง กม.)`;
     else if(ln.noSegN&&ln.segs.length){
       const t=el('text',{class:'kmtick',x:x0+plotW+2,y:by+bh/2+4,'font-style':'italic','font-size':'9.5'},svg);
-      t.textContent=`+${ln.noSegN}`; t.style.cursor='help';
+      t.textContent=`+${ln.noSegN}`; t.style.cursor='help'; t.style.pointerEvents='auto';  // ตัวเดียวในไฟล์ที่ต้องรับเมาส์เอง
       t.addEventListener('mousemove',e=>showTip(`<b>+${ln.noSegN}</b> โครงการใน "${esc(ln.label)}" ที่ไม่ระบุช่วง กม.<br>วาดตำแหน่งบนแถบไม่ได้ — ดูรายละเอียดในตารางด้านล่าง`,e.clientX,e.clientY));
       t.addEventListener('mouseleave',hideTip);
     }
