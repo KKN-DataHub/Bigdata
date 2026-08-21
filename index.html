@@ -2354,7 +2354,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v28.0', APP_DATE='20 ส.ค. 2569';
+const APP_VER='v28.1', APP_DATE='20 ส.ค. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -6552,17 +6552,6 @@ function renderRequests(){
       <div class="card kpi"><div class="lbl">รอประเมินราคา</div><div class="val" style="color:var(--crit)">${waiting} <small>คำขอ</small></div><div class="foot">ยังไม่ระบุวงเงิน</div></div>
       <div class="card kpi"><div class="lbl">หมวดที่มีคำขอ</div><div class="val">${muadWithReq.length} <small>/ ${MUAD_ORDER.length} หมวด</small></div><div class="foot">${muadWithReq.join(' · ')||'—'}</div></div>
     </div>
-    <div class="card" style="margin-bottom:14px">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:8px">
-        <div><h3 style="margin:0">สรุปคำของบตามแหล่งงบ</h3>
-          <div class="note" style="margin:2px 0 0">เรียงตามลำดับแหล่งงบในชีท (1.จังหวัด … 10.กลุ่มจังหวัด) · แบ่งย่อยตามชนิดงบ · คลิกแถวเพื่อดูรายละเอียดสายนั้น</div></div>
-        <div style="display:flex;gap:7px;flex:none">
-          <button class="btn ghost" type="button" onclick="printReqSrc()">🖨 พิมพ์ A3</button>
-          <button class="btn ghost" type="button" onclick="exportReqSrcXlsx()">⬇ Excel</button>
-        </div>
-      </div>
-      <div id="reqSrcBody"></div>
-    </div>
     <div class="grid two">
       <div class="card"><h3>สายทางที่มีคำขอซ้ำมากที่สุด (Top 10)</h3><div class="note">จำนวนคำขอ — คลิกแท่งเพื่อดูรายละเอียดด้านขวา</div><div id="chTopReq"></div></div>
       <div class="card">
@@ -6582,6 +6571,18 @@ function renderRequests(){
       <div class="tblwrap" style="max-height:520px"><table id="reqRoadTable"><thead><tr>
         <th>รหัส</th><th>ชื่อสายทาง</th><th>หมวด</th>${reqAll?'<th>ปีที่ขอ</th>':''}<th class="num">ระยะทางสาย (กม.)</th><th class="num">จำนวนคำขอ</th><th class="num">ระยะที่ขอรวม (กม.)</th><th class="num">% ของสาย</th><th class="num">งบระบุแล้ว (บาท)</th><th>ชนิดงบที่ขอ</th><th>One-Page</th>
       </tr></thead><tbody></tbody></table></div>
+    </div>
+    <!-- ตารางรายงานทางการ — วางไว้ท้ายสุดของหน้า ใช้พิมพ์/ส่งออกเป็นเอกสารแนบ -->
+    <div class="card" style="margin-top:14px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+        <div><h3 style="margin:0">สรุปคำของบตามแหล่งงบ</h3>
+          <div class="note" style="margin:2px 0 0">เรียงตามลำดับแหล่งงบในชีท (1.จังหวัด … 10.กลุ่มจังหวัด) · แบ่งย่อยตามชนิดงบ · คลิกแถวเพื่อดูรายละเอียดสายนั้น</div></div>
+        <div style="display:flex;gap:7px;flex:none">
+          <button class="btn ghost" type="button" onclick="printReqSrc()">🖨 พิมพ์ A3</button>
+          <button class="btn ghost" type="button" onclick="exportReqSrcXlsx()">⬇ Excel</button>
+        </div>
+      </div>
+      <div id="reqSrcBody"></div>
     </div>`;
   safeRun('สรุปตามแหล่งงบ', renderReqSrc);
   const top10=counts.slice(0,10);
