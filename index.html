@@ -171,11 +171,19 @@ body{font-family:'Sarabun',Tahoma,'Segoe UI',system-ui,sans-serif;background:var
   .mappopup{max-width:78vw}
 }
 /* ---------- svg charts ---------- */
-/* v27.1 — ตัวอักษรบนกราฟห้ามบังเมาส์
-   เดิมป้ายตัวเลขที่วาดทับกลางช่อง (เช่น heatmap) กินคลิก/การชี้ไปหมด
-   ทำให้ชี้ตรงกลางช่องแล้วไม่ขึ้นข้อมูล ต้องเล็งขอบช่องเท่านั้นถึงจะติด
-   แก้ที่เดียวได้ผลกับกราฟทุกแบบ — ตัวอักษรที่ต้องรับเมาส์จริงๆ สั่ง auto กลับเป็นรายตัว */
-.viz text{font-family:inherit;pointer-events:none}
+.viz text{font-family:inherit}
+/* ══ กฎข้อ 8 (v27.3) — ในกราฟ ทุกอย่างเป็น "ภาพ" ห้ามรับเมาส์โดยปริยาย ══════
+   ตัวไหนตั้งใจให้รับเมาส์ ต้องประกาศผ่าน hitOn() เท่านั้น (ได้คลาส .hit)
+   ─────────────────────────────────────────────────────────────────────────
+   บั๊กเดียวกันนี้เกิดมาแล้ว 3 ครั้ง คนละรูปร่างทุกครั้ง:
+     v24.0  กราฟอมยิ้ม — กล่องรับเมาส์วาดทับจุด กดไม่โดนจุด
+     v27.1  ตารางความร้อน — ตัวเลขวาดทับช่อง ชี้กลางช่องไม่ขึ้นข้อมูล
+     v27.2  แถบ One-Page — กล่องใสของจุดไฟฟ้าคลุมทั้งแถบ กินงานที่อยู่ข้างใต้
+   สองครั้งแรกผมแก้ "ตัวที่เกิด" ไม่ได้แก้ "กติกา" ครั้งที่สามจึงกลับมาอีก
+   กฎนี้ทำให้มันเกิดไม่ได้อีกโดยโครงสร้าง ไม่ใช่แค่มีเทสต์คอยจับ
+   ═════════════════════════════════════════════════════════════════════════ */
+svg.viz *{pointer-events:none}
+svg.viz .hit, svg.viz .hit *{pointer-events:auto}
 .viz .bar{cursor:pointer}
 .viz .gridline{stroke:var(--grid);stroke-width:1}
 .viz .axisline{stroke:#c3c2b7;stroke-width:1}
@@ -932,7 +940,7 @@ body.cmdopen .cmdbd{display:flex}
     <div class="brand">
       <h1>Big Data สายทาง</h1>
       <div class="sub">แขวงทางหลวงชนบทขอนแก่น<br>กรมทางหลวงชนบท</div>
-      <div class="ver">v24.6 · 20 ส.ค. 2569</div>
+      <div class="ver"></div><!-- v27.1 — เนื้อความมาจาก APP_VER ที่เดียว (กฎ 1) ห้ามพิมพ์เลขเวอร์ชันตรงนี้ -->
     </div>
     <nav class="nav">
       <button data-page="overview" class="active"><span class="ico">▦</span> ภาพรวมโครงข่าย</button>
@@ -1275,6 +1283,12 @@ const esc = s => String(s??'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>
 
 /* ================= tooltip ================= */
 const tip = document.getElementById('tooltip');
+/* ══ กฎข้อ 8 — ประตูเดียวที่ทำให้ของบนกราฟ "รับเมาส์ได้" ══════════════════
+   ห้ามผูก mousemove/click กับของบนกราฟโดยไม่ผ่าน hitOn() เด็ดขาด
+   เพราะ CSS ปิดการรับเมาส์ของทุกอย่างใน svg.viz ไว้แล้ว ลืมเรียก = ชี้ไม่ติด
+   (เห็นทันทีตอนทดสอบ แทนที่จะไปเงียบแบบ "บังของอื่น" ซึ่งมองไม่เห็นด้วยตา)
+   ═════════════════════════════════════════════════════════════════════════ */
+function hitOn(elm, cur){ if(!elm) return elm; elm.classList.add('hit'); if(cur) elm.style.cursor=cur; return elm; }
 function showTip(html, x, y){ tip.innerHTML=html; tip.style.display='block';
   const w=tip.offsetWidth, vw=innerWidth;
   tip.style.left=Math.min(Math.max(6,x+14), vw-w-8)+'px'; tip.style.top=(y+16)+'px'; }
@@ -1331,8 +1345,8 @@ function lolli(container, items, {unit='', color=C.teal, labelW=86, onClick=null
     const vflip=x+11+vest>W-2;
     el('text',{class:'vallabel',x:vflip?x-11:x+11,y:y+4,'text-anchor':vflip?'end':'start'},svg).textContent=vtxt;
     const tipf=e=>showTip(`<b>${esc(it.label)}</b><br>${it.tip??(fmt(it.v)+' '+unit)}`,e.clientX,e.clientY);
-    [d,hit].forEach(n=>{ n.addEventListener('mousemove',tipf); n.addEventListener('mouseleave',hideTip);
-      if(onClick){ n.style.cursor='pointer'; n.addEventListener('click',()=>onClick(it)); } });
+    [d,hit].forEach(n=>{ hitOn(n); n.addEventListener('mousemove',tipf); n.addEventListener('mouseleave',hideTip);
+      if(onClick){ hitOn(n,'pointer'); n.addEventListener('click',()=>onClick(it)); } });
   });
   return svg;
 }
@@ -1361,9 +1375,10 @@ function heat(container, rowLabels, colLabels, matrix, {unit='', fmtV=fmt, onCli
       if(cw>34) el('text',{x:lw+cw*(j+0.5),y:y+ch/2+4,'text-anchor':'middle','font-size':10.5,'font-weight':700,
         fill:t>0.55?'#fff':C.ink2},svg).textContent=v?fmtV(v):'';
       const rTip=(rowFull&&rowFull[i])||r;
+      hitOn(rc);   // กฎ 8
       rc.addEventListener('mousemove',e=>showTip(`<b>${esc(rTip)} · ${esc(colLabels[j])}</b><br>${v?(fmt(v)+' '+unit):esc(zeroText)}`,e.clientX,e.clientY));
       rc.addEventListener('mouseleave',hideTip);
-      if(onClick){ rc.style.cursor='pointer'; rc.addEventListener('click',()=>onClick(r,colLabels[j],v)); }
+      if(onClick){ hitOn(rc,'pointer'); rc.addEventListener('click',()=>onClick(r,colLabels[j],v)); }
     });
   });
   return svg;
@@ -1386,6 +1401,7 @@ function bullet(container, rows, {height=null}={}){
     el('text',{class:'ticktext',x:tx,y:y+33,'text-anchor':'middle'},svg).textContent='เป้า '+fmt(r.target)+(r.unit||'%');
     el('text',{x:W-padR+8,y:y+15,'font-size':13,'font-weight':700,fill:col},svg).textContent=fmt(r.v)+(r.unit||'%');
     const hit=el('rect',{x:lw,y:y-2,width:pw,height:24,fill:'transparent'},svg);
+    hitOn(hit);   // กฎ 8
     hit.addEventListener('mousemove',e=>showTip(`<b>${esc(r.label)}</b><br>ผล ${fmt(r.v)}${r.unit||'%'} · เป้า ${fmt(r.target)}${r.unit||'%'}`+
       (r.foot?`<br>${r.foot}`:''),e.clientX,e.clientY));
     hit.addEventListener('mouseleave',hideTip);
@@ -1413,6 +1429,7 @@ function dumbbell(container, rows, {unit='', c1=C.gold, c2=C.blue, l1='ค่า
     el('text',{x:W-padR+8,y:y+4,'font-size':11,'font-weight':700,fill:gap>0?C.crit:'#0ca30c'},svg)
       .textContent=(gap>0?'−':'+')+fmt(Math.abs(+gap.toFixed(1)));
     const hit=el('rect',{x:lw,y:y-rowH/2,width:pw,height:rowH,fill:'transparent'},svg);
+    hitOn(hit);   // กฎ 8
     hit.addEventListener('mousemove',e=>showTip(`<b>${esc(r.label)}</b><br>${esc(l1)} ${fmt(r.a)} ${unit}<br>${esc(l2)} ${fmt(r.b)} ${unit}`+
       `<br><b style="color:#ff9b9b">${esc(gapLabel)} ${fmt(+Math.abs(gap).toFixed(1))} ${unit}</b>`,e.clientX,e.clientY));
     hit.addEventListener('mouseleave',hideTip);
@@ -1478,9 +1495,10 @@ function scatter(container, pts, {xLab='', yLab='', height=290, refY=null, refLa
     const rr=4+Math.sqrt(Math.max(0,p.r||0)/mxR)*11;
     const c=el('circle',{class:'bubble',cx:X(p.x),cy:Y(p.y),r:rr.toFixed(1),fill:p.color||C.teal,
       'fill-opacity':.62,stroke:p.color||C.teal,'stroke-width':1.5},svg);
+    hitOn(c);   // กฎ 8
     c.addEventListener('mousemove',e=>showTip(p.tip||`<b>${esc(p.label||'')}</b>`,e.clientX,e.clientY));
     c.addEventListener('mouseleave',hideTip);
-    if(onClick){ c.style.cursor='pointer'; c.addEventListener('click',()=>onClick(p)); }
+    if(onClick){ hitOn(c,'pointer'); c.addEventListener('click',()=>onClick(p)); }
   });
   // ป้ายชื่อ 3 จุดสูงสุด — ถ้าชิดขอบขวาให้พลิกไปอยู่ซ้ายของฟอง กันข้อความโดนตัด
   pts.slice().sort((a,b)=>b.y-a.y).slice(0,3).forEach(p=>{
@@ -1521,10 +1539,11 @@ function pareto(container, items, {unit='', height=250, cutPct=80, onClick=null,
     const h=ph*it.v/mx, x=padL+bw*i+1;
     const r=el('rect',{class:'bar','data-i':i,x:x,y:padT+ph-h,width:Math.max(1,bw-2),height:h,rx:2,
       fill:i<=cut?(it.color||C.teal):'#cdcbc4'},svg);
+    hitOn(r);   // กฎ 8
     r.addEventListener('mousemove',e=>showTip(`<b>${esc(it.label)}</b><br>${fmt(it.v)} ${unit}`+
       `<br>อันดับ ${i+1} · สะสมถึงตัวนี้ ${(100*arr.slice(0,i+1).reduce((a,x)=>a+x.v,0)/tot).toFixed(1)}% ของทั้งหมด`,e.clientX,e.clientY));
     r.addEventListener('mouseleave',hideTip);
-    if(onClick){ r.style.cursor='pointer'; r.addEventListener('click',()=>onClick(it)); }
+    if(onClick){ hitOn(r,'pointer'); r.addEventListener('click',()=>onClick(it)); }
   });
   el('polyline',{points:pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' '),fill:'none',
     stroke:C.gold,'stroke-width':2.5,'stroke-linejoin':'round'},svg);
@@ -1585,9 +1604,10 @@ function gantt(container, rows, {height=null, onClick=null}={}){
     const done=Math.min(w,Math.max(0,xn-x));
     if(done>2) el('rect',{x:x,y:by+4,width:done,height:bh-8,rx:3,fill:'#fff',opacity:.5},svg);
     if(r.late) el('circle',{cx:X(r.b)+7,cy:by+bh/2,r:3.6,fill:C.crit},svg);
+    hitOn(b);   // กฎ 8
     b.addEventListener('mousemove',e=>showTip(r.tip||`<b>${esc(r.label)}</b>`,e.clientX,e.clientY));
     b.addEventListener('mouseleave',hideTip);
-    if(onClick){ b.style.cursor='pointer'; b.addEventListener('click',()=>onClick(r)); }
+    if(onClick){ hitOn(b,'pointer'); b.addEventListener('click',()=>onClick(r)); }
   });
   return svg;
 }
@@ -1609,7 +1629,7 @@ function smallmult(container, groups, {unit='', height=92, onClick=null}={}){
         `<circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="3" fill="${g.color||C.teal}"/></svg>`+
       `<div class="smval">${fmt(g.vals[g.vals.length-1])}<small>${esc(unit)}</small></div>`;
     cell.title=g.tip||'';
-    if(onClick){ cell.style.cursor='pointer'; cell.addEventListener('click',()=>onClick(g)); }
+    if(onClick){ hitOn(cell,'pointer'); cell.addEventListener('click',()=>onClick(g)); }
     box.appendChild(cell);
   });
 }
@@ -1665,10 +1685,11 @@ function sankey(container, links, {unit='ลบ.', height=null, fmtV=fmt, onClic
             `L${x1},${y1+h} C${cx},${y1+h} ${cx},${y0+h} ${x0+colW},${y0+h} Z`;
     const col=colOf(l.to, dsts.indexOf(l.to));
     const pth=el('path',{class:'skrib',d,fill:col,'fill-opacity':.30},svg);
+    hitOn(pth);   // กฎ 8
     pth.addEventListener('mousemove',e=>showTip(`<b>${esc(l.from)} → ${esc(l.to)}</b><br>${fmtV(l.v)} ${unit}`+
       `<br>${(100*l.v/tot).toFixed(1)}% ของทั้งหมด`,e.clientX,e.clientY));
     pth.addEventListener('mouseleave',hideTip);
-    if(onClick){ pth.style.cursor='pointer'; pth.addEventListener('click',()=>onClick(l)); }
+    if(onClick){ hitOn(pth,'pointer'); pth.addEventListener('click',()=>onClick(l)); }
   });
   // แท่งซ้าย/ขวา + ป้าย
   const drawCol=(keys,map,x,side,anchor)=>keys.forEach((k,i)=>{
@@ -1712,6 +1733,7 @@ function lineChart(container, labels, series, {unit='', height=240, fmtVal=fmt, 
     el('polyline',{points:pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' '),fill:'none',stroke:col,
       'stroke-width':2.5,'stroke-linejoin':'round','stroke-linecap':'round'},svg);
     pts.forEach((p,i)=>{ const c=el('circle',{cx:p[0],cy:p[1],r:4.5,fill:col,stroke:'#fcfcfb','stroke-width':2},svg);
+      hitOn(c);   // กฎ 8
       c.addEventListener('mousemove',e=>showTip(`<b>${esc(labels[i])}</b><br>${esc(s.name||'')} ${fmtVal(s.vals[i])} ${unit}`,e.clientX,e.clientY));
       c.addEventListener('mouseleave',hideTip); });
     const lp=pts[pts.length-1];
@@ -1744,9 +1766,10 @@ function hbar(container, items, {unit='', color=C.teal, labelW=86, showVal=true,
       const flip=xv+est>W-2;   // ไม่มีที่ข้างขวา -> พลิกป้ายเข้ามาในแท่ง
       el('text',{class:'vallabel',x:flip?labelW+bw-6:xv,y:by+bh/2+4,
         'text-anchor':flip?'end':'start', fill:flip?'#fff':'currentColor'},svg).textContent=txt; }
+    hitOn(p);   // กฎ 8
     p.addEventListener('mousemove',e=>showTip(`<b>${esc(it.label)}</b><br>${it.tip??(fmt(it.v)+' '+unit)}`,e.clientX,e.clientY));
     p.addEventListener('mouseleave',hideTip);
-    if(onClick) p.addEventListener('click',()=>onClick(it));
+    if(onClick){ hitOn(p,'pointer'); p.addEventListener('click',()=>onClick(it)); }
   });
   return svg;
 }
@@ -1785,6 +1808,7 @@ function vbar(container, labels, series, {unit='', height=270, stacked=false, fm
       let p;
       if(isTop) p=el('path',{class:'bar',d:roundedTopRect(x,y,bw,h,3),fill:s.color},svg);
       else p=el('rect',{class:'bar',x:x,y:y,width:bw,height:Math.max(0,h-2),fill:s.color},svg); /* 2px spacer */
+      hitOn(p);   // กฎ 8
       p.addEventListener('mousemove',e=>showTip(s.tips&&s.tips[i]?s.tips[i]:`<b>${esc(lb)}</b><br>${esc(s.label||'')} ${fmtVal(v)} ${unit}`,e.clientX,e.clientY));
       p.addEventListener('mouseleave',hideTip);
       acc+=h;
@@ -1816,6 +1840,7 @@ function donut(container, slices, {unit='กม.', height=280}={}){
     const xi0=cx+r*Math.cos(a1),yi0=cy+r*Math.sin(a1),xi1=cx+r*Math.cos(a0),yi1=cy+r*Math.sin(a0);
     const p=el('path',{class:'bar',d:`M${x0},${y0} A${R},${R} 0 ${large} 1 ${x1},${y1} L${xi0},${yi0} A${r},${r} 0 ${large} 0 ${xi1},${yi1} z`,
       fill:s.color,stroke:'#fcfcfb','stroke-width':2},svg);
+    hitOn(p);   // กฎ 8
     p.addEventListener('mousemove',e=>showTip(`<b>${esc(s.label)}</b><br>${fmt(s.v)} ${unit} (${(100*s.v/tot).toFixed(1)}%)`,e.clientX,e.clientY));
     p.addEventListener('mouseleave',hideTip);
     // % ในเนื้อวง — เฉพาะชิ้นที่ใหญ่พอ (≥6%) ชิ้นเล็กดูจาก tooltip
@@ -1848,9 +1873,10 @@ function hstack(container, rows, segsOrder, {unit='คำขอ', labelW=112, on
     const totRow=segsOrder.reduce((a,s)=>a+(row.segs[s.k]||0),0);
     // ชี้ตรงไหนของแถวก็ได้ -> สรุปของแถว
     const hit=el('rect',{class:onClick?'hitrow':'', 'data-i':i, x:0,y:y,width:W,height:rowH,fill:'transparent'},svg);
+    hitOn(hit);   // กฎ 8
     hit.addEventListener('mousemove',e=>showTip(`<b>${esc(catName(row.label))}</b><br>${row.right?esc(row.right):fmt(totRow)+' '+unit}`,e.clientX,e.clientY));
     hit.addEventListener('mouseleave',hideTip);
-    if(onClick) hit.addEventListener('click',()=>onClick(row,i));
+    if(onClick){ hitOn(hit,'pointer'); hit.addEventListener('click',()=>onClick(row,i)); }
     const t=el('text',{class:'cattext bar','data-i':i,x:labelW-8,y:by+bh/2+4,'text-anchor':'end','pointer-events':'none'},svg);
     t.textContent=row.label.length>14?row.label.slice(0,14)+'…':row.label;
     let x=labelW;
@@ -1858,6 +1884,7 @@ function hstack(container, rows, segsOrder, {unit='คำขอ', labelW=112, on
       const v=row.segs[s.k]||0; if(v<=0) return;
       const w=plotW*v/max;
       const rect=el('rect',{class:'bar','data-i':i,x:x,y:by,width:Math.max(1,w-2),height:bh,rx:3,fill:s.color},svg);
+      hitOn(rect);   // กฎ 8
       rect.addEventListener('mousemove',e=>showTip(`<b>${esc(catName(row.label))} · ${esc(catName(s.label))}</b><br>${fmt(v)} ${unit} (${(100*v/totRow).toFixed(0)}%)${row.right?`<br><span style="color:#c8d2e4;font-size:11px">${esc(row.right)}</span>`:''}`,e.clientX,e.clientY));
       rect.addEventListener('mouseleave',hideTip);
       x+=w;
@@ -2317,6 +2344,14 @@ const NAV_SVG={
      msg    ข้อความแจ้งหลังกดโหลดใหม่ (ไม่ใส่ = ไม่ต้องแจ้ง)
      csv    [id ตาราง, ชื่อไฟล์] สำหรับปุ่มส่งออก CSV (ไม่ใส่ = หน้านี้ไม่มีตารางให้ส่งออก)
    ══════════════════════════════════════════════════════════════════════════ */
+/* ══ เลขเวอร์ชัน — ประกาศที่เดียว (กฎ 1) ══════════════════════════════════
+   เดิมเลขเวอร์ชันพิมพ์อยู่ใน HTML ตรงป้ายมุมซ้ายบน แยกจากตัวโค้ดโดยสิ้นเชิง
+   ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
+   ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
+   อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
+const APP_VER='v27.3', APP_DATE='20 ส.ค. 2569';
+const APP_VER_TXT=APP_VER+' · '+APP_DATE;
+
 const PAGES=[
   {id:'overview',                            body:'ovBudget',                                     retry:()=>loadHistory(true),
    needs:{ history:()=>renderOverviewBudget(),
@@ -2426,6 +2461,11 @@ function dataArrived(key){
    ══════════════════════════════════════════════════════════════════════════ */
 function archCheck(){
   const bad=[], warn=[];
+  /* v27.1 กฎ 1 — ป้ายเวอร์ชันต้องมาจาก APP_VER ห้ามพิมพ์เลขซ้ำไว้ใน HTML */
+  const vEl=document.querySelector('.brand .ver');
+  if(!vEl) bad.push('ไม่มีป้ายเวอร์ชัน .brand .ver');
+  else if(vEl.textContent.trim()!==APP_VER_TXT)
+    bad.push(`ป้ายเวอร์ชันไม่ตรงกับ APP_VER ("${vEl.textContent.trim()}" ควรเป็น "${APP_VER_TXT}")`);
   const btnPages=[...document.querySelectorAll('.nav button[data-page]')].map(b=>b.dataset.page);
   PAGES.forEach(p=>{
     if(btnPages.indexOf(p.id)<0)                       bad.push(`หน้า "${p.id}" อยู่ในทะเบียน แต่ไม่มีปุ่มเมนู`);
@@ -5399,6 +5439,7 @@ function renderHistory(){
       ];
       document.querySelectorAll('#histBody .worktile').forEach((elx,i)=>{
         elx.style.cursor='help';
+        hitOn(elx);   // กฎ 8
         elx.addEventListener('mousemove',e=>showTip(workTips[i],e.clientX,e.clientY));
         elx.addEventListener('mouseleave',hideTip);
       });
@@ -5751,6 +5792,7 @@ function renderHistRoad(code){
    'ป้ายติดค้ำประกัน': ()=>{
       // ป้าย 🛡 ติดค้ำ: ชี้แล้วโชว์วันหมดค้ำประกัน
       document.querySelectorAll('#histRoadBody .warrTag').forEach(t=>{ t.style.cursor='help';
+        hitOn(t);   // กฎ 8
         t.addEventListener('mousemove',e=>showTip(`🛡 ติดค้ำประกันถึง <b>${esc(t.dataset.w)}</b><br>(ส่งงานงวดสุดท้าย + 2 ปี)`,e.clientX,e.clientY));
         t.addEventListener('mouseleave',hideTip); });
    },
@@ -5990,8 +6032,23 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
   const treeIcon=(dx,base,g)=>{ // ต้นไม้เล็ก (ฐานอยู่ที่ base)
     el('path',{d:`M${dx},${base-8} l3.4,5.2 h-6.8 z`,fill:'#2f9e57','pointer-events':'none'},g);
     el('rect',{x:dx-0.9,y:base-2.9,width:1.8,height:2.9,fill:'#8a6d4b','pointer-events':'none'},g); };
+  /* ══════════════════════════════════════════════════════════════════════
+     v27.2 — งานที่ซ้อนกันต้องขึ้น "ทุกอัน" ไม่ใช่เฉพาะอันที่วาดทีหลัง
+     ปัญหาเดิม: แต่ละสัญลักษณ์เป็นกลุ่มของตัวเอง มีกล่องรับเมาส์ใสๆ ของตัวเอง
+     กลุ่มที่วาดทีหลัง (จุดไฟฟ้า · เส้นประ · ต้นไม้) มีกล่องคลุมสูงเท่าแถบทั้งแถบ
+     จึงกินเมาส์ของแถบถนนที่อยู่ข้างใต้ไปหมด — ชี้กลางแถบได้แต่ "ไฟฟ้าแสงสว่าง"
+     งานที่ซ้อนอยู่ตรงกลางไม่มีทางเปิดดูได้เลย (อาการเดียวกับตัวเลขบัง heatmap)
+     ตอนนี้: ทุกสัญลักษณ์ไม่รับเมาส์ แต่ละเลนมีตัวรับเมาส์ตัวเดียวคลุมทั้งเลน
+     ชี้ที่ไหน = รวบทุกอย่างที่อยู่ใต้จุดนั้นมาแสดงพร้อมกัน
+     ══════════════════════════════════════════════════════════════════════ */
+  const svgXY=e=>{ const r=svg.getBoundingClientRect();
+    return {x:(e.clientX-r.left)*W/(r.width||W), y:(e.clientY-r.top)*H/(r.height||H)}; };
+  const laneHit=()=>{ const A=[];
+    return {add:(x1,y1,w,h,tip)=>{ if(tip) A.push({x1,x2:x1+w,y1,y2:y1+h,tip}); }, all:A}; };
+
   lanes.forEach((ln,i)=>{
     const y=padT+i*laneH, bh=15, by=y+(laneH-bh)/2;
+    const HIT=laneHit();
     // ป้ายชื่อแถว: เส้นสีข้างหน้า + ชื่อ (legend อยู่ที่แถวเลย ไม่ต้องอ่านด้านล่าง)
     el('rect',{x:6,y:by+bh/2-2,width:12,height:4,rx:2,fill:ln.color||'#9aa5a3'},svg);
     const lb=el('text',{class:'lanelbl',x:22,y:by+bh/2+4,'text-anchor':'start'},svg); lb.textContent=ln.label;
@@ -6002,6 +6059,7 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
     else if(ln.noSegN&&ln.segs.length){
       const t=el('text',{class:'kmtick',x:x0+plotW+2,y:by+bh/2+4,'font-style':'italic','font-size':'9.5'},svg);
       t.textContent=`+${ln.noSegN}`; t.style.cursor='help'; t.style.pointerEvents='auto';  // ตัวเดียวในไฟล์ที่ต้องรับเมาส์เอง
+      hitOn(t);   // กฎ 8
       t.addEventListener('mousemove',e=>showTip(`<b>+${ln.noSegN}</b> โครงการใน "${esc(ln.label)}" ที่ไม่ระบุช่วง กม.<br>วาดตำแหน่งบนแถบไม่ได้ — ดูรายละเอียดในตารางด้านล่าง`,e.clientX,e.clientY));
       t.addEventListener('mouseleave',hideTip);
     }
@@ -6011,23 +6069,28 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
     [...ln.segs].sort((a,b2)=>(ORD[mkOf(a)]||0)-(ORD[mkOf(b2)]||0)||((a.zAlive||0)-(b2.zAlive||0))).forEach(sg=>{
       const xa=X(sg.a), xb=X(Math.min(sg.b,roadLen));
       const col=sg.color||ln.color, mid=(xa+xb)/2, mk=mkOf(sg);
-      const g=el('g',{class:'seg'},svg); g.style.cursor='help';
-      const hit=(x1,y1,w,h)=>el('rect',{x:x1,y:y1,width:w,height:h,fill:'transparent'},g);
+      const g=el('g',{class:'seg'},svg); g.style.pointerEvents='none';
+      const W2=Math.max(3,xb-xa);
+      const hit=(x1,y1,w,h)=>HIT.add(x1,y1,w,h,sg.tip);
       if(mk==='elec'){
         // ไฟฟ้า/แสงสว่าง -> จุดเล็ก 2 แนว บน-ล่างแถบ (คนละไลน์กับเส้นประรางระบายน้ำ)
-        hit(xa-4,by-7,Math.max(10,xb-xa+8),bh+14);
+        // v27.2 — รับเมาส์เฉพาะ "แนวจุด" บน-ล่าง ไม่คลุมตัวแถบตรงกลางอีกแล้ว
+        hit(xa-4,by-8,Math.max(10,xb-xa+8),8);
+        hit(xa-4,by+bh,Math.max(10,xb-xa+8),8);
         const n=Math.max(2, Math.min(30, Math.floor((xb-xa)/12)+2));
         [by-4, by+bh+4].forEach(cy=>{ for(let k=0;k<n;k++){
           const dx=xa+(n===1?0:(xb-xa)*k/(n-1));
           el('circle',{cx:dx,cy,r:2,fill:col,stroke:'#fcfcfb','stroke-width':0.9,'pointer-events':'none'},g); }});
       }else if(mk==='drain'){
-        // รางระบายน้ำ -> เส้นประชิดขอบบน-ล่างของแถบ
-        hit(xa-2,by-2,Math.max(9,xb-xa+4),bh+4);
+        // รางระบายน้ำ -> เส้นประชิดขอบบน-ล่างของแถบ (v27.2 รับเมาส์เฉพาะแนวเส้น)
+        hit(xa-2,by-1,Math.max(9,xb-xa+4),6);
+        hit(xa-2,by+bh-5,Math.max(9,xb-xa+4),6);
         [by+2, by+bh-2].forEach(yy=>
           el('line',{x1:xa,y1:yy,x2:Math.max(xa+7,xb),y2:yy,stroke:col,'stroke-width':2,'stroke-dasharray':'4 3','stroke-linecap':'round','pointer-events':'none'},g));
       }else if(mk==='tree'){
-        // ปรับปรุงภูมิทัศน์ -> ต้นไม้เล็กๆ บนและล่างแถบ
-        hit(xa-6,by-9,Math.max(14,xb-xa+12),bh+18);
+        // ปรับปรุงภูมิทัศน์ -> ต้นไม้เล็กๆ บนและล่างแถบ (v27.2 รับเมาส์เฉพาะแนวต้นไม้)
+        hit(xa-6,by-10,Math.max(14,xb-xa+12),10);
+        hit(xa-6,by+bh,Math.max(14,xb-xa+12),11);
         const n=Math.max(1, Math.min(20, Math.floor((xb-xa)/16)+1));
         [by-0.5, by+bh+8.2].forEach(base=>{ for(let k=0;k<n;k++){
           const dx=xa+(n===1?(xb-xa)/2:(xb-xa)*k/(n-1));
@@ -6038,6 +6101,7 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
         camIcon(mid,by+bh/2,col,g);
       }else if(mk==='sign'){
         // ป้าย/อุปกรณ์อำนวยความปลอดภัย (ต่ำกว่า 5 แสน) -> สามเหลี่ยม ▲ (แบบป้ายจราจร)
+        hit(mid-7,by,14,bh);   // v27.2 เดิมไม่มีกล่องรับเมาส์เลย ต้องเล็งโดนสามเหลี่ยมพอดีถึงติด
         el('path',{d:`M${mid},${by+2} l5.5,${bh-4} l-11,0 z`,fill:col,stroke:'#fcfcfb','stroke-width':1},g);
       }else if(mk==='bridge'){
         // ก่อสร้างสะพาน -> ไอคอนสะพาน )( สีของแถว (ช่วงยาวมีเส้นฐานกำกับ)
@@ -6047,24 +6111,22 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
       }else{
         // ถนน: ก่อสร้าง/ขยาย = แถบเต็ม · บำรุง (Hot In-Plant/Recycling ฯลฯ) = แถบเล็กกลาง
         const thin=mk==='thin';
-        if(sg.pt){ el('rect',{x:xa-2,y:by,width:4,height:bh,rx:2,fill:col,stroke:'#fcfcfb','stroke-width':1},g); }
+        if(sg.pt){ hit(xa-4,by,8,bh);
+          el('rect',{x:xa-2,y:by,width:4,height:bh,rx:2,fill:col,stroke:'#fcfcfb','stroke-width':1},g); }
         else{ const h=thin?7:bh, yy=thin?by+(bh-7)/2:by;
-          el('rect',{x:xa,y:yy,width:Math.max(3,xb-xa),height:h,rx:3,fill:col,stroke:'#fcfcfb','stroke-width':1},g); }
+          hit(xa,yy,W2,h);
+          el('rect',{x:xa,y:yy,width:W2,height:h,rx:3,fill:col,stroke:'#fcfcfb','stroke-width':1},g); }
       }
-      g.addEventListener('mousemove',e=>showTip(sg.tip,e.clientX,e.clientY));
-      g.addEventListener('mouseleave',hideTip);
     });
     // 🌉 ไอคอนสะพานในสายทาง — วางบนแถว "ภาพรวม"
     if(ln.over&&bridgesOnRoad&&bridgesOnRoad.length){
       bridgesOnRoad.forEach(b=>{
         const km=kmVal(b.km); if(km==null) return;
         const bx=X(km), cy=by+bh/2;
-        const g=el('g',{class:'seg'},svg); g.style.cursor='help';
-        el('rect',{x:bx-8,y:cy-9,width:16,height:18,fill:'transparent'},g);
+        const g=el('g',{class:'seg'},svg); g.style.pointerEvents='none';
+        HIT.add(bx-8,cy-9,16,18,`<b>)( ${esc(b.name&&b.name!=='-'?b.name:'สะพาน (ไม่ระบุชื่อ)')}</b><br>กม. ${esc(b.km)} · ข้าม${esc(b.river||'-')}<br>ยาว ${fmt(b.len)} ม. · กว้าง ${fmt(b.width)} ม.${b.year?' · สร้างปี '+esc(b.year):''}`);
         // สัญลักษณ์สะพานแบบแผนที่/ป้ายจราจร: เส้นตั้งคู่ ปลายบานออก — โทนฟ้าอ่อนกว่าแถบ กันกลืนกับงานสีน้ำเงิน
         brIcon(bx,cy,'#7f93b8',g);
-        g.addEventListener('mousemove',e=>showTip(`<b>)( ${esc(b.name&&b.name!=='-'?b.name:'สะพาน (ไม่ระบุชื่อ)')}</b><br>กม. ${esc(b.km)} · ข้าม${esc(b.river||'-')}<br>ยาว ${fmt(b.len)} ม. · กว้าง ${fmt(b.width)} ม.${b.year?' · สร้างปี '+esc(b.year):''}`,e.clientX,e.clientY));
-        g.addEventListener('mouseleave',hideTip);
       });
     }
     // 🔌 อุปกรณ์ปัจจุบัน (ชีท Equipment) — "งานเดียวกันอยู่แนวเดียวกัน" กับสัญลักษณ์โครงการ:
@@ -6074,10 +6136,10 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
       (eqOnRoad.marks||[]).forEach(mq=>{
         const hasB=mq.b!=null&&mq.b>mq.a;
         const xa=X(mq.a), xb=X(Math.min(hasB?mq.b:mq.a, roadLen));
-        const col=mq.color||EQC[mq.kind], g=el('g',{class:'seg'},svg); g.style.cursor='help';
+        const col=mq.color||EQC[mq.kind], g=el('g',{class:'seg'},svg); g.style.pointerEvents='none';
         if(mq.kind==='elec'){
           // จุดแนวเดียวกับงานไฟฟ้าโครงการ (บน-ล่างแถบ) · hover เฉพาะแนวจุด ไม่คลุมตัวแถบ
-          [[by-8,8],[by+bh,8]].forEach(([yy,hh])=>el('rect',{x:xa-4,y:yy,width:Math.max(10,xb-xa+8),height:hh,fill:'transparent'},g));
+          [[by-8,8],[by+bh,8]].forEach(([yy,hh])=>HIT.add(xa-4,yy,Math.max(10,xb-xa+8),hh,mq.tip));
           const n=hasB?Math.max(2,Math.min(30,Math.floor((xb-xa)/12)+2)):1;
           [by-4, by+bh+4].forEach(cy=>{ for(let k=0;k<n;k++){
             const dx=xa+(n===1?0:(xb-xa)*k/(n-1));
@@ -6085,24 +6147,44 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
         }else if(mq.kind==='drain'){
           // เส้นประแนวเดียวกับงานรางระบายน้ำโครงการ (ชิดขอบแถบ) · hover เฉพาะแนวเส้น
           [[by+2,by-1],[by+bh-2,by+bh-5]].forEach(([yy,hy])=>{
-            el('rect',{x:xa-2,y:hy,width:Math.max(9,xb-xa+4),height:6,fill:'transparent'},g);
+            HIT.add(xa-2,hy,Math.max(9,xb-xa+4),6,mq.tip);
             el('line',{x1:xa,y1:yy,x2:Math.max(xa+7,xb),y2:yy,stroke:col,'stroke-width':2,'stroke-dasharray':'4 3','stroke-linecap':'round','pointer-events':'none'},g); });
         }else{ const mid=(xa+xb)/2;
-          el('rect',{x:mid-8,y:by-2,width:16,height:bh+4,fill:'transparent'},g);
+          HIT.add(mid-8,by-2,16,bh+4,mq.tip);
           camIcon(mid,by+bh/2,col,g);
         }
-        g.addEventListener('mousemove',e=>showTip(mq.tip,e.clientX,e.clientY));
-        g.addEventListener('mouseleave',hideTip);
       });
       (eqOnRoad.trans||[]).forEach(t=>{
-        const bx=X(Math.min(t.km,roadLen)), cy=by+bh/2, g=el('g',{class:'seg'},svg); g.style.cursor='help';
-        el('rect',{x:bx-7,y:by-2,width:14,height:bh+4,fill:'transparent'},g);
+        const bx=X(Math.min(t.km,roadLen)), cy=by+bh/2, g=el('g',{class:'seg'},svg); g.style.pointerEvents='none';
+        HIT.add(bx-7,by-2,14,bh+4,t.tip);
         el('circle',{cx:bx,cy,r:6,fill:t.color||'#d97706',stroke:'#fcfcfb','stroke-width':1.2,'pointer-events':'none'},g);
         el('path',{d:`M${bx+1.7},${cy-4.1} l-3.6,4.6 h2.5 l-1.5,3.7 l4,-5 h-2.5 z`,fill:'#fff','pointer-events':'none'},g);
-        g.addEventListener('mousemove',e=>showTip(t.tip,e.clientX,e.clientY));
-        g.addEventListener('mouseleave',hideTip);
       });
     }
+    /* ── ตัวรับเมาส์ตัวเดียวของเลนนี้ (v27.2) ───────────────────────────
+       ชี้ตรงไหน = รวบทุกอย่างที่ทับกันอยู่ใต้จุดนั้นมาแสดงพร้อมกัน
+       ไม่ใช่เฉพาะอันที่บังเอิญวาดทีหลังแล้วอยู่บนสุด */
+    const ov=el('rect',{x:x0,y:by-9,width:plotW,height:bh+18,fill:'transparent'},svg);
+    ov.style.cursor='help';
+    hitOn(ov);   // กฎ 8
+    ov.addEventListener('mousemove',e=>{
+      const pt=svgXY(e);
+      const seen=new Set(), hits=[];
+      HIT.all.forEach(h=>{
+        if(pt.x<h.x1||pt.x>h.x2||pt.y<h.y1||pt.y>h.y2) return;
+        if(seen.has(h.tip)) return;          // สัญลักษณ์เดียวมีหลายกล่อง (บน-ล่าง) นับครั้งเดียว
+        seen.add(h.tip); hits.push(h.tip);
+      });
+      if(!hits.length){ hideTip(); return; }
+      const MAX=4;
+      const body=hits.slice(0,MAX).join('<hr style="border:0;border-top:1px solid rgba(255,255,255,.22);margin:7px 0">');
+      showTip(
+        (hits.length>1?`<div style="font-size:10.5px;opacity:.75;margin-bottom:5px">ตรงนี้มี ${hits.length} รายการซ้อนกัน</div>`:'')+
+        body+
+        (hits.length>MAX?`<div style="font-size:10.5px;opacity:.75;margin-top:6px">…อีก ${hits.length-MAX} รายการ — ดูครบในตารางด้านล่าง</div>`:''),
+        e.clientX, e.clientY);
+    });
+    ov.addEventListener('mouseleave',hideTip);
   });
   // legend ล่าง: ตาราง grid คอลัมน์ตรงกันทุกบรรทัด (ไอคอนกว้างคงที่ 20px)
   const lg=document.createElement('div'); lg.className='legendrow';
@@ -6928,6 +7010,7 @@ function drawLanes(container, roadLen, laneDefs){
     ln.segs.forEach(sg=>{
       const xa=X(sg.a), xb=X(Math.min(sg.b,roadLen));
       const rect=el('rect',{class:'seg',x:xa,y:by,width:Math.max(4,xb-xa),height:bh,rx:3,fill:sg.color||ln.color,stroke:'#fcfcfb','stroke-width':1},svg);
+      hitOn(rect);   // กฎ 8
       rect.addEventListener('mousemove',e=>showTip(sg.tip,e.clientX,e.clientY));
       rect.addEventListener('mouseleave',hideTip);
     });
@@ -7689,6 +7772,7 @@ countUpAll(document);
 buildAppStat();
 buildTopActions();
 svgSidebarIcons();
+{ const v=document.querySelector('.brand .ver'); if(v) v.textContent=APP_VER_TXT; }   // v27.1 ป้ายเวอร์ชันจากที่เดียว
 try{ archCheck(); }catch(e){ console.error('archCheck พัง:',e); }   // v25.0 ด่านตรวจโครงสร้าง
 if(location.hash) setTimeout(applyURL, 120);   // v21.0 เปิดจากลิงก์ที่แชร์มา -> เด้งไปมุมมองนั้นเลย
 /* วาดกราฟใหม่ตามขนาดจอ — ใช้พื้นที่เต็มเสมอ */
