@@ -327,6 +327,11 @@ select.search{width:auto}
 .viz .lolli-dot:hover{r:7}
 .lolli-stem.dimmed,.lolli-dot.dimmed{opacity:.22}
 .heatcell{transition:opacity .12s} .heatcell:hover{opacity:.82}
+/* v28.0 — ตารางสรุปตามแหล่งงบ: แถวหัวกลุ่ม 2 ระดับ + แถวรวมท้ายตาราง */
+#reqSrcTable tr.srcgrp td{background:#e9eef6;border-top:2px solid var(--navy);font-size:13px;padding-top:8px;padding-bottom:8px}
+#reqSrcTable tr.srccat td{background:#f5f2e8;font-weight:600}
+#reqSrcTable tr.srctot td{background:var(--navy);color:#fff;font-size:13px}
+#reqSrcTable tbody tr[data-code]:hover td{background:var(--teal-soft)}
 .skrib{transition:fill-opacity .12s} .skrib:hover{fill-opacity:.62}
 .bubble{transition:fill-opacity .12s} .bubble:hover{fill-opacity:.9}
 .smgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
@@ -2349,7 +2354,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v27.3', APP_DATE='20 ส.ค. 2569';
+const APP_VER='v28.0', APP_DATE='20 ส.ค. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -2378,7 +2383,7 @@ const PAGES=[
                                              redraw:()=>renderDecide(),
                                              csv:['dcRankTable','สายทางที่ควรได้งบก่อน']},
   {id:'requests', enter:()=>loadRequests(),  body:'reqBody',                                       retry:()=>loadRequests(true),
-   needs:{ requests:()=>renderRequests() },  csv:['reqRoadTable','คำของบรายสาย']},
+   needs:{ requests:()=>renderRequests() },  csv:['reqSrcTable','สรุปคำของบตามแหล่งงบ']},
   {id:'zerobase', enter:()=>loadZerobase(),  body:'zbBody',                                        retry:()=>loadZerobase(true),
    needs:{ zerobase:()=>renderZerobase() },  csv:['zbRoadTable','Zerobase รายสาย']},
   {id:'risk',     enter:()=>loadRisk(),      body:'riskBody',                                      retry:()=>loadRisk(true),
@@ -3578,6 +3583,92 @@ function reloadPage(){
   if(p.msg) banner('info',p.msg);
 }
 function printPage(){ hideTip(); window.print(); }
+/* ══════════════════════════════════════════════════════════════════════════
+   ตัวสร้างไฟล์ Excel จริง (.xlsx) — v28.0
+   ─────────────────────────────────────────────────────────────────────────
+   ทำไมไม่ใช้ CSV: CSV เก็บได้แค่ข้อความล้วน — หัวตาราง ตัวหนา ยอดรวม ความกว้าง
+   คอลัมน์ และเลขที่เป็น "ตัวเลขจริง" หายหมด เปิดใน Excel แล้วต้องมานั่งจัดใหม่
+   ทำไมไม่ใช้ไลบรารีสำเร็จรูป: ข้อกำหนดคือไฟล์เดียวจบ ห้ามโหลดอะไรจากเน็ต
+   จึงเขียนเอง — .xlsx คือไฟล์ ZIP ที่ข้างในเป็น XML ไม่กี่ไฟล์
+   ใช้ ZIP แบบ "ไม่บีบอัด" (stored) ซึ่ง Excel เปิดได้ปกติ จึงไม่ต้องมีตัวบีบอัด
+   กฎ 7 — ตัวนี้ไม่รู้จักงานทางเลย รับแค่ตาราง [[ค่า,...]] ใครจะเอาไปใช้ก็ได้
+   ══════════════════════════════════════════════════════════════════════════ */
+const CRC_TB=(()=>{ const t=new Uint32Array(256);
+  for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1); t[n]=c>>>0; }
+  return t; })();
+function crc32(u8){ let c=0xFFFFFFFF; for(let i=0;i<u8.length;i++) c=CRC_TB[(c^u8[i])&0xFF]^(c>>>8); return (c^0xFFFFFFFF)>>>0; }
+function zipStore(files){            // files=[{name, data:Uint8Array}] -> Blob (.zip แบบไม่บีบอัด)
+  const enc=new TextEncoder(), parts=[], central=[]; let off=0;
+  const u16=v=>[v&255,(v>>8)&255], u32=v=>[v&255,(v>>8)&255,(v>>16)&255,(v>>24)&255];
+  files.forEach(f=>{
+    const nm=enc.encode(f.name), crc=crc32(f.data), n=f.data.length;
+    const lh=new Uint8Array([...u32(0x04034b50),...u16(20),...u16(0),...u16(0),...u16(0),...u16(0),
+      ...u32(crc),...u32(n),...u32(n),...u16(nm.length),...u16(0)]);
+    parts.push(lh, nm, f.data);
+    central.push(new Uint8Array([...u32(0x02014b50),...u16(20),...u16(20),...u16(0),...u16(0),...u16(0),...u16(0),
+      ...u32(crc),...u32(n),...u32(n),...u16(nm.length),...u16(0),...u16(0),...u16(0),...u16(0),...u32(0),...u32(off)]));
+    central.push(nm);
+    off += lh.length + nm.length + n;
+  });
+  const cs=central.reduce((a,x)=>a+x.length,0);
+  const end=new Uint8Array([...u32(0x06054b50),...u16(0),...u16(0),...u16(files.length),...u16(files.length),
+    ...u32(cs),...u32(off),...u16(0)]);
+  return new Blob([...parts,...central,end],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+}
+const xmlEsc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const colName=i=>{ let s=''; i++; while(i>0){ const m=(i-1)%26; s=String.fromCharCode(65+m)+s; i=(i-m-1)/26; } return s; };
+/* rows = [[cell,...]] · cell = ค่าดิบ หรือ {v,s} เมื่อ s = 1 หัวตาราง · 2 หัวกลุ่ม · 3 ยอดรวม
+   opts = {name, widths:[กว้างคอลัมน์], freeze:จำนวนแถวที่ตรึงไว้} */
+function xlsxBlob(rows, opts){
+  const o=opts||{}, W=o.widths||[];
+  const cells=rows.map((r,ri)=>{
+    const cs=r.map((c,ci)=>{
+      const obj=(c&&typeof c==='object')?c:{v:c};
+      const st=obj.s||0, ref=colName(ci)+(ri+1);
+      if(obj.v==null||obj.v==='') return '<c r="'+ref+'"'+(st?' s="'+st+'"':'')+'/>';
+      if(typeof obj.v==='number'&&isFinite(obj.v)) return '<c r="'+ref+'"'+(st?' s="'+st+'"':'')+'><v>'+obj.v+'</v></c>';
+      return '<c r="'+ref+'"'+(st?' s="'+st+'"':'')+' t="inlineStr"><is><t xml:space="preserve">'+xmlEsc(obj.v)+'</t></is></c>';
+    }).join('');
+    return '<row r="'+(ri+1)+'">'+cs+'</row>';
+  }).join('');
+  const cols=W.length?'<cols>'+W.map((w,i)=>'<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+w+'" customWidth="1"/>').join('')+'</cols>':'';
+  const pane=o.freeze?'<sheetViews><sheetView workbookViewId="0"><pane ySplit="'+o.freeze+'" topLeftCell="A'+(o.freeze+1)+'" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>':'';
+  const sheet='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'+pane+cols+'<sheetData>'+cells+'</sheetData></worksheet>';
+  /* สไตล์ 4 แบบ: 0 ปกติ · 1 หัวตาราง(น้ำเงินเข้ม ตัวขาว) · 2 หัวกลุ่ม(พื้นครีม ตัวหนา) · 3 ยอดรวม(ตัวหนา เส้นบน) */
+  const styles='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'+
+'<numFmts count="1"><numFmt numFmtId="164" formatCode="#,##0"/></numFmts>'+
+'<fonts count="4"><font><sz val="11"/><name val="TH Sarabun New"/></font>'+
+'<font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="TH Sarabun New"/></font>'+
+'<font><b/><sz val="11"/><name val="TH Sarabun New"/></font>'+
+'<font><b/><sz val="11"/><name val="TH Sarabun New"/></font></fonts>'+
+'<fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill>'+
+'<fill><patternFill patternType="solid"><fgColor rgb="FF1B2A4A"/><bgColor indexed="64"/></patternFill></fill>'+
+'<fill><patternFill patternType="solid"><fgColor rgb="FFF3EFE2"/><bgColor indexed="64"/></patternFill></fill></fills>'+
+'<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border>'+
+'<border><left/><right/><top style="thin"><color rgb="FF888888"/></top><bottom/><diagonal/></border></borders>'+
+'<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'+
+'<cellXfs count="4">'+
+'<xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>'+
+'<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>'+
+'<xf numFmtId="164" fontId="2" fillId="3" borderId="0" xfId="0" applyFont="1" applyFill="1" applyNumberFormat="1"/>'+
+'<xf numFmtId="164" fontId="3" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyNumberFormat="1"/>'+
+'</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+  const nm=xmlEsc((o.name||'Sheet1').slice(0,31).replace(/[\\\/\?\*\[\]:]/g,'-'));
+  const E=new TextEncoder();
+  return zipStore([
+    {name:'[Content_Types].xml', data:E.encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>')},
+    {name:'_rels/.rels', data:E.encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>')},
+    {name:'xl/workbook.xml', data:E.encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="'+nm+'" sheetId="1" r:id="rId1"/></sheets></workbook>')},
+    {name:'xl/_rels/workbook.xml.rels', data:E.encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>')},
+    {name:'xl/styles.xml', data:E.encode(styles)},
+    {name:'xl/worksheets/sheet1.xml', data:E.encode(sheet)}
+  ]);
+}
+function saveBlob(blob, filename){
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+}
+
 /* กฎข้อ 1 — ตารางที่ส่งออก CSV ได้ ก็อ่านจากทะเบียนหน้าเช่นกัน (ช่อง csv) */
 function exportCSV(){
   const pg=(document.querySelector('.page.active')||{}).id||'';
@@ -6221,6 +6312,14 @@ defineSource({
   has:()=>!!reqData,
   read:async()=>{
     const S=v=>String(v??'').trim();
+    /* v28.0 — อ่านหัวคอลัมน์แบบยืดหยุ่น: ตรงตัวก่อน ไม่เจอค่อยไล่หาแบบ "มีคำนี้อยู่"
+       (หัวชีทจริงมีเว้นวรรค/วงเล็บปน เช่น "งบประมาณ (บาท)") */
+    const G=(o,...names)=>{
+      for(const n of names){ const v=S(o[n]); if(v) return v; }
+      const ks=Object.keys(o);
+      for(const n of names){ const k=ks.find(k2=>normKey(k2).includes(normKey(n))); if(k){ const v=S(o[k]); if(v) return v; } }
+      return '';
+    };
     // แปลง 1 tab -> รายการคำขอของปีนั้น (หัวคอลัมน์ยืดหยุ่น: กิจกรรม/ลักษณะงาน หรือ ชื่อโครงการ/กิจกรรมโดยสังเขป)
     const parseReq=(objs, year)=>{
       const recs=[];
@@ -6231,6 +6330,13 @@ defineSource({
           cat:S(o['ชนิดงบ'])||'— ไม่ระบุ',
           proj:S(o['ชื่อโครงการ']??o['กิจกรรม']),
           act:S(o['กิจกรรมโดยสังเขป']??o['ลักษณะงาน']??o['กิจกรรม']),
+          /* v28.0 — คอลัมน์ที่ตารางสรุปตามแหล่งงบต้องใช้ (มีในชีทอยู่แล้ว แค่ไม่เคยอ่านเข้ามา)
+             ค่าในคอลัมน์แหล่งงบมีเลขนำมาเอง เช่น "1.จังหวัด" … "10.กลุ่มจังหวัด"
+             ระบบจึงเรียงลำดับตามเลขนั้นได้เลย ไม่ต้องมีรายชื่อตายตัวในโค้ด */
+          src:G(o,'แหล่งงบ','แหล่งงบประมาณ')||'— ไม่ระบุแหล่งงบ',
+          actv:G(o,'กิจกรรม','ประเภทงาน'),
+          rname:G(o,'ชื่อสายทาง'),
+          qty:G(o,'ปริมาณงาน'), unit:G(o,'หน่วยนับ'),
           segs,
           amt:typeof o['งบประมาณ']==='number'?o['งบประมาณ']:num(o['งบประมาณ'])});
       });
@@ -6272,6 +6378,157 @@ defineSource({
 });
 const reqFiltered=()=>reqYearPick==='all'?reqData:reqData.filter(r=>String(r.year)===String(reqYearPick));
 document.getElementById('reqYearSel').addEventListener('change',e=>{ reqYearPick=e.target.value; renderRequests(); });
+/* ══════════════════════════════════════════════════════════════════════════
+   สรุปคำของบตามแหล่งงบ — v28.0
+   ─────────────────────────────────────────────────────────────────────────
+   แบ่ง 2 ชั้น: แหล่งงบ (1.จังหวัด … 10.กลุ่มจังหวัด) → ชนิดงบ → รายการ
+   ลำดับแหล่งงบอ่านจาก "เลขนำหน้า" ที่มีอยู่ในค่าของชีทเอง ไม่มีรายชื่อตายตัวในโค้ด
+   ชีทเพิ่ม/ย้ายลำดับแหล่งงบเมื่อไหร่ ตารางนี้เปลี่ยนตามทันที ไม่ต้องแก้ไฟล์
+
+   กฎ 1 — บนจอ · พิมพ์ A3 · ไฟล์ Excel ใช้ "โครงข้อมูลชุดเดียวกัน" (reqSrcModel)
+   ถ้าแยกกันสร้าง 3 ที่ วันหนึ่งตัวเลขสามทางจะไม่ตรงกันโดยไม่มีใครรู้
+   ══════════════════════════════════════════════════════════════════════════ */
+const SRC_NO=s=>{ const m=String(s||'').match(/^\s*(\d+)/); return m?+m[1]:999; };
+function reqSrcModel(){
+  const Q=(typeof reqFiltered==='function'?reqFiltered():reqData)||[];
+  const info=codeInfo();
+  const kmTxt=r=>{
+    const t=(r.segs||[]).map(s=>{ const a=String(s.a||'').trim(), b=String(s.b||'').trim();
+      return a&&b?(a+' – '+b):(a||b||''); }).filter(Boolean).join(', ');
+    return t||'ทั้งสาย';
+  };
+  const bySrc={};
+  Q.forEach(r=>{ const k=r.src||'— ไม่ระบุแหล่งงบ'; (bySrc[k]=bySrc[k]||[]).push(r); });
+  return Object.keys(bySrc)
+    .sort((a,b)=>SRC_NO(a)-SRC_NO(b)||a.localeCompare(b,'th'))
+    .map(src=>{
+      const list=bySrc[src], byCat={};
+      list.forEach(r=>{ const c=r.cat||'— ไม่ระบุ'; (byCat[c]=byCat[c]||[]).push(r); });
+      return {
+        src, n:list.length,
+        amt:list.reduce((a,r)=>a+(r.amt||0),0),
+        wait:list.filter(r=>r.amt==null).length,
+        cats:Object.keys(byCat).sort((a,b)=>a.localeCompare(b,'th')).map(c=>({
+          cat:c, n:byCat[c].length,
+          amt:byCat[c].reduce((a,r)=>a+(r.amt||0),0),
+          items:byCat[c]
+            .slice().sort((x,y)=>SUF3(x.code)-SUF3(y.code)||String(x.code).localeCompare(String(y.code),'th'))
+            .map(r=>({ actv:r.actv||r.act||r.proj||'—', code:r.code,
+              rname:r.rname||(info[r.code]&&info[r.code].name)||'—',
+              km:kmTxt(r), qty:r.qty, unit:r.unit, amt:r.amt }))
+        }))
+      };
+    });
+}
+const reqSrcTitle=()=>'สรุปคำของบประมาณตามแหล่งงบ · '+
+  (reqYearPick==='all'?('ทุกปี '+(reqYears||[]).join(' · ')):('ปีงบประมาณ '+reqYearPick));
+
+function renderReqSrc(){
+  const box=document.getElementById('reqSrcBody'); if(!box) return;
+  const M=reqSrcModel();
+  if(!M.length){ box.innerHTML='<div class="note" style="padding:18px 4px">ยังไม่มีคำขอในปีที่เลือก</div>'; return; }
+  const grand=M.reduce((a,g)=>a+g.amt,0), grandN=M.reduce((a,g)=>a+g.n,0);
+  const NC=6;
+  let rows='';
+  M.forEach(g=>{
+    rows+=`<tr class="srcgrp"><td colspan="${NC-1}"><b>${esc(g.src)}</b>`+
+      `<span style="font-weight:400;color:var(--ink2);font-size:11.5px"> · ${g.n} รายการ`+
+      (g.wait?` · รอประเมินราคา ${g.wait}`:'')+`</span></td>`+
+      `<td class="num"><b>${fmt(g.amt)}</b></td></tr>`;
+    g.cats.forEach(c=>{
+      rows+=`<tr class="srccat"><td colspan="${NC-1}">${esc(catName(c.cat))}`+
+        `<span style="font-weight:400;color:var(--muted);font-size:11px"> · ${c.n} รายการ</span></td>`+
+        `<td class="num">${fmt(c.amt)}</td></tr>`;
+      c.items.forEach((it,i)=>{
+        rows+=`<tr data-code="${esc(it.code)}" style="cursor:pointer">`+
+          `<td class="num" style="color:var(--muted)">${i+1}</td>`+
+          `<td>${esc(it.actv)}</td>`+
+          `<td><b>${esc(it.code)}</b></td>`+
+          `<td>${esc(it.rname)}</td>`+
+          `<td style="font-variant-numeric:tabular-nums;font-size:11.5px">${esc(it.km)}</td>`+
+          `<td class="num">${it.amt==null?'<span style="color:var(--muted)">รอประเมิน</span>':fmt(it.amt)}</td></tr>`;
+      });
+    });
+  });
+  /* ปิดการเรียงคอลัมน์: ตารางนี้เป็นรายงานแบ่งกลุ่ม 2 ชั้น ถ้าเรียงใหม่ แถวหัวกลุ่มกับยอดรวมจะหลุดจากพวก */
+  box.innerHTML=`<div class="tblwrap" style="max-height:560px"><table id="reqSrcTable" data-sortable="1"><thead><tr>
+      <th data-nosort style="width:42px">ที่</th><th data-nosort style="width:20%">กิจกรรม</th><th data-nosort style="width:88px">รหัสสายทาง</th>
+      <th data-nosort>ชื่อสายทาง</th><th data-nosort style="width:16%">ช่วงดำเนินการ (กม.)</th><th data-nosort class="num" style="width:120px">งบประมาณ (บาท)</th>
+    </tr></thead><tbody>${rows}
+      <tr class="srctot"><td colspan="${NC-1}"><b>รวมทั้งสิ้น ${grandN} รายการ · ${M.length} แหล่งงบ</b></td>
+        <td class="num"><b>${fmt(grand)}</b></td></tr>
+    </tbody></table></div>`;
+  box.querySelectorAll('tbody tr[data-code]').forEach(tr=>tr.addEventListener('click',()=>{
+    const sel=document.getElementById('reqRoadSel');
+    if(sel){ sel.value=tr.dataset.code; renderReqDetail(tr.dataset.code); }
+  }));
+}
+
+/* ---- ส่งออกเป็นไฟล์ Excel จริง (.xlsx) ---- */
+function exportReqSrcXlsx(){
+  const M=reqSrcModel();
+  if(!M.length){ banner('info','ยังไม่มีข้อมูลให้ส่งออก'); return; }
+  const rows=[[{v:reqSrcTitle(),s:2},'','','','',''],
+    [{v:'ที่',s:1},{v:'กิจกรรม',s:1},{v:'รหัสสายทาง',s:1},{v:'ชื่อสายทาง',s:1},{v:'ช่วงดำเนินการ (กม.)',s:1},{v:'งบประมาณ (บาท)',s:1}]];
+  let grand=0, grandN=0;
+  M.forEach(g=>{
+    grand+=g.amt; grandN+=g.n;
+    rows.push([{v:g.src,s:2},{v:'',s:2},{v:'',s:2},{v:'',s:2},{v:g.n+' รายการ',s:2},{v:g.amt,s:2}]);
+    g.cats.forEach(c=>{
+      rows.push(['', catName(c.cat), '', '', c.n+' รายการ', c.amt]);
+      c.items.forEach((it,i)=>rows.push([i+1, it.actv, it.code, it.rname, it.km, it.amt==null?'รอประเมิน':it.amt]));
+    });
+  });
+  rows.push([{v:'รวมทั้งสิ้น',s:3},{v:'',s:3},{v:'',s:3},{v:'',s:3},{v:grandN+' รายการ',s:3},{v:grand,s:3}]);
+  const fn='สรุปคำของบตามแหล่งงบ_'+(reqYearPick==='all'?'ทุกปี':reqYearPick)+'.xlsx';
+  saveBlob(xlsxBlob(rows,{name:'สรุปตามแหล่งงบ',widths:[6,34,13,40,22,16],freeze:2}), fn);
+  banner('info','ดาวน์โหลด '+fn+' แล้ว — เปิดด้วย Excel ได้ทันที (ตัวเลขเป็นตัวเลขจริง คำนวณต่อได้)');
+}
+
+/* ---- พิมพ์เป็น PDF A3 แนวนอน (ใช้สไตล์พิมพ์ชุดเดียวกับรายงานอื่น) ---- */
+function printReqSrc(){
+  const M=reqSrcModel();
+  if(!M.length){ banner('info','ยังไม่มีข้อมูลให้พิมพ์'); return; }
+  const grand=M.reduce((a,g)=>a+g.amt,0), grandN=M.reduce((a,g)=>a+g.n,0);
+  let body='';
+  M.forEach(g=>{
+    body+=`<tr class="g"><td colspan="5"><b>${esc(g.src)}</b> · ${g.n} รายการ`+
+      (g.wait?` · รอประเมินราคา ${g.wait}`:'')+`</td><td class="n"><b>${fmt(g.amt)}</b></td></tr>`;
+    g.cats.forEach(c=>{
+      body+=`<tr class="c"><td colspan="5">${esc(catName(c.cat))} · ${c.n} รายการ</td><td class="n">${fmt(c.amt)}</td></tr>`;
+      c.items.forEach((it,i)=>{
+        body+=`<tr><td class="n">${i+1}</td><td>${esc(it.actv)}</td><td><b>${esc(it.code)}</b></td>`+
+          `<td>${esc(it.rname)}</td><td>${esc(it.km)}</td>`+
+          `<td class="n">${it.amt==null?'รอประเมิน':fmt(it.amt)}</td></tr>`;
+      });
+    });
+  });
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html lang="th"><head><meta charset="utf-8"><title>${esc(reqSrcTitle())}</title><style>${PRINT_CSS}
+    table{font-size:11px}
+    thead{display:table-header-group}
+    tr{page-break-inside:avoid}
+    tr.g td{background:#e8eef7;font-size:12px;padding:6px 8px;border-top:1.6px solid #1B2A4A;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    tr.c td{background:#f4f1e6;font-weight:700;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    tr.t td{background:#1B2A4A;color:#fff;font-size:12.5px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    td.n{text-align:right;font-variant-numeric:tabular-nums}
+    td{padding:3.5px 8px;border-bottom:1px solid #e3e7ee;vertical-align:top}
+  </style></head><body>
+  <div class="ptools"><button onclick="window.print()">🖨 พิมพ์</button><span><b>ตั้งค่าในหน้าต่างพิมพ์:</b> ขนาดกระดาษ <b>A3</b> · แนวกระดาษ <b>แนวนอน</b> · เปิด <b>"กราฟิกพื้นหลัง"</b> — แถบเหลืองนี้ไม่ติดไปในกระดาษ</span></div>
+  <div class="pg" style="page-break-after:auto">
+    <div class="hd"><div><h1>${esc(reqSrcTitle())}</h1>
+      <div class="sub">แขวงทางหลวงชนบทขอนแก่น · กรมทางหลวงชนบท</div></div>
+      <div style="text-align:right;font-size:11.5px">พิมพ์ ${new Date().toLocaleDateString('th-TH',{dateStyle:'long'})}<br>${esc(APP_VER_TXT)}</div></div>
+    <table><thead><tr>
+      <th style="width:34px">ที่</th><th style="width:19%">กิจกรรม</th><th style="width:80px">รหัสสายทาง</th>
+      <th>ชื่อสายทาง</th><th style="width:16%">ช่วงดำเนินการ (กม.)</th><th style="width:110px;text-align:right">งบประมาณ (บาท)</th>
+    </tr></thead><tbody>${body}
+      <tr class="t"><td colspan="5"><b>รวมทั้งสิ้น ${grandN} รายการ · ${M.length} แหล่งงบ</b></td><td class="n"><b>${fmt(grand)}</b></td></tr>
+    </tbody></table>
+  </div></body></html>`);
+  w.document.close();
+}
+
 function renderRequests(){
   const Q=reqFiltered();
   const reqAll=reqYearPick==='all';
@@ -6295,6 +6552,17 @@ function renderRequests(){
       <div class="card kpi"><div class="lbl">รอประเมินราคา</div><div class="val" style="color:var(--crit)">${waiting} <small>คำขอ</small></div><div class="foot">ยังไม่ระบุวงเงิน</div></div>
       <div class="card kpi"><div class="lbl">หมวดที่มีคำขอ</div><div class="val">${muadWithReq.length} <small>/ ${MUAD_ORDER.length} หมวด</small></div><div class="foot">${muadWithReq.join(' · ')||'—'}</div></div>
     </div>
+    <div class="card" style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+        <div><h3 style="margin:0">สรุปคำของบตามแหล่งงบ</h3>
+          <div class="note" style="margin:2px 0 0">เรียงตามลำดับแหล่งงบในชีท (1.จังหวัด … 10.กลุ่มจังหวัด) · แบ่งย่อยตามชนิดงบ · คลิกแถวเพื่อดูรายละเอียดสายนั้น</div></div>
+        <div style="display:flex;gap:7px;flex:none">
+          <button class="btn ghost" type="button" onclick="printReqSrc()">🖨 พิมพ์ A3</button>
+          <button class="btn ghost" type="button" onclick="exportReqSrcXlsx()">⬇ Excel</button>
+        </div>
+      </div>
+      <div id="reqSrcBody"></div>
+    </div>
     <div class="grid two">
       <div class="card"><h3>สายทางที่มีคำขอซ้ำมากที่สุด (Top 10)</h3><div class="note">จำนวนคำขอ — คลิกแท่งเพื่อดูรายละเอียดด้านขวา</div><div id="chTopReq"></div></div>
       <div class="card">
@@ -6315,6 +6583,7 @@ function renderRequests(){
         <th>รหัส</th><th>ชื่อสายทาง</th><th>หมวด</th>${reqAll?'<th>ปีที่ขอ</th>':''}<th class="num">ระยะทางสาย (กม.)</th><th class="num">จำนวนคำขอ</th><th class="num">ระยะที่ขอรวม (กม.)</th><th class="num">% ของสาย</th><th class="num">งบระบุแล้ว (บาท)</th><th>ชนิดงบที่ขอ</th><th>One-Page</th>
       </tr></thead><tbody></tbody></table></div>
     </div>`;
+  safeRun('สรุปตามแหล่งงบ', renderReqSrc);
   const top10=counts.slice(0,10);
   /* สีแท่ง = สีหมวดของสาย · ปลายแท่งโชว์แค่จำนวน — งบดูจาก tooltip */
   lolli('chTopReq', top10.map(e=>{
