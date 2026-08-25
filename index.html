@@ -197,10 +197,15 @@ svg.viz .hit, svg.viz .hit *{pointer-events:auto}
 /* ---------- table ---------- */
 .tblwrap{overflow:auto;max-height:430px;border:1px solid var(--grid);border-radius:8px}
 table{width:100%;border-collapse:collapse;font-size:12.5px}
-th{position:sticky;top:0;background:var(--navy);color:#fff;font-weight:600;text-align:left;padding:8px 10px;white-space:nowrap;z-index:5}
-td{padding:7px 10px;border-top:1px solid var(--grid);vertical-align:top}
+/* กฎ 9 — หัวตารางต้องล็อกเสมอเมื่อเลื่อนในกล่อง
+   ห้ามมีกฎอื่นตั้ง position ทับ th (เคยพังทั้งไฟล์มาแล้วเพราะ th.sortable{position:relative}) */
+th{position:sticky;top:0;background:var(--navy);color:#fff;font-weight:600;text-align:left;
+   padding:8px 10px;white-space:nowrap;z-index:5;box-shadow:inset 0 -1px 0 rgba(255,255,255,.28)}
+td{padding:7px 10px;border-top:1px solid var(--grid);vertical-align:middle;line-height:1.45}
 tbody tr:hover{background:var(--teal-soft)}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+/* คอลัมน์สั้น (รหัส · ปี · หมวด · สถานะ · ปุ่ม) จัดกึ่งกลาง — ใส่ให้อัตโนมัติโดย alignTables() */
+td.c,th.c{text-align:center}
 .pill{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;white-space:nowrap}
 .pill.ok{background:#e7f6e7;color:#0a6b0a}
 .pill.miss{background:#fdecec;color:#a12626}
@@ -327,6 +332,13 @@ select.search{width:auto}
 .viz .lolli-dot:hover{r:7}
 .lolli-stem.dimmed,.lolli-dot.dimmed{opacity:.22}
 .heatcell{transition:opacity .12s} .heatcell:hover{opacity:.82}
+/* v29.0 — สวิตช์ชั้นข้อมูลบนแผนที่: ยุบสไตล์อินไลน์ 5 ชุดเป็นคลาสเดียว และทำให้กะทัดรัดขึ้น
+   เดิมเป็นสไตล์อินไลน์ก๊อปกัน พอเพิ่มสวิตช์ที่ 5 แถบล้นเป็น 2 บรรทัด
+   ดันแถวตัวกรองไปซ่อนใต้หัวเพจจนกดดรอปดาวน์ไม่ได้ (ชุดทดสอบ sweep จับได้) */
+.lyrtg{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--ink2);cursor:pointer;
+  background:#fff;border:1px solid var(--grid);border-radius:8px;padding:6px 9px;white-space:nowrap}
+.lyrtg input{margin:0}
+#mapSearch{max-width:188px}   /* กันแถบเครื่องมือแผนที่ล้นเป็น 2 บรรทัด */
 /* v28.0 — ตารางสรุปตามแหล่งงบ: แถวหัวกลุ่ม 2 ระดับ + แถวรวมท้ายตาราง */
 #reqSrcTable tr.srcgrp td{background:#e9eef6;border-top:2px solid var(--navy);font-size:13px;padding-top:8px;padding-bottom:8px}
 #reqSrcTable tr.srccat td{background:#f5f2e8;font-weight:600}
@@ -521,7 +533,9 @@ select.search{width:auto}
 #muadTable tbody tr.selrow{background:var(--teal-soft);box-shadow:inset 3px 0 0 var(--teal)}
 
 /* หัวคอลัมน์เรียงได้ */
-th.sortable{cursor:pointer;user-select:none;position:relative;padding-right:20px!important}
+/* ห้ามใส่ position ตรงนี้! position:sticky ของ th เป็นจุดอ้างอิงให้ ::after อยู่แล้ว
+   (v29.1 — position:relative ที่เคยอยู่บรรทัดนี้ทำให้หัวตารางทุกใบเลิกล็อกแบบเงียบๆ) */
+th.sortable{cursor:pointer;user-select:none;padding-right:20px!important}
 th.sortable::after{content:'⇅';position:absolute;right:6px;opacity:.42;font-size:10px}
 th.sortable.asc::after{content:'▲';opacity:1;font-size:8px}
 th.sortable.desc::after{content:'▼';opacity:1;font-size:8px}
@@ -1041,9 +1055,9 @@ body.cmdopen .cmdbd{display:flex}
         </select>
         <select class="search" id="mapZoneSel"></select>
         <input class="search" id="mapSearch" placeholder="ค้นหาสายทาง...">
-        <label style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2);cursor:pointer;background:#fff;border:1px solid var(--grid);border-radius:8px;padding:6px 12px"><input type="checkbox" id="mapElChk"> 🗳 เขตเลือกตั้ง</label>
-        <label style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2);cursor:pointer;background:#fff;border:1px solid var(--grid);border-radius:8px;padding:6px 12px"><input type="checkbox" id="mapPvChk" checked> 🗺 ขอบจังหวัด</label><label style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2);cursor:pointer;background:#fff;border:1px solid var(--grid);border-radius:8px;padding:6px 12px"><input type="checkbox" id="mapBrChk" checked> 🌉 สะพาน</label>
-        <label style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2);cursor:pointer;background:#fff;border:1px solid var(--grid);border-radius:8px;padding:6px 12px"><input type="checkbox" id="mapKmChk" checked> 📍 หลัก กม.</label>
+        <label class="lyrtg"><input type="checkbox" id="mapElChk"> 🗳 เขตเลือกตั้ง</label>
+        <label class="lyrtg"><input type="checkbox" id="mapPvChk" checked> 🗺 ขอบจังหวัด</label><label class="lyrtg"><input type="checkbox" id="mapBrChk" checked> 🌉 สะพาน</label>
+        <label class="lyrtg"><input type="checkbox" id="mapKmChk" checked> 📍 หลัก กม.</label><label class="lyrtg"><input type="checkbox" id="mapLblChk" checked> 🏷 ป้ายรหัส</label>
         <button class="btn ghost mflt-tg" id="mapFltTg" title="ตัวกรองและชั้นข้อมูล">⚙ ตัวกรอง</button><button class="btn ghost" id="mapReset" title="กลับมุมมองภาพรวมทั้งโครงข่าย">⛶ ภาพรวม</button></div>
       <button class="sheettg" id="mapSheetTg">▲ รายชื่อสายทาง</button>
       <div class="maplayout">
@@ -1051,8 +1065,9 @@ body.cmdopen .cmdbd{display:flex}
         <div style="position:relative">
           <button id="mapListTg" class="listtg" title="ซ่อน/แสดงรายชื่อสายทาง เพื่อขยายแผนที่">◀</button>
           <div id="map">
-            <div id="tilepane"></div>
-            <svg id="vecpane"></svg>
+            <!-- data-nodecor: เขตที่ DOM เปลี่ยนถี่มาก (กระเบื้อง/เส้นแผนที่) และไม่มีของให้ตกแต่ง — กฎ 10 -->
+            <div id="tilepane" data-nodecor></div>
+            <svg id="vecpane" data-nodecor></svg>
             <div class="zoomctl"><button id="zin">+</button><button id="zout">−</button><button id="zfit" title="ภาพรวมทั้งโครงข่าย" style="font-size:14px;border-top:1px solid var(--grid)">⛶</button></div>
             <div class="basectl"><button data-b="osm" class="active">🗺 ถนน</button><button data-b="sat">🛰 ดาวเทียม</button></div>
             <div class="attrib" id="mapAttrib">© OpenStreetMap</div>
@@ -2077,6 +2092,62 @@ function wrapTables(root){
     h.className='scrollhint'; h.textContent='← เลื่อนตารางแนวนอนเพื่อดูคอลัมน์อื่น →';
     w.parentNode.insertBefore(h,w.nextSibling);
   });
+  /* กฎ 9 · ตาข่ายกันพลาด — กล่องที่ปลดเพดานไว้ (max-height:none) ถ้าวันหนึ่งข้อมูลยาวจน
+     สูงเกินจอ หน้าจะเลื่อนแทนกล่อง แล้วหัวตารางจะหลุดไปกับหน้า จึงใส่เพดานคืนให้อัตโนมัติ
+     ตารางสั้นไม่โดนแตะ (ไม่มีแถบเลื่อนในกล่องมากวนสายตา) */
+  R.querySelectorAll('.tblwrap').forEach(w=>{
+    if(w.style.maxHeight!=='none') return;
+    const t=w.querySelector('table'); if(!t) return;
+    const lim=Math.max(320, Math.round(innerHeight*0.72));
+    if(t.scrollHeight>lim+40){ w.style.maxHeight=lim+'px'; w.dataset.autocap='1'; }
+    else if(w.dataset.autocap){ w.style.maxHeight='none'; delete w.dataset.autocap; }
+  });
+}
+
+/* ============================================================
+   v29.1 — จัดแนวคอลัมน์ให้เป็นระเบียบเอง
+   ไม่ไล่ตั้งทีละตาราง (ตารางใหม่จะถูกลืมทุกครั้ง) แต่ตัดสินจาก "รูปร่างของข้อมูล":
+     • คอลัมน์ตัวเลข (.num)           → ชิดขวา  (เทียบหลักกันได้)
+     • คอลัมน์สั้น/ป้าย/ปุ่ม           → กึ่งกลาง (รหัส ปี หมวด สถานะ ช่วง กม.)
+     • คอลัมน์ข้อความยาว (ชื่อ ที่อยู่) → ชิดซ้าย  (อ่านเป็นบรรทัด)
+   แล้วบังคับ "หัวคอลัมน์ชิดทางเดียวกับข้อมูลใต้มัน" เสมอ ตาจะได้ไล่ตรงคอลัมน์
+   เรียกซ้ำได้ ไม่สะสมคลาส · ข้ามแถวหัวกลุ่ม (colspan) ที่จัดแนวเองอยู่แล้ว
+   ============================================================ */
+const ALIGN_MAX=14;               // ยาวเกินนี้ถือว่าเป็นข้อความ ไม่ใช่ป้าย
+/* ช่องที่บรรจุ "วิดเจ็ต" เต็มช่อง (แถบสัดส่วน ฯลฯ) วางตัวเองอยู่แล้ว การจัดชิดไม่มีผล
+   จึงไม่นับเข้าการตัดสินและไม่ไปยุ่งกับมัน — นิยามจากพฤติกรรม ไม่ใช่จากชื่อคลาส */
+const cellWidget=c=>{
+  const k=c.firstElementChild;
+  return !!k && c.children.length===1 &&
+         c.textContent.trim()===k.textContent.trim() &&
+         !/^inline/.test(getComputedStyle(k).display);
+};
+/* วัดความยาวจาก "สิ่งที่ตาเห็น" ไม่ใช่จากตัวอักษรดิบใน HTML
+   (ย่อหน้า/ขึ้นบรรทัดในโค้ดเคยทำให้ช่องสั้นๆ ถูกนับว่ายาวจนไม่ยอมจัดกึ่งกลาง) */
+const cellLen=c=>c.textContent.replace(/\s+/g,' ').trim().length;
+function alignTables(root){
+  const put=(el,cls,on)=>{ if(el.classList.contains(cls)!==on) el.classList.toggle(cls,on); };
+  (root||document).querySelectorAll('table').forEach(t=>{
+    const ths=[...t.querySelectorAll('thead th')];
+    if(!ths.length) return;
+    const rows=[...t.querySelectorAll('tbody tr')].filter(tr=>tr.children.length===ths.length);
+    ths.forEach((th,ci)=>{
+      const cells=rows.map(tr=>tr.children[ci]).filter(Boolean).filter(c=>!cellWidget(c));
+      const num = cells.length>0 && cells.every(c=>c.classList.contains('num'));
+      let center=false;
+      if(!num && cells.length && !th.classList.contains('num')){
+        // เซลล์ที่มีแต่ป้าย/ปุ่ม/ลิงก์ (ไม่มีข้อความลอยๆ ของตัวเอง) ถือว่าเป็นสัญลักษณ์
+        const token=cells.every(c=>c.children.length>0 &&
+          ![...c.childNodes].some(n=>n.nodeType===3 && n.data.trim()) &&
+          [...c.children].every(k=>/^inline/.test(getComputedStyle(k).display)));
+        const max=cells.reduce((m,c)=>Math.max(m,cellLen(c)),0);
+        center = max<=(token?20:ALIGN_MAX);
+      }
+      if(num) put(th,'num',true);          // ข้อมูลเป็นตัวเลขล้วน หัวก็ต้องชิดขวาตาม
+      put(th,'c',center);
+      cells.forEach(c=>{ if(!c.classList.contains('num')) put(c,'c',center); });
+    });
+  });
 }
 /* ============================================================
    v21.0 — แชร์มุมมองผ่านลิงก์
@@ -2228,6 +2299,7 @@ function makeSortable(table){
 }
 function enhanceTables(root){
   (root||document).querySelectorAll('table').forEach(makeSortable);
+  alignTables(root);   // v29.1 — ประตูเดียว ตารางใหม่จึงจัดแนวเองอัตโนมัติ ไม่ต้องไปจำ
 }
 
 /* ============================================================
@@ -2354,7 +2426,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v28.1', APP_DATE='20 ส.ค. 2569';
+const APP_VER='v29.3', APP_DATE='25 ส.ค. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -2456,7 +2528,61 @@ function dataArrived(key){
   ST.ready[key]=srcVer(key)+1;
   pageDraw(activePage());                       // หน้าที่ผู้ใช้กำลังดูอยู่ วาดทันที
   if(typeof updAppStat==='function') updAppStat();  // หน้าอื่นค่อยวาดตอนเปิด (ดูใน ensureRendered)
+  // กฎ 10 — วาดใหม่เมื่อไหร่ ต้องตกแต่งใหม่เมื่อนั้น ไม่ปล่อยให้ตัวเฝ้าดู DOM รับผิดชอบคนเดียว
+  if(typeof enhanceSoon==='function') enhanceSoon();
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ทะเบียนข้อรับประกัน (INVARIANTS) — v29.2  « กฎข้อ 11 : ประกาศที่เดียว มีคนตรวจ »
+
+   ปัญหาที่ทะเบียนนี้แก้:
+     กฎหนึ่งเขียนไว้บรรทัดที่ 200 · อีกฟีเจอร์เขียนกฎใหม่บรรทัดที่ 530 ที่บังเอิญ
+     ตั้งค่าเดียวกันทับ = ข้อรับประกันแรกตายเงียบ ไม่มี error ไม่มีใครรู้
+     (เกิดจริง v29.1: th.sortable{position:relative} ล้ม th{position:sticky} ทั้งไฟล์)
+
+   ทะเบียนนี้ทำให้ "ของที่ต้องจริงเสมอ" มีที่อยู่เดียว แล้วด่านตรวจ guard.js จะ
+     ① เดินดูทุก element ในทุกหน้า พิสูจน์ว่าค่าที่เบราว์เซอร์คำนวณได้ตรงตามรับประกัน
+     ② ไล่สไตล์ชีททั้งแผ่น หา "กฎอื่น" ที่ตั้งคุณสมบัติเดียวกันทับ element เดียวกัน
+        ถ้าไม่ได้ประกาศไว้ใน allow = สอบตกทันทีที่เขียน ไม่ต้องรอผู้ใช้มาบอก
+
+   เพิ่มฟีเจอร์ใหม่แล้วจำเป็นต้องเขียนทับจริงๆ? ได้ — แต่ต้องมาเติมใน allow
+   คือบังคับให้ "การยกเว้น" เป็นการตัดสินใจที่มองเห็น ไม่ใช่ผลข้างเคียงที่ไม่มีใครสังเกต
+   ══════════════════════════════════════════════════════════════════════════ */
+const INVARIANTS=[
+  {id:'หัวตารางล็อก', sel:'table thead th', prop:'position', want:'sticky',
+   why:'เลื่อนตารางลงแล้วหัวต้องอยู่กับที่ (กฎ 9)',
+   allow:['print|th', '|th.sortable::after']},
+
+  {id:'กราฟไม่รับเมาส์เอง', sel:'svg.viz *:not(.hit)', prop:'pointer-events', want:'none',
+   why:'ทุกชิ้นในกราฟเป็นภาพ เว้นตัวที่ประกาศผ่าน hitOn() (กฎ 8)',
+   allow:['|svg.viz .hit, svg.viz .hit *']},
+
+  {id:'ตัวเลขชิดขวา', sel:'td.num,th.num', prop:'text-align', want:'right',
+   why:'ตัวเลขต้องเทียบหลักกันได้ (กฎ 9)', allow:[]},
+
+  {id:'คอลัมน์สั้นกึ่งกลาง', sel:'td.c,th.c', prop:'text-align', want:'center',
+   why:'แนวคอลัมน์มาจาก alignTables() เท่านั้น (กฎ 9)', allow:[]},
+
+  {id:'ช่องตารางจัดกลางแนวตั้ง', sel:'tbody td', prop:'vertical-align', want:'middle',
+   why:'แถวสูงไม่เท่ากันต้องยังดูเป็นแถว (กฎ 9)', allow:[]},
+
+  {id:'กล่องตารางเลื่อนได้', sel:'.tblwrap', prop:'overflow-y', want:'auto',
+   why:'ตารางต้องเลื่อนในกล่อง ไม่ใช่ดันทั้งหน้า (กฎ 9)',
+   allow:['print|.tblwrap']},
+
+  /* ข้อรับประกันที่ไม่ใช่เรื่อง CSS ก็ต้องอยู่ทะเบียนเดียวกัน ไม่งั้นจะมี "ที่ที่สอง" ให้ลืม
+     รูปแบบนี้ใช้ check() คืนรายการปัญหา (ว่าง = ผ่าน) */
+  {id:'แถบ กม. ต้องคลุมทุกรายการ', allow:[],
+   why:'สายที่ไม่ได้เริ่มนับที่ 0+000 (ตอนขอนแก่นของถนนจังหวัดอื่น เช่น กส.4039 · ชย.5027) '+
+       'เคยถูกหนีบไปกองที่ขอบจนแถบดูว่างเปล่าทั้งที่ข้อมูลครบ (กฎ 9 · 11)',
+   check:()=>{
+     const s=window.__strip;
+     if(!s || !s.n) return [];
+     return s.outside>0
+       ? [`แถบ "${s.container}" มี ${s.outside} ค่าตกนอกแกน ${kmLbl(s.lo)}–${kmLbl(s.hi)}`]
+       : [];
+   }}
+];
 
 /* ══════════════════════════════════════════════════════════════════════════
    ด่านตรวจตัวเอง (archCheck) — v25.0   « กฎข้อ 6 : ผิดต้องดัง ห้ามเงียบ »
@@ -2506,7 +2632,20 @@ function archCheck(){
     if(!PAGES.some(p=>Object.keys(p.needs||{}).indexOf(k)>=0))
                                                        warn.push(`แหล่งข้อมูล "${k}" ไม่มีหน้าไหนรอใช้เลย`);
   });
-  const res={ok:!bad.length, bad, warn, pages:PAGES.length, sources:Object.keys(SRC).length, at:new Date().toISOString()};
+  /* v29.2 กฎ 11 — ทะเบียนข้อรับประกันต้องกรอกครบและใช้งานได้จริง
+     (ตัวเลือกที่พิมพ์ผิดจะทำให้ด่านตรวจ "ผ่านเพราะมองไม่เห็น" ซึ่งอันตรายกว่าไม่มีเลย) */
+  (typeof INVARIANTS!=='undefined'?INVARIANTS:[]).forEach((i,n)=>{
+    const at=`ข้อรับประกันลำดับ ${n+1} ("${i.id||'ไม่มีชื่อ'}")`;
+    const fn=typeof i.check==='function';
+    if(!i.id)                                          bad.push(`${at} ไม่มีชื่อ`);
+    if(!fn && (!i.sel||!i.prop||!i.want))              bad.push(`${at} กรอกไม่ครบ (ต้องมี sel · prop · want หรือไม่ก็ check())`);
+    if(!Array.isArray(i.allow))                        bad.push(`${at} ช่อง allow ต้องเป็นรายการ`);
+    if(!i.why)                                         warn.push(`${at} ไม่ได้เขียนว่าทำไมต้องจริง`);
+    if(!fn){ try{ document.querySelector(i.sel); }
+             catch(e){                                 bad.push(`${at} ตัวเลือก "${i.sel}" ใช้ไม่ได้`); } }
+  });
+  const res={ok:!bad.length, bad, warn, pages:PAGES.length, sources:Object.keys(SRC).length,
+             invariants:(typeof INVARIANTS!=='undefined'?INVARIANTS.length:0), at:new Date().toISOString()};
   window.__arch=res;
   if(bad.length){
     console.error('%c⛔ ด่านตรวจโครงสร้างไม่ผ่าน '+bad.length+' ข้อ','font-weight:700');
@@ -2754,28 +2893,53 @@ function roadOptHtml(codes, selCode){
 function ddEnhanceAll(root){
   (root||document).querySelectorAll('.page select:not([data-dd])').forEach(ddEnhance);
 }
-/* ============================================================
-   v22.0 (สำคัญ) — หน้าที่ดึงข้อมูลจาก Google Sheets จะเรนเดอร์ตาราง/ดรอปดาวน์
-   "หลัง" เปลี่ยนหน้าไปหลายวินาที ถ้าตกแต่งแค่ตอนสลับหน้า ของพวกนั้นจะไม่ถูกจับเลย
-   จึงเฝ้าดู DOM ของทุกหน้า แล้วตกแต่งซ้ำให้อัตโนมัติ (หน่วงรวบไว้กันเรียกถี่)
-   ============================================================ */
+/* ══════════════════════════════════════════════════════════════════════════
+   ทะเบียนตัวตกแต่ง (DECOR)  —  « กฎข้อ 10 : ของที่ตกแต่งทีหลัง ต้องทนต่อการวาดใหม่ »
+   v22.0  เฝ้าดู DOM แล้วตกแต่งซ้ำ  — แต่เงื่อนไขปลุกเขียนไว้แคบ (เห็นแค่ table/select)
+   v29.2  ปัญหาที่เจอจริง: ฟังก์ชันวาดตารางส่วนใหญ่เขียนทับ "เฉพาะ tbody"
+          โหนดที่เพิ่มเข้ามาจึงเป็น <tr> ล้วนๆ ตัวเฝ้าดูมองไม่เห็น = ไม่ตื่น
+          ผลคือหน้าภาพรวมเสียการจัดแนว/การหุ้มกล่อง ทุกครั้งที่ชีทสภาพทางมาถึง
+          จนกว่าจะสลับหน้า — เงียบสนิท ไม่มี error ให้เห็น
+
+   แก้ที่โครงสร้าง ไม่ใช่เติมชื่อโหนดเข้าไปในเงื่อนไข:
+     ① ทะเบียนเดียว — ตัวตกแต่งใหม่ในอนาคตแค่มาต่อท้าย ได้ครบทุกทางปลุกฟรี
+     ② ปลุก 3 ทางที่ไม่พึ่งกัน  (ก) ข้อมูลมาถึง  (ข) DOM เปลี่ยน  (ค) สลับหน้า
+        ทางไหนพลาด อีกสองทางยังรับไว้ได้
+     ③ เงื่อนไขปลุกคือ "มีของถูกเพิ่มเข้าหน้า" ไม่ใช่ "ของชิ้นนั้นชื่ออะไร"
+   ══════════════════════════════════════════════════════════════════════════ */
+const DECOR=[
+  {name:'หุ้มกล่องตาราง',   fn:pg=>wrapTables(pg)},
+  {name:'ตารางเรียง+จัดแนว', fn:pg=>enhanceTables(pg)},
+  {name:'ดรอปดาวน์',        fn:pg=>ddEnhanceAll(pg)},
+  {name:'ตัวเลขนับขึ้น',     fn:pg=>countUpAll(pg)},
+  {name:'กล่องว่าง',        fn:pg=>emptyGuard(pg)},
+  {name:'โครงร่างรอโหลด',   fn:()=>['histBody','reqBody','zbBody','riskBody','equipBody','routineBody','ovBudget']
+                                     .forEach(x=>withSkeleton(x,'kpi'))}
+];
 let _enhT=null;
+const _enhObs=[];
 function enhanceNow(){
   const pg=document.querySelector('.page.active'); if(!pg) return;
-  wrapTables(pg); enhanceTables(pg); ddEnhanceAll(pg); countUpAll(pg); emptyGuard(pg);
-  ['histBody','reqBody','zbBody','riskBody','equipBody','routineBody','ovBudget'].forEach(x=>withSkeleton(x,'kpi'));
+  DECOR.forEach(d=>{ try{ d.fn(pg); }catch(err){ console.warn('ตกแต่ง "'+d.name+'" ไม่ผ่าน:',err); } });
+  // ทิ้งรอยที่ตัวตกแต่งเพิ่งทำเอง ไม่ให้ปลุกตัวเองวนซ้ำ
+  _enhObs.forEach(o=>{ try{ o.takeRecords(); }catch(e){} });
 }
 const enhanceSoon=()=>{ clearTimeout(_enhT); _enhT=setTimeout(enhanceNow,180); };
 function watchPages(){
   document.querySelectorAll('.page').forEach(pg=>{
-    new MutationObserver(muts=>{
+    const o=new MutationObserver(muts=>{
       for(const m of muts){
         for(const n of m.addedNodes){
+          // อะไรก็ตามที่เป็น element ถูกเพิ่มเข้าหน้า = เนื้อหาเปลี่ยน ต้องตกแต่งใหม่
+          // (ยกเว้นเขตที่ประกาศตัวว่าเปลี่ยนถี่มากและไม่มีของให้ตกแต่ง เช่น กระเบื้องแผนที่)
           if(n.nodeType!==1) continue;
-          if(n.matches?.('table,select') || n.querySelector?.('table,select')){ enhanceSoon(); return; }
+          if(n.closest?.('[data-nodecor]')) continue;
+          enhanceSoon(); return;
         }
       }
-    }).observe(pg,{childList:true,subtree:true});
+    });
+    o.observe(pg,{childList:true,subtree:true});
+    _enhObs.push(o);
   });
 }
 window.addEventListener('resize',ddClose);
@@ -4483,6 +4647,49 @@ function initMap(){
       }
     }
   }
+  /* ══════════════════════════════════════════════════════════════════════
+     ป้ายรหัสสายทางบนแผนที่ — v29.0  (สวิตช์ 🏷 ป้ายรหัส)
+     ─────────────────────────────────────────────────────────────────────
+     แบบเดียวกับแผนที่โครงข่ายของกรม: ชิปเล็กๆ วางคร่อมเส้น บอกว่าเส้นไหนคือสายอะไร
+     ปัญหาที่ต้องกันคือ "ป้ายทับกันจนอ่านไม่ออก" ตอนซูมออกดูทั้งจังหวัด
+     วิธีแก้: เตรียมจุดวางไว้ 3 จุดต่อสาย (1/4 · กึ่งกลาง · 3/4 ของความยาว)
+     เวลาวาดจะไล่หาจุดแรกที่ "อยู่ในจอ และไม่ทับป้ายที่วางไปแล้ว" ถ้าไม่มีเลยก็ซ่อนใบนั้น
+     เรียงลำดับความสำคัญ: สายที่เลือกอยู่ก่อน แล้วสายยาวก่อน — สายสั้นยอมหลบให้
+     กฎ 8: ป้ายไม่รับเมาส์ (pointer-events:none) คลิกทะลุไปโดนเส้นถนนได้ตามเดิม
+     ══════════════════════════════════════════════════════════════════════ */
+  M.roadLbls=[];
+  M.lblG=el('g',{class:'roadlbls'},M.svg);
+  {
+    const dKm=(a,b)=>{ const dx=(b[0]-a[0])*Math.cos((a[1]+b[1])*Math.PI/360)*111.32, dy=(b[1]-a[1])*110.57; return Math.hypot(dx,dy); };
+    for(const code in M.layers){
+      const L=M.layers[code];
+      const cs=L.coordsList.flat(); if(cs.length<2) continue;
+      // ระยะสะสมตามแนวเส้น แล้วดึงจุดที่ 25% · 50% · 75% ของความยาว
+      const acc=[0]; for(let i=1;i<cs.length;i++) acc.push(acc[i-1]+dKm(cs[i-1],cs[i]));
+      const tot=acc[acc.length-1]||0;
+      const at=f=>{
+        if(tot<=0) return cs[0];
+        const target=tot*f;
+        for(let i=1;i<acc.length;i++){
+          if(acc[i]>=target){
+            const seg=acc[i]-acc[i-1]||1, t=(target-acc[i-1])/seg;
+            return [cs[i-1][0]+(cs[i][0]-cs[i-1][0])*t, cs[i-1][1]+(cs[i][1]-cs[i-1][1])*t];
+          }
+        }
+        return cs[cs.length-1];
+      };
+      /* จุดวางหลายจุดตลอดแนวสาย — ซูมลึกเข้าไปช่วงไหนของสาย ก็ยังมีจุดที่อยู่ในจอให้วาง */
+      const pts=[0.5,0.28,0.72,0.14,0.86,0.4,0.6,0.06,0.94,0.2,0.8,0.34,0.66].map(at);
+      const wpx=Math.round(code.length*6.15+11), hpx=15;
+      const g=el('g',{},M.lblG); g.style.display='none'; g.style.pointerEvents='none';
+      el('rect',{x:-wpx/2,y:-hpx/2,width:wpx,height:hpx,rx:3.5,fill:C.navy,
+        stroke:'#fff','stroke-width':1.1,'fill-opacity':.94},g);
+      const t=el('text',{x:0,y:0,fill:'#fff','font-size':10.4,'font-weight':'700',
+        'text-anchor':'middle','dominant-baseline':'central'},g);
+      t.textContent=code;
+      M.roadLbls.push({code,g,pts,w:wpx,h:hpx,len:(L.road&&L.road.len_acct)||0});
+    }
+  }
   // ---- ชั้นสะพาน (ไอคอน )( เดียวกับ Strip Map) — ชุมชน + ในสายทาง ----
   M.bridges=[];
   const addBrMarker=(lat,lon,tip,pop,muad,zone,meta)=>{
@@ -4548,6 +4755,7 @@ function initMap(){
   document.getElementById('mapBrChk').addEventListener('change',e=>{ M.brShow=e.target.checked; redrawMap(); });
   M.brShow=true;
   document.getElementById('mapKmChk').addEventListener('change',e=>{ M.kmShow=e.target.checked; redrawMap(); });
+  document.getElementById('mapLblChk').addEventListener('change',e=>{ M.lblShow=e.target.checked; redrawMap(); });
   M.kmShow=true;
   // ปุ่มภาพรวม: ล้างสายที่เลือก + ซูมกลับเต็มโครงข่าย
   const doReset=()=>resetMapView();
@@ -4750,6 +4958,44 @@ function redrawMap(){
     b.g.style.display=show?'':'none';
     if(show) b.g.setAttribute('transform',`translate(${(lon2x(b.lon,z)-ox).toFixed(1)},${(lat2y(b.lat,z)-oy).toFixed(1)}) scale(${sc})`);
   });
+  /* ---- ป้ายรหัสสายทาง: วางทีละใบ ใบที่ทับของเดิมข้ามไป (v29.0) ---- */
+  {
+    const on=M.lblShow!==false;
+    const placed=[];
+    const clash=(a,b)=>!(a.x2<b.x1||a.x1>b.x2||a.y2<b.y1||a.y1>b.y2);
+    const order=(M.roadLbls||[]).slice().sort((a,b)=>
+      ((b.code===activeCode)-(a.code===activeCode)) || (b.len-a.len));
+    order.forEach(Lb=>{
+      const L=M.layers[Lb.code];
+      if(!on||!L||L.path.style.display==='none'){ Lb.g.style.display='none'; return; }
+      let put=null;
+      for(const pt of Lb.pts){
+        const px=lon2x(pt[0],z)-ox, py=lat2y(pt[1],z)-oy;
+        if(px<Lb.w/2+3||py<11||px>w-Lb.w/2-3||py>h-11) continue;     // นอกจอ/ชิดขอบเกินไป
+        const box={x1:px-Lb.w/2-3,x2:px+Lb.w/2+3,y1:py-10,y2:py+10};
+        if(placed.some(q=>clash(box,q))) continue;                    // ทับใบที่วางไปแล้ว
+        put={px,py,box}; break;
+      }
+      /* ซูมลึกเข้าไปกลางสายจนจุดที่เตรียมไว้หลุดจอหมด — เฉพาะ "สายที่เลือกอยู่"
+         ให้ไล่หาจุดบนเส้นจริงที่อยู่ในจอแล้ววางตรงนั้น (สายเดียว ไม่หนักเครื่อง) */
+      if(!put && Lb.code===activeCode && L.coordsList){
+        const cs=L.coordsList.flat();
+        let best=null, bd=1e9, cxp=w/2, cyp=h/2;
+        for(let i=0;i<cs.length;i++){
+          const px=lon2x(cs[i][0],z)-ox, py=lat2y(cs[i][1],z)-oy;
+          if(px<Lb.w/2+3||py<11||px>w-Lb.w/2-3||py>h-11) continue;
+          const d=Math.hypot(px-cxp,py-cyp);
+          if(d<bd){ bd=d; best={px,py,box:{x1:px-Lb.w/2-3,x2:px+Lb.w/2+3,y1:py-10,y2:py+10}}; }
+        }
+        if(best) put=best;
+      }
+      if(!put){ Lb.g.style.display='none'; return; }
+      placed.push(put.box);
+      Lb.g.style.display='';
+      Lb.g.setAttribute('transform','translate('+put.px.toFixed(1)+','+put.py.toFixed(1)+')');
+    });
+    if(M.lblG) M.lblG.style.display=on?'':'none';
+  }
   positionPopup();
 }
 /* ปุ่มภาพรวม: ล้างสายที่เลือก + ปิด popup + ซูมกลับเต็มโครงข่าย */
@@ -5203,6 +5449,7 @@ function selectRoad(code, hitLL){
     // ยกหลัก กม. ของสายที่เลือก + สะพาน ขึ้นเหนือเส้นไฮไลต์ (ไม่งั้นโดนเส้นหนาทับ)
     (M.kmDots||[]).forEach(d=>{ if(d.code===code) M.svg.appendChild(d.c); });
     (M.bridges||[]).forEach(b=>M.svg.appendChild(b.g));
+    if(M.lblG) M.svg.appendChild(M.lblG);   // v29.0 ป้ายรหัสอยู่ชั้นบนสุดเสมอ
     redrawMap(); fitBounds(L.bounds); openPopup(code, hitLL); syncURL(); }
   else banner('err', code+' ยังไม่มีเส้น GPS จริง (รอสำรวจ — ดูสรุปที่หน้าข้อมูลระบบ)');
 }
@@ -6066,6 +6313,41 @@ const segMark=(x,sg)=>{
   }
   return m;
 };
+/* ══════════════════════════════════════════════════════════════════════════
+   หน้าต่างสถานี กม. ของแถบ (stripDomain) — v29.3
+
+   เดิมแถบสมมติว่า "ทุกสายเริ่มที่ 0+000" แล้วหนีบทุกอย่างเข้าช่วง [0, ยาวสาย]
+   แต่สายที่เป็น "ตอนขอนแก่น" ของถนนจังหวัดอื่น เริ่มนับ กม. ที่เลขอื่น
+   (กส.4039 เริ่ม 16+350 · ชย.5027 ก็เป็นสายตอนต่อเหมือนกัน)
+   ผลคือของทั้งเส้นถูกหนีบไปกองที่ขอบขวา — แถบดูเหมือนว่างเปล่าทั้งที่ข้อมูลครบ
+   และไม่มี error อะไรเลย (บั๊กตระกูลเดิม: การหนีบทำให้ความผิดเงียบ)
+
+   กติกาใหม่ — หน้าต่างต้องคลุม "ทุกชิ้นที่จะวาด" เสมอ:
+     • ถ้าข้อมูลอยู่ใน [0, ยาวสาย] ครบ → ใช้ [0, ยาวสาย] เหมือนเดิมทุกประการ (ไม่มีอะไรเปลี่ยน)
+     • ถ้ามีของอยู่นอกช่วงนั้น → เลื่อนหน้าต่างไปเริ่มที่สถานีจริง และกว้างไม่น้อยกว่าความยาวสาย
+   ผลพลอยได้: ถ้าวันหนึ่งมีข้อมูลพิมพ์ผิด (เช่น 999+000) จะ "เห็น" ทันที แทนที่จะถูกซ่อน
+   ══════════════════════════════════════════════════════════════════════════ */
+function stripDomain(roadLen, marks){
+  const L = roadLen>0 ? roadLen : 1;
+  const v=[];
+  (marks||[]).forEach(m=>{ if(m==null) return;
+    if(isFinite(m.a)) v.push(+m.a);
+    if(isFinite(m.b)) v.push(+m.b);
+    if(isFinite(m.km)) v.push(+m.km); });
+  if(!v.length) return {lo:0, hi:L, shifted:false, outside:0};
+  const dMin=Math.min(...v), dMax=Math.max(...v);
+  if(dMin>=-0.001 && dMax<=L+0.001) return {lo:0, hi:L, shifted:false, outside:0};
+  const lo=Math.max(0, Math.floor(dMin*20)/20);      // ปัดลงทีละ 50 ม. ให้เลขบนแกนอ่านง่าย
+  const hi=Math.max(lo+L, dMax);
+  return {lo, hi, shifted:true, outside:v.filter(x=>x<lo-1e-6||x>hi+1e-6).length};
+}
+/* ให้ด่านตรวจ (กฎ 11) อ่านได้ว่าแถบล่าสุดวาดหน้าต่างไหน และมีอะไรตกขอบไหม */
+function stripLog(container, dom, marks){
+  const out=(marks||[]).filter(m=>m&&((isFinite(m.a)&&(m.a<dom.lo-1e-6||m.a>dom.hi+1e-6))||
+                                      (isFinite(m.b)&&(m.b<dom.lo-1e-6||m.b>dom.hi+1e-6)))).length;
+  window.__strip={container, lo:dom.lo, hi:dom.hi, shifted:dom.shifted, n:(marks||[]).length, outside:out};
+  return window.__strip;
+}
 function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, extraLanes, topLanes, eqOnRoad){
   const box=document.getElementById(container); box.innerHTML='';
   const yearsHere=[...new Set(list.map(x=>x.year))].sort(); // ทุกปีที่มีโครงการ แม้ไม่ระบุช่วง (แถวเว้นว่าง)
@@ -6102,14 +6384,26 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
   const H=padT+lanes.length*laneH+axisH;
   const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:cw<640?W:'100%',height:H},box);
   const plotW=W-labelW-padR, x0=labelW;
-  const X=km=>x0+plotW*Math.max(0,Math.min(1,km/roadLen));
+  // v29.3 — แกนมาจากข้อมูลจริง ไม่สมมติว่าสายเริ่มที่ 0+000 (ดู stripDomain)
+  const DOM=stripDomain(roadLen, lanes.flatMap(l=>l.segs||[]));
+  const SPAN=Math.max(0.001, DOM.hi-DOM.lo);
+  const X=km=>x0+plotW*Math.max(0,Math.min(1,(km-DOM.lo)/SPAN));
+  stripLog(container, DOM, lanes.flatMap(l=>l.segs||[]));
+  if(DOM.shifted){
+    const n=document.createElement('div');
+    n.className='note stripnote';
+    n.innerHTML=`📍 สายนี้ไม่ได้เริ่มนับที่ 0+000 — แกนใช้สถานีจริงของสายทาง <b>${kmLbl(DOM.lo)} – ${kmLbl(DOM.hi)}</b>`+
+      (DOM.outside?` · <span style="color:var(--bad)">⚠ มี ${DOM.outside} ค่าอยู่นอกความยาวสาย ตรวจข้อมูลอีกครั้ง</span>`:'');
+    n.style.cssText='margin:0 0 7px;padding:5px 9px;background:#eef3fa;border-left:3px solid var(--navy);border-radius:0 6px 6px 0';
+    box.insertBefore(n, box.firstChild);
+  }
   // แกน กม. — ถ้า tick สุดท้ายชิดป้ายปลายสาย ให้ข้าม tick นั้น กันตัวหนังสือซ้อน
-  const endX=X(roadLen);
-  niceTicks(roadLen,6).forEach(t=>{ if(t>roadLen) return;
-    const tx=X(t);
+  const endX=X(DOM.hi);
+  niceTicks(SPAN,6).forEach(t=>{ if(t>SPAN) return;
+    const tx=X(DOM.lo+t);
     el('line',{class:'gridline',x1:tx,y1:padT,x2:tx,y2:H-axisH+4},svg);
-    if(endX-tx>=84) el('text',{class:'kmtick',x:tx,y:H-axisH+16,'text-anchor':'middle'},svg).textContent=kmLbl(t); });
-  el('text',{class:'kmtick',x:endX,y:H-axisH+16,'text-anchor':'end','font-weight':'700'},svg).textContent=kmLbl(roadLen);
+    if(endX-tx>=84) el('text',{class:'kmtick',x:tx,y:H-axisH+16,'text-anchor':'middle'},svg).textContent=kmLbl(DOM.lo+t); });
+  el('text',{class:'kmtick',x:endX,y:H-axisH+16,'text-anchor':'end','font-weight':'700'},svg).textContent=kmLbl(DOM.hi);
   // ---- ตัววาดไอคอน (ใช้ซ้ำทั้งชิ้นงานและสะพานในสายทาง) ----
   const brIcon=(bx,cy,colr,g)=>{ [-3.2,3.2].forEach(o=>{
       el('line',{x1:bx+o,y1:cy-5.2,x2:bx+o,y2:cy+5.2,stroke:colr,'stroke-width':2.1,'stroke-linecap':'round','pointer-events':'none'},g);
@@ -6158,7 +6452,7 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
     const mkOf=sg=>sg.mk||(sg.dot?'elec':(sg.pt?'sign':(sg.cls==='บำรุง'?'thin':'full')));
     const ORD={full:0,thin:1,drain:2,elec:3,tree:4,sign:5,cctv:6,bridge:7};
     [...ln.segs].sort((a,b2)=>(ORD[mkOf(a)]||0)-(ORD[mkOf(b2)]||0)||((a.zAlive||0)-(b2.zAlive||0))).forEach(sg=>{
-      const xa=X(sg.a), xb=X(Math.min(sg.b,roadLen));
+      const xa=X(sg.a), xb=X(Math.min(sg.b,DOM.hi));
       const col=sg.color||ln.color, mid=(xa+xb)/2, mk=mkOf(sg);
       const g=el('g',{class:'seg'},svg); g.style.pointerEvents='none';
       const W2=Math.max(3,xb-xa);
@@ -6226,7 +6520,7 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
       const EQC={elec:'#e8a417',drain:'#0d9488',cctv:'#6d28d9'};
       (eqOnRoad.marks||[]).forEach(mq=>{
         const hasB=mq.b!=null&&mq.b>mq.a;
-        const xa=X(mq.a), xb=X(Math.min(hasB?mq.b:mq.a, roadLen));
+        const xa=X(mq.a), xb=X(Math.min(hasB?mq.b:mq.a, DOM.hi));
         const col=mq.color||EQC[mq.kind], g=el('g',{class:'seg'},svg); g.style.pointerEvents='none';
         if(mq.kind==='elec'){
           // จุดแนวเดียวกับงานไฟฟ้าโครงการ (บน-ล่างแถบ) · hover เฉพาะแนวจุด ไม่คลุมตัวแถบ
@@ -6246,7 +6540,7 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
         }
       });
       (eqOnRoad.trans||[]).forEach(t=>{
-        const bx=X(Math.min(t.km,roadLen)), cy=by+bh/2, g=el('g',{class:'seg'},svg); g.style.pointerEvents='none';
+        const bx=X(Math.min(t.km,DOM.hi)), cy=by+bh/2, g=el('g',{class:'seg'},svg); g.style.pointerEvents='none';
         HIT.add(bx-7,by-2,14,bh+4,t.tip);
         el('circle',{cx:bx,cy,r:6,fill:t.color||'#d97706',stroke:'#fcfcfb','stroke-width':1.2,'pointer-events':'none'},g);
         el('path',{d:`M${bx+1.7},${cy-4.1} l-3.6,4.6 h2.5 l-1.5,3.7 l4,-5 h-2.5 z`,fill:'#fff','pointer-events':'none'},g);
@@ -6441,7 +6735,7 @@ function renderReqSrc(){
         `<td class="num">${fmt(c.amt)}</td></tr>`;
       c.items.forEach((it,i)=>{
         rows+=`<tr data-code="${esc(it.code)}" style="cursor:pointer">`+
-          `<td class="num" style="color:var(--muted)">${i+1}</td>`+
+          `<td style="color:var(--muted);font-variant-numeric:tabular-nums">${i+1}</td>`+
           `<td>${esc(it.actv)}</td>`+
           `<td><b>${esc(it.code)}</b></td>`+
           `<td>${esc(it.rname)}</td>`+
@@ -7266,19 +7560,23 @@ function drawLanes(container, roadLen, laneDefs){
   const H=padT+laneDefs.length*laneH+axisH;
   const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:'100%',height:H},box);
   const plotW=W-labelW-padR, x0=labelW;
-  const X=km=>x0+plotW*Math.max(0,Math.min(1,km/roadLen));
-  const endX=X(roadLen);
-  niceTicks(roadLen,6).forEach(t=>{ if(t>roadLen) return;
-    const tx=X(t);
+  // v29.3 — ใช้ตัวคิดหน้าต่างตัวเดียวกับ Strip Map (ห้ามมีที่ที่สองที่สมมติว่าเริ่ม 0+000)
+  const DOM=stripDomain(roadLen, laneDefs.flatMap(l=>l.segs||[]));
+  const SPAN=Math.max(0.001, DOM.hi-DOM.lo);
+  const X=km=>x0+plotW*Math.max(0,Math.min(1,(km-DOM.lo)/SPAN));
+  stripLog(container, DOM, laneDefs.flatMap(l=>l.segs||[]));
+  const endX=X(DOM.hi);
+  niceTicks(SPAN,6).forEach(t=>{ if(t>SPAN) return;
+    const tx=X(DOM.lo+t);
     el('line',{class:'gridline',x1:tx,y1:padT,x2:tx,y2:H-axisH+4},svg);
-    if(endX-tx>=84) el('text',{class:'kmtick',x:tx,y:H-axisH+16,'text-anchor':'middle'},svg).textContent=kmLbl(t); });
-  el('text',{class:'kmtick',x:endX,y:H-axisH+16,'text-anchor':'end','font-weight':'700'},svg).textContent=kmLbl(roadLen);
+    if(endX-tx>=84) el('text',{class:'kmtick',x:tx,y:H-axisH+16,'text-anchor':'middle'},svg).textContent=kmLbl(DOM.lo+t); });
+  el('text',{class:'kmtick',x:endX,y:H-axisH+16,'text-anchor':'end','font-weight':'700'},svg).textContent=kmLbl(DOM.hi);
   laneDefs.forEach((ln,i)=>{
     const y=padT+i*laneH, bh=15, by=y+(laneH-bh)/2;
     el('text',{class:'lanelbl',x:labelW-9,y:by+bh/2+4,'text-anchor':'end'},svg).textContent=ln.label.length>15?ln.label.slice(0,15)+'…':ln.label;
     el('rect',{class:'lanebg',x:x0,y:by,width:plotW,height:bh,rx:4},svg);
     ln.segs.forEach(sg=>{
-      const xa=X(sg.a), xb=X(Math.min(sg.b,roadLen));
+      const xa=X(sg.a), xb=X(Math.min(sg.b,DOM.hi));
       const rect=el('rect',{class:'seg',x:xa,y:by,width:Math.max(4,xb-xa),height:bh,rx:3,fill:sg.color||ln.color,stroke:'#fcfcfb','stroke-width':1},svg);
       hitOn(rect);   // กฎ 8
       rect.addEventListener('mousemove',e=>showTip(sg.tip,e.clientX,e.clientY));
