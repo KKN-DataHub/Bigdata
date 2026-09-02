@@ -4748,10 +4748,13 @@ function renderOverviewBudget(){
 
 function renderSystem(){
   // เครดิตผู้พัฒนา: เติมเลขเวอร์ชันอัตโนมัติจากป้าย version มุมซ้ายบน
+  // v30.7 — เดิมเขียน "(กว่า 200 รอบปรับปรุง)" ตายตัว ซึ่งเป็นตัวเลขที่ไม่มีที่มา (ผู้ใช้ทัก "30 เวอร์ชัน แต่ 200 รอบเองเหรอ")
+  //         ตอนนี้แสดงเฉพาะเลขที่นับได้จริง: รุ่นย่อยที่ทิ้งร่องรอยไว้ในโค้ด (แท็ก vNN.N ในคอมเมนต์/โค้ด) นับสดจากไฟล์นี้เอง
   const _cv=document.getElementById('creditVer');
   if(_cv){ const vt=(document.querySelector('.ver')?.textContent||'').trim();
     const mj=(vt.match(/v(\d+)/)||[])[1];
-    _cv.textContent=`เวอร์ชันปัจจุบัน ${vt}${mj?` · พัฒนาต่อเนื่อง ${mj} เวอร์ชันหลัก (กว่า 200 รอบปรับปรุง)`:''}`; }
+    let minor=0; try{ minor=new Set(document.documentElement.outerHTML.match(/\bv\d{1,2}\.\d{1,2}\b/g)||[]).size; }catch(e){}
+    _cv.textContent=`เวอร์ชันปัจจุบัน ${vt}${mj?` · พัฒนาต่อเนื่อง ${mj} เวอร์ชันหลัก`:''}${minor?` · ${minor} รุ่นย่อยที่บันทึกร่องรอยไว้ในโค้ด`:''}`; }
   const R = EMB.roads;
   const realGeo = new Set(EMB.geo.features.filter(f=>!f.properties.stub).map(f=>f.properties.code));
   const stubGeo = new Set(EMB.geo.features.filter(f=>f.properties.stub).map(f=>f.properties.code));
