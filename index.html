@@ -125,6 +125,20 @@ body{font-family:'Sarabun',Tahoma,'Segoe UI',system-ui,sans-serif;background:var
    (มือถือไม่แตะเลย เพราะ media query ที่แคบกว่าบังคับเป็น 1 คอลัมน์อยู่แล้ว) */
 .ovgrid{grid-template-columns:1fr 1fr}
 .ovgrid>*{min-width:0}
+/* กฎ 16 — การ์ดในแถวแรกที่ไม่ใช่กราฟ: เนื้อในยืดเต็มความสูงการ์ด ไม่เหลือแถบว่างท้าย */
+/* v30.7 ผู้ใช้: "ไม่เอาเป็นแถบแนวตั้งสูงๆ" — กล่องชนิดผิวคงความสูงเดิม ที่ว่างไปอยู่ระหว่างก้อน (ตัวเลขใหญ่ · แถบ · กล่องชนิด) แทน */
+.ovg-c{display:flex;flex-direction:column} .ovg-c #chSurface{flex:1;display:flex;flex-direction:column}
+.ovg-c .surfgrid{align-content:start} .ovg-c .surfbox{align-self:start}
+/* v30.7 ผู้ใช้วงช่องว่างระหว่างก้อน: ก้อนต้องโตขึ้นให้พอดีการ์ด ไม่ใช่ถ่างห่าง — ตัวเลขใหญ่ขึ้น · แถบหนาขึ้นและมีป้าย % ในแถบ */
+.ovg-c .heroblk{margin-bottom:0;flex:1;align-items:center;padding:6px 0} .ovg-c .onebar{margin-bottom:10px} .ovg-c .heroblk .hn{font-size:58px} .ovg-c .heroblk .hn span{font-size:24px} .ovg-c .heroblk .hl{font-size:13.5px}
+.ovg-c .onebar{height:34px;border-radius:8px} .ovg-c .onebar span{display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;overflow:hidden;white-space:nowrap}
+.ovg-c .surfgrid{margin-top:0}
+.ovg-b{display:flex;flex-direction:column} .ovg-b .surfrows{flex:1;justify-content:space-between}   /* v30.7 แถวแรกชิดบน แถวท้ายชิดล่าง ไม่เหลือแถบว่างท้ายการ์ด */
+/* v30.7 ผู้ใช้: กราฟย่อยในการ์ดงบ "ไม่มีกรอบดูสะเปะสะปะ" → ช่องกริดย่อยมีกรอบบางแบบการ์ดย่อย */
+.gcell{border:1px solid var(--hairline);border-radius:10px;padding:10px 12px 8px;background:#fff;min-width:0}
+/* กฎ 16 — การ์ดรายการ (ไม่ใช่กราฟ/ตาราง): กล่องเนื้อในยืดเต็มการ์ด แล้วกระจายรายการเท่าๆ กัน */
+.card.fillcol{display:flex;flex-direction:column} .card.fillcol>[id]{flex:1;display:flex;flex-direction:column}
+.card.fillcol .alist{flex:1;align-content:space-evenly}
 #muadTable td,#muadTable th{padding-left:6px} #muadTable td{padding-right:6px}   /* v30.0 ให้ตารางสรุปพอดีช่อง 6/12 บนจอ 1500px ไม่ต้องเลื่อนข้าง */
 /* v30.0 — สัดส่วนผิวจราจรรายหมวด: แถวละหมวด · % ลาดยางเป็นพระเอก · แถบเต็ม 100% ของหมวด เทียบกันได้ทันที */
 /* v30.0 — แถวละหมวด บรรทัดเดียว: ชื่อ · % ลาดยาง · แถบ 100% · คอนกรีต/ลูกรัง · กม. (จอแคบ ส่วนท้ายพับลงบรรทัดถัดไปเอง) */
@@ -1259,8 +1273,8 @@ body.cmdopen .cmdbd{display:flex}
         <div id="dcStuck"></div>
       </div>
       <div class="grid two" style="margin-top:14px">
-        <div class="card"><h3>④ เรื่องที่ต้องจับตา</h3><div class="note">สร้างจากข้อมูลจริง ไม่ใช่ข้อความตายตัว</div><div id="dcAlerts"></div></div>
-        <div class="card"><h3>⑤ ข้อเสนอแนะ</h3><div class="note">แปลตัวเลขเป็นสิ่งที่ทำได้จริง</div><div id="dcRecs"></div></div>
+        <div class="card fillcol"><h3>④ เรื่องที่ต้องจับตา</h3><div class="note">สร้างจากข้อมูลจริง ไม่ใช่ข้อความตายตัว</div><div id="dcAlerts"></div></div>
+        <div class="card fillcol"><h3>⑤ ข้อเสนอแนะ</h3><div class="note">แปลตัวเลขเป็นสิ่งที่ทำได้จริง</div><div id="dcRecs"></div></div>
       </div>
       <div class="footnote">หน้านี้สรุปจากบัญชีสายทาง · ประวัติโครงการ · คำของบ · Zerobase · จุดเสี่ยง ที่มีอยู่แล้ว — ไม่มีข้อมูลชุดใหม่</div>
     </section>
@@ -1469,6 +1483,7 @@ const clipTh=(s,n)=>{ s=String(s); if(thWidth(s)<=n) return s;
   return out+'…'; };
 function lolli(container, items, {unit='', color=C.teal, labelW=86, onClick=null, valW=null, height=null}={}){
   const box=document.getElementById(container); if(!box) return; box.innerHTML='';
+  box.__fit=h=>lolli(container, items, {unit,color,labelW,onClick,valW,height:h});   // กฎ 16
   if(!items.length){ box.innerHTML='<div class="note" style="padding:18px 4px;text-align:center">ไม่มีข้อมูล</div>'; return; }
   const W=box.clientWidth||560, padT=8, padB=22, padR=valW||58;
   const rowH=height?Math.max(20,(height-padT-padB)/items.length):24;
@@ -1501,7 +1516,11 @@ function lolli(container, items, {unit='', color=C.teal, labelW=86, onClick=null
 /* rowFull = ชื่อเต็มของแต่ละแถว ใช้ตอนชี้ดู (แกนซ้ายที่แคบใช้ชื่อย่อได้ ไม่ต้องเสียข้อมูล) */
 function heat(container, rowLabels, colLabels, matrix, {unit='', fmtV=fmt, onClick=null, ramp=[13,148,136], rowFull=null, colFull=null, rowH=null, zeroText='ไม่มีค่า'}={}){
   const box=document.getElementById(container); if(!box) return; box.innerHTML='';
-  const W=box.clientWidth||560, lw=Math.min(126,Math.max(64,W*0.25)), padR=8, padT=20, padB=4;
+  const padR=8, padT=20, padB=4;
+  box.__fit=h=>heat(container, rowLabels, colLabels, matrix, {unit,fmtV,onClick,ramp,rowFull,colFull,zeroText,
+    rowH:Math.max(26,Math.min(64,(h-padT-padB)/Math.max(1,rowLabels.length)))});   // กฎ 16
+  /* v30.7 — ช่องป้ายแถวกว้างเท่าที่ป้ายต้องใช้จริง (เดิม 25% ของกว้าง: ป้าย "2563" ได้ช่องว่างข้างซ้ายเป็นแถบยาว) */
+  const W=box.clientWidth||560, lw=Math.min(126,Math.max(40, Math.max(...rowLabels.map(r=>thWidth(r)))*7.2+16));
   const cw=(W-lw-padR)/Math.max(1,colLabels.length), ch=rowH||Math.max(26,Math.min(38,(cw*0.62)));
   const H=padT+rowLabels.length*ch+padB;
   const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:'100%',height:H},box);
@@ -1535,6 +1554,7 @@ function heat(container, rowLabels, colLabels, matrix, {unit='', fmtV=fmt, onCli
 /* ③ Bullet — ค่าจริงเทียบเป้า เห็นทันทีว่าถึงหรือไม่ถึง (แทนเกจวัด กินที่น้อยกว่า บอกมากกว่า) */
 function bullet(container, rows, {height=null, tgtText='เป้า'}={}){
   const box=document.getElementById(container); if(!box) return; box.innerHTML=''; box.__rows=rows;
+  box.__fit=h=>bullet(container, rows, {tgtText, height:Math.max(40,Math.min(80,(h-8)/Math.max(1,rows.length)))});   // กฎ 16
   const W=box.clientWidth||460, lw=Math.min(150,Math.max(96,W*0.30)), padR=70, rowH=height||46;
   const H=rows.length*rowH+8, pw=W-lw-padR;
   const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:'100%',height:H},box);
@@ -1560,10 +1580,12 @@ function bullet(container, rows, {height=null, tgtText='เป้า'}={}){
 }
 
 /* ④ Dumbbell — ช่องว่างระหว่าง 2 ค่า กลายเป็น "ความยาวเส้น" ที่มองปุ๊บเห็น */
-function dumbbell(container, rows, {unit='', c1=C.gold, c2=C.blue, l1='ค่า 1', l2='ค่า 2', gapLabel='ส่วนต่าง'}={}){
+function dumbbell(container, rows, {unit='', c1=C.gold, c2=C.blue, l1='ค่า 1', l2='ค่า 2', gapLabel='ส่วนต่าง', height=null}={}){
   const box=document.getElementById(container); if(!box) return; box.innerHTML=''; box.__rows=rows;   // __rows: ให้ชุดทดสอบเทียบ "บนจอ = ในข้อมูล"
+  box.__fit=h=>dumbbell(container, rows, {unit,c1,c2,l1,l2,gapLabel,height:h});   // กฎ 16
   if(!rows.length){ box.innerHTML='<div class="note" style="padding:18px 4px;text-align:center">ไม่มีข้อมูล</div>'; return; }
-  const W=box.clientWidth||460, lw=Math.min(112,Math.max(72,W*0.22)), padR=64, rowH=34, padT=10, legH=22;
+  const W=box.clientWidth||460, lw=Math.min(112,Math.max(72,W*0.22)), padR=64, padT=10, legH=22;
+  const rowH=height?Math.max(28,Math.min(56,(height-padT-legH-8)/Math.max(1,rows.length))):34;
   const H=rows.length*rowH+padT+legH+8, pw=W-lw-padR;
   const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:'100%',height:H},box);
   const mx=Math.max(...rows.map(r=>Math.max(r.a,r.b)),0.0001);
@@ -1595,6 +1617,7 @@ function dumbbell(container, rows, {unit='', c1=C.gold, c2=C.blue, l1='ค่า
 function scatter(container, pts, {xLab='', yLab='', height=290, refY=null, refLab='', refX=null, refXLab='',
     quad=null, onClick=null, sizeMax=null, xLog=false}={}){
   const box=document.getElementById(container); if(!box) return; box.innerHTML='';
+  box.__fit=h=>scatter(container, pts, {xLab,yLab,refY,refLab,refX,refXLab,quad,onClick,sizeMax,xLog,height:h});   // กฎ 16
   if(!pts.length){ box.innerHTML='<div class="note" style="padding:26px 4px;text-align:center">ไม่มีข้อมูลพอจะวาด</div>'; return; }
   const W=box.clientWidth||460, H=height, padL=54, padB=38, padT=14, padR=18;
   const pw=W-padL-padR, ph=H-padT-padB;
@@ -1668,6 +1691,7 @@ function scatter(container, pts, {xLab='', yLab='', height=290, refY=null, refLa
 /* กฎ 7 — noun/items คือคำที่ผู้เรียกกำหนด กราฟไม่รู้ว่ากำลังวาดงบ ระยะทาง หรืออะไร */
 function pareto(container, items, {unit='', height=250, cutPct=80, onClick=null, noun='ค่า', unitName='รายการ'}={}){
   const box=document.getElementById(container); if(!box) return; box.innerHTML='';
+  box.__fit=h=>pareto(container, items, {unit,cutPct,onClick,noun,unitName,height:h});   // กฎ 16
   if(!items.length){ box.innerHTML='<div class="note" style="padding:22px 4px;text-align:center">ไม่มีข้อมูล</div>'; return; }
   const W=box.clientWidth||460, H=height, padL=46, padB=34, padT=14, padR=42;
   const pw=W-padL-padR, ph=H-padT-padB;
@@ -1719,8 +1743,11 @@ function pareto(container, items, {unit='', height=250, cutPct=80, onClick=null,
 /* ⑦ Gantt — ใช้วันเริ่ม/สิ้นสุดสัญญาที่มีอยู่แล้วในชีท + เส้น "วันนี้" */
 function gantt(container, rows, {height=null, onClick=null}={}){
   const box=document.getElementById(container); if(!box) return; box.innerHTML='';
+  box.__fit=h=>gantt(container, rows, {onClick, height:Math.max(18,Math.min(40,(h-46)/Math.max(1,rows.length)))});   // กฎ 16
   if(!rows.length){ box.innerHTML='<div class="note" style="padding:22px 4px;text-align:center">ไม่มีสัญญาที่ระบุช่วงวันที่</div>'; return; }
-  const W=box.clientWidth||520, lw=Math.min(210,Math.max(118,W*0.26)), padR=30, padT=24, padB=22;
+  /* v30.7 ผู้ใช้: "ดูไม่บาลานซ์ ขยายกราฟมาอีกก็ได้" — ช่องป้ายกว้างเท่าป้ายที่ยาวที่สุดจริง ไม่ใช่ 26% ของกล่องเสมอ */
+  const maxLab=Math.max(0,...rows.map(r=>thWidth(r.label||'')));
+  const W=box.clientWidth||520, lw=Math.min(Math.max(96,W*0.42), maxLab*6.6+16), padR=58, padT=24, padB=22;
   const rowH=height||22, H=rows.length*rowH+padT+padB, pw=W-lw-padR;
   const t0=Math.min(...rows.map(r=>r.a)), t1=Math.max(...rows.map(r=>r.b));
   const now=Date.now();
@@ -1749,11 +1776,18 @@ function gantt(container, rows, {height=null, onClick=null}={}){
   rows.forEach((r,i)=>{
     const y=padT+i*rowH, bh=14, by=y+(rowH-bh)/2;
     const x=X(r.a), w=Math.max(3,X(r.b)-X(r.a));
-    el('text',{class:'cattext',x:lw-7,y:by+11,'text-anchor':'end'},svg).textContent=r.label;
-    const b=el('rect',{class:'bar','data-i':i,x:x,y:by,width:w,height:bh,rx:4,fill:r.color||C.teal,opacity:.88},svg);
+    el('text',{class:'cattext',x:lw-7,y:by+11,'text-anchor':'end'},svg).textContent=clipTh(r.label||'',Math.max(6,Math.floor((lw-10)/6.6)));   // จอแคบ: ตัดป้ายให้พอดีช่อง ไม่ล้น
+    /* v30.7 ผู้ใช้: "ทำไมต้องเป็นเงาๆ เอาแบบแถบค่าพลัง เต็มไม่เต็ม" — ราง = ช่วงสัญญาทั้งหมด (สีจาง) · ส่วนทึบ = เวลาที่ใช้ไปแล้วถึงวันนี้
+       หมดสัญญาแล้ว = เต็มราง + จุดแดง · ยังไม่หมด = บอกจำนวนวันที่เหลือท้ายราง */
+    const col=r.color||C.teal;
+    el('rect',{x:x,y:by,width:w,height:bh,rx:4,fill:col,opacity:.22},svg);
     const done=Math.min(w,Math.max(0,xn-x));
-    if(done>2) el('rect',{x:x,y:by+4,width:done,height:bh-8,rx:3,fill:'#fff',opacity:.5},svg);
+    if(done>0) el('rect',{x:x,y:by,width:done,height:bh,rx:4,fill:col,opacity:.95},svg);
+    const b=el('rect',{class:'bar','data-i':i,x:x,y:by,width:w,height:bh,rx:4,fill:'transparent'},svg);
     if(r.late) el('circle',{cx:X(r.b)+7,cy:by+bh/2,r:3.6,fill:C.crit},svg);
+    else if(r.b>now){ const dl=Math.ceil((r.b-now)/864e5), tx=`เหลือ ${dl} วัน`, tw=thWidth(tx)*6.2;
+      const fitsR=X(r.b)+5+tw<=W-2;                               // ไม่พอทางขวา → วางไว้ในรางท้ายแถบแทน
+      el('text',{x:fitsR?X(r.b)+5:X(r.b)-4,y:by+11,'font-size':10,'font-weight':700,fill:col,'text-anchor':fitsR?'start':'end'},svg).textContent=tx; }
     hitOn(b);   // กฎ 8
     b.addEventListener('mousemove',e=>showTip(r.tip||`<b>${esc(r.label)}</b>`,e.clientX,e.clientY));
     b.addEventListener('mouseleave',hideTip);
@@ -1763,8 +1797,20 @@ function gantt(container, rows, {height=null, onClick=null}={}){
 }
 
 /* ⑧ Small multiples — 5 หมวดแยกช่องเล็ก แกนเดียวกัน (ดีกว่ายัด 5 เส้นในกราฟเดียว) */
-function smallmult(container, groups, {unit='', height=92, onClick=null}={}){
+function smallmult(container, groups, {unit='', height=92, onClick=null, cols=null}={}){
   const box=document.getElementById(container); if(!box) return; box.innerHTML='';
+  box.style.gridTemplateColumns=cols?`repeat(${cols},1fr)`:'';
+  /* กฎ 16 — กราฟจิ๋วมีที่ว่าง: ผู้ใช้ v30.7 "เป็นแนวตั้งดูแปลกๆ ซ้อนกันเป็น 2 บรรทัดก็ได้ 6 ช่องพอดี"
+     → ไม่ยืดช่องให้สูง แต่จัดเป็นหลายแถว (6 ช่อง = 3×2) ให้แต่ละช่องสูงราว 110–150px แล้วค่อยเกลี่ยที่เหลือ */
+  box.__fit=H=>{ const cells=[...box.children], n=cells.length; if(!n) return;
+    const sv=box.querySelector('svg.viz'); if(!sv) return;
+    const gap=8, total=box.getBoundingClientRect().height+(H-sv.getBoundingClientRect().height);   // ความสูงกล่องที่ควรเป็น
+    let best=null;
+    for(let nrow=1; nrow<=n; nrow++){ const c=Math.ceil(n/nrow); if(Math.ceil(n/c)!==nrow) continue;
+      const cellH=(total-gap*(nrow-1))/nrow; const score=Math.abs(cellH-130);
+      if(cellH>=height && (!best||score<best.score)) best={nrow,c,cellH,score}; }
+    if(!best) return;
+    smallmult(container, groups, {unit,onClick,cols:best.c,height:Math.round(best.cellH)}); };
   if(!groups.length){ box.innerHTML='<div class="note" style="padding:18px 4px;text-align:center">ไม่มีข้อมูล</div>'; return; }
   const mx=Math.max(...groups.flatMap(g=>g.vals),0.0001);
   box.className=(box.className||'').replace(/\bsmgrid\b/,'')+' smgrid';
@@ -1790,6 +1836,7 @@ function smallmult(container, groups, {unit='', height=92, onClick=null}={}){
 /* กฎ 7 — colorOf ส่งมาจากผู้เรียก กราฟไม่รู้จักคำว่า "หมวด" หรือสีประจำหมวด */
 function sankey(container, links, {unit='ลบ.', height=null, fmtV=fmt, onClick=null, colorOf=null}={}){
   const box=document.getElementById(container); if(!box) return; box.innerHTML='';
+  box.__fit=h=>sankey(container, links, {unit,fmtV,onClick,colorOf,height:h});   // กฎ 16
   if(!links.length){ box.innerHTML='<div class="note" style="padding:22px 4px;text-align:center">ไม่มีข้อมูลพอจะวาด</div>'; return; }
   /* v24.6 — ก้อนเล็กมากๆ ทำให้ป้ายซ้อนกันจนอ่านไม่ออก ยุบเป็น "อื่นๆ" ตามกฎ 8 ซีรีส์
      (เกินเพดานเมื่อไหร่ ให้ยุบหาง ไม่ใช่เพิ่มสีหรือเพิ่มบรรทัด) */
@@ -1863,6 +1910,7 @@ function sankey(container, links, {unit='ลบ.', height=null, fmtV=fmt, onClic
 }
 function lineChart(container, labels, series, {unit='', height=240, fmtVal=fmt, area=false}={}){
   const box=document.getElementById(container); if(!box) return; box.innerHTML='';
+  box.__fit=h=>lineChart(container, labels, series, {unit,fmtVal,area,height:h});   // กฎ 16
   if(!labels.length){ box.innerHTML='<div class="note" style="padding:22px 4px;text-align:center">ไม่มีข้อมูล</div>'; return; }
   const ss=series.slice(0,4);
   const W=box.clientWidth||460, H=height, padL=48, padB=30, padT=14;
@@ -1895,6 +1943,7 @@ function lineChart(container, labels, series, {unit='', height=240, fmtVal=fmt, 
 
 function hbar(container, items, {unit='', color=C.teal, labelW=86, showVal=true, onClick=null, height=null, valW=null}={}){
   const box=document.getElementById(container); box.innerHTML='';
+  box.__fit=h=>hbar(container, items, {unit,color,labelW,showVal,onClick,valW,height:h});   // กฎ 16
   const W=box.clientWidth||560, padT=6, padB=22, padR=valW||(showVal?54:14);
   const rowH=height?Math.max(24,(height-padT-padB)/items.length):26;
   const H=height||items.length*rowH+padT+padB;
@@ -1924,6 +1973,7 @@ function hbar(container, items, {unit='', color=C.teal, labelW=86, showVal=true,
 /* vertical bars (optionally stacked series) */
 function vbar(container, labels, series, {unit='', height=270, stacked=false, fmtVal=fmt}={}){
   const box=document.getElementById(container); box.innerHTML='';
+  box.__fit=h=>vbar(container, labels, series, {unit,stacked,fmtVal,height:h});   // กฎ 16
   const W=box.clientWidth||560, H=height, padL=52, padR=10, padT=10;
   // ป้ายยาวกว่าช่อง -> หมุนเฉียง กันซ้อนกัน
   const slotEst=(W-padL-padR)/labels.length;
@@ -1973,6 +2023,7 @@ function vbar(container, labels, series, {unit='', height=270, stacked=false, fm
    รายละเอียดเต็ม (ค่า/หน่วย/%) ดูจาก tooltip ตอนชี้ — ไม่มีเส้นชี้ให้รก */
 function donut(container, slices, {unit='กม.', height=280}={}){
   const box=document.getElementById(container); box.innerHTML='';
+  box.__fit=h=>donut(container, slices, {unit,height:h});   // กฎ 16
   const W=box.clientWidth||460, legH=Math.ceil(slices.length/3)*22+8;
   // v24.1 — เดิมบังคับ R ขั้นต่ำ 50 ทำให้วงใหญ่กว่ากรอบตอนการ์ดเตี้ย/แคบ ป้าย % เลยล้นออกนอก svg
   let R=Math.min((height-legH)/2-10, W/2-24);
@@ -2009,9 +2060,11 @@ function donut(container, slices, {unit='กม.', height=280}={}){
   box.appendChild(lg);
 }
 /* stacked horizontal bars — มาตรฐาน: ไม่มีป้ายท้ายแถว ชี้แถว/ท่อนแล้วรายละเอียด+% ค่อยขึ้น · legend ชื่อล้วนไม่มีเลขนำหน้า */
-function hstack(container, rows, segsOrder, {unit='คำขอ', labelW=112, onClick=null, rightW=14, showRight=false}={}){
+function hstack(container, rows, segsOrder, {unit='คำขอ', labelW=112, onClick=null, rightW=14, showRight=false, height=null}={}){
   const box=document.getElementById(container); box.innerHTML=''; box.__rows=rows;
-  const W=box.clientWidth||560, rowH=34, padT=6;
+  box.__fit=h=>hstack(container, rows, segsOrder, {unit,labelW,onClick,rightW,showRight,height:h});   // กฎ 16
+  const W=box.clientWidth||560, padT=6, legH=30;
+  const rowH=height?Math.max(28,Math.min(52,(height-padT-6-legH)/Math.max(1,rows.length))):34;
   const H=rows.length*rowH+padT+6;
   const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:'100%',height:H},box);
   const max=Math.max(...rows.map(r=>segsOrder.reduce((a,s)=>a+(r.segs[s.k]||0),0)),0.0001);
@@ -2561,7 +2614,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v30.6', APP_DATE='1 ก.ย. 2569';
+const APP_VER='v30.7', APP_DATE='2 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -3112,12 +3165,71 @@ function ddEnhanceAll(root){
         ทางไหนพลาด อีกสองทางยังรับไว้ได้
      ③ เงื่อนไขปลุกคือ "มีของถูกเพิ่มเข้าหน้า" ไม่ใช่ "ของชิ้นนั้นชื่ออะไร"
    ══════════════════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════════════════
+   กฎ 16 — การ์ดในแถวเดียวกันต้องเต็มเท่ากัน (v30.7)
+   ผู้ใช้: "แถวเดียวกันยังมีช่องว่าง … ยังจัดไม่สวยงาม"
+   กริดทำให้การ์ดทุกใบในแถวสูงเท่าใบที่สูงที่สุด แต่ "เนื้อใน" ของใบที่เตี้ยกว่าไม่ได้ยืดตาม
+   จึงเหลือแถบว่างท้ายการ์ด — ตัวตกแต่งนี้วัดที่ว่างจริงหลังวาด แล้วสั่งกราฟในการ์ดนั้น
+   "วาดใหม่ให้สูงพอดีที่ว่าง" ผ่าน box.__fit ที่กราฟทุกชนิดลงทะเบียนไว้เอง
+   • ไม่แตะใบที่สูงที่สุดของแถว (มันคือคนกำหนดความสูง) → แถวไม่โตขึ้นเรื่อยๆ
+   • จำ (ความสูงการ์ด : ความสูงกราฟ) ไว้ ถ้าเท่าเดิมไม่ทำซ้ำ → ไม่วนลูป
+   • จอเดียวคอลัมน์เดียว: ไม่มีที่ว่างให้เติม = ไม่ทำอะไร
+   ══════════════════════════════════════════════════════════════════════════ */
+const FILL_MIN_GAP=24;
+function fillCards(pg){
+  if(window.__noFill) return;                                  // ให้ชุดทดสอบปิดเพื่อพิสูจน์ว่าตัวตกแต่งทำงานจริง
+  /* .gcell = ช่องในกริดย่อยที่ไม่ใช่การ์ด (เช่น กราฟงบ 7 ช่องในการ์ดงบประมาณสะสม) — ถือเป็นการ์ดในกฎนี้ */
+  (pg||document).querySelectorAll('.grid:not(.kpis) > .card, .grid:not(.kpis) > .gcell').forEach(card=>{
+    const cr=card.getBoundingClientRect(); if(!cr.height) return;
+    const padB=parseFloat(getComputedStyle(card).paddingBottom)||0;
+    const kids=[...card.children].filter(k=>k.getBoundingClientRect().height>0);
+    const last=kids[kids.length-1]; if(!last) return;
+    const gap=(cr.bottom-padB)-last.getBoundingClientRect().bottom;
+    const boxes=[...card.querySelectorAll('[id]')].filter(b=>b.__fit && b.querySelector('svg.viz'));
+    if(boxes.length===1){                                      // (ก) การ์ดกราฟใบเดียว → สั่งกราฟวาดใหม่ให้สูงพอดี
+      const box=boxes[0], svg=box.querySelector('svg.viz');
+      const h=svg.getBoundingClientRect().height;
+      const key=Math.round(cr.height)+':'+Math.round(h);
+      if(box.dataset.fitKey===key) return;
+      box.dataset.fitKey=key;
+      if(gap<FILL_MIN_GAP) return;
+      /* ของที่ผู้เรียกเติมท้ายกราฟหลังวาด (.xnote เช่น "กลุ่มที่ไม่ได้ยื่นขอ") จะหายตอนกราฟล้างกล่องวาดใหม่ → เก็บไว้แล้วเติมคืน
+         (บั๊กจริง v30.7: gap.js จับได้ว่าบรรทัด "ชนิดงบที่ไม่ได้ยื่นขอ" หายหลังยืดกราฟ) */
+      const extra=[...box.children].filter(k=>k.classList.contains('xnote')).map(k=>k.outerHTML);
+      try{ box.__fit(Math.round(h+gap)); box.dataset.fitted='1'; }catch(err){ console.warn('ยืดกราฟไม่ผ่าน', box.id, err); }
+      extra.forEach(x=>box.insertAdjacentHTML('beforeend',x));
+      return;
+    }
+    if(boxes.length) return;                                   // หลายกราฟ ไม่รู้จะให้ใครยืด — ปล่อย
+    /* (ข) การ์ดตารางใบเดียว (ไม่มีกราฟ) → เฉลี่ยที่ว่างให้ทุกแถวสูงขึ้นเท่าๆ กัน
+       ตารางที่เลื่อนได้ (แถวมากจนกล่องจำกัดความสูง) ไม่ยืด — ที่ว่างไม่ได้เกิดจากเนื้อในสั้น */
+    const tables=card.querySelectorAll('table');
+    if(tables.length!==1) return;
+    const tb=tables[0], wrap=tb.parentElement;
+    if(wrap && wrap.scrollHeight>wrap.clientHeight+20) return;     // +20 เผื่อแถบเลื่อนแนวนอนกินความสูง ไม่ใช่เลื่อนแนวตั้งจริง
+    const rows=[...tb.querySelectorAll('tbody tr')].filter(r=>r.getBoundingClientRect().height>0);
+    if(!rows.length) return;
+    const key=Math.round(cr.height)+':'+Math.round(tb.getBoundingClientRect().height);
+    if(tb.dataset.fitKey===key) return;
+    tb.dataset.fitKey=key;
+    /* คิดที่ว่างจาก "ความสูงแถวเดิม" เสมอ — ถ้าเคยยืดไว้แล้วแถวข้างๆ เตี้ยลง จะได้หดกลับ ไม่ค้างสูง */
+    let extra=0;
+    rows.forEach(r=>{ if(!r.dataset.baseH) r.dataset.baseH=r.getBoundingClientRect().height;
+                      extra+=r.getBoundingClientRect().height-parseFloat(r.dataset.baseH); });
+    const gapBase=gap+extra;
+    if(gapBase<FILL_MIN_GAP){ rows.forEach(r=>r.style.height=''); delete tb.dataset.fitted; return; }
+    const add=gapBase/rows.length;
+    rows.forEach(r=>r.style.height=Math.round(parseFloat(r.dataset.baseH)+add)+'px');
+    tb.dataset.fitted='1';
+  });
+}
 const DECOR=[
   {name:'หุ้มกล่องตาราง',   fn:pg=>wrapTables(pg)},
   {name:'ตารางเรียง+จัดแนว', fn:pg=>enhanceTables(pg)},
   {name:'ดรอปดาวน์',        fn:pg=>ddEnhanceAll(pg)},
   {name:'ตัวเลขนับขึ้น',     fn:pg=>countUpAll(pg)},
   {name:'กล่องว่าง',        fn:pg=>emptyGuard(pg)},
+  {name:'การ์ดเต็มแถว',     fn:pg=>fillCards(pg)},           // กฎ 16 — ต้องอยู่หลังตัวอื่น เพราะวัดที่ว่างหลังทุกอย่างจัดเสร็จ
   {name:'โครงร่างรอโหลด',   fn:()=>['histBody','reqBody','zbBody','riskBody','equipBody','routineBody','ovBudget']
                                      .forEach(x=>withSkeleton(x,'kpi'))}
 ];
@@ -3736,7 +3848,7 @@ function renderDcScatter(rows){
     const perKm=(r.gotBaht||0)/1e6/Math.max(r.len,0.01);
     return {x:+perKm.toFixed(3), y:pcuOf(r.code), r:r.len, label:r.code, color:muadColor(r.muad),
       _got:r.gotBaht||0, _len:r.len, _yr:r.lastYear,
-      tip:`<b>${esc(r.code)}</b> ${esc((r.name||'').slice(0,30))}`+
+      tip:`<b>${esc(r.code)}</b>`+                                  // v30.7 ผู้ใช้: กล่องที่รายละเอียดเยอะ ใส่แค่รหัสพอ ไม่ต้องชื่อเต็ม
           `<br>PCU ${fmt(pcuOf(r.code))} คัน/วัน · ระยะทาง ${fmt(r.len)} กม.`+
           `<br>งบสะสม ${r.gotBaht?fmtM(r.gotBaht):'ยังไม่เคยได้งบ'} = <b>${fmt(+perKm.toFixed(2))} ลบ./กม.</b>`+
           `${r.lastYear?`<br>ได้งบล่าสุดปี ${r.lastYear}`:''}<br>หมวด${esc(r.muad||'-')}`};
@@ -3753,7 +3865,7 @@ function renderDcScatter(rows){
     onClick:pt=>{ const b=document.querySelector('.nav button[data-page="map"]');
       if(b) b.click(); setTimeout(()=>{ if(typeof selectRoad==='function') selectRoad(pt.label); },320); }});
   const hot=pts.filter(p=>p.y>=mY&&p.x<=mX).sort((a,b)=>b.y-a.y);
-  const n=document.createElement('div'); n.className='footnote'; n.style.marginTop='8px';
+  const n=document.createElement('div'); n.className='footnote xnote'; n.style.marginTop='8px';   // .xnote = ของที่ผู้เรียกเติมท้ายกราฟ ต้องรอดตอนกราฟวาดใหม่ (กฎ 16)
   n.innerHTML=hot.length
     ? `<b style="color:var(--crit)">${hot.length} สาย</b>อยู่ในช่องซ้ายบน (คนใช้มากกว่าค่ากลาง แต่ได้งบต่อ กม. น้อยกว่าค่ากลาง): `+
       hot.slice(0,8).map(p=>`<b>${esc(p.label)}</b>`).join(' · ')+(hot.length>8?` และอีก ${hot.length-8} สาย`:'')+
@@ -4328,8 +4440,8 @@ function renderOverview(){
     box.innerHTML=
       `<div class="heroblk"><div class="hn">${(100*lat/tt).toFixed(1)}<span>%</span></div>`+
       `<div class="hl">ของผิวทางเป็น<b>ลาดยาง</b><div class="mu">${fmt(+lat.toFixed(1))} จาก ${fmt(+tt.toFixed(1))} กม.</div></div></div>`+
-      `<div class="onebar">${segs.map(([l,v,c])=>
-        `<span style="width:${(100*v/tt).toFixed(3)}%;background:${c}" title="${l} ${fmt(+v.toFixed(1))} กม."></span>`).join('')}</div>`+
+      `<div class="onebar">${segs.map(([l,v,c])=>{ const p=100*v/tt;
+        return `<span style="width:${p.toFixed(3)}%;background:${c}" title="${l} ${fmt(+v.toFixed(1))} กม. (${p.toFixed(1)}%)">${p>=12?l+' '+p.toFixed(1)+'%':(p>=5?p.toFixed(0)+'%':'')}</span>`; }).join('')}</div>`+
       /* v29.5 — กล่องย่อยรายชนิด แทน legend บรรทัดเดียว
          legend เดิมอ่านได้แต่ "มีสีอะไรบ้าง" ต้องเพ่งถึงจะเจอตัวเลข
          กล่องย่อยยกตัวเลขขึ้นมาเป็นพระเอกทีละชนิด + บอกว่ากี่สายมีผิวชนิดนี้ */
@@ -4563,21 +4675,21 @@ function renderOverviewBudget(){
   /* v24.0 — การ์ดงบ: 4 รูปทรงต่างกัน (เส้น / แท่ง / lollipop / โดนัท) ไม่ซ้ำแบบติดกัน */
   document.getElementById('ovBudget').innerHTML=`
     <div class="grid" style="grid-template-columns:1fr 1fr;gap:14px">
-      <div><h3 style="font-size:13px">แนวโน้มงบรายปี (ลบ.)</h3>
+      <div class="gcell"><h3 style="font-size:13px">แนวโน้มงบรายปี (ลบ.)</h3>
         <div class="note" style="margin-bottom:4px">แกนเริ่มที่ 0 · ป้ายที่ปลายเส้น</div><div id="chBudTrend"></div></div>
-      <div><h3 style="font-size:13px">งบรายปีแยกรายหมวด</h3>
+      <div class="gcell"><h3 style="font-size:13px">งบรายปีแยกรายหมวด</h3>
         <div class="note" style="margin-bottom:4px">กราฟจิ๋วแกนเดียวกัน เทียบรูปทรงได้ตรงๆ</div><div id="chBudSmall"></div></div>
     </div>
     <div class="grid" style="grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:14px">
-      <div><h3 style="font-size:13px">งบรวมต่อหมวด (ลบ.)</h3><div id="chBudMuad"></div></div>
-      <div><h3 style="font-size:13px">งบรวมต่อสายทาง Top 10 (ลบ.)</h3><div id="chBudRoad"></div></div>
-      <div><h3 style="font-size:13px">งบแยกตามชนิดงบ</h3><div id="chBudType"></div></div>
+      <div class="gcell"><h3 style="font-size:13px">งบรวมต่อหมวด (ลบ.)</h3><div id="chBudMuad"></div></div>
+      <div class="gcell"><h3 style="font-size:13px">งบรวมต่อสายทาง Top 10 (ลบ.)</h3><div id="chBudRoad"></div></div>
+      <div class="gcell"><h3 style="font-size:13px">งบแยกตามชนิดงบ</h3><div id="chBudType"></div></div>
     </div>
     <div class="grid two" style="margin-top:14px">
-      <div><h3 style="font-size:13px">เงินไหลจากชนิดงบ ไปลงหมวดไหน</h3>
+      <div class="gcell"><h3 style="font-size:13px">เงินไหลจากชนิดงบ ไปลงหมวดไหน</h3>
         <div class="note" style="margin-bottom:4px">ความหนาของสาย = วงเงิน · ชี้ที่สายเพื่อดูตัวเลขและ %</div>
         <div id="chBudFlow"></div></div>
-      <div><h3 style="font-size:13px">งบกระจุกอยู่ที่ไหน (Pareto)</h3>
+      <div class="gcell"><h3 style="font-size:13px">งบกระจุกอยู่ที่ไหน (Pareto)</h3>
         <div class="note" style="margin-bottom:4px">เรียงสายทางจากงบมาก→น้อย · เส้นทองคือยอดสะสม</div>
         <div id="chBudPareto"></div></div>
     </div>
@@ -6235,7 +6347,7 @@ function renderHistory(){
           const goMap=code=>{ if(!code) return; const b=document.querySelector('.nav button[data-page="map"]');
             if(b) b.click(); setTimeout(()=>{ if(typeof selectRoad==='function') selectRoad(code); },320); };
           gantt('chGanttPlot', gs.map(g=>({
-            label:(g.code||'ไม่ระบุสาย')+' · '+normCat(g.x.budgetType),   // v30.0 ผู้ใช้สั่ง: รหัส + ชนิดงบ (กิจกรรมยาวเกิน ดูใน tip)
+            label:(g.code||'ไม่ระบุสาย')+' · '+normCat(g.x.budgetType)+(g.x.contract?' · '+String(g.x.contract).trim():''),   // v30.0 รหัส + ชนิดงบ · v30.7 ผู้ใช้: ใส่เลขที่สัญญาด้วย
             a:g.ta, b:g.tb, color:muadColor(mB[g.code]),
             late:(g.tb<now && !g.dv),
             tip:`<b>${esc(g.code||'ไม่ระบุสาย')}</b> ${esc(String(g.x.activity||'').slice(0,28))}`+
@@ -7288,12 +7400,12 @@ function renderRequests(){
     </div>
     <div class="grid two">
       <div class="card"><h3>สายทางที่มีคำขอซ้ำมากที่สุด (Top 10)</h3><div class="note">จำนวนคำขอ — คลิกแท่งเพื่อดูรายละเอียดด้านขวา</div><div id="chTopReq"></div></div>
-      <div class="card">
+      <div class="card" style="display:flex;flex-direction:column">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px">
           <h3 style="margin:0">มุมมองรวมรายสาย</h3>
           <select class="search" id="reqRoadSel" style="width:min(560px,100%)">${roadOptHtml([...counts].sort((a,b)=>roadOptGroup(a[0])-roadOptGroup(b[0])||SUF3(a[0])-SUF3(b[0])||a[0].localeCompare(b[0],'th')).map(e=>e[0]))}</select>
         </div>
-        <div id="reqDetail"></div>
+        <div id="reqDetail" style="flex:1;display:flex;flex-direction:column"></div>
       </div>
     </div>
     <div class="grid two" style="margin-top:14px">
@@ -7389,7 +7501,7 @@ function renderReqDetail(code){
         <div class="amt ${r.amt!=null?'ok':'wait'}">${r.amt!=null?(first?fmt(r.amt):''):'⏳ รอประเมิน'}</div>
       </div>`).join('')}
     </div>
-    <div class="footnote">ประโยชน์: เห็นคำขอทั้งหมดของสายนี้ในหน้าจอเดียว ก่อนตัดสินใจออกแบบแผนงบในขั้นตอนถัดไป</div>`;
+    <div class="footnote" style="margin-top:auto">ประโยชน์: เห็นคำขอทั้งหมดของสายนี้ในหน้าจอเดียว ก่อนตัดสินใจออกแบบแผนงบในขั้นตอนถัดไป</div>`;
 }
 
 /* ================= ZEROBASE (live — tab ต่อปี Z_71, Z_72, … หาปีอัตโนมัติ) ================= */
@@ -7705,7 +7817,7 @@ function renderGap(){
     if(rows.length) bullet('gapChCat', rows, {tgtText:'เฉลี่ยรวม'});
     else document.getElementById('gapChCat').innerHTML='<div class="note" style="padding:18px 4px;text-align:center">ยังไม่มีคำของบในมุมมองนี้</div>';
     if(idleCats.length) document.getElementById('gapChCat').insertAdjacentHTML('beforeend',
-      `<div class="footnote">ชนิดงบที่ไม่ได้ยื่นขอในมุมมองนี้ (มีแต่สัญญา): ${idleCats.map(esc).join(' · ')}</div>`);
+      `<div class="footnote xnote">ชนิดงบที่ไม่ได้ยื่นขอในมุมมองนี้ (มีแต่สัญญา): ${idleCats.map(esc).join(' · ')}</div>`);
   });
 
   safeRun('แถบซ้อน หมวด × ชนิดงบ', ()=>{
@@ -7721,7 +7833,7 @@ function renderGap(){
     const box=document.getElementById('gapChMuad');
     box.__cross={rows:keys, cols:askedCats, mat:rows.map(r=>askedCats.map(c=>r.segs[c]))};
     if(idle.length) box.insertAdjacentHTML('beforeend',
-      `<div class="footnote">หมวดที่ไม่ได้ยื่นขอในมุมมองนี้: ${idle.map(esc).join(' · ')}</div>`);
+      `<div class="footnote xnote">หมวดที่ไม่ได้ยื่นขอในมุมมองนี้: ${idle.map(esc).join(' · ')}</div>`);
   });
 
   safeRun('แถบซ้อน เขตเลือกตั้ง', ()=>{
