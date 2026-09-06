@@ -517,6 +517,8 @@ select.search{width:auto}
     background:none;border:none;border-top:1px dashed var(--grid);
     font-family:inherit;font-size:12px;font-weight:600;color:var(--teal);cursor:pointer}
   .mappopup.mobdock .gmnote{order:3;display:none;margin-top:2px;padding-top:0;border-top:none}
+  .mappopup.mobdock .pkm{display:block;margin-top:3px;color:var(--teal);font-weight:600}
+  .mappopup.mobdock.haskm.open .gmnote{display:none!important}   /* กม. โชว์ในหัวแล้ว ไม่ต้องซ้ำตอนขยาย */
   .mappopup.mobdock .rmBtn{order:4;display:none;align-self:flex-start;margin-top:8px!important}
   .mappopup.mobdock.open .gmnote,.mappopup.mobdock.open .rmBtn{display:block}
   .mappopup.mobdock.open .pact .cptxt{display:block;grid-column:1/-1;text-align:center;margin-top:4px}
@@ -556,6 +558,7 @@ select.search{width:auto}
   font-size:10.5px;line-height:1.45;color:var(--muted)}
 .mappopup .gmnote b{color:var(--ink2)}
 .mappopup .pmore{display:none}          /* v30.8 ปุ่มขยายมีไว้ให้จอแคบเท่านั้น */
+.mappopup .pkm{display:none}            /* v30.9 บรรทัด กม. ของจุดที่คลิก — จอแคบเท่านั้น (จอกว้างอยู่ใน gmnote) */
 .mappopup .lbs{display:none}            /* จอกว้างใช้ป้ายเต็ม */
 .mappopup .gmnote+.gmrow{margin-top:6px;padding-top:0;border-top:none}
 @media(max-width:900px){.mappopup.mobdock .gmnote{font-size:11.5px}}
@@ -1468,7 +1471,11 @@ const tip = document.getElementById('tooltip');
    (เห็นทันทีตอนทดสอบ แทนที่จะไปเงียบแบบ "บังของอื่น" ซึ่งมองไม่เห็นด้วยตา)
    ═════════════════════════════════════════════════════════════════════════ */
 function hitOn(elm, cur){ if(!elm) return elm; elm.classList.add('hit'); if(cur) elm.style.cursor=cur; return elm; }
-function showTip(html, x, y){ tip.innerHTML=html; tip.style.display='block';
+/* v30.9 — จอสัมผัส: การแตะทำให้เบราว์เซอร์ยิง mousemove จำลอง ป้ายชี้จึงโผล่แล้วค้าง (ไม่มี mouseleave)
+   ผู้ใช้เห็นในภาพ 5 ก.ย. 69: ป้ายดำค้างบังแผนที่หลังแตะสายทาง -> นิ้วสัมผัสไม่แสดงป้ายชี้เลย (กล่องรายละเอียดทำหน้าที่แทน) */
+window.__touchPtr=false;
+document.addEventListener('pointerdown',e=>{ window.__touchPtr=(e.pointerType==='touch'); if(window.__touchPtr) hideTip(); },true);
+function showTip(html, x, y){ if(window.__touchPtr) return; tip.innerHTML=html; tip.style.display='block';
   const w=tip.offsetWidth, vw=innerWidth;
   tip.style.left=Math.min(Math.max(6,x+14), vw-w-8)+'px'; tip.style.top=(y+16)+'px'; }
 function hideTip(){ tip.style.display='none'; }
@@ -2656,7 +2663,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v30.9', APP_DATE='5 ก.ย. 2569';
+const APP_VER='v30.10', APP_DATE='6 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -5703,6 +5710,11 @@ function openPopup(code, hitLL){
     gmOpt={dir:true, svNote:'Street View ตรงจุดที่คลิก — ขึ้นกับว่า Google มีภาพถนนบริเวณนั้น',
            dirTip:'นำทางไปจุดที่คลิกบนสาย'};
     note=`📌 อ้างอิง<b>จุดที่คลิก</b> · ≈ กม. ${kmStamp(hit.km)}`;
+    /* v30.9 ผู้ใช้: "คลิกสายทางในแผนที่ อ้างอิงจุดคลิกที่เป็น กม. น่าจะขึ้นมาเลย ไม่ต้องกดข้อมูลเพิ่มเติม"
+       -> จอแคบโชว์บรรทัด กม. ในหัวการ์ดตั้งแต่ตอนย่อ (จอกว้างซ่อนบรรทัดนี้ เพราะ gmnote โชว์อยู่แล้ว) */
+    d.classList.add('haskm');
+    d.querySelector('.phead').insertAdjacentHTML('beforeend',
+      `<div class="pkm">📍 จุดที่คลิก ≈ <b>กม. ${kmStamp(hit.km)}</b></div>`);
   }else{
     anchorLL=A;
     gmOpt={dir:true, svLat:S?S[1]:null, svLon:S?S[0]:null,
