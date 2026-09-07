@@ -1726,27 +1726,32 @@ function heat(container, rowLabels, colLabels, matrix, {unit='', fmtV=fmt, onCli
 /* v31.7 แถบหลอด (ผู้ใช้ 7 ก.ย. 69: "เหมือนแถบหลอด เต็มคือที่ขอ แล้วได้เท่าไหร่ก็โชว์เป็นขีดหลอด")
    แถวละกลุ่ม: หลอดเต็ม = วงเงินที่ขอของกลุ่มนั้น · ส่วนสีเข้ม = ที่ได้ (พร้อม %) · ท้ายแถว = ขอ/ได้/ตัด (ลบ.)
    rows: {label, k, a(ขอ ลบ.), askOk(ได้ ลบ.), askNo(ตัด ลบ.), n, ok, tip, idle(ไม่ได้ยื่นขอ)} — เก็บ __rows ไว้ให้ด่านตรวจเทียบ */
-function tube(container, rows, {labelW=110, height=null, rightW=150}={}){
+function tube(container, rows, {labelW=110, height=null, rightW=110, colorOf=null, avg=null}={}){
   const box=document.getElementById(container); if(!box) return; box.innerHTML=''; box.__rows=rows;
-  box.__fit=h=>tube(container, rows, {labelW, rightW, height:h});   // กฎ 16
-  const W=box.clientWidth||560, padT=6, padB=6;
-  const rowH=height?Math.max(30,Math.min(54,(height-padT-padB)/Math.max(1,rows.length))):36;
+  box.__fit=h=>tube(container, rows, {labelW, rightW, colorOf, avg, height:h});   // กฎ 16
+  const W=box.clientWidth||560, padT=avg!=null?22:6, padB=6;
+  /* v31.8 ผู้ใช้: "กล่องไหนข้อมูลน้อยกว่า อัพไซส์ขึ้นมาก็ได้" — ยืดแถวได้ถึง 96px หลอดหนาตาม */
+  const rowH=height?Math.max(30,Math.min(96,(height-padT-padB)/Math.max(1,rows.length))):36;
   const natural=rows.length*rowH+padT+padB, H=(height&&height>natural)?height:natural, off=Math.floor((H-natural)/2);
   const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:'100%',height:H},box);
-  const pw=W-labelW-rightW, th=18;
+  const pw=W-labelW-rightW, th=Math.max(18,Math.min(30,Math.round(rowH*0.5)));
+  if(avg!=null){ const ax=labelW+pw*Math.max(0,Math.min(100,avg))/100;
+    el('line',{x1:ax,y1:padT-4,x2:ax,y2:H-padB,stroke:C.navy,'stroke-width':1.4,'stroke-dasharray':'4 3',opacity:.7},svg);
+    el('text',{x:ax,y:padT-8,'text-anchor':'middle',fill:C.navy,'font-size':10.5,'font-weight':700},svg).textContent=`เฉลี่ย ${avg.toFixed(0)}%`; }
   const maxCh=Math.max(8,Math.floor((labelW-8)/7.2));
   rows.forEach((r,i)=>{
     const y=padT+off+i*rowH, ty=y+(rowH-th)/2, cy=ty+th/2+4;
     const t=el('text',{class:'cattext',x:labelW-8,y:cy,'text-anchor':'end'},svg); t.textContent=clipTh(r.label,maxCh);
     const pct=r.a>0?Math.max(0,Math.min(100,100*r.askOk/r.a)):0;
-    el('rect',{x:labelW,y:ty,width:pw,height:th,rx:9,fill:r.idle?'#f4f5f4':'#e6e9e8',stroke:r.idle?'#e3e6e5':'none','stroke-dasharray':r.idle?'3 3':''},svg);
+    el('rect',{class:'track',x:labelW,y:ty,width:pw,height:th,rx:9,fill:r.idle?'#f4f5f4':'#e6e9e8',stroke:r.idle?'#e3e6e5':'none','stroke-dasharray':r.idle?'3 3':''},svg);
+    const col=(colorOf&&colorOf(r.k))||C.teal;
     if(r.a>0&&pct>0){ const fw=Math.max(th,pw*pct/100);
-      el('rect',{class:'bar','data-i':i,x:labelW,y:ty,width:fw,height:th,rx:9,fill:C.teal},svg);
+      el('rect',{class:'bar','data-i':i,x:labelW,y:ty,width:fw,height:th,rx:9,fill:col},svg);
       if(fw>=34) el('text',{x:labelW+fw-7,y:cy,'text-anchor':'end',fill:'#fff','font-size':11,'font-weight':700},svg).textContent=pct.toFixed(0)+'%';
-      else el('text',{x:labelW+fw+5,y:cy,fill:C.teal,'font-size':11,'font-weight':700},svg).textContent=pct.toFixed(0)+'%'; }
+      else el('text',{x:labelW+fw+5,y:cy,fill:col,'font-size':11,'font-weight':700},svg).textContent=pct.toFixed(0)+'%'; }
     else if(!r.idle&&r.a>0) el('text',{x:labelW+8,y:cy,fill:'#e34948','font-size':11,'font-weight':700},svg).textContent='0%';
     const rt=el('text',{class:'ticktext',x:W-4,y:cy,'text-anchor':'end'},svg);
-    rt.textContent=r.right||(r.idle?'ไม่ได้ยื่นขอ':(r.a>0?`ขอ ${fmt(r.a)} · ได้ ${fmt(r.askOk)} · ตัด ${fmt(r.askNo)} ลบ.`:`${r.n} คำขอ · ไม่ระบุวงเงิน`));
+    rt.textContent=r.right||(r.idle?'ไม่ได้ยื่นขอ':(r.a>0?`ตัด ${fmt(r.askNo)} ลบ.`:`ไม่ระบุวงเงิน`));
     const hit=el('rect',{x:0,y:y,width:W,height:rowH,fill:'transparent'},svg);
     hitOn(hit);   // กฎ 8
     hit.addEventListener('mousemove',e=>showTip(`<b>${esc(r.label)}</b><br>${r.tip||''}`,e.clientX,e.clientY));
@@ -2821,7 +2826,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.7', APP_DATE='7 ก.ย. 2569';
+const APP_VER='v31.8', APP_DATE='7 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -8019,7 +8024,7 @@ function gapMatch(rec, gotList){
   if(vague.length) return {got:vague, exact:false};
   return {got:[], exact:true};
 }
-let gapYearPick='all';
+let gapYearPick='all', gapStuckAll=false;   // v31.8 gapStuckAll: ตารางสายที่ขอแล้วไม่ได้ ดูทุกปี
 const gapZoneOf=(code,segs)=>{ const sg=segsOf({segs});
   return sg.length ? zoneOfRec(code, sg[0].a, sg[0].b??sg[0].a) : zoneOfRec(code,null); };
 function gapModel(){
@@ -8096,7 +8101,9 @@ function renderGap(){
   const noReq=!V.rows.length;
   const pct=(a,b)=>b?(100*a/b).toFixed(0):'0';
   const lb=v=>fmt(+(v/1e6).toFixed(1));
-  const stuck=gapStuck(M);
+  /* v31.8 ผู้ใช้: "ตารางข้อมูลไม่น่าเอารวมกัน กด 70 อยู่ไม่น่าเอา 71 ไปรวม" — ตารางสายที่ขอแล้วไม่ได้ กรองตามปีที่เลือก (เลือก "ทุกปี" ได้) */
+  const stuckAllYears=gapStuck(M);
+  const stuck=gapStuckAll?stuckAllYears:gapStuck({rows:M.rows.filter(r=>String(r.year)===String(gapYearPick))});
   const yearLbl=gapYearPick==='all'?('ทุกปี '+M.years.join(' · ')):('ปีงบ '+gapYearPick);
 
   const catKeys=Object.keys(V.byCat).sort((a,b)=>V.byCat[b].ask-V.byCat[a].ask);
@@ -8113,29 +8120,36 @@ function renderGap(){
      <div class="card kpi"><div class="lbl">คำของบ · ${esc(yearLbl)}</div><div class="val">${T.n}<small> รายการ</small></div><div class="foot">${new Set(V.rows.map(r=>r.code)).size} สายทาง · ขอ ${lb(T.ask)} ลบ.</div></div>
      <div class="card kpi" style="border-left:4px solid var(--teal)"><div class="lbl">ได้ตามคำขอ</div><div class="val">${T.ok}<small>/${T.n}</small></div><div class="foot">${pct(T.ok,T.n)}% · วงเงินสัญญาที่ตรงคำขอ ${lb(T.gotAmt)} ลบ.</div></div>
      <div class="card kpi" style="border-left:4px solid #e34948"><div class="lbl">โดนตัด / ยังไม่ได้</div><div class="val">${lb(T.askNo)}<small> ลบ.</small></div><div class="foot">${T.n-T.ok} รายการ ยังไม่มีสัญญารองรับ · ${pct(T.askNo,T.ask)}% ของที่ขอ</div></div>
-     <div class="card kpi" style="border-left:4px solid var(--gold)"><div class="lbl">สัญญาจริงในปีเดียวกัน (ทุกสาย)</div><div class="val">${T.histN}<small> สัญญา</small></div><div class="foot">${T.histN?`${lb(T.histAmt)} ลบ. — รวมงานที่ไม่ได้ผ่านคำขอด้วย`:`${esc(yearLbl)} ยังไม่มีสัญญาในประวัติ`}</div></div>
-     <div class="card kpi"><div class="lbl">สายที่ขอแล้วยังไม่ได้</div><div class="val">${stuck.length}<small> สาย</small></div><div class="foot">ทุกปีรวมกัน · ดูตารางล่างสุด</div></div>
+     <div class="card kpi" style="border-left:4px solid var(--gold)"><div class="lbl">โครงการจริงในปีเดียวกัน (ทุกสาย)</div><div class="val">${T.histN}<small> โครงการ</small></div><div class="foot">${T.histN?`${lb(T.histAmt)} ลบ. — รวมงานที่ไม่ได้ผ่านคำขอด้วย`:`${esc(yearLbl)} ยังไม่มีโครงการในประวัติ`}</div></div>
+     <div class="card kpi"><div class="lbl">สายที่ขอแล้วยังไม่ได้</div><div class="val">${stuck.length}<small> สาย</small></div><div class="foot">${gapStuckAll?'ทุกปีรวมกัน':esc(yearLbl)} · ดูตารางล่างสุด</div></div>
    </div>`+
 
   (noReq?'':`<div class="grid two" style="margin-top:14px">
+     <div class="card"><h3>ผลคำของบ — แต่ละชนิดงบ · ${esc(yearLbl)}</h3>
+       <div class="note">หลอดเต็ม = ที่ขอ · สีเข้ม = ได้ · เส้นประ = ค่าเฉลี่ยทั้งปี</div>
+       <div id="gapChCat"></div></div>
      <div class="card"><h3>ผลคำของบ — แต่ละหมวด · ${esc(yearLbl)}</h3>
-       <div class="note">หลอดเต็ม = วงเงินที่ขอ · สีเข้ม = ได้ · ที่เหลือ = โดนตัด</div>
+       <div class="note">หลอดเต็ม = ที่ขอ · สีเข้ม = ได้ · เส้นประ = ค่าเฉลี่ยทั้งปี</div>
        <div id="gapChMuad"></div></div>
-     <div class="card"><h3>ผลคำของบ — แต่ละกิจกรรม · ${esc(yearLbl)}</h3>
-       <div class="note">หลอดเต็ม = วงเงินที่ขอ · สีเข้ม = ได้ · ที่เหลือ = โดนตัด · แสดง 12 กิจกรรมที่ขอมากสุด</div>
-       <div id="gapChAct"></div></div>
    </div>
    <div class="grid two" style="margin-top:14px">
+     <div class="card"><h3>ผลคำของบ — แต่ละกิจกรรม · ${esc(yearLbl)}</h3>
+       <div class="note">สีตามชนิดงบหลักของกิจกรรม · แสดง 12 กิจกรรมที่ขอมากสุด</div>
+       <div id="gapChAct"></div></div>
      <div class="card"><h3>ผลคำของบ — แต่ละเขตเลือกตั้ง · ${esc(yearLbl)}</h3>
-       <div class="note">หลอดเต็ม = วงเงินที่ขอ · สีเข้ม = ได้ · หลอดประ = เขตที่ไม่ได้ยื่นขอ</div>
+       <div class="note">หลอดประ = เขตที่ไม่ได้ยื่นขอ</div>
        <div id="gapChZone"></div></div>
-     <div class="card"><h3>ผลคำของบ — แต่ละชนิดงบ · ${esc(yearLbl)}</h3>
-       <div class="note">หลอดเต็ม = วงเงินที่ขอ · สีเข้ม = ได้ · ที่เหลือ = โดนตัด</div>
-       <div id="gapChCat"></div></div>
    </div>
-   <div class="card" style="margin-top:14px"><h3>ขอ และได้ — เทียบทุกปี (ลบ.)</h3><div class="note">สีเขียว = ได้ · สีแดง = โดนตัด</div><div id="gapChYear"></div></div>`)+
+   <div class="card" style="margin-top:14px">
+     <h3>ผลคำของบ — รายละเอียดทุกกลุ่ม · ${esc(yearLbl)}</h3>
+     <div class="note">ตัวเลขเต็มของทุกหลอดด้านบน · คลิกหัวคอลัมน์เพื่อเรียง</div>
+     <div class="tblwrap" style="max-height:460px"><table id="gapDetailTable"><thead><tr>
+       <th>ประเภท</th><th>กลุ่ม</th><th class="num">คำขอ</th><th class="num">ได้ (รายการ)</th><th class="num">ขอ (ลบ.)</th><th class="num">ได้ (ลบ.)</th><th class="num">โดนตัด (ลบ.)</th><th class="num">% ได้</th>
+     </tr></thead><tbody></tbody></table></div>
+   </div>
+   <div class="card" style="margin-top:14px"><h3>ผลคำของบ — เทียบทุกปี</h3><div class="note">หลอดเต็ม = ที่ขอ · สีเข้ม = ได้</div><div id="gapChYear"></div></div>`)+
   /* ปีที่ไม่มีคำขอ: กราฟเทียบทุกปียังต้องมี (เป็นภาพรวมทุกปี ไม่ขึ้นกับปีที่เลือก) */
-  (noReq?`<div class="card" style="margin-top:14px"><h3>ขอ และได้ — เทียบทุกปี (ลบ.)</h3><div class="note">สีเขียว = ได้ · สีแดง = โดนตัด</div><div id="gapChYear"></div></div>`:'')+
+  (noReq?`<div class="card" style="margin-top:14px"><h3>ผลคำของบ — เทียบทุกปี</h3><div class="note">หลอดเต็ม = ที่ขอ · สีเข้ม = ได้</div><div id="gapChYear"></div></div>`:'')+
 
   `<div class="card" style="margin-top:14px">
      <h3>ตารางรายปี — ขอเท่าไหร่ ได้เท่าไหร่ (ทุกปีที่มีคำขอ)</h3>
@@ -8155,7 +8169,10 @@ function renderGap(){
 
 
   `<div class="card" style="margin-top:14px">
-     <h3>สายทางที่ขอแล้วยังไม่ได้ — เรียงตามจำนวนปีที่พลาด (ทุกปี)</h3>
+     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+       <h3 style="margin:0">สายทางที่ขอแล้วยังไม่ได้ — ${gapStuckAll?'ทุกปี เรียงตามจำนวนปีที่พลาด':esc(yearLbl)}</h3>
+       <select class="search" id="gapStuckSel" style="max-width:200px"><option value="pick"${gapStuckAll?'':' selected'}>เฉพาะ${esc(yearLbl)}</option><option value="all"${gapStuckAll?' selected':''}>ทุกปี (${M.years.join(' · ')})</option></select>
+     </div>
      <div class="note">"ปีที่พลาด" = ปีที่ยื่นขอแล้วไม่ได้ · คลิกแถวเพื่อเปิดสายบนแผนที่</div>
      <div class="tblwrap" style="max-height:480px"><table id="gapTable" data-sortable="1"><thead><tr>
        <th>รหัสสายทาง</th><th>ชื่อสายทาง</th><th>หมวด</th><th>เขต</th><th class="num">ปีที่ขอ</th><th class="num">ปีที่ได้</th><th class="num">ปีที่พลาด</th>
@@ -8166,11 +8183,6 @@ function renderGap(){
      </tbody></table></div>
    </div>`;
 
-  safeRun('กราฟขอ vs ได้ รายปี', ()=>{
-    dumbbell('gapChYear', M.years.map(y=>({label:'ปี '+y,
-      a:+(M.byYear[y].ask/1e6).toFixed(2), b:+(M.byYear[y].gotAmt/1e6).toFixed(2)})),
-      {unit:'ลบ.', c1:C.gold, c2:C.teal, l1:'ที่ขอ', l2:'สัญญาที่ตรงคำขอ', gapLabel:'ยังไม่ได้'});
-  });
   /* v30.4 รูปทรงตามคำถาม → v31.7 ผู้ใช้เปลี่ยน: ทุกกลุ่ม (หมวด · กิจกรรม · เขต · ชนิดงบ) เป็น "แถบหลอด" แบบเดียวกัน
      หลอดเต็ม = วงเงินที่ขอของกลุ่มนั้น · สีเข้ม = ได้ (%) · ที่เหลือ = โดนตัด — ไม่ซ้อนชนิดงบในหมวด ("หมวดก็หมวด ชนิดงบก็ชนิดงบ")
      % คิดภายในกลุ่มเอง (ขอ 300 ได้ 200 = 67%) ไม่ใช่ส่วนแบ่งจากยอดรวมหน้า · "ไม่ได้ยื่นขอ" = หลอดประ แยกจาก "ขอแล้วได้ครบ" */
@@ -8178,49 +8190,62 @@ function renderGap(){
   const askedCats=catKeys.filter(k=>V.byCat[k].n>0);          // ชนิดงบที่ "ยื่นขอจริง" ในมุมมองนี้
   const idleCats =catKeys.filter(k=>V.byCat[k].n===0);
 
-  safeRun('กราฟรายปี', ()=>{
-    const ys=M.years;
-    vbar('gapChYear', ys.map(String), [
-      {label:'ขอแล้วได้', color:OKC, data:ys.map(y=>+(M.byYear[y].askOk/1e6).toFixed(2)),
-       tips:ys.map(y=>{ const b=M.byYear[y]; return `<b>ปี ${y}</b><br>ขอแล้วได้ ${lb(b.askOk)} ลบ. (${b.ok}/${b.n} รายการ)<br>วงเงินสัญญาที่ตรงคำขอ ${lb(b.gotAmt)} ลบ.`; })},
-      {label:'ขอแล้วยังไม่ได้', color:NOC, data:ys.map(y=>+(M.byYear[y].askNo/1e6).toFixed(2)),
-       tips:ys.map(y=>{ const b=M.byYear[y]; return `<b>ปี ${y}</b><br>ขอแล้วยังไม่ได้ ${lb(b.askNo)} ลบ. (${b.n-b.ok} รายการ)<br>รวมที่ขอ ${lb(b.ask)} ลบ.`; })}
-    ], {unit:'ลบ.', stacked:true, height:250});
-  });
-
-  /* v31.7 ทุกกลุ่มใช้แถบหลอดแบบเดียวกัน (ผู้ใช้: "หมวดก็หมวด ชนิดงบก็ชนิดงบ เขตก็เขต" — ไม่ซ้อนชนิดงบในหมวด) */
+  /* v31.7 ทุกกลุ่มใช้แถบหลอดแบบเดียวกัน (ผู้ใช้: "หมวดก็หมวด ชนิดงบก็ชนิดงบ เขตก็เขต" — ไม่ซ้อนชนิดงบในหมวด)
+     v31.8 ผู้ใช้: สีหลอดตามสีหมวด/ชนิดงบ/เขต (กิจกรรม = สีชนิดงบหลัก) · มีเส้นค่าเฉลี่ยทั้งปี · ท้ายแถวสั้น รายละเอียดอยู่ในตาราง */
   const tubeRows=(G,keys,lab,extra)=>keys.map(k=>{ const g=G[k]||{n:0,ok:0,ask:0,askOk:0,askNo:0,gotAmt:0,histN:0};
     const a=+(g.ask/1e6).toFixed(2), askOk=+(g.askOk/1e6).toFixed(2), askNo=+(g.askNo/1e6).toFixed(2);
     return {label:lab?lab(k):k, k, a, askOk, askNo, b:+(g.gotAmt/1e6).toFixed(2), n:g.n, ok:g.ok, idle:!g.n, v:g.ask?+(100*g.askOk/g.ask).toFixed(1):0,
-      tip:g.n?`คำขอ ${g.n} รายการ · ได้ตามคำขอ ${g.ok} (${pct(g.ok,g.n)}%) · ขอ ${lb(g.ask)} ลบ. · ได้ ${lb(g.askOk)} ลบ. · โดนตัด ${lb(g.askNo)} ลบ. · สัญญาทั้งหมดในกลุ่ม ${g.histN}`+(extra?extra(k):''):'ไม่มีคำของบในมุมมองนี้'}; });
+      tip:g.n?`คำขอ ${g.n} รายการ · ได้ตามคำขอ ${g.ok} (${pct(g.ok,g.n)}%) · ขอ ${lb(g.ask)} ลบ. · ได้ ${lb(g.askOk)} ลบ. · โดนตัด ${lb(g.askNo)} ลบ. · โครงการในกลุ่ม ${g.histN}`+(extra?extra(k):''):'ไม่มีคำของบในมุมมองนี้'}; });
+  const avgPct=T.ask?+(100*T.askOk/T.ask).toFixed(1):0;
+  const detail=[];   // แถวตารางรายละเอียด (ประเภท · กลุ่ม)
+  const addDetail=(type,rows)=>rows.filter(r=>!r.idle).forEach(r=>detail.push({type, ...r}));
+  const actCat=k=>{ const c={}; V.rows.filter(r=>(r.act||'')===k).forEach(r=>{ c[r.cat]=(c[r.cat]||0)+(r.ask||0); }); return Object.entries(c).sort((a,b)=>b[1]-a[1])[0]?.[0]||''; };
   safeRun('หลอด ชนิดงบ', ()=>{
     if(noReq) return;
-    const rows=tubeRows(V.byCat, askedCats);
-    tube('gapChCat', rows, {labelW:110});
+    const rows=tubeRows(V.byCat, askedCats); addDetail('ชนิดงบ',rows);
+    tube('gapChCat', rows, {labelW:110, colorOf:k=>btColor(k)||C.teal, avg:avgPct});
     if(idleCats.length) document.getElementById('gapChCat').insertAdjacentHTML('beforeend',
       `<div class="footnote xnote">ชนิดงบที่ไม่ได้ยื่นขอ: ${idleCats.map(esc).join(' · ')}</div>`);
   });
   safeRun('หลอด หมวด', ()=>{
     if(noReq) return;
     const keys=muadKeys.filter(k=>V.byMuad[k].n>0), idle=muadKeys.filter(k=>V.byMuad[k].n===0);
-    tube('gapChMuad', tubeRows(V.byMuad, keys), {labelW:96});
+    const rows=tubeRows(V.byMuad, keys); addDetail('หมวด',rows);
+    tube('gapChMuad', rows, {labelW:96, colorOf:k=>recMuadColor(k), avg:avgPct});
     if(idle.length) document.getElementById('gapChMuad').insertAdjacentHTML('beforeend',
       `<div class="footnote xnote">หมวดที่ไม่ได้ยื่นขอ: ${idle.map(esc).join(' · ')}</div>`);
   });
   safeRun('หลอด กิจกรรม', ()=>{
     if(noReq) return;
     const allK=Object.keys(V.byAct).filter(k=>V.byAct[k].n>0).sort((a,b)=>V.byAct[b].ask-V.byAct[a].ask), keys=allK.slice(0,12);
-    tube('gapChAct', tubeRows(V.byAct, keys, k=>k.length>26?k.slice(0,25)+'…':k), {labelW:150});
-    if(allK.length>keys.length) document.getElementById('gapChAct').insertAdjacentHTML('beforeend',`<div class="footnote xnote">อีก ${allK.length-keys.length} กิจกรรมอยู่ในตารางรายสาย</div>`);
+    const rows=tubeRows(V.byAct, allK, k=>k.length>22?k.slice(0,21)+'…':k); addDetail('กิจกรรม',rows);
+    tube('gapChAct', rows.slice(0,12), {labelW:140, colorOf:k=>btColor(actCat(k))||C.teal, avg:avgPct});
+    if(allK.length>keys.length) document.getElementById('gapChAct').insertAdjacentHTML('beforeend',`<div class="footnote xnote">อีก ${allK.length-keys.length} กิจกรรมอยู่ในตารางรายละเอียด</div>`);
   });
   safeRun('หลอด เขตเลือกตั้ง', ()=>{
     if(noReq) return;
     const all=[...new Set([...Object.keys(KK_ZONES), ...zoneKeys])].sort((a,b)=>(isNaN(a)?99:+a)-(isNaN(b)?99:+b));
     const rows=tubeRows(V.byZone, all, k=>isNaN(k)?k:'เขต '+k, k=>KK_ZONES[k]?`<br>สส. ${esc(KK_ZONES[k].mp)} · ${esc(KK_ZONES[k].party)}`:'');
-    rows.forEach(r=>{ if(r.idle) r.right='ไม่ได้ยื่นขอ'; });
-    tube('gapChZone', rows, {labelW:70});
+    rows.forEach(r=>{ if(r.idle) r.right='ไม่ได้ยื่นขอ'; }); addDetail('เขต',rows);
+    tube('gapChZone', rows, {labelW:70, colorOf:k=>isNaN(k)?'#9aa5a3':zoneColor(+k), avg:avgPct});
+  });
+  safeRun('ตารางรายละเอียด', ()=>{
+    const tb=document.querySelector('#gapDetailTable tbody'); if(!tb) return;
+    tb.innerHTML=detail.map(r=>`<tr><td>${esc(r.type)}</td><td>${esc(r.label)}</td><td class="num">${r.n}</td><td class="num">${r.ok}</td><td class="num">${fmt(r.a)}</td><td class="num">${fmt(r.askOk)}</td><td class="num">${fmt(r.askNo)}</td><td class="num"><b style="color:${r.v>=avgPct?'#0d7a4a':'var(--crit)'}">${r.a?r.v.toFixed(0)+'%':'—'}</b></td></tr>`).join('')||
+      '<tr><td colspan="8" class="c" style="color:var(--muted)">ไม่มีคำของบในปีนี้</td></tr>';
   });
 
+  safeRun('หลอดรายปี', ()=>{
+    /* v31.8 ผู้ใช้: "กล่องรายปีก็ใช้คำ ผลคำของบ · เปลี่ยนกราฟ มันดูโล่ง" — หลอดต่อปี แบบเดียวกับกลุ่มอื่น */
+    const rows=M.years.map(y=>{ const b=M.byYear[y];
+      return {label:'ปี '+y, k:String(y), a:+(b.ask/1e6).toFixed(2), askOk:+(b.askOk/1e6).toFixed(2), askNo:+(b.askNo/1e6).toFixed(2), n:b.n, ok:b.ok, v:b.ask?+(100*b.askOk/b.ask).toFixed(1):0,
+        right:`ขอ ${lb(b.ask)} · ได้ ${lb(b.askOk)} · ตัด ${lb(b.askNo)} ลบ.`,
+        tip:`คำขอ ${b.n} รายการ · ได้ตามคำขอ ${b.ok} (${pct(b.ok,b.n)}%) · โครงการทั้งปี ${b.histN}`}; });
+    tube('gapChYear', rows, {labelW:70, rightW:210, colorOf:k=>String(k)===String(gapYearPick)?C.teal:'#7fb5ad'});
+  });
+
+  const ssel=document.getElementById('gapStuckSel');
+  if(ssel) ssel.addEventListener('change',()=>{ gapStuckAll=ssel.value==='all'; renderGap(); });
   box.querySelectorAll('#gapTable tbody tr[data-code]').forEach(tr=>{
     tr.style.cursor='pointer';
     tr.addEventListener('click',()=>{ const b=document.querySelector('.nav button[data-page="map"]');
@@ -8289,9 +8314,9 @@ function renderYearly(){
       <span class="note" style="margin:0">ส่วนสรุปแสดงเฉพาะปีและหน่วยที่เลือก · ยอดสะสมทุกปีดูที่หน้า "ประวัติสายทาง"</span>
     </div>
     <div class="secdiv"><h2>① สรุปปีงบ ${y}${agLbl} — งบเท่าไหร่ กี่โครงการ ทำอะไรบ้าง</h2></div>
-    ${noHist?`<div class="card" style="margin-bottom:14px"><div class="note" style="margin:0;padding:8px 2px">ปีงบ ${y} ยังไม่มีสัญญาในประวัติ — ดูส่วนเช็คคำขอด้านล่างว่าปีนี้ยื่นขออะไรไปบ้าง</div></div>`:''}
+    ${noHist?`<div class="card" style="margin-bottom:14px"><div class="note" style="margin:0;padding:8px 2px">ปีงบ ${y} ยังไม่มีโครงการในประวัติ — ดูส่วนเช็คคำขอด้านล่างว่าปีนี้ยื่นขออะไรไปบ้าง</div></div>`:''}
     <div class="grid kpis kpi3">
-      ${kico('📋','#edf2fa','สัญญาปีนี้', `${H.length} <small>รายการ</small>`, `ปีงบ ${y}${agLbl} · จาก ${histData.length} สัญญาทุกปี`)}
+      ${kico('📋','#edf2fa','โครงการปีนี้', `${H.length} <small>โครงการ</small>`, `ปีงบ ${y}${agLbl} · จาก ${histData.length} โครงการทุกปี`)}
       ${kico('🛣️','#e6f4f2','สาย/สะพานที่มีงาน', `${codes.size} <small>รหัส</small>`, `${(100*codes.size/Math.max(1,ALL_CODES.length)).toFixed(0)}% ของบัญชี${hBld.length?` · งานอาคาร ${hBld.length}`:''}`)}
       ${kico('💰','#e9f6ee','วงเงินตามสัญญารวม', fmtM(tot), `${withAmt} รายการที่ระบุวงเงิน · เฉลี่ย ${fmtM(tot/Math.max(1,withAmt))}`)}
       ${kico('🛤️','#f0ecfa','ระยะทางถนนที่ทำ', `${fmt(+roadKm.toFixed(1))} <small>กม.</small>`, `ก่อสร้าง ${fmt(+cls['ก่อสร้าง'].km.toFixed(1))} · ขยาย ${fmt(+cls['ขยาย'].km.toFixed(1))} · บำรุง ${fmt(+cls['บำรุง'].km.toFixed(1))} กม.`)}
@@ -8310,26 +8335,27 @@ function renderYearly(){
         <div class="worktile" style="background:#f0ecfa"><div class="wico">🏢</div><div style="min-width:0"><div class="wval">${hBld.length||'—'}${hBld.length?' <small>งาน</small>':''}</div><div class="wlbl">งานอาคาร</div><div class="wfoot">${hBld.length?fmtM(sum(hBld,x=>x.amount)):'—'}</div></div></div>
       </div>
     </div>
+    <!-- v31.8 ผู้ใช้เรียงใหม่: หน่วยดำเนินการ · ชนิดงบ · หมวด · กิจกรรม · เขต · ลำดับสูงสุด -->
     <div class="grid two">
-      <div class="card"><h3>กิจกรรมที่ทำปีนี้</h3><div class="note">ล้านบาท — ชี้เพื่อดูจำนวนสัญญา</div><div id="yrAct"></div></div>
-      <div class="card"><h3>วงเงินแยกตามชนิดงบ</h3><div class="note">ล้านบาท — ชี้ที่แท่งเพื่อดูจำนวนสัญญาและ % ของปี</div><div id="yrType"></div></div>
+      <div class="card"><h3>หน่วยดำเนินการ</h3><div class="note">ล้านบาท — คลิกแท่งเพื่อกรองเฉพาะหน่วยนั้น คลิกซ้ำเพื่อดูทุกหน่วย</div><div id="yrAgency"></div></div>
+      <div class="card"><h3>วงเงินแยกตามชนิดงบ</h3><div class="note">ล้านบาท — ชี้ที่แท่งเพื่อดูจำนวนโครงการและ % ของปี</div><div id="yrType"></div></div>
     </div>
     <div class="grid two" style="margin-top:14px">
       <div class="card"><h3>วงเงินแยกตามหมวดบำรุงทาง</h3><div class="note">ล้านบาท — หมวดของสายที่ทำ · แขวงฯ = งานที่ไม่ผูกสาย</div><div id="yrMuad"></div></div>
-      <div class="card"><h3>จำแนกตามเขตเลือกตั้ง</h3><div class="note">ล้านบาท — ตามช่วง กม. ที่ทำจริง · "ไม่ระบุ" = สัญญาที่ระบุตำแหน่งไม่ได้</div><div id="yrZone"></div></div>
+      <div class="card"><h3>กิจกรรมที่ทำปีนี้</h3><div class="note">ล้านบาท — ชี้เพื่อดูจำนวนโครงการ</div><div id="yrAct"></div></div>
     </div>
     <div class="grid two" style="margin-top:14px">
+      <div class="card"><h3>จำแนกตามเขตเลือกตั้ง</h3><div class="note">ล้านบาท — "ไม่ระบุ" = ระบุตำแหน่งไม่ได้</div><div id="yrZone"></div></div>
       <div class="card"><h3>สายทางที่ได้งบสูงสุดปีนี้ (Top 10)</h3><div class="note">ล้านบาท — คลิกเพื่อเปิดสรุปรายสาย</div><div id="yrTopRoad"></div></div>
-      <div class="card"><h3>หน่วยดำเนินการ</h3><div class="note">ล้านบาท — คลิกแท่งเพื่อกรองเฉพาะหน่วยนั้น คลิกซ้ำเพื่อดูทุกหน่วย</div><div id="yrAgency"></div></div>
     </div>
     <div class="card" style="margin-top:14px"><h3>ผู้รับจ้างปีนี้ (Top 10)</h3><div class="note">ล้านบาท — ชี้เพื่อดูจำนวนสัญญา</div><div id="yrContractor"></div></div>
     <div class="card" style="margin-top:14px">
-      <h3>ช่วงเวลาสัญญาปีงบ ${y}</h3>
+      <h3>ช่วงเวลาดำเนินโครงการ ปีงบ ${y}</h3>
       <div class="note">แถบ = ช่วงสัญญา · เส้นแดง = วันนี้ · จุดแดงท้ายแถบ = หมดสัญญาแล้วยังไม่ส่งงาน · คลิกเพื่อเปิดในแผนที่</div>
       <div id="yrGantt"></div>
     </div>`:''}
     <div class="card" style="margin-top:14px">
-      <h3>รายการสัญญาทั้งหมด ปีงบ ${y}${agLbl} (${H.length} รายการ)</h3>
+      <h3>รายการโครงการทั้งหมด ปีงบ ${y}${agLbl} (${H.length} โครงการ)</h3>
       <div class="note">คลิกแถวเพื่อเปิดสรุปรายสาย (One-Page) · คลิกหัวคอลัมน์เพื่อเรียง · แถวรวมอยู่ท้ายตาราง</div>
       <div class="tblwrap" style="max-height:560px"><table id="yrTable"><thead><tr>
         <th>รหัส</th><th>ชื่อสายทาง</th><th>หมวด</th><th>หน่วย</th><th>ชนิดงบ</th><th>กิจกรรม</th><th style="min-width:150px">ช่วง กม.</th><th>เลขที่สัญญา</th><th class="c">เริ่ม</th><th class="c">สิ้นสุด</th><th class="num">วงเงิน (บาท)</th><th class="c">ส่งงานงวดสุดท้าย</th>
@@ -8353,28 +8379,28 @@ function renderYearly(){
       const ks=Object.keys(byT).sort((a,b)=>byT[b].amt-byT[a].amt);
       const TC=btColorMap(ks);
       hbar('yrType', ks.map(k=>({label:k, v:+(byT[k].amt/1e6).toFixed(1), color:TC[k],
-        tip:`<b>${esc(k)}</b><br>${byT[k].n} สัญญา · ${fmt(byT[k].amt)} บาท · ${tot?(100*byT[k].amt/tot).toFixed(0):0}% ของปี`})), {unit:'ลบ.', labelW:120});
+        tip:`<b>${esc(k)}</b><br>${byT[k].n} โครงการ · ${fmt(byT[k].amt)} บาท · ${tot?(100*byT[k].amt/tot).toFixed(0):0}% ของปี`})), {unit:'ลบ.', labelW:120});
    },
    'หมวด': ()=>{
       if(!H.length) return;
       const ms=[...MUAD_ORDER,'แขวงฯ','ถ่ายโอน','ไม่ระบุ'].filter(m=>H.some(x=>recMuad(x)===m));
       hbar('yrMuad', ms.map(m=>{ const L=H.filter(x=>recMuad(x)===m), a=sum(L,x=>x.amount);
         return {label:recMuadLabel(m), v:+(a/1e6).toFixed(1), color:recMuadColor(m),
-          tip:`<b>${esc(recMuadLabel(m))}</b><br>${L.length} สัญญา · ${new Set(L.map(x=>x.code).filter(Boolean)).size} สาย · ${fmt(a)} บาท`}; }), {unit:'ลบ.', labelW:120});
+          tip:`<b>${esc(recMuadLabel(m))}</b><br>${L.length} โครงการ · ${new Set(L.map(x=>x.code).filter(Boolean)).size} สาย · ${fmt(a)} บาท`}; }), {unit:'ลบ.', labelW:120});
    },
    'สายได้งบสูงสุด': ()=>{
       if(!H.length) return;
       const byRd={}; H.forEach(x=>{ if(!x.code) return; byRd[x.code]=byRd[x.code]||{amt:0,n:0}; byRd[x.code].amt+=(x.amount||0); byRd[x.code].n++; });
       const top=Object.entries(byRd).sort((a,b)=>b[1].amt-a[1].amt).slice(0,10);
       lolli('yrTopRoad', top.map(([c,o])=>({label:c, v:+(o.amt/1e6).toFixed(1), color:muadColor(mB[c]),
-        tip:`${esc(info[c]?.name||'')}<br>${o.n} สัญญา · ${fmt(o.amt)} บาท · หมวด${esc(mB[c]||'-')}`})), {unit:'ลบ.', onClick:it=>gotoOnePage(it.label)});
+        tip:`${esc(info[c]?.name||'')}<br>${o.n} โครงการ · ${fmt(o.amt)} บาท · หมวด${esc(mB[c]||'-')}`})), {unit:'ลบ.', onClick:it=>gotoOnePage(it.label)});
    },
    'กิจกรรม': ()=>{
       if(!H.length) return;
       const byA={}; H.forEach(x=>{ const k=x.activity||'ไม่ระบุ'; byA[k]=byA[k]||{amt:0,n:0,bt:{}}; byA[k].amt+=(x.amount||0); byA[k].n++; byA[k].bt[x.budgetType]=(byA[k].bt[x.budgetType]||0)+(x.amount||0); });
       const top=Object.entries(byA).sort((a,b)=>b[1].amt-a[1].amt).slice(0,8);
       hbar('yrAct', top.map(([k,o])=>{ const dom=Object.entries(o.bt).sort((a,b)=>b[1]-a[1])[0]?.[0]||'';
-        return {label:k, v:+(o.amt/1e6).toFixed(1), color:btColor(dom)||C.teal, tip:`${fmt(o.amt)} บาท · ${o.n} สัญญา · ชนิดงบหลัก: ${esc(dom)||'-'}`}; }), {unit:'ลบ.', labelW:230});
+        return {label:k, v:+(o.amt/1e6).toFixed(1), color:btColor(dom)||C.teal, tip:`${fmt(o.amt)} บาท · ${o.n} โครงการ · ชนิดงบหลัก: ${esc(dom)||'-'}`}; }), {unit:'ลบ.', labelW:230});
    },
    'เขตเลือกตั้ง': ()=>{
       if(!H.length) return;
@@ -8383,7 +8409,7 @@ function renderYearly(){
         const k=z==null?'':String(z); const o=Z[k]||(Z[k]={n:0,amt:0}); o.n++; o.amt+=(x.amount||0); });
       const keys=Object.keys(Z).sort((a,b)=>(a===''?99:+a)-(b===''?99:+b));
       hbar('yrZone', keys.map(k=>({label:k?'เขต '+k:'ไม่ระบุ', v:+(Z[k].amt/1e6).toFixed(1), color:k?zoneColor(+k):'#9aa5a3',
-        tip:k?`<b>เขต ${k}</b> ${esc(KK_ZONES[k].mp)} · ${esc(KK_ZONES[k].party)}<br>${Z[k].n} สัญญา · ${fmtM(Z[k].amt)}`:`${Z[k].n} สัญญา · ${fmtM(Z[k].amt)}`})), {unit:'ลบ.', labelW:64});
+        tip:k?`<b>เขต ${k}</b> ${esc(KK_ZONES[k].mp)} · ${esc(KK_ZONES[k].party)}<br>${Z[k].n} โครงการ · ${fmtM(Z[k].amt)}`:`${Z[k].n} โครงการ · ${fmtM(Z[k].amt)}`})), {unit:'ลบ.', labelW:64});
    },
    'หน่วยดำเนินการ': ()=>{
       /* v31.4 ผู้ใช้: "ดูหน่วยดำเนินการด้วย" — คิดจากทั้งปี (ไม่ใช่เฉพาะหน่วยที่กรอง) เพื่อให้เห็นเทียบกันและคลิกสลับหน่วยได้ */
@@ -8392,16 +8418,16 @@ function renderYearly(){
       const us=Object.keys(byU).sort((a,b)=>byU[b].amt-byU[a].amt);
       const uColor=u=>u==='แขวงฯ'?C.navy:(u.startsWith('หมวด')?muadColor(u.replace('หมวด','')):'#9aa5a3');
       hbar('yrAgency', us.map(u=>({label:u, v:+(byU[u].amt/1e6).toFixed(1), color:uColor(u), k:u,
-        tip:`<b>${esc(u)}</b><br>${byU[u].n} สัญญา · ${fmt(byU[u].amt)} บาท${u===yrAgency?'<br><i>กำลังกรองหน่วยนี้อยู่ — คลิกอีกครั้งเพื่อดูทุกหน่วย</i>':'<br>คลิกเพื่อกรองเฉพาะหน่วยนี้'}`})),
+        tip:`<b>${esc(u)}</b><br>${byU[u].n} โครงการ · ${fmt(byU[u].amt)} บาท${u===yrAgency?'<br><i>กำลังกรองหน่วยนี้อยู่ — คลิกอีกครั้งเพื่อดูทุกหน่วย</i>':'<br>คลิกเพื่อกรองเฉพาะหน่วยนี้'}`})),
         {unit:'ลบ.', labelW:110, onClick:it=>{ yrAgency=(yrAgency===it.label)?'all':it.label; renderYearly(); }});
    },
    'ผู้รับจ้าง': ()=>{
       if(!H.length) return;
       const byC={}; H.forEach(x=>{ const k=(x.contractor||'').trim()||'ไม่ระบุ'; byC[k]=byC[k]||{amt:0,n:0}; byC[k].amt+=(x.amount||0); byC[k].n++; });
       const top=Object.entries(byC).sort((a,b)=>b[1].amt-a[1].amt).slice(0,10);
-      hbar('yrContractor', top.map(([k,o])=>({label:k.length>34?k.slice(0,33)+'…':k, v:+(o.amt/1e6).toFixed(1), color:C.navy, tip:`${esc(k)}<br>${o.n} สัญญา · ${fmt(o.amt)} บาท`})), {unit:'ลบ.', labelW:230});
+      hbar('yrContractor', top.map(([k,o])=>({label:k.length>34?k.slice(0,33)+'…':k, v:+(o.amt/1e6).toFixed(1), color:C.navy, tip:`${esc(k)}<br>${o.n} โครงการ · ${fmt(o.amt)} บาท`})), {unit:'ลบ.', labelW:230});
    },
-   'ช่วงเวลาสัญญา': ()=>{
+   'ช่วงเวลาโครงการ': ()=>{
       const gb=document.getElementById('yrGantt'); if(!gb) return;
       const DAY=864e5;
       const rows=H.map(x=>{ const a=parseThaiDate(x.start), b=parseThaiDate(x.end); if(!b) return null;
@@ -8415,10 +8441,10 @@ function renderYearly(){
         tip:`<b>${esc(g.x.code||'ไม่ระบุสาย')}</b> ${esc(String(g.x.activity||'').slice(0,28))}<br>สัญญา ${esc(g.x.contract||'-')}<br>${g.noStart?'<i>ไม่ระบุวันเริ่ม</i>':esc(g.x.start)} – ${esc(g.x.end)}<br>วงเงิน ${g.x.amount?fmtM(g.x.amount):'-'}`+
             (g.x.delivered?`<br>ส่งงานงวดสุดท้าย ${esc(g.x.delivered)}`:(g.tb<now?'<br><b style="color:#ff9b9b">หมดสัญญาแล้ว ยังไม่มีวันส่งงาน</b>':''))})), {onClick:r=>goMap(r.code)});
       const fn=document.createElement('div'); fn.className='footnote'; fn.style.marginTop='6px';
-      fn.textContent=(rows.length>GMAX?`แถบแสดง ${GMAX} จาก ${rows.length} สัญญาที่ระบุวันสิ้นสุด`:`ครบทุกสัญญาที่ระบุวันสิ้นสุด ${rows.length} รายการ`)+(noDate?` · ไม่ระบุวันสิ้นสุด ${noDate} รายการ (อยู่ในตารางด้านล่าง)`:'');
+      fn.textContent=(rows.length>GMAX?`แถบแสดง ${GMAX} จาก ${rows.length} โครงการที่ระบุวันสิ้นสุด`:`ครบทุกโครงการที่ระบุวันสิ้นสุด ${rows.length} รายการ`)+(noDate?` · ไม่ระบุวันสิ้นสุด ${noDate} รายการ (อยู่ในตารางด้านล่าง)`:'');
       gb.appendChild(fn);
    },
-   'ตารางสัญญา': ()=>{
+   'ตารางโครงการ': ()=>{
       const tb=document.querySelector('#yrTable tbody'); if(!tb) return;
       const L=[...H].sort((a,b)=>(b.amount||0)-(a.amount||0));
       tb.innerHTML=L.map(x=>{ const r=x.code?info[x.code]:null;
@@ -8428,7 +8454,7 @@ function renderYearly(){
           `<td style="white-space:nowrap">${esc(normCat(x.budgetType))}</td><td style="white-space:nowrap">${esc(x.activity||'—')}</td><td style="white-space:normal;max-width:210px;font-size:11.5px;line-height:1.35">${esc((x.kmRange||'—').replace(/,\s*/g,'\n')).replace(/\n/g,'<br>')}</td><td style="white-space:nowrap">${esc(x.contract||'—')}</td>`+
           `<td class="c">${esc(x.start||'—')}</td><td class="c">${esc(x.end||'—')}</td><td class="num">${x.amount?fmt(x.amount):'—'}</td>`+
           `<td class="c">${x.delivered?esc(x.delivered):'<span style="color:var(--muted)">ยังไม่ส่ง</span>'}</td></tr>`; }).join('')+
-        `<tr style="background:var(--teal-soft);font-weight:700"><td>รวม</td><td>${codes.size} สาย/สะพาน</td><td></td><td></td><td></td><td>${H.length} สัญญา</td><td></td><td></td><td></td><td></td><td class="num">${fmt(tot)}</td><td class="c">${delivered}/${H.length}</td></tr>`;
+        `<tr style="background:var(--teal-soft);font-weight:700"><td>รวม</td><td>${codes.size} สาย/สะพาน</td><td></td><td></td><td></td><td>${H.length} โครงการ</td><td></td><td></td><td></td><td></td><td class="num">${fmt(tot)}</td><td class="c">${delivered}/${H.length}</td></tr>`;
       tb.querySelectorAll('tr[data-code]').forEach(tr=>tr.addEventListener('click',()=>gotoOnePage(tr.dataset.code)));
    },
    'เช็คคำขอ': ()=>renderGap()   // v31.4 ส่วนล่างของหน้า — ใช้ตัววาดเดิมของหน้าเช็คคำขอ ปี = yrPick
@@ -8436,8 +8462,8 @@ function renderYearly(){
   Object.keys(CARDS).forEach(k=>safeRun('โครงการประจำปี · '+k, CARDS[k]));
   renderYearly.cards=CARDS;
   const pills=document.getElementById('yrPills');
-  if(pills) pills.innerHTML=`<span class="hpill"><span class="dot live"></span> ประวัติสัญญา ${hy.length} ปี (${hy[0]}–${hy[hy.length-1]})</span>`+
-    `<span class="hpill">▣ ปีงบ ${y}${agLbl} · ${H.length} สัญญา · ${codes.size} สาย/สะพาน</span>`+
+  if(pills) pills.innerHTML=`<span class="hpill"><span class="dot live"></span> ประวัติโครงการ ${hy.length} ปี (${hy[0]}–${hy[hy.length-1]})</span>`+
+    `<span class="hpill">▣ ปีงบ ${y}${agLbl} · ${H.length} โครงการ · ${codes.size} สาย/สะพาน</span>`+
     `<span class="hpill">💰 ${fmtM(tot)}</span>`+
     (typeof reqData!=='undefined'&&reqData?`<span class="hpill">⇄ คำขอปีนี้ ${reqData.filter(r=>r.year===y).length} รายการ</span>`:`<span class="hpill"><span class="dot wait"></span> รอคำของบ</span>`);
   enhanceSoon();
