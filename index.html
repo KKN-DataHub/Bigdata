@@ -89,6 +89,7 @@ body{font-family:'Sarabun',Tahoma,'Segoe UI',system-ui,sans-serif;background:var
 .hpill .dot.live{background:#3ddc7d;animation:pulse 2s infinite}
 .hpill .dot.snap{background:#7fb2ff}
 .hpill .dot.wait{background:#f7c948}
+.hpill.warn{background:rgba(247,201,72,.22);border-color:rgba(247,201,72,.6);color:#ffe9a8;white-space:normal} /* v31.2 เตือนหัวคอลัมน์ชีทไม่ตรงแบบ */
 .hpill .dot.err{background:#ff7d6b}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(61,220,125,.5)}70%{box-shadow:0 0 0 6px rgba(61,220,125,0)}100%{box-shadow:0 0 0 0 rgba(61,220,125,0)}}
 .pgh-right{display:flex;gap:8px;align-items:flex-start;flex:none;margin-left:auto;position:relative;z-index:2}
@@ -217,6 +218,14 @@ body{font-family:'Sarabun',Tahoma,'Segoe UI',system-ui,sans-serif;background:var
   .kpill .kic{flex:0 0 38px;width:38px;height:38px;font-size:17px}
   .kpill .val{font-size:17px}
   .kpi .val{font-size:19px}
+  /* v31.3 การ์ด KPI 2 คอลัมน์บนมือถือ: ไอคอน 38px + ช่องว่าง 12px กินไป 1/3 ของการ์ด ตัวเลข "4,045.3 ลบ." เลยหักบรรทัด
+     → ไอคอนย่อเหลือ 28px ชิดขวาบน ข้อความได้เต็มความกว้าง · บรรทัดเทียบปีให้ขึ้นบรรทัดใหม่ได้ */
+  .kpi.iko{display:block;position:relative}
+  .kpi.iko .kico{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:8px;font-size:14px}
+  .kpi.iko>div:not(.kico){min-width:0}
+  .kpi.iko .lbl{padding-right:34px}
+  .kpi .kdelta{flex-wrap:wrap;row-gap:0}
+  .kpi .lbl{line-height:1.25}
   .tblwrap{overflow-x:auto}
   .tblwrap table{min-width:620px}
   .stripwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
@@ -441,6 +450,19 @@ select.search{width:auto}
 .surfbox .sval small{font-size:11px;font-weight:400;color:var(--ink2);margin-left:3px}
 .surfbox .sfoot{font-size:10.5px;color:var(--muted);margin-top:1px;line-height:1.35}   /* v30.0 ปล่อยให้ขึ้นบรรทัดใหม่ได้ — กล่องแคบแล้ว "93 สาย" เคยถูกตัดเป็น "93…" */
 .surfbox.zero{opacity:.62}
+/* v31.2 กล่องชนิดงบในหน้าคำของบ (ต่อยอดจาก surfbox) */
+.catgrid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;margin-top:12px}
+/* v31.4 หัวส่วนในหน้าโครงการประจำปี (① สรุปปี · ② เช็คคำขอ) */
+.secdiv{margin:6px 0 12px;padding-left:2px} .secdiv h2{font-size:17px;margin:0 0 3px;color:var(--navy)} #gapBody .secdiv{margin-top:22px;padding-top:14px;border-top:2px dashed var(--grid)}
+.catbox .cdot{flex:none;width:10px;height:10px;border-radius:50%}
+.catbox .sname{font-size:12px;white-space:normal;line-height:1.25}
+.catbox .sval{font-size:22px}
+.catbox .camt{font-size:15px;font-weight:700;color:var(--teal);font-variant-numeric:tabular-nums;line-height:1.3;margin-top:2px}
+.msw{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:0}   /* v31.6 กฎ 20 สี่เหลี่ยมสีหมวดในตาราง */
+.catbar{height:26px;border-radius:7px;margin-top:8px}
+.catbar span{display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;letter-spacing:.2px;text-shadow:0 1px 2px rgba(0,0,0,.55);overflow:hidden;white-space:nowrap;min-width:0}
+.catgrid-s{grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:7px}
+.catgrid-s .catbox .sval{font-size:18px} .catgrid-s .catbox .camt{font-size:13px} .catgrid-s .catbox .sname{font-size:11px}
 .onelg i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
 .chip-none{color:var(--muted);border-style:dashed;background:transparent}
 .chip{font-size:11.5px;color:var(--ink2);border:1px solid var(--grid);border-radius:99px;padding:3px 11px;background:#fff}
@@ -609,9 +631,10 @@ select.search{width:auto}
   .pgh-ico{display:none}
   .pghero h2{font-size:17px}
   .pghero .desc{font-size:11.5px}
-  .pillrow{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
-  .pillrow::-webkit-scrollbar{display:none}
-  .pillrow .pill,.pillrow .hpill{flex:none}
+  /* v31.3 ผู้ใช้ (7 ก.ย. 69 ภาพมือถือ): "ข้อมูลล้น" — ป้ายสถิติเคยเลื่อนแนวนอนแบบไม่มีสัญญาณบอก ป้ายที่ 3 ถูกตัดกลางคำ
+     ตอนนี้ให้ขึ้นบรรทัดใหม่ (หัวหน้าสูงขึ้นนิดแต่เห็นครบ) · หน้าแผนที่ยังเลื่อนแนวนอน (กฎ 17 หัวหน้าซ่อนอยู่แล้ว) */
+  .pillrow{flex-wrap:wrap;gap:6px}
+  .pillrow .pill,.pillrow .hpill{flex:none;max-width:100%;white-space:normal;line-height:1.3}
   .pgh-right{width:100%;margin-top:9px}
   .pgh-right .hbtn{flex:1 1 auto;font-size:11.5px;padding:7px 10px;justify-content:center}
   .card{padding:12px 12px}
@@ -965,7 +988,11 @@ body.cmdopen .cmdbd{display:flex}
     box-shadow:0 6px 20px rgba(16,24,40,.26)}
   .brand h1{font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
   .brand .ver{display:none}                      /* เวอร์ชันย้ายไปอยู่ในชิปสถานะ */
-  .themesw{display:none}                         /* v31.0 จอแคบเลือกชุดสีที่หน้าข้อมูลระบบ */
+  .brand .themesw{display:none}                  /* v31.0 จอแคบ: จุดสีในแถบชื่อซ่อน · v31.3 ย้ายไปอยู่ในเมนู "เพิ่มเติม" (ผู้ใช้: "มือถือเลือกสียังไง") */
+  .moresheet .themesw{display:flex;margin:12px 2px 2px;gap:10px;padding-top:10px;border-top:1px solid var(--grid)}
+  .moresheet .themesw .tl{font-size:12px;font-weight:700;color:var(--navy);margin-right:4px}
+  .moresheet .themesw button{width:24px;height:24px;border:2px solid rgba(0,0,0,.12)}
+  .moresheet .themesw button.on{border-color:var(--navy);box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--navy)}
   .appstat{display:inline-flex;align-items:center;gap:6px;flex:none;
     font-size:10.5px;font-weight:700;color:#cdd9f0;
     background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);
@@ -1112,10 +1139,10 @@ try{ const t=localStorage.getItem('drr_theme'); if(t&&t!=='default') document.do
       <button data-page="overview" class="active"><span class="ico">▦</span> ภาพรวมโครงข่าย</button>
       <button data-page="map"><span class="ico">◈</span> แผนที่สายทาง</button>
       <button data-page="history"><span class="ico">▤</span> ประวัติสายทาง</button>
-      <button data-page="decide"><span class="ico">◎</span> วิเคราะห์ตัดสินใจ</button>
+      <button data-page="yearly"><span class="ico">▣</span> โครงการประจำปี</button>
       <button data-page="requests"><span class="ico">▥</span> คำของบประมาณ</button>
-      <button data-page="gap"><span class="ico">⇄</span> เช็คคำขอ</button>
       <button data-page="zerobase"><span class="ico">◪</span> Zerobase</button>
+      <button data-page="decide"><span class="ico">◎</span> วิเคราะห์ตัดสินใจ</button><!-- v31.4 ผู้ใช้เลือก: อยู่หลังคำของบ = ขั้น "แล้วควรขออะไรก่อน" -->
       <button data-page="risk"><span class="ico">⚠</span> จุดเสี่ยงอันตราย</button>
       <button data-page="equip"><span class="ico">🔌</span> Equipment</button>
       <button data-page="routine"><span class="ico">🔧</span> งานบำรุงปกติ</button>
@@ -1263,16 +1290,6 @@ try{ const t=localStorage.getItem('drr_theme'); if(t&&t!=='default') document.do
     </section>
 
     <!-- ============ PAGE: ZEROBASE ============ -->
-    <section class="page" id="pg-gap">
-      <div class="pghero">
-        <div class="pgh-left"><div class="pgh-ico">⇄</div>
-          <div><h2>เช็คคำขอ — ขอไปเท่าไหร่ ได้จริงเท่าไหร่</h2><div class="desc">คำของบรายปี เทียบกับสัญญาจริงในประวัติสายทาง — ดูว่าแต่ละปี แต่ละชนิดงบ ขอไปเท่าไหร่ ได้เท่าไหร่ · จำแนกชนิดงบ / หมวด / เขตเลือกตั้ง</div>
-            <div class="pillrow" id="gapPills"><span class="hpill"><span class="dot wait"></span> กำลังดึงข้อมูล…</span></div></div>
-        </div>
-        <div class="pgh-right"><button class="hbtn" onclick="reloadPage()">⟳ โหลดข้อมูลใหม่</button><button class="hbtn" onclick="exportCSV()">⬇ CSV</button><button class="hbtn" onclick="printPage()">🖨 พิมพ์</button></div>
-      </div>
-      <div id="gapBody"><div class="loading"><span class="spin"></span>กำลังเทียบคำของบกับประวัติสายทาง…</div></div>
-    </section>
     <section class="page" id="pg-zerobase">
       <div class="pghero">
         <div class="pgh-left"><div class="pgh-ico">◪</div>
@@ -1365,7 +1382,7 @@ try{ const t=localStorage.getItem('drr_theme'); if(t&&t!=='default') document.do
         <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start">
           <div><h3>③¾ สายที่ขอบ่อยแต่ยังไม่ได้</h3>
             <div class="note" style="margin:0">แท่ง = วงเงินที่ขอแล้วไม่ได้ (ลบ.) · แดง = พลาดมากกว่า 1 ปี · เรียงตามจำนวนปีที่พลาด · ชี้เพื่อดูรายละเอียด คลิกเพื่อเปิดในแผนที่</div></div>
-          <button class="btn ghost" onclick="document.querySelector('.nav button[data-page=gap]').click()">⇄ ดูทั้งหมดในหน้าเช็คคำขอ</button>
+          <button class="btn ghost" onclick="document.querySelector('.nav button[data-page=yearly]').click();setTimeout(()=>document.getElementById('gapBody')?.scrollIntoView({behavior:'smooth'}),400)">⇄ ดูทั้งหมดในหน้าโครงการประจำปี</button>
         </div>
         <div id="dcStuck"></div>
       </div>
@@ -1374,6 +1391,17 @@ try{ const t=localStorage.getItem('drr_theme'); if(t&&t!=='default') document.do
         <div class="card fillcol"><h3>⑤ ข้อเสนอแนะ</h3><div class="note">แปลตัวเลขเป็นสิ่งที่ทำได้จริง</div><div id="dcRecs"></div></div>
       </div>
       <div class="footnote">หน้านี้สรุปจากบัญชีสายทาง · ประวัติโครงการ · คำของบ · Zerobase · จุดเสี่ยง ที่มีอยู่แล้ว — ไม่มีข้อมูลชุดใหม่</div>
+    </section>
+<!-- ============ PAGE: YEARLY (v31.2) — โครงการประจำปี: ประวัติสัญญาแยกรายปี "ปีนี้มีสายไหน ทำอะไรบ้าง" ============ -->
+    <section class="page" id="pg-yearly">
+      <div class="pghero">
+        <div class="pgh-left"><div class="pgh-ico">▣</div>
+          <div><h2>โครงการประจำปี</h2><div class="desc">สัญญาจริงจากประวัติสายทาง แยกตามปีงบประมาณ — ปีนี้มีสายไหน ทำอะไร วงเงินเท่าไหร่ ถึงไหนแล้ว</div>
+            <div class="pillrow" id="yrPills"><span class="hpill"><span class="dot wait"></span> กำลังดึงข้อมูล…</span></div></div>
+        </div>
+        <div class="pgh-right"><button class="hbtn" onclick="copyViewLink()" title="คัดลอกลิงก์ที่เปิดแล้วเห็นมุมมองนี้เป๊ะ">🔗 แชร์มุมมอง</button><button class="hbtn" onclick="reloadPage()">⟳ โหลดข้อมูลใหม่</button><button class="hbtn" onclick="exportCSV()">⬇ CSV</button><button class="hbtn" onclick="printPage()">🖨 พิมพ์</button></div>
+      </div>
+      <div id="yrBody"><div class="loading"><span class="spin"></span>กำลังดึงประวัติสายทาง…</div></div>
     </section>
 
     <!-- ============ PAGE: SYSTEM ============ -->
@@ -1502,9 +1530,12 @@ function applyTheme(id, opt){
   }
 }
 function buildThemeSwitch(){
-  const host=document.getElementById('themeSw'); if(!host) return;
-  host.innerHTML='<span class="tl">ชุดสี</span>'+THEMES.map(t=>`<button type="button" data-theme="${t.id}" title="${t.name}" aria-label="ชุดสี ${t.name}" style="--sw:${t.sw}"></button>`).join('');
-  host.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>applyTheme(b.dataset.theme)));
+  /* v31.3 สร้างได้หลายที่: แถบชื่อ (จอกว้าง) + เมนูเพิ่มเติม (มือถือ) — ปุ่มชุดเดียวกัน applyTheme ติ๊ก .on ให้ทุกชุด */
+  const hosts=['themeSw','themeSwM'].map(id=>document.getElementById(id)).filter(Boolean); if(!hosts.length) return;
+  hosts.forEach(host=>{
+    host.innerHTML='<span class="tl">ชุดสี</span>'+THEMES.map(t=>`<button type="button" data-theme="${t.id}" title="${t.name}" aria-label="ชุดสี ${t.name}" style="--sw:${t.sw}"></button>`).join('');
+    host.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>applyTheme(b.dataset.theme)));
+  });
   applyTheme(curTheme(), {silent:true});
 }
 const YEAR_PALETTE=['#0d9488','#2a78d6','#d9a441','#4a3aa7','#008300','#0891b2','#a16207','#7c3aed','#c2410c','#0e7490','#6b7280'];
@@ -1693,15 +1724,18 @@ function heat(container, rowLabels, colLabels, matrix, {unit='', fmtV=fmt, onCli
 }
 
 /* ③ Bullet — ค่าจริงเทียบเป้า เห็นทันทีว่าถึงหรือไม่ถึง (แทนเกจวัด กินที่น้อยกว่า บอกมากกว่า) */
-function bullet(container, rows, {height=null, tgtText='เป้า'}={}){
+function bullet(container, rows, {height=null, tgtText='เป้า', total=null}={}){
   const box=document.getElementById(container); if(!box) return; box.innerHTML=''; box.__rows=rows;
-  box.__fit=h=>bullet(container, rows, {tgtText, height:Math.max(40,Math.min(80,(h-8)/Math.max(1,rows.length)))});   // กฎ 16
+  box.__fit=h=>bullet(container, rows, {tgtText, height:Math.max(40,Math.min(80,(h-8)/Math.max(1,rows.length))), total:h});   // กฎ 16
   const W=box.clientWidth||460, lw=Math.min(150,Math.max(96,W*0.30)), padR=70, rowH=height||46;
-  const H=rows.length*rowH+8, pw=W-lw-padR;
+  /* v31.4 กฎ 16: แถวน้อยยืดได้ไม่เกิน 80px/แถว — ส่วนที่เหลือจัดกึ่งกลางแนวตั้ง */
+  const natural=rows.length*rowH+8;
+  const off=(total&&total>natural)?Math.floor((total-natural)/2):0;
+  const H=(total&&total>natural)?total:natural, pw=W-lw-padR;
   const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:'100%',height:H},box);
   const sameTgt=rows.every(r=>r.target===rows[0].target);
   rows.forEach((r,i)=>{
-    const y=8+i*rowH, mx=r.max||100, ok=r.v>=r.target;
+    const y=8+off+i*rowH, mx=r.max||100, ok=r.v>=r.target;
     const col=ok?'#0ca30c':(r.v>=r.target*0.75?C.gold:C.crit);
     el('text',{class:'cattext',x:0,y:y+9},svg).textContent=r.label;
     el('rect',{x:lw,y:y+2,width:pw,height:16,rx:8,fill:'#eeede7'},svg);
@@ -2204,9 +2238,11 @@ function donut(container, slices, {unit='กม.', height=280}={}){
 function hstack(container, rows, segsOrder, {unit='คำขอ', labelW=112, onClick=null, rightW=14, showRight=false, height=null}={}){
   const box=document.getElementById(container); box.innerHTML=''; box.__rows=rows;
   box.__fit=h=>hstack(container, rows, segsOrder, {unit,labelW,onClick,rightW,showRight,height:h});   // กฎ 16
-  const W=box.clientWidth||560, padT=6, legH=30;
-  const rowH=height?Math.max(28,Math.min(52,(height-padT-6-legH)/Math.max(1,rows.length))):34;
-  const H=rows.length*rowH+padT+6;
+  const W=box.clientWidth||560, legH=30;
+  const rowH=height?Math.max(28,Math.min(52,(height-6-6-legH)/Math.max(1,rows.length))):34;
+  /* v31.4 กฎ 16: แถวน้อย (เช่น 2 กิจกรรม) ยืดแถวได้ไม่เกิน 52px — ที่เหลือจัดกึ่งกลางแนวตั้งแทนที่จะทิ้งไว้ท้ายการ์ด */
+  const natural=rows.length*rowH+12, padT=6+(height&&height-legH>natural?Math.floor((height-legH-natural)/2):0);
+  const H=(height&&height-legH>natural)?height-legH:rows.length*rowH+padT+6;
   const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:'100%',height:H},box);
   const max=Math.max(...rows.map(r=>segsOrder.reduce((a,s)=>a+(r.segs[s.k]||0),0)),0.0001);
   const plotW=W-labelW-rightW;
@@ -2716,6 +2752,7 @@ const NAV_SVG={
   equip:    SVGI('<path d="M13.4 2.6 4.6 13.4h6.2l-1.2 8 8.8-10.8h-6.2l1.2-8Z"/>'),
   routine:  SVGI('<path d="M14.8 6.2a4.1 4.1 0 0 0 5.4 5.4l-8.1 8.1a2.6 2.6 0 0 1-3.7-3.7l8.1-8.1Z"/><path d="M16.4 4.6 19.4 7.6"/>'),
   system:   SVGI('<circle cx="12" cy="12" r="3.1"/><path d="M19.6 14.6a1.6 1.6 0 0 0 .3 1.8l.1.1a1.9 1.9 0 1 1-2.7 2.7l-.1-.1a1.6 1.6 0 0 0-2.7 1.1v.3a1.9 1.9 0 1 1-3.8 0v-.2a1.6 1.6 0 0 0-2.8-1.1l-.1.1a1.9 1.9 0 1 1-2.7-2.7l.1-.1a1.6 1.6 0 0 0-1.1-2.7h-.3a1.9 1.9 0 0 1 0-3.8h.2a1.6 1.6 0 0 0 1.1-2.8l-.1-.1a1.9 1.9 0 1 1 2.7-2.7l.1.1a1.6 1.6 0 0 0 1.8.3h.1a1.6 1.6 0 0 0 1-1.5v-.3a1.9 1.9 0 1 1 3.8 0v.2a1.6 1.6 0 0 0 2.7 1.1l.1-.1a1.9 1.9 0 1 1 2.7 2.7l-.1.1a1.6 1.6 0 0 0-.3 1.8v.1a1.6 1.6 0 0 0 1.5 1h.3a1.9 1.9 0 1 1 0 3.8h-.2a1.6 1.6 0 0 0-1.5 1Z"/>'),
+  yearly:   SVGI('<rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M8 14h3"/><path d="M13 14h3"/><path d="M8 17.5h3"/>'),
   decide:   SVGI('<circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="3.4"/><path d="M12 1.9v3"/><path d="M12 19.1v3"/><path d="M1.9 12h3"/><path d="M19.1 12h3"/>'),
   more:     SVGI('<circle cx="5.2" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="18.8" cy="12" r="1.7"/>'),
   share:    SVGI('<path d="M10.6 13.4a4 4 0 0 0 6 .4l2.4-2.4a4 4 0 0 0-5.7-5.7l-1.4 1.4"/><path d="M13.4 10.6a4 4 0 0 0-6-.4L5 12.6a4 4 0 0 0 5.7 5.7l1.4-1.4"/>'),
@@ -2755,7 +2792,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.1', APP_DATE='7 ก.ย. 2569';
+const APP_VER='v31.6', APP_DATE='7 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -2784,20 +2821,18 @@ const PAGES=[
            risk   :()=>renderDecide(), cond    :()=>renderDecide() },
                                              redraw:()=>renderDecide(),
                                              csv:['dcRankTable','สายทางที่ควรได้งบก่อน']},
+  /* v31.2 — โครงการประจำปี: แหล่งเดียว (ประวัติสัญญา) แยกดูทีละปี — ผู้ใช้ 7 ก.ย. 69 */
+  /* v31.4 ผู้ใช้: "เอาหน้าเช็คคำขอไปรวมกับโครงการประจำปี" — หน้านี้จึงใช้ 2 แหล่ง (ประวัติ + คำของบ)
+     ครึ่งบน = สรุปปี (ประวัติอย่างเดียว) วาดได้ทันทีที่ประวัติมา · ครึ่งล่าง = เช็คคำขอ รอครบ 2 แหล่ง (กฎ 3) */
+  {id:'yearly',   enter:()=>{ loadHistory(); loadRequests(); },   body:'yrBody',                 retry:()=>{ loadHistory(true); loadRequests(true); },
+   needs:{ history:()=>renderYearly(), requests:()=>renderYearly() },     redraw:()=>renderYearly(),
+                                             reload:()=>{ histData=null; reqData=null; loadHistory(true); loadRequests(true); },
+                                             msg:'กำลังดึงประวัติสายทางและคำของบใหม่…',
+                                             csv:['yrTable','โครงการประจำปี']},
   {id:'requests', enter:()=>loadRequests(),  body:'reqBody',                                       retry:()=>loadRequests(true),
    needs:{ requests:()=>renderRequests() },  csv:['reqSrcTable','สรุปคำของบตามแหล่งงบ']},
   {id:'zerobase', enter:()=>loadZerobase(),  body:'zbBody',                                        retry:()=>loadZerobase(true),
    needs:{ zerobase:()=>renderZerobase() },  csv:['zbRoadTable','Zerobase รายสาย']},
-  /* v29.8 — หน้า "เช็คคำขอ": คำของบ (แผน) เทียบกับสัญญาจริงในประวัติสายทาง
-     Zerobase เป็นข้อมูลดิบ ไม่เอามาเทียบ (ผู้ใช้กำหนด 30 ส.ค. 69)
-     ใช้ 2 แหล่ง จึงประกาศ needs ทั้งคู่ แล้วให้ตัวจัดการกลางวาดเมื่อครบ (กฎ 3) */
-  {id:'gap',      enter:()=>{ loadRequests(); loadHistory(); },
-   body:'gapBody', retry:()=>{ loadRequests(true); loadHistory(true); },
-   needs:{ requests:()=>renderGap(), history:()=>renderGap() },
-   redraw:()=>renderGap(),
-   reload:()=>{ reqData=null; histData=null; loadRequests(true); loadHistory(true); },
-   msg:'กำลังดึงคำของบและประวัติสายทางใหม่…',
-   csv:['gapTable','เช็คคำขอ รายสาย']},
   {id:'risk',     enter:()=>loadRisk(),      body:'riskBody',                                      retry:()=>loadRisk(true),
    needs:{ risk:()=>renderRisk() },          reload:()=>{ riskData=null; loadRisk(true); },
                                              csv:['riskRoadTable','จุดเสี่ยงรายสาย']},
@@ -3079,7 +3114,7 @@ function buildTabBar(){
   const sh=document.createElement('div'); sh.className='moresheet'; sh.id='moreSheet';
   sh.innerHTML=`<div class="grip"></div><h4>เมนูทั้งหมด</h4><div class="moregrid">`+
     all.map(p=>`<button data-go="${p}"><span class="mico">${NAV_SVG[p]||NAV_SVG.more}</span>${esc(navLabel(p))}</button>`).join('')+
-    `</div>`;
+    `</div><div class="themesw" id="themeSwM"></div>`;   /* v31.3 จุดสีในเมนูเพิ่มเติม (มือถือ) */
   document.body.appendChild(sh);
 
   const closeMore=()=>document.body.classList.remove('moreopen');
@@ -3957,7 +3992,7 @@ function renderDcStuck(){
   box.innerHTML=`<div class="chips" style="margin:6px 0 8px"><span class="pill bad">ค้าง ${S.length} สาย</span>`+
       `<span class="chip">วงเงินที่ขอแล้วไม่ได้รวม ${fmtM(S.reduce((a,o)=>a+o.missAmt,0))}</span>`+
       `<span class="chip">คำขอ ${M.years.length} ปี: ${M.years.join(' · ')}</span></div><div id="chDcStuck"></div>`+
-    (S.length>top.length?`<div class="footnote">แสดง 10 อันดับแรกจาก ${S.length} สาย — ครบทุกสายในหน้าเช็คคำขอ</div>`:'');
+    (S.length>top.length?`<div class="footnote">แสดง 10 อันดับแรกจาก ${S.length} สาย — ครบทุกสายในหน้าโครงการประจำปี (ส่วนเช็คคำขอ)</div>`:'');
   hbar('chDcStuck', top.map(o=>({label:`${o.code} · พลาด ${o.nMiss} ปี`, v:+(o.missAmt/1e6).toFixed(1), color:o.nMiss>1?'#e34948':C.gold, code:o.code,
       tip:`<b>${esc(o.code)}</b> ${esc(String(o.name||'').slice(0,40))}<br>หมวด${esc(o.muad)} · เขต ${o.zone||'—'}<br>ขอ ${o.nAsk} ปี · ได้ ${o.nOk} ปี · พลาด ${o.nMiss} ปี (${o.yrs.join(' · ')})<br>ชนิดงบที่ค้าง: ${esc(o.catTxt)}<br>วงเงินที่ไม่ได้ ${fmtM(o.missAmt)}`})),
     {unit:'ลบ.', labelW:150, onClick:r=>{ const b=document.querySelector('.nav button[data-page="map"]'); if(b) b.click();
@@ -4096,9 +4131,9 @@ function renderDcRank(rows,act){
     </tr></thead><tbody>${top.map((r,i)=>`
       <tr data-code="${esc(r.code)}" style="cursor:pointer" title="คลิกเพื่อเปิดในแผนที่">
         <td><span class="rk-badge${i<3?' top':''}">${i+1}</span></td>
-        <td><b>${esc(r.code)}</b> <span style="font-size:11px;color:var(--ink2)">${esc((r.name||'').slice(0,38))}</span>
+        <td style="white-space:nowrap"><b>${esc(r.code)}</b> <span style="font-size:11px;color:var(--ink2)">${esc(r.name||'')}</span>
             <div class="rk-why">${dcWhy(r,act).map(([c,t])=>`<span class="${c}">${esc(t)}</span>`).join('')}</div></td>
-        <td><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${muadColor(r.muad)};margin-right:5px"></span>${esc(r.muad)}</td>
+        <td style="white-space:nowrap">${muadCell(r.muad)}</td>
         <td class="num">${fmt(+r.len.toFixed(2))}</td>
         <td class="num">${r.surfPct>0?r.surfPct.toFixed(0)+'%':'—'}</td>
         <td class="num">${r.lastYear||(act.age?'ไม่เคย':'—')}</td>
@@ -4372,6 +4407,22 @@ const kico=(ico,bg,lbl,val,foot,opt)=>{ const o=opt||{};
     `<div class="lbl">${lbl}</div><div class="val">${val}</div>`+
     (o.delta||'')+(o.spark||'')+
     `<div class="foot">${foot}</div></div></div>`; };
+/* v31.6 กล่องสัดส่วนตามกลุ่ม (ตัวเดียวใช้ทุกหน้า): แถบสัดส่วน + กล่องละกลุ่ม (จำนวน · % · ค่าที่สอง · บรรทัดท้ายเมื่อจำเป็น)
+   groups = [[key,{label,n,amt(html/ข้อความ),foot,tip}]] · colorOf(key) · opt.unit (หน่วยของ n) · opt.small (กล่องเล็ก) */
+function groupBoxes(hostId, groups, colorOf, opt){
+  const box=document.getElementById(hostId); if(!box) return;
+  const o=opt||{}, unit=o.unit||'รายการ', tot=groups.reduce((a,[,g])=>a+g.n,0)||1;
+  box.innerHTML=
+    `<div class="onebar catbar">${groups.map(([k,g])=>{ const p=100*g.n/tot;
+      return `<span style="width:${p.toFixed(3)}%;background:${colorOf(k)}" title="${esc(g.label||k)} ${g.n} ${unit} (${p.toFixed(0)}%)">${p>=18?esc(g.label||k)+' '+p.toFixed(0)+'%':(p>=7?p.toFixed(0)+'%':'')}</span>`; }).join('')}</div>`+
+    `<div class="surfgrid catgrid${o.small?' catgrid-s':''}">${groups.map(([k,g])=>{ const p=100*g.n/tot;
+      return `<div class="surfbox catbox" style="border-left-color:${colorOf(k)}" title="${esc(g.label||k)} · ${g.tip||''}">`+
+        `<div class="shead"><span class="cdot" style="background:${colorOf(k)}"></span><span class="sname">${esc(g.label||k)}</span></div>`+
+        `<div class="sval">${g.n}<small>${unit} · ${p.toFixed(0)}%</small></div>`+
+        (g.amt?`<div class="camt">${g.amt}</div>`:'')+
+        (g.foot?`<div class="sfoot">${g.foot}</div>`:'')+`</div>`;
+    }).join('')}</div>`;
+}
 /* สปาร์กไลน์เล็กๆ ในการ์ด KPI — เส้นเดียว ไม่มีแกน ให้เห็นแนวโน้มพอ */
 function sparkSVG(vals,color,w,h){
   if(!vals||vals.length<2) return '';
@@ -4390,8 +4441,9 @@ const deltaHTML=(pct,note)=>{
   return `<div class="kdelta ${cls}">${ar} ${pct>0?'+':''}${pct.toFixed(1)}%<span style="color:var(--muted);font-weight:400">${note?' '+note:''}</span></div>`;
 };
 const SUF3=c=>{ const d=(String(c).split('.')[1]||''); return parseInt(d.slice(-3),10)||999; };
-/* สีชนิดงบตายตัว: ยกระดับ=ส้ม บำรุง=ฟ้า ปลอดภัย=เขียว จังหวัด=แดง วิจัย=เหลือง สะพาน=เทา */
-const BT_COLOR=[['ยกระดับ','#eb6834'],['บำรุง','#2a78d6'],['ปลอดภัย','#008300'],['จังหวัด','#e34948'],['วิจัย','#d9a441'],['สะพาน','#8a8f98'],['อาคาร','#4a3aa7'],['พระราชดำริ','#0d9488'],['ซ่อม','#e87ba4']];
+/* สีชนิดงบตายตัว: ยกระดับ=ส้ม บำรุง=ฟ้า ปลอดภัย=เขียว กลุ่มจังหวัด=น้ำตาล จังหวัด=แดง วิจัย=เหลือง สะพาน=เทา
+   v31.2 (ผู้ใช้: "สี จังหวัด กลุ่มจังหวัด ใกล้กันเกินไป") — 'กลุ่มจังหวัด' ต้องอยู่ก่อน 'จังหวัด' เพราะจับด้วย includes */
+const BT_COLOR=[['ยกระดับ','#eb6834'],['บำรุง','#2a78d6'],['ปลอดภัย','#008300'],['กลุ่มจังหวัด','#8d5a2b'],['จังหวัด','#e34948'],['วิจัย','#d9a441'],['สะพาน','#8a8f98'],['อาคาร','#4a3aa7'],['พระราชดำริ','#0d9488'],['ซ่อม','#e87ba4']];
 const btColor=t=>{ const hit=BT_COLOR.find(([k])=>String(t).includes(k)); return hit?hit[1]:null; };
 const btColorMap=names=>{ const o={}; let fb=0; names.forEach(n=>{ o[n]=btColor(n)||CAT8[(fb++)%8]; }); return o; };
 const catName=t=>String(t).replace(/^\s*\d+[\.\)]\s*/,''); // "6.ปลอดภัย" -> "ปลอดภัย"
@@ -4418,6 +4470,9 @@ function recMuad(x){
   return m||'ไม่ระบุ';
 }
 const recMuadColor=m=>m==='แขวงฯ'?'#1B2A4A':(m==='ถ่ายโอน'?'#8a6d4b':(m==='ไม่ระบุ'?'#9aa5a3':muadColor(m)));
+/* v31.6 กฎ 20 — ช่องหมวดในทุกตารางหน้าตาเดียวกับทะเบียนสายทาง: สี่เหลี่ยมสี + ชื่อหมวด (ไม่มีคำว่า "หมวด") · ว่าง = "—" */
+const muadCell=m=>{ const k=String(m||'').replace(/^หมวด/,'').trim(); if(!k) return '—';
+  return `<span class="msw" style="background:${recMuadColor(k)}"></span>${esc(k)}`; };
 const recMuadLabel=m=>(m==='แขวงฯ'||m==='ไม่ระบุ')?m:(m==='ถ่ายโอน'?'ถนน/สะพานถ่ายโอน':'หมวด'+m);
 /* v27.1 — ชื่อย่อสำหรับที่แคบ (แกนตาราง/heatmap) — "หมวดมัญจาคีรี" ยาวเกินจนโดนตัดทิ้ง
    ใช้ตัวย่อราชการ บทช. (หมวดบำรุงทางชนบท) แทน ชื่อยาวยังอยู่ครบใน tooltip */
@@ -4553,7 +4608,7 @@ function renderOverview(){
   const mxKm=Math.max(...muads.map(m=>byM[m].km),0.0001);   // v24.0 — สเกลแท่งในช่องตาราง (แทนกราฟ chAmphoe ที่ถอดออก)
   document.querySelector('#muadTable tbody').innerHTML = muads.map(m=>{
     const d=byM[m];
-    return `<tr data-muad="${esc(m)}" class="${OVF.muad===m?'selrow':''}" title="คลิกเพื่อกรองทั้งหน้าด้วยหมวดนี้"><td><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${muadColor(m)};margin-right:7px"></span><b>หมวด${esc(m)}</b></td>
+    return `<tr data-muad="${esc(m)}" class="${OVF.muad===m?'selrow':''}" title="คลิกเพื่อกรองทั้งหน้าด้วยหมวดนี้"><td style="white-space:nowrap"><span class="msw" style="width:10px;height:10px;border-radius:3px;background:${muadColor(m)}"></span><b>${esc(m)}</b></td>
       <td class="num">${d.n}</td>
       <td><div class="ibar" title="หมวด${esc(m)} · ${fmt(+d.km.toFixed(2))} กม. — ${(100*d.km/totKmAll).toFixed(1)}% ของโครงข่าย (${(100*d.km/mxKm).toFixed(0)}% ของหมวดที่ยาวที่สุด)"><div class="trk"><span style="width:${(100*d.km/mxKm).toFixed(1)}%;background:${muadColor(m)}"></span></div><b>${fmt(+d.km.toFixed(2))}</b><i class="ipct">${(100*d.km/totKmAll).toFixed(1)}%</i></div></td>
       <td class="num">${d.br}</td><td class="num">${fmt(+d.brkm.toFixed(3))}</td></tr>`;
@@ -4993,8 +5048,8 @@ function renderRoadTable(){
     const r = rowsByCode[c];
     if(!r) return `<tr data-s="${c}"><td><b>${c}</b></td><td colspan="11" style="color:var(--muted)">— ยังไม่มีข้อมูล —</td></tr>`;
     return `<tr data-code="${c}" data-s="${esc(c+' '+(r.name||'')+' '+(r.amphoe||'')+' '+(r.muad||''))}" style="cursor:pointer">
-      <td><b>${c}</b></td><td>${esc(r.name)}</td>
-      <td><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${muadColor(r.muad)};margin-right:6px"></span>${r.muad?esc(r.muad):'—'}</td>
+      <td><b>${c}</b></td><td style="white-space:nowrap">${esc(r.name)}</td>
+      <td style="white-space:nowrap">${muadCell(r.muad)}</td>
       <td>${esc(r.amphoe)}</td>
       <td class="num">${fmt(r.len_acct)}</td><td class="num">${fmt(r.latyang)}</td><td class="num">${fmt(r.concrete)}</td><td class="num">${fmt(r.lukrang)}</td>
       <td class="num">${fmt(+(r.bridge_len_acct||0).toFixed(3))}</td>
@@ -6186,7 +6241,7 @@ let histData=null, histDropped=null, histExcluded=0, histUnknown=[];
 async function loadHistory(force){ return loadSource('history', force); }
 defineSource({
   key:'history', what:'ประวัติโครงการ',
-  boxes:['histBody','ovBudget'],   // การ์ดงบบนหน้าภาพรวมกินข้อมูลชุดเดียวกัน ต้องหยุดหมุนพร้อมกัน
+  boxes:['histBody','ovBudget','yrBody'],   // การ์ดงบบนหน้าภาพรวม + หน้าโครงการประจำปี กินข้อมูลชุดเดียวกัน ต้องหยุดหมุนพร้อมกัน
   pills:'histPills',
   has:()=>!!histData,
   read:async()=>{
@@ -6445,14 +6500,7 @@ function renderHistory(){
       // ---- หน่วยดำเนินการ: วงเงิน + จำนวน ----
       (()=>{
         const box=document.getElementById('chAgency'); if(!box) return;
-        const agencyOf=x=>{
-          const t=String(x.agency||'').trim();
-          if(!t) return 'ไม่ระบุ';
-          const m=MUAD_ORDER.find(mm=>t.includes(mm));
-          if(m) return 'หมวด'+m;
-          if(/แขวง/.test(t)) return 'แขวงฯ';
-          return t.slice(0,22);
-        };
+        const agencyOf=histAgency;   // v31.4 ย้ายเป็นตัวช่วยกลาง ใช้ร่วมกับหน้าโครงการประจำปี
         const byA={};
         H.forEach(x=>{ const u=agencyOf(x); byA[u]=byA[u]||{n:0,amt:0,y:{},c:{}}; byA[u].n++; byA[u].amt+=(x.amount||0);
           byA[u].y[x.year]=(byA[u].y[x.year]||0)+(x.amount||0); byA[u].c[x.year]=(byA[u].c[x.year]||0)+1; });
@@ -6678,7 +6726,7 @@ function renderHistory(){
             const yrs=[...new Set(list.map(x=>x.year))].sort();
             const acts=[...new Set(list.map(x=>x.activity).filter(Boolean))];
             return `<tr data-code="${code}" style="cursor:pointer">
-              <td><b>${code}</b>${b?' <span class="pill wait" style="font-size:10px">สะพาน</span>':''}</td><td>${esc(r?.name||b?.name||'—')}</td><td>${(r?.muad||b?.muad)?'หมวด'+esc(r?.muad||b.muad):'—'}</td>
+              <td><b>${code}</b>${b?' <span class="pill wait" style="font-size:10px">สะพาน</span>':''}</td><td>${esc(r?.name||b?.name||'—')}</td><td style="white-space:nowrap">${muadCell(r?.muad||b?.muad)}</td>
               <td class="num"><b>${list.length}</b></td><td class="num">${amt?fmt(amt):'–'}</td>
               <td style="font-variant-numeric:tabular-nums;font-size:11.5px">${yrs.join(', ')}</td>
               <td style="font-size:11.5px">${acts.slice(0,3).map(esc).join(' · ')}${acts.length>3?' · …':''}</td></tr>`;
@@ -7048,6 +7096,10 @@ function eqWarrSplit(list, a, b, kind){
   return out;
 }
 /* งานไฟฟ้า/แสงสว่าง: แสดงเป็นจุด (dot) และคำนวณจำนวนต้น = ระยะ(ม.) ÷ 30 */
+/* v31.4 หน่วยดำเนินการของสัญญา (จากคอลัมน์ "หน่วยดำเนินการ" ในชีทประวัติ) — ใช้ทั้งหน้าประวัติและตัวกรองหน้าโครงการประจำปี */
+const histAgency=x=>{ const t=String(x.agency||'').trim(); if(!t) return 'ไม่ระบุ';
+  const m=MUAD_ORDER.find(mm=>t.includes(mm)); if(m) return 'หมวด'+m;
+  if(/แขวง/.test(t)) return 'แขวงฯ'; return t.slice(0,22); };
 const isElectric=x=>/ไฟฟ้า|แสงสว่าง|ไฟกระพริบ|ไฟสัญญาณ/.test((x.activity||'')+(x.budgetType||''));
 /* สะพานล้วน = ชื่อมี "สะพาน" แต่ไม่ใช่งานผสม "ทางและสะพาน/ถนน..." — งานผสมให้ช่วง กม. เป็นถนน
    (ความยาวสะพานในงานผสมนับเฉพาะช่วงที่ติดป้าย "(สะพาน)" เท่านั้น กันเลขบวม) */
@@ -7422,7 +7474,8 @@ defineSource({
     const parseReq=(objs, year)=>{
       const recs=[];
       objs.filter(o=>{ const c=S(o['รหัสสายทาง']); return c && c!=='0' && c.includes('.'); }).forEach(o=>{
-        const starts=String(o['กม.เริ่ม']??'').split('\n').map(s=>s.trim()).filter(s=>s), ends=String(o['กม.จบ']??'').split('\n').map(s=>s.trim());
+        /* v31.6 ช่วง กม. หลายช่วงในช่องเดียว: ขึ้นบรรทัดใหม่ หรือคั่นด้วยจุลภาค ("1+700, 7+400") — ชีทรวมแผน 2570 ใช้จุลภาค */
+        const starts=String(o['กม.เริ่ม']??'').split(/[\n,]/).map(s=>s.trim()).filter(s=>s), ends=String(o['กม.จบ']??'').split(/[\n,]/).map(s=>s.trim());
         const segs=(starts.length?starts:['']).map((a,i)=>({a, b:ends[i]||''}));
         recs.push({year, code:S(o['รหัสสายทาง']),
           cat:S(o['ชนิดงบ'])||'— ไม่ระบุ',
@@ -7440,25 +7493,30 @@ defineSource({
       });
       return recs;
     };
-    // 1) sentinel: ชื่อ tab ที่ไม่มีจริง gviz จะส่ง "tab แรก" กลับมา -> จำลายนิ้วมือไว้กรองปีหลอก
-    let sentinelFp=null;
-    try{ sentinelFp=JSON.stringify((await sheetData(REQ_ID,'sheet=__Q_PROBE_XX99__')).slice(0,25)); }catch(e){}
-    // 2) ไล่หา tab ปี Q_68 … Q_82 พร้อมกัน — เพิ่มปีใหม่แค่สร้าง tab ชื่อ Q_72 ในชีท
-    const probes=await Promise.allSettled(REQ_PROBE_YEARS.map(y=>
-      sheetData(REQ_ID,'sheet='+encodeURIComponent('Q_'+y)).then(objs=>({y,objs}))));
-    const seen=new Set(); let all=[]; const yearsFound=[];
+    /* v31.6 (ผู้ใช้ 7 ก.ย. 69: "คำขอ 70 ก็มีแล้วนะ อยู่ใน sheet รวมแผน") — ตรวจชีทจริง "00.4 รวมแผน" มี 2 แท็บชื่อ "2570" · "2571"
+       (ไม่ใช่ Q_70/Q_71) และ gviz ตอบชื่อแท็บที่ไม่มีจริงด้วย "แท็บซ้ายสุด" (= 2570) ตัวอ่านเดิมจึงคิดว่า 2570 เป็นแท็บหลอกแล้วทิ้ง
+       กติกาใหม่: ① ไล่ชื่อทั้ง Q_xx และ 25xx ② แท็บที่มีชื่อชัดเจน = ปีตามชื่อ ③ แท็บซ้ายสุด (ตอบเหมือน sentinel) แยกชื่อไม่ได้
+       → นับเป็น "ปีก่อนหน้าปีแรกที่พบชื่อ" (ผู้ใช้เรียงแท็บเก่า→ใหม่ ซ้าย→ขวา) · ถ้าไม่พบชื่อเลย = 2571 (แบบเดิม) */
+    let sentinel=null, sentinelFp=null;
+    try{ sentinel=await sheetData(REQ_ID,'sheet=__Q_PROBE_XX99__'); sentinelFp=JSON.stringify(sentinel.slice(0,25)); }catch(e){}
+    const names=[]; REQ_PROBE_YEARS.forEach(y=>{ names.push({y, n:'Q_'+y}); names.push({y, n:String(2500+y)}); });
+    const probes=await Promise.allSettled(names.map(t=>sheetData(REQ_ID,'sheet='+encodeURIComponent(t.n)).then(objs=>({y:t.y,objs}))));
+    const seen=new Set(); let all=[]; const yearsFound=[]; let anyReply=!!sentinel, lastErr=null;
     for(const p of probes){
-      if(p.status!=='fulfilled') continue;
+      if(p.status!=='fulfilled'){ lastErr=p.reason; continue; }
+      anyReply=true;   // กฎ 6 — ชีทตอบแล้ว ต่อให้ว่างก็ไม่ใช่ "เน็ตล่ม"
       const fp=JSON.stringify(p.value.objs.slice(0,25));
       if(fp===sentinelFp||seen.has(fp)) continue;
       seen.add(fp);
       const recs=parseReq(p.value.objs, 2500+p.value.y);
       if(recs.length){ all=all.concat(recs); yearsFound.push(2500+p.value.y); }
     }
-    // 3) ยังไม่มี tab Q_71 -> อ่าน tab แรกของไฟล์ (แบบเดิม) เป็นปี 2571
-    if(!yearsFound.length){
-      const recs=parseReq(await sheetData(REQ_ID,'gid=0'), 2571);
-      if(recs.length){ all=recs; yearsFound.push(2571); }
+    if(!anyReply) throw lastErr||new Error('เชื่อมต่อ Google Sheets ไม่ได้');
+    // แท็บซ้ายสุด (เนื้อหาเดียวกับ sentinel) — ยังไม่ถูกอ่านเพราะแยกชื่อไม่ได้
+    if(sentinel&&sentinel.length){
+      const firstYear=yearsFound.length?Math.min(...yearsFound)-1:2571;
+      const recs=parseReq(sentinel, firstYear);
+      if(recs.length){ all=all.concat(recs); yearsFound.push(firstYear); }
     }
     if(!all.length) throw noData('ยังไม่พบแถวข้อมูลในชีท — ต้องมี tab ปี (Q_71, Q_72, …) หรือข้อมูลใน tab แรก และแชร์ "ทุกคนที่มีลิงก์"');
     yearsFound.sort((a,b)=>a-b);
@@ -7650,8 +7708,14 @@ function renderRequests(){
       <div class="card kpi"><div class="lbl">รอประเมินราคา</div><div class="val" style="color:var(--crit)">${waiting} <small>คำขอ</small></div><div class="foot">ยังไม่ระบุวงเงิน</div></div>
       <div class="card kpi"><div class="lbl">หมวดที่มีคำขอ</div><div class="val">${muadWithReq.length} <small>/ ${MUAD_ORDER.length} หมวด</small></div><div class="foot">${muadWithReq.join(' · ')||'—'}</div></div>
     </div>
-    <div class="grid two">
-      <div class="card"><h3>สายทางที่มีคำขอซ้ำมากที่สุด (Top 10)</h3><div class="note">จำนวนคำขอ — คลิกแท่งเพื่อดูรายละเอียดด้านขวา</div><div id="chTopReq"></div></div>
+    <!-- v31.2 ผู้ใช้สั่ง (7 ก.ย. 69): สัดส่วนชนิดงบเป็นกล่องแยกชนิด (จำนวน · % · วงเงิน) มาก่อน → มุมมองรายสาย → Top 10 -->
+    <div class="card" style="margin-top:14px"><h3>สัดส่วนคำขอแยกตามชนิดงบ/แผนงาน</h3><div class="note">แต่ละชนิดงบ ขอกี่รายการ · กี่ % ของคำขอทั้งหมด · วงเงินที่ระบุแล้ว — แถบสีด้านบน = สัดส่วนจำนวนคำขอ</div><div id="chReqCat"></div></div>
+    <!-- v31.4 ผู้ใช้: "เพิ่มกล่องคำขอแบ่ง ตามเขต ตามกิจกรรม ด้วย" — กล่องชุดเดียวกับชนิดงบ -->
+    <div class="grid two" style="margin-top:14px">
+      <div class="card"><h3>คำขอแยกตามเขตเลือกตั้ง</h3><div class="note">สีตามพรรคของ สส. เขตนั้น · "ไม่ระบุ" = ระบุตำแหน่งไม่ได้</div><div id="chReqZone"></div></div>
+      <div class="card"><h3>คำขอแยกตามกิจกรรม</h3><div class="note">กิจกรรมตามที่เขียนในคำขอ · แสดง 8 กิจกรรมที่ขอมากสุด ที่เหลือรวมเป็น "อื่นๆ"</div><div id="chReqAct"></div></div>
+    </div>
+    <div class="grid two" style="margin-top:14px">
       <div class="card" style="display:flex;flex-direction:column">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px">
           <h3 style="margin:0">มุมมองรวมรายสาย</h3>
@@ -7659,11 +7723,9 @@ function renderRequests(){
         </div>
         <div id="reqDetail" style="flex:1;display:flex;flex-direction:column"></div>
       </div>
+      <div class="card"><h3>สายทางที่มีคำขอซ้ำมากที่สุด (Top 10)</h3><div class="note">จำนวนคำขอ — คลิกแท่งเพื่อดูรายละเอียดในมุมมองรายสาย</div><div id="chTopReq"></div></div>
     </div>
-    <div class="grid two" style="margin-top:14px">
-      <div class="card"><h3>สัดส่วนคำขอแยกตามชนิดงบ/แผนงาน</h3><div class="note">จำนวนคำขอ และ % — ชี้ที่วงเพื่อดูวงเงินที่ระบุแล้ว</div><div id="chReqCat"></div></div>
-      <div class="card"><h3>คำขอแยกตามหมวดบำรุงทาง</h3><div class="note">แท่งซ้อนแบ่งตามชนิดงบ — ชี้ที่ท่อนเพื่อดูรายละเอียด</div><div id="chReqMuad"></div></div>
-    </div>
+    <div class="card" style="margin-top:14px"><h3>คำขอแยกตามหมวดบำรุงทาง</h3><div class="note">แท่งซ้อนแบ่งตามชนิดงบ — ชี้ที่ท่อนเพื่อดูรายละเอียด</div><div id="chReqMuad"></div></div>
     <!-- v30.6 ผู้ใช้สั่ง: ตารางรายงานทางการ (สรุปคำขอตามแหล่งงบ) มาก่อนสรุปรายสายทาง -->
     <div class="card" style="margin-top:14px">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:8px">
@@ -7692,18 +7754,44 @@ function renderRequests(){
         tip:`${e[1]} คำขอ · งบระบุแล้ว ${amt?fmt(amt)+' บาท':'– (รอประเมิน)'} · หมวด${m||'-'}`};}),
     {unit:'คำขอ', onClick:it=>{ document.getElementById('reqRoadSel').value=it.label; renderReqDetail(it.label); }});
   // โดนัทชนิดงบ — ครบทุกชนิด
-  const byCat={}; Q.forEach(r=>{ byCat[r.cat]=byCat[r.cat]||{n:0,amt:0}; byCat[r.cat].n++; byCat[r.cat].amt+=(r.amt||0); });
+  /* v31.2 รวมชื่อชนิดงบที่สะกดต่างกัน ("1.ยกระดับ" = "ยกระดับ" = "งบยกระดับ") ด้วย normCat เหมือนหน้าเช็คคำขอ — ไม่ให้ชนิดเดียวกันแตกเป็น 2 กล่อง */
+  const rc=r=>r.cat==='— ไม่ระบุ'?r.cat:normCat(r.cat);
+  const byCat={}; Q.forEach(r=>{ const k=rc(r); byCat[k]=byCat[k]||{n:0,amt:0}; byCat[k].n++; byCat[k].amt+=(r.amt||0); });
   const cats=Object.entries(byCat).sort((a,b)=>b[1].n-a[1].n);
   const CATCOLOR=btColorMap(cats.map(c=>c[0]).filter(c=>c!=='— ไม่ระบุ'));
   CATCOLOR['— ไม่ระบุ']='#9aa5a3';
-  donut('chReqCat', cats.map(c=>({label:catName(c[0]), v:c[1].n, color:CATCOLOR[c[0]]})), {unit:'คำขอ', height:300});
+  /* v31.2 กล่องรายชนิดงบแทนโดนัท — ผู้ใช้: "น่าจะแยกออกเป็นกล่อง kpi ให้เห็นชัด … มีแต่จำนวนกับ % ไม่มีจำนวนเงิน"
+     v31.4 ทำเป็นตัวสร้างกลาง reqBoxes() ใช้ 3 ที่: ชนิดงบ · เขตเลือกตั้ง · กิจกรรม — และแถบสัดส่วนอ่านง่ายขึ้น (ผู้ใช้: "แถบพวกนี้มองยากไปหน่อย") */
+  /* v31.6 ผู้ใช้: "เขตย่อเหลือแค่เขต ไม่ต้องใส่ชื่อ · 'วงเงินระบุแล้ว' ขึ้นทุกกล่อง งง" → บรรทัดท้ายมีเฉพาะเมื่อมีรอประเมิน */
+  const reqBoxes=(hostId, groups, colorOf, opt)=>groupBoxes(hostId, groups.map(([k,g])=>[k,{label:g.label||k, n:g.n,
+      amt:g.amt?fmtM(g.amt):'<span style="color:var(--crit);font-size:12px">รอประเมินทั้งหมด</span>',
+      foot:g.wait?`รอประเมิน ${g.wait} คำขอ`:'', tip:`${g.n} คำขอ · วงเงินระบุแล้ว ${fmt(g.amt)} บาท${g.wait?` · รอประเมิน ${g.wait}`:''}`}]), colorOf, {unit:'คำขอ', ...(opt||{})});
+  const groupQ=(keyOf, labelOf)=>{ const G={}; Q.forEach(r=>{ const k=keyOf(r); const g=G[k]||(G[k]={n:0,amt:0,wait:0,label:labelOf?labelOf(k):k}); g.n++; g.amt+=(r.amt||0); if(r.amt==null) g.wait++; }); return G; };
+  // ชนิดงบ
+  const catG=groupQ(rc); Object.keys(catG).forEach(k=>catG[k].label=catName(k));
+  reqBoxes('chReqCat', Object.entries(catG).sort((a,b)=>b[1].n-a[1].n), k=>CATCOLOR[k]);
+  // เขตเลือกตั้ง (ตามช่วง กม. บนเส้น GIS — ตัวเดียวกับหน้าเช็คคำขอ) เรียงเลขเขต · ไม่ระบุท้ายสุด
+  safeRun('กล่องคำขอตามเขต', ()=>{
+    const zG=groupQ(r=>{ const z=gapZoneOf(r.code, r.segs); return z==null?'ไม่ระบุ':String(z); }, k=>isNaN(k)?'ไม่ระบุเขต':('เขต '+k));
+    const keys=Object.keys(zG).sort((a,b)=>(isNaN(a)?99:+a)-(isNaN(b)?99:+b));
+    reqBoxes('chReqZone', keys.map(k=>[k,zG[k]]), k=>isNaN(k)?'#9aa5a3':zoneColor(+k), {small:true});
+  });
+  // กิจกรรม — 8 อันดับแรก + อื่นๆ
+  safeRun('กล่องคำขอตามกิจกรรม', ()=>{
+    const aG=groupQ(r=>(r.actv||r.act||r.proj||'ไม่ระบุ').trim()||'ไม่ระบุ');
+    const ks=Object.keys(aG).sort((a,b)=>aG[b].n-aG[a].n);
+    const top=ks.slice(0,8), rest=ks.slice(8);
+    if(rest.length){ const o={n:0,amt:0,wait:0,label:`อื่นๆ (${rest.length} กิจกรรม)`}; rest.forEach(k=>{ o.n+=aG[k].n; o.amt+=aG[k].amt; o.wait+=aG[k].wait; }); aG['__rest']=o; top.push('__rest'); }
+    const AC=Object.fromEntries(top.map((k,i)=>[k, k==='__rest'?'#9aa5a3':CAT8[i%8]]));
+    reqBoxes('chReqAct', top.map(k=>[k,aG[k]]), k=>AC[k], {small:true});
+  });
   // คำขอแยกตามหมวด (stacked hbar ตามชนิดงบ)
   const segsOrder=cats.map(c=>({k:c[0], label:c[0], color:CATCOLOR[c[0]]}));
   const muadRows={};
   Object.entries(byRoad).forEach(([code,list])=>{
     const m=roadInfo[code]?.muad||'ไม่ระบุ';
     muadRows[m]=muadRows[m]||{segs:{}, roads:new Set(), n:0};
-    list.forEach(r=>{ muadRows[m].segs[r.cat]=(muadRows[m].segs[r.cat]||0)+1; muadRows[m].n++; });
+    list.forEach(r=>{ const k=rc(r); muadRows[m].segs[k]=(muadRows[m].segs[k]||0)+1; muadRows[m].n++; });
     muadRows[m].roads.add(code);
   });
   const mRows=[...MUAD_ORDER,'ไม่ระบุ'].filter(m=>muadRows[m])
@@ -7719,7 +7807,7 @@ function renderRequests(){
     const catsIn=[...new Set(list.map(x=>x.cat))];
     const yrsIn=[...new Set(list.map(x=>x.year))].sort();
     return `<tr data-code="${code}" style="cursor:pointer">
-      <td><b>${code}</b></td><td>${esc(r?.name||'—')}</td><td>${r?.muad?'หมวด'+esc(r.muad):'—'}</td>
+      <td><b>${code}</b></td><td style="white-space:nowrap">${esc(r?.name||'—')}</td><td style="white-space:nowrap">${muadCell(r?.muad)}</td>
       ${reqAll?`<td style="font-variant-numeric:tabular-nums;font-size:11.5px">${yrsIn.join(', ')}</td>`:''}
       <td class="num">${fmt(r?.len_acct)}</td><td class="num"><b>${n}</b></td><td class="num">${km>0?fmt(+km.toFixed(2)):'—'}</td>
       <td class="num">${pct!=null?`<b style="color:${pct>=50?'var(--crit)':'var(--ink)'}">${pct.toFixed(0)}%</b>`:'—'}</td>
@@ -7760,7 +7848,7 @@ function renderReqDetail(code){
 const ZB_ID='1i-hZYI74qz7kjO2ypo1fpEKxWwtLHojfTtIt1Pdz5jg';
 const ZB_PROBE_YEARS=Array.from({length:15},(_,i)=>68+i); // ไล่หา Z_68 … Z_82
 /* โครงเดิมของไฟล์ "00.5 ZEROBASE 2571" (แยก 5 หมวด) — ใช้เป็นปี 2571 จนกว่าจะมี tab Z_71 */
-const ZB_LEGACY_TABS=[{gid:0},{gid:1401334488},{gid:1937790879},{gid:496176892},{gid:1759232698}];
+const ZB_LEGACY_TABS=[{gid:0,name:'แท็บ 1'},{gid:1401334488,name:'แท็บ 2'},{gid:1937790879,name:'แท็บ 3'},{gid:496176892,name:'แท็บ 4'},{gid:1759232698,name:'แท็บ 5 (หมวดพล)'}];
 const ZB_GROUPS=[
  {k:'ซ่อมบำรุงผิวทาง', c:'#2a78d6', match:a=>/RECYCLING|RECYLING|HOT RE|RE \+/i.test(a)},
  {k:'ไฟฟ้าแสงสว่าง',   c:'#d9a441', match:a=>a.includes('ไฟฟ้า')},
@@ -7778,11 +7866,27 @@ function zbRawRows(table){ // แถวดิบ (รวมหัว) — หั
   const rows=(table.rows||[]).map(r=>(r.c||[]).map(cell=>cell==null?'':String(cell.f!=null?cell.f:(cell.v!=null?cell.v:'')).trim()));
   return [head,...rows];
 }
-function zbParse(rows, year){ // หาแถวหัวที่มี "รหัสสายทาง" แล้วอ่านคำขอทีละแถว
+let zbWarn=[];   // v31.2 แท็บที่หัวคอลัมน์ไม่ตรงแบบ (อ่านจากรูปแบบข้อมูลแทน) — โชว์เตือนบนจอ
+function zbParse(rows, year, tabName){ // หาแถวหัวที่มี "รหัสสายทาง" แล้วอ่านคำขอทีละแถว
+  /* v31.2 (ผู้ใช้ 7 ก.ย. 69: "zerobase ของหมวดพลหายไป") — แท็บหมวดพลถูกแปลงเป็นตารางของ Sheets
+     หัวคอลัมน์กลายเป็น "คอลัมน์ 1 / คอลัมน์ 2" ตัวอ่านเดิมหาหัว "รหัสสายทาง" ไม่เจอจึงทิ้งทั้งแท็บเงียบๆ
+     กติกาใหม่: ถ้าไม่มีหัว "รหัสสายทาง" ให้ใช้แถวที่มี "กม.เริ่ม"+"กม.จบ" เป็นหัว แล้วเดาคอลัมน์รหัสสาย = คอลัมน์ที่
+     แถวข้อมูลเป็นรหัสสายมากที่สุด · กิจกรรม = คอลัมน์ข้อความคอลัมน์แรกที่ไม่ใช่รหัส/กม. — และบันทึกเตือนไว้ใน zbWarn */
   for(let i=0;i<rows.length;i++){
-    const j=rows[i].findIndex(v=>normKey(v)==='รหัสสายทาง');
-    if(j<0) continue;
+    let j=rows[i].findIndex(v=>normKey(v)==='รหัสสายทาง');
     const map={}; rows[i].forEach((v,k)=>{ if(normKey(v)) map[normKey(v)]=k; });
+    if(j<0){
+      if(map['กม.เริ่ม']==null||map['กม.จบ']==null) continue;
+      const body=rows.slice(i+1,i+60);
+      const score=rows[i].map((_,k)=>body.filter(r=>extractRoadCode(r[k]||'')).length);
+      j=score.indexOf(Math.max(...score)); if(score[j]<1) continue;
+      map['รหัสสายทาง']=j;
+      if(map['กิจกรรม']==null){
+        const kmCols=[map['กม.เริ่ม'],map['กม.จบ'],map['หมายเหตุ']];
+        map['กิจกรรม']=rows[i].findIndex((_,k)=>k!==j&&!kmCols.includes(k)&&body.some(r=>(r[k]||'').trim()&&!extractRoadCode(r[k]||'')&&kmVal(r[k])==null));
+      }
+      zbWarn.push({tab:tabName||('ปี '+year), head:rows[i].filter(Boolean).slice(0,3).join(' / ')});
+    }
     const out=[];
     for(const row of rows.slice(i+1)){
       const code=extractRoadCode(row[map['รหัสสายทาง']]);
@@ -7806,6 +7910,7 @@ defineSource({
   read:async()=>{
     // 1) sentinel: ชื่อ tab ที่ไม่มีจริง gviz จะส่ง "tab แรก" กลับมา -> จำลายนิ้วมือไว้กรองปีหลอก
     let sentinelFp=null;
+    zbWarn=[];
     try{ sentinelFp=JSON.stringify(zbRawRows(await gvizJSONP(ZB_ID,'sheet=__ZB_PROBE_XX99__')).slice(0,25)); }catch(e){}
     // 2) ไล่หา tab ปีพร้อมกันทุกปี
     const probes=await Promise.allSettled(ZB_PROBE_YEARS.map(y=>
@@ -7818,22 +7923,22 @@ defineSource({
       const fp=JSON.stringify(rows.slice(0,25));
       if(fp===sentinelFp||seen.has(fp)) continue; // tab ไม่มีจริง / ซ้ำ
       seen.add(fp);
-      const recs=zbParse(rows, 2500+p.value.y);
+      const recs=zbParse(rows, 2500+p.value.y, 'Z_'+p.value.y);
       if(recs&&recs.length){ all=all.concat(recs); yearsFound.push(2500+p.value.y); }
     }
     // 3) ยังไม่มี tab Z_71 -> อ่านโครงเดิม (5 หมวด) เป็นปี 2571
     if(!yearsFound.includes(2571)){
       const legacy=await Promise.allSettled(ZB_LEGACY_TABS.map(t=>gvizJSONP(ZB_ID,'gid='+t.gid)));
       const seenL=new Set(); let legacyAll=[];
-      for(const p of legacy){
-        if(p.status!=='fulfilled') continue;
+      legacy.forEach((p,li)=>{
+        if(p.status!=='fulfilled') return;
         anyReply=true;
         const rows=zbRawRows(p.value);
         const fp=JSON.stringify(rows.slice(0,25));
-        if(seenL.has(fp)) continue; seenL.add(fp);
-        const recs=zbParse(rows, 2571);
+        if(seenL.has(fp)) return; seenL.add(fp);
+        const recs=zbParse(rows, 2571, ZB_LEGACY_TABS[li].name);
         if(recs) legacyAll=legacyAll.concat(recs);
-      }
+      });
       if(legacyAll.length){ all=all.concat(legacyAll); yearsFound.push(2571); }
     }
     if(!anyReply) throw new Error('เชื่อมต่อ Google Sheets ไม่ได้');
@@ -7845,6 +7950,7 @@ defineSource({
     return `<span class="hpill"><span class="dot live"></span> ข้อมูลสดจาก Google Sheets</span>`+
       `<span class="hpill">◪ ${all.length} คำขอ · ${new Set(all.map(r=>r.code)).size} สาย</span>`+
       `<span class="hpill">♻ เหมารวมทุกรายการ — ได้รับงบแล้วถอดออกจากชีท</span>`+
+      (zbWarn.length?`<span class="hpill warn" title="หัวคอลัมน์ในชีทไม่ใช่ 'รหัสสายทาง / กิจกรรม' — อ่านจากรูปแบบข้อมูลแทน ควรแก้หัวในชีทให้ตรง">⚠ ${zbWarn.map(w=>w.tab).join(', ')}: หัวคอลัมน์ไม่ตรงแบบ (${zbWarn[0].head}) — อ่านจากรูปแบบข้อมูลแทน</span>`:'')+
       `<span class="hpill">🕐 ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})} น.</span>`;
   }
 });
@@ -7929,9 +8035,13 @@ function gapModel(){
     const out={}; ks.forEach(k=>{ out[k]=agg(R.filter(r=>K(r)===k), Hs.filter(h=>K(h)===k)); });
     return out;
   };
-  const view=y=>{ const R=y==='all'?rows:rows.filter(r=>r.year===+y), Hs=y==='all'?hist:hist.filter(h=>h.year===+y);
+  /* v31.2 (ผู้ใช้ 7 ก.ย. 69: "สัญญาจริงทั้งปีคืออะไร ปี 71 ยังไม่ได้เริ่มเลย … ถ้าเป็นยอดรวมทั้งหมดไม่ต้องโชว์")
+     "ทุกปี" = เฉพาะปีที่มีคำขอ ไม่ใช่ประวัติทุกปีของแขวง (ยอดรวมทุกปีมีในหน้าประวัติแล้ว) */
+  const view=y=>{ const R=y==='all'?rows:rows.filter(r=>r.year===+y), Hs=y==='all'?hist.filter(h=>years.includes(h.year)):hist.filter(h=>h.year===+y);
     return {rows:R, hist:Hs, total:agg(R,Hs),
-      byCat:groupBy(x=>x.cat,R,Hs), byMuad:groupBy(x=>x.muad,R,Hs), byZone:groupBy(x=>x.zone,R,Hs)}; };
+      byCat:groupBy(x=>x.cat,R,Hs), byMuad:groupBy(x=>x.muad,R,Hs), byZone:groupBy(x=>x.zone,R,Hs),
+      byAct:groupBy(x=>x.act||x.activity,R,Hs),
+      bySrc:groupBy(x=>x.src,R,Hs)}; };   // v31.5 ผู้ใช้: "ตามแหล่งงบ" — สัญญาไม่มีช่องแหล่งงบ จึงรวมอยู่ใน "ไม่ระบุ" ฝั่งสัญญา   // v31.4 ผู้ใช้: "แต่ละกิจกรรม" — คำขอใช้ช่องกิจกรรม/โครงการ สัญญาใช้ช่องกิจกรรม
   return {years, rows, hist, byYear, view};
 }
 /* สายที่ขอบ่อยแต่ยังไม่ได้ — สัญญาณว่า "ทำไมไม่ได้" ควรไปดูสายไหนก่อน (ใช้ร่วมกับหน้าตัดสินใจ) */
@@ -7948,12 +8058,18 @@ function gapStuck(M){
     .filter(o=>o.itemsNo>0).sort((a,b)=>b.nMiss-a.nMiss||b.missAmt-a.missAmt);
 }
 function renderGap(){
+  /* v31.4 — ส่วน "เช็คคำขอ" อยู่ท้ายหน้าโครงการประจำปี: ปี = ปีที่หน้านั้นเลือก (yrPick) ไม่มีตัวเลือกปีของตัวเอง
+     "โดนตัด" = วงเงินคำขอที่ไม่มีสัญญารองรับ (askNo) — นิยามเดิมของหน้าเช็คคำขอ ไม่คิดใหม่ */
   const box=document.getElementById('gapBody'); if(!box) return;
   const M=gapModel();
-  if(!M) return;
+  if(!M){ box.innerHTML='<div class="loading"><span class="spin"></span>รอคำของบ (ชีทคำของบ) เพื่อเทียบกับสัญญาปีนี้…</div>'; return; }
   if(!M.years.length){ box.innerHTML='<div class="note" style="padding:18px 4px">ยังไม่มีคำของบให้เทียบ</div>'; return; }
-  if(gapYearPick!=='all' && !M.years.includes(+gapYearPick)) gapYearPick='all';
+  /* v31.5 ผู้ใช้: "ฟีเจอร์ของเช็คคำขอหายหมด" — ปีที่หน้าเลือก (ปีล่าสุดที่มีสัญญา) มักยังไม่มีคำขอ
+     → ถ้าปีนั้นไม่มีคำขอ ให้แสดงปีล่าสุดที่มีคำขอแทน และบอกไว้ชัด ไม่ปล่อยกล่องว่าง */
+  /* v31.6 ผู้ใช้: "ชั้นเลือก 70 ตัวนี้ก็ต้องเป็น 70 ไม่ใช่เอาปีอื่นมาเทียบ" — ปี = ปีที่หน้าเลือกเสมอ ไม่เด้งไปปีอื่น */
+  gapYearPick=String((typeof yrPick==='number'&&yrPick)?yrPick:M.years[M.years.length-1]);
   const V=M.view(gapYearPick), T=V.total;
+  const noReq=!V.rows.length;
   const pct=(a,b)=>b?(100*a/b).toFixed(0):'0';
   const lb=v=>fmt(+(v/1e6).toFixed(1));
   const stuck=gapStuck(M);
@@ -7964,25 +8080,46 @@ function renderGap(){
   const zoneKeys=Object.keys(V.byZone).sort((a,b)=>(isNaN(a)?99:+a)-(isNaN(b)?99:+b));   // เขต 1..11 แล้วปิดท้ายด้วย "ไม่ระบุ" 
 
   box.innerHTML=
-  `<div class="card" style="margin-bottom:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-     <b>ปีงบประมาณ</b>
-     <select class="search" id="gapYearSel" style="max-width:220px">
-       <option value="all"${gapYearPick==='all'?' selected':''}>ทุกปี (${M.years.join(' · ')})</option>
-       ${M.years.map(y=>`<option value="${y}"${String(gapYearPick)===String(y)?' selected':''}>ปีงบ ${y}</option>`).join('')}
-     </select>
-     <span class="note" style="margin:0">เลือกปีเดียวเพื่อดูว่าปีนั้นขอไปเท่าไหร่ ได้เท่าไหร่ · "ทุกปี" รวมทุกปีที่มีคำขอ</span>
+  `<div class="secdiv" id="gapHead"><h2>② เช็คคำขอ — ${esc(yearLbl)} ขอไปเท่าไหร่ ได้จริงเท่าไหร่</h2>
+     <div class="note" style="margin:0">"ได้" = คำขอที่มีสัญญารองรับ · "โดนตัด" = คำขอที่ยังไม่มีสัญญารองรับ · ส่วนนี้แสดงทุกหน่วยดำเนินการ</div>
    </div>`+
+  (noReq?`<div class="card" style="margin-bottom:14px;border-left:4px solid var(--gold)"><div class="note" style="margin:0;padding:6px 2px">ปีงบ ${esc(gapYearPick)} ไม่มีคำของบ · ปีที่มีคำขอ: ${M.years.join(' · ')}</div></div>`:'')+
 
   `<div class="grid kpis">
-     <div class="card kpi"><div class="lbl">คำของบ · ${esc(yearLbl)}</div><div class="val">${T.n}<small> รายการ</small></div><div class="foot">${new Set(V.rows.map(r=>r.code)).size} สายทาง · ${lb(T.ask)} ลบ.</div></div>
+     <div class="card kpi"><div class="lbl">คำของบ · ${esc(yearLbl)}</div><div class="val">${T.n}<small> รายการ</small></div><div class="foot">${new Set(V.rows.map(r=>r.code)).size} สายทาง · ขอ ${lb(T.ask)} ลบ.</div></div>
      <div class="card kpi" style="border-left:4px solid var(--teal)"><div class="lbl">ได้ตามคำขอ</div><div class="val">${T.ok}<small>/${T.n}</small></div><div class="foot">${pct(T.ok,T.n)}% · วงเงินสัญญาที่ตรงคำขอ ${lb(T.gotAmt)} ลบ.</div></div>
-     <div class="card kpi" style="border-left:4px solid #e34948"><div class="lbl">คำขอที่ยังไม่ได้</div><div class="val">${lb(T.askNo)}<small> ลบ.</small></div><div class="foot">${T.n-T.ok} รายการ ยังไม่มีสัญญารองรับ</div></div>
-     <div class="card kpi" style="border-left:4px solid var(--gold)"><div class="lbl">สัญญาจริงทั้งปี (ทุกสาย)</div><div class="val">${T.histN}<small> สัญญา</small></div><div class="foot">${lb(T.histAmt)} ลบ. — รวมงานที่ไม่ได้ผ่านคำขอด้วย</div></div>
+     <div class="card kpi" style="border-left:4px solid #e34948"><div class="lbl">โดนตัด / ยังไม่ได้</div><div class="val">${lb(T.askNo)}<small> ลบ.</small></div><div class="foot">${T.n-T.ok} รายการ ยังไม่มีสัญญารองรับ · ${pct(T.askNo,T.ask)}% ของที่ขอ</div></div>
+     <div class="card kpi" style="border-left:4px solid var(--gold)"><div class="lbl">สัญญาจริงในปีเดียวกัน (ทุกสาย)</div><div class="val">${T.histN}<small> สัญญา</small></div><div class="foot">${T.histN?`${lb(T.histAmt)} ลบ. — รวมงานที่ไม่ได้ผ่านคำขอด้วย`:`${esc(yearLbl)} ยังไม่มีสัญญาในประวัติ`}</div></div>
      <div class="card kpi"><div class="lbl">สายที่ขอแล้วยังไม่ได้</div><div class="val">${stuck.length}<small> สาย</small></div><div class="foot">ทุกปีรวมกัน · ดูตารางล่างสุด</div></div>
    </div>`+
 
+  (noReq?'':`<div class="grid two" style="margin-top:14px">
+     <div class="card"><h3>ขอ vs ได้ — แต่ละหมวด · ${esc(yearLbl)}</h3>
+       <div class="note">แถวละหมวด · ความยาวแถบ = วงเงินที่ขอ แบ่งท่อนตามชนิดงบ · ท้ายแถบ = ได้กี่ % และโดนตัดกี่ ลบ. · ชี้ท่อนเพื่อดูวงเงิน</div>
+       <div id="gapChMuad"></div></div>
+     <div class="card"><h3>ขอ vs ได้ — แต่ละกิจกรรม · ${esc(yearLbl)}</h3>
+       <div class="note">กิจกรรมตามที่เขียนในคำขอ (มากสุด 12 กิจกรรม) · สีเขียว = ได้ · สีแดง = โดนตัด/ยังไม่ได้ · ชี้เพื่อดูจำนวนคำขอ</div>
+       <div id="gapChAct"></div></div>
+   </div>
+   <div class="grid two" style="margin-top:14px">
+     <div class="card"><h3>ขอ vs ได้ — แต่ละเขตเลือกตั้ง · ${esc(yearLbl)}</h3>
+       <div class="note">ครบทั้ง 11 เขตเสมอ · สีเขียว = ได้ · สีแดง = โดนตัด/ยังไม่ได้ · เขตที่ไม่มีแถบคือ "ไม่ได้ยื่นขอ" ไม่ใช่ได้ครบ · ชี้เพื่อดูชื่อ สส. และวงเงิน</div>
+       <div id="gapChZone"></div></div>
+     <div class="card"><h3>ขอ vs ได้ — แต่ละแหล่งงบ · ${esc(yearLbl)}</h3>
+       <div class="note">แหล่งงบตามที่ระบุในคำขอ (จังหวัด · กรม · กลุ่มจังหวัด …) · สีเขียว = ได้ · สีแดง = โดนตัด/ยังไม่ได้ · ชี้เพื่อดูจำนวนคำขอ</div>
+       <div id="gapChSrc"></div></div>
+   </div>
+   <div class="grid two" style="margin-top:14px">
+     <div class="card"><h3>ได้ตามคำขอกี่ % — แยกชนิดงบ · ${esc(yearLbl)}</h3>
+       <div class="note">คิดภายในชนิดงบนั้นเอง: ขอ 300 ลบ. ได้ 200 ลบ. = 67% · เส้นตั้งคือค่าเฉลี่ยรวมทุกชนิดงบ ยาวเกินเส้น = ได้ดีกว่าค่าเฉลี่ย · ชี้เพื่อดูวงเงิน</div>
+       <div id="gapChCat"></div></div>
+     <div class="card"><h3>งบที่ขอ และที่ได้รับ — เทียบทุกปี (ลบ.)</h3><div class="note">แท่งละปี = วงเงินที่ขอทั้งหมด · ส่วนสีเขียว = ที่ได้ · ส่วนสีแดง = โดนตัด/ยังไม่ได้</div><div id="gapChYear"></div></div>
+   </div>`)+
+  /* ปีที่ไม่มีคำขอ: กราฟเทียบทุกปียังต้องมี (เป็นภาพรวมทุกปี ไม่ขึ้นกับปีที่เลือก) */
+  (noReq?`<div class="card" style="margin-top:14px"><h3>งบที่ขอ และที่ได้รับ — เทียบทุกปี (ลบ.)</h3><div class="note">แท่งละปี = วงเงินที่ขอทั้งหมด · ส่วนสีเขียว = ที่ได้ · ส่วนสีแดง = โดนตัด/ยังไม่ได้</div><div id="gapChYear"></div></div>`:'')+
+
   `<div class="card" style="margin-top:14px">
-     <h3>ตารางรายปี — ขอเท่าไหร่ ได้เท่าไหร่</h3>
+     <h3>ตารางรายปี — ขอเท่าไหร่ ได้เท่าไหร่ (ทุกปีที่มีคำขอ)</h3>
      <div class="note">แต่ละปี ขอกี่รายการ ได้กี่รายการ · "ได้" = คำขอที่มีสัญญาจริงรองรับในปีเดียวกัน${T.vague?` · <span style="color:var(--gold)">⚠ ${T.vague} รายการไม่ระบุ กม. เทียบได้แค่ระดับสาย</span>`:''}</div>
      <div class="tblwrap" style="max-height:380px"><table id="gapYearTable"><thead><tr>
        <th>ปีงบ</th><th class="num">คำขอ</th><th class="num">ได้</th><th class="num">ไม่ได้</th><th class="num">% ได้</th>
@@ -7996,23 +8133,7 @@ function renderGap(){
      </tbody></table></div>
    </div>`+
 
-  `<div class="grid two" style="margin-top:14px">
-     <div class="card"><h3>งบที่ขอ และที่ได้รับ — รายปี (ลบ.)</h3><div class="note">แท่งละปี = วงเงินที่ขอทั้งหมด · ส่วนสีเขียว = ที่ได้ · ส่วนสีแดง = ที่ยังไม่ได้ · ชี้เพื่อดูวงเงินสัญญาจริง</div><div id="gapChYear"></div></div>
-     <div class="card"><h3>ได้ตามคำขอกี่ % — แยกชนิดงบ · ${esc(yearLbl)}</h3>
-       <div class="note">คิดภายในชนิดงบนั้นเอง: ขอ 300 ลบ. ได้ 200 ลบ. = 67% · เส้นตั้งคือค่าเฉลี่ยรวมทุกชนิดงบ ยาวเกินเส้น = ได้ดีกว่าค่าเฉลี่ย · ชี้เพื่อดูวงเงิน</div>
-       <div id="gapChCat"></div></div>
-   </div>`+
 
-  `<div class="card" style="margin-top:14px">
-     <h3>คำของบแยกตามหมวดบำรุงทาง · ${esc(yearLbl)}</h3>
-     <div class="note">แถวละหมวด · ความยาวแถบ = วงเงินที่ขอ แบ่งท่อนตามชนิดงบ · ท้ายแถบบอกว่าหมวดนั้นได้ตามคำขอกี่ % · ชี้ท่อนเพื่อดูวงเงิน</div>
-     <div id="gapChMuad"></div>
-   </div>
-   <div class="card" style="margin-top:14px">
-     <h3>คำของบแยกตามเขตเลือกตั้ง · ${esc(yearLbl)}</h3>
-     <div class="note">ครบทั้ง 11 เขตเสมอ · สีเขียว = ได้ · สีแดง = ยังไม่ได้ · เขตที่ไม่มีแถบคือ "ไม่ได้ยื่นขอ" ไม่ใช่ได้ครบ · ชี้เพื่อดูชื่อ สส. และวงเงิน</div>
-     <div id="gapChZone"></div>
-   </div>`+
 
   `<div class="card" style="margin-top:14px">
      <h3>สายทางที่ขอแล้วยังไม่ได้ — เรียงตามจำนวนปีที่พลาด (ทุกปี)</h3>
@@ -8020,7 +8141,7 @@ function renderGap(){
      <div class="tblwrap" style="max-height:480px"><table id="gapTable" data-sortable="1"><thead><tr>
        <th>รหัสสายทาง</th><th>ชื่อสายทาง</th><th>หมวด</th><th>เขต</th><th class="num">ปีที่ขอ</th><th class="num">ปีที่ได้</th><th class="num">ปีที่พลาด</th>
        <th class="num">วงเงินที่ไม่ได้ (บาท)</th><th>ชนิดงบที่ค้าง</th><th>ปีที่เคยขอ</th></tr></thead><tbody>
-       ${stuck.map(o=>`<tr data-code="${esc(o.code)}"><td><b>${esc(o.code)}</b></td><td>${esc(o.name||'')}</td><td>${esc(o.muad)}</td><td>${o.zone||'—'}</td>`+
+       ${stuck.map(o=>`<tr data-code="${esc(o.code)}"><td><b>${esc(o.code)}</b></td><td style="white-space:nowrap">${esc(o.name||'')}</td><td style="white-space:nowrap">${muadCell(o.muad)}</td><td>${o.zone||'—'}</td>`+
          `<td class="num">${o.nAsk}</td><td class="num">${o.nOk}</td><td class="num">${o.nMiss}</td>`+
          `<td class="num">${o.missAmt?fmt(o.missAmt):'—'}</td><td>${esc(o.catTxt)}</td><td>${o.yrs.join(' · ')}</td></tr>`).join('')}
      </tbody></table></div>
@@ -8060,6 +8181,7 @@ function renderGap(){
   });
 
   safeRun('bullet % ได้ตามคำขอ แยกชนิดงบ', ()=>{
+    if(noReq) return;
     const avg=T.ask?100*T.askOk/T.ask:0;
     const rows=askedCats.map(k=>{ const g=V.byCat[k], p=g.ask?100*g.askOk/g.ask:0;
       return {label:k, k, v:+p.toFixed(1), target:+avg.toFixed(1), max:100, unit:'%', n:g.n, ok:g.ok,
@@ -8073,45 +8195,278 @@ function renderGap(){
   });
 
   safeRun('แถบซ้อน หมวด × ชนิดงบ', ()=>{
+    if(noReq) return;
     const keys=muadKeys.filter(k=>V.byMuad[k].n>0), idle=muadKeys.filter(k=>V.byMuad[k].n===0);
     const rows=keys.map(k=>{ const g=V.byMuad[k], segs={};
       askedCats.forEach(c=>{ segs[c]=sumAsk(r=>r.muad===k&&r.cat===c); });
       return {label:k, k, segs, a:+(g.ask/1e6).toFixed(2), b:+(g.gotAmt/1e6).toFixed(2), n:g.n, ok:g.ok,
         askOk:+(g.askOk/1e6).toFixed(2), askNo:+(g.askNo/1e6).toFixed(2),
-        right:g.ask?`ได้ ${pct(g.askOk,g.ask)}%`:`${g.n} คำขอ · ไม่ระบุวงเงิน`,
-        tip:`คำขอ ${g.n} รายการ · ได้ตามคำขอ ${g.ok} (${pct(g.ok,g.n)}%) · สัญญาทั้งหมดในกลุ่ม ${g.histN}`}; });
+        right:g.ask?`ได้ ${pct(g.askOk,g.ask)}% · ตัด ${lb(g.askNo)}`:`${g.n} คำขอ · ไม่ระบุวงเงิน`,
+        tip:`คำขอ ${g.n} รายการ · ได้ตามคำขอ ${g.ok} (${pct(g.ok,g.n)}%) · โดนตัด ${lb(g.askNo)} ลบ. · สัญญาทั้งหมดในกลุ่ม ${g.histN}`}; });
     hstack('gapChMuad', rows, askedCats.map(c=>({k:c,label:c,color:catColor(c)})),
-      {unit:'ลบ.', labelW:104, rightW:82, showRight:true});
+      {unit:'ลบ.', labelW:104, rightW:118, showRight:true});
     const box=document.getElementById('gapChMuad');
     box.__cross={rows:keys, cols:askedCats, mat:rows.map(r=>askedCats.map(c=>r.segs[c]))};
     if(idle.length) box.insertAdjacentHTML('beforeend',
       `<div class="footnote xnote">หมวดที่ไม่ได้ยื่นขอในมุมมองนี้: ${idle.map(esc).join(' · ')}</div>`);
   });
 
+  safeRun('แถบซ้อน กิจกรรม', ()=>{
+    /* v31.4 ผู้ใช้: "แต่ละกิจกรรม โดนตัดเท่าไหร่" — เอาเฉพาะกิจกรรมที่ยื่นขอจริง เรียงตามวงเงินที่ขอ มากสุด 12 */
+    if(noReq) return;
+    const keys=Object.keys(V.byAct).filter(k=>V.byAct[k].n>0).sort((a,b)=>V.byAct[b].ask-V.byAct[a].ask).slice(0,12);
+    const rows=grpRows(V.byAct, keys, k=>k.length>30?k.slice(0,29)+'…':k);
+    rows.forEach(r=>{ const g=V.byAct[r.k]; r.segs={ok:r.askOk, no:r.askNo};
+      r.right=r.a?`ได้ ${pct(r.askOk,r.a)}% · ตัด ${lb(g.askNo)}`:`${r.n} คำขอ · ไม่ระบุวงเงิน`; });
+    hstack('gapChAct', rows, [{k:'ok',label:'ขอแล้วได้',color:OKC},{k:'no',label:'โดนตัด/ยังไม่ได้',color:NOC}],
+      {unit:'ลบ.', labelW:150, rightW:118, showRight:true});
+    const more=Object.keys(V.byAct).filter(k=>V.byAct[k].n>0).length-keys.length;
+    if(more>0) document.getElementById('gapChAct').insertAdjacentHTML('beforeend',`<div class="footnote xnote">แสดง 12 กิจกรรมที่ขอมากสุด · อีก ${more} กิจกรรมอยู่ในตารางรายสาย</div>`);
+  });
+
+  safeRun('แถบซ้อน แหล่งงบ', ()=>{
+    if(noReq) return;
+    const keys=Object.keys(V.bySrc).filter(k=>V.bySrc[k].n>0).sort((a,b)=>V.bySrc[b].ask-V.bySrc[a].ask);
+    const rows=grpRows(V.bySrc, keys, k=>k.replace(/^\s*\d+[.)]\s*/,''));
+    rows.forEach(r=>{ const g=V.bySrc[r.k]; r.segs={ok:r.askOk, no:r.askNo};
+      r.right=r.a?`ได้ ${pct(r.askOk,r.a)}% · ตัด ${lb(g.askNo)}`:`${r.n} คำขอ · ไม่ระบุวงเงิน`; });
+    hstack('gapChSrc', rows, [{k:'ok',label:'ขอแล้วได้',color:OKC},{k:'no',label:'โดนตัด/ยังไม่ได้',color:NOC}],
+      {unit:'ลบ.', labelW:120, rightW:118, showRight:true});
+  });
+
   safeRun('แถบซ้อน เขตเลือกตั้ง', ()=>{
+    if(noReq) return;
     const all=[...new Set([...Object.keys(KK_ZONES), ...zoneKeys])].sort((a,b)=>(isNaN(a)?99:+a)-(isNaN(b)?99:+b));
     const rows=grpRows(V.byZone, all, k=>isNaN(k)?k:'เขต '+k,
       k=>KK_ZONES[k]?`<br>สส. ${esc(KK_ZONES[k].mp)} · ${esc(KK_ZONES[k].party)}`:'');
     rows.forEach(r=>{ const g=V.byZone[r.k];
       r.segs={ok:r.askOk, no:r.askNo};
-      r.right = !g||!g.n ? 'ไม่ได้ยื่นขอ' : (r.a? `ได้ ${pct(r.askOk,r.a)}%` : `${r.n} คำขอ · ไม่ระบุวงเงิน`);
+      r.right = !g||!g.n ? 'ไม่ได้ยื่นขอ' : (r.a? `ได้ ${pct(r.askOk,r.a)}% · ตัด ${lb(g.askNo)}` : `${r.n} คำขอ · ไม่ระบุวงเงิน`);
       r.tip = (!g||!g.n) ? 'ไม่มีคำของบในมุมมองนี้' : r.tip; });
-    hstack('gapChZone', rows, [{k:'ok',label:'ขอแล้วได้',color:OKC},{k:'no',label:'ขอแล้วยังไม่ได้',color:NOC}],
-      {unit:'ลบ.', labelW:96, rightW:110, showRight:true});
+    hstack('gapChZone', rows, [{k:'ok',label:'ขอแล้วได้',color:OKC},{k:'no',label:'โดนตัด/ยังไม่ได้',color:NOC}],
+      {unit:'ลบ.', labelW:70, rightW:118, showRight:true});
   });
 
-  const sel=document.getElementById('gapYearSel');
-  if(sel) sel.addEventListener('change',()=>{ gapYearPick=sel.value; renderGap(); });
   box.querySelectorAll('#gapTable tbody tr[data-code]').forEach(tr=>{
     tr.style.cursor='pointer';
     tr.addEventListener('click',()=>{ const b=document.querySelector('.nav button[data-page="map"]');
       if(b) b.click(); setTimeout(()=>{ if(typeof selectRoad==='function') selectRoad(tr.dataset.code); },320); });
   });
-  const pills=document.getElementById('gapPills');
-  if(pills) pills.innerHTML=`<span class="hpill"><span class="dot ok"></span> คำของบ ${M.years.length} ปี × ประวัติสัญญา</span>`+
-    `<span class="hpill">คำขอ ${M.rows.length} รายการ</span>`+
-    `<span class="hpill">ได้ตามคำขอ ${pct(M.rows.filter(r=>r.status==='ok').length,M.rows.length)}%</span>`+
-    (M.rows.filter(r=>!r.exact).length?`<span class="hpill"><span class="dot wait"></span> ไม่ระบุ กม. ${M.rows.filter(r=>!r.exact).length}</span>`:'');
+}
+/* ══════════════════════════════════════════════════════════════════════════
+   โครงการประจำปี (renderYearly) — v31.2
+   ที่มา (ผู้ใช้ 7 ก.ย. 69): "เพิ่มแถบถัดจากวิเคราะห์ตัดสินใจ เป็นแถบโครงการประจำปี แล้วดึงเอาข้อมูลจากประวัติสายทาง
+   แต่ละปี แต่ละชีท มาแสดงข้อมูลสำคัญต่างๆ ตามแพทเทิร์นที่ทำ จะได้รู้ว่าปีนี้มีสายไหน ทำอะไรบ้าง"
+   กติกา: แหล่งเดียว = ประวัติสัญญา (แท็บ Y_xx) · เลือกปีเดียว ค่าเริ่มต้น = ปีล่าสุดที่มีสัญญา ·
+          ทุกการ์ดในหน้าคิดจากรายการปีนั้นชุดเดียว (H) — ยอดรวมทุกการ์ดต้องเท่ากับยอดรวมหน้า ·
+          รูปแบบเดียวกับหน้าประวัติ (kico · worktile · hbar · lolli · gantt · ตาราง) ไม่คิดสูตรใหม่
+   ══════════════════════════════════════════════════════════════════════════ */
+let yrPick=null, yrAgency='all';
+/* ปีที่เลือกได้ = ปีที่มีสัญญา ∪ ปีที่มีคำขอ (v31.4 — ปีที่ยื่นขอแล้วแต่ยังไม่มีสัญญาก็ต้องเปิดดูส่วนเช็คคำขอได้) */
+function yrYears(){ const a=histData?histData.map(x=>x.year):[], b=(typeof reqData!=='undefined'&&reqData)?reqData.map(r=>r.year):[];
+  return [...new Set([...a,...b].filter(Boolean))].sort((p,q)=>p-q); }
+function yrHistYears(){ return histData?[...new Set(histData.map(x=>x.year))].sort((a,b)=>a-b):[]; }
+function renderYearly(){
+  const box=document.getElementById('yrBody'); if(!box) return;
+  if(!histData||!histData.length) return;
+  const years=yrYears(), hy=yrHistYears();
+  if(!years.includes(+yrPick)) yrPick=hy[hy.length-1]||years[years.length-1];
+  const y=+yrPick, yi=years.indexOf(y);
+  const agencies=[...new Set(histData.map(histAgency))].sort((a,b)=>histData.filter(x=>histAgency(x)===b).length-histData.filter(x=>histAgency(x)===a).length);
+  if(yrAgency!=='all'&&!agencies.includes(yrAgency)) yrAgency='all';
+  const HY=histData.filter(x=>x.year===y), H=yrAgency==='all'?HY:HY.filter(x=>histAgency(x)===yrAgency);
+  const info=codeInfo(), mB=muadByCode();
+  const sum=(L,f)=>L.reduce((a,x)=>a+(f(x)||0),0);
+  const tot=sum(H,x=>x.amount);
+  const codes=new Set(H.map(x=>x.code).filter(Boolean));
+  const withAmt=H.filter(x=>x.amount).length;
+  const delivered=H.filter(x=>x.delivered).length;
+  const now=Date.now();
+  const endOf=x=>{ const d=parseThaiDate(x.end); return d?d.getTime():null; };
+  const active=H.filter(x=>{ const e=endOf(x); return e!=null&&e>=now; }).length;
+  const overdue=H.filter(x=>{ const e=endOf(x); return e!=null&&e<now&&!x.delivered; }).length;
+  // ปริมาณงาน — สูตรเดียวกับ "ปริมาณงานสะสม" หน้าประวัติ แต่เฉพาะปีนี้ (และหน่วยที่กรอง)
+  const roadKm=sum(H,x=>segKmType(x,'r')), elecKm=sum(H,x=>segKmType(x,'e')), poles=sum(H,x=>poleCount(x)), brM=sum(H,x=>segKmType(x,'b'))*1000;
+  const segCls=(x,s)=>(s.lbl&&roadClsTxt(s.lbl))||roadCls(x);
+  const cls={'ก่อสร้าง':{km:0,n:0},'ขยาย':{km:0,n:0},'บำรุง':{km:0,n:0}};
+  H.filter(x=>segKmType(x,'r')>0||(!isElectric(x)&&!histIsBridge(x)&&!histIsBuilding(x)&&!x.segs.length)).forEach(x=>{
+    const per={'ก่อสร้าง':0,'ขยาย':0,'บำรุง':0};
+    x.segs.filter(v=>(v.t||'r')==='r').forEach(v=>{ per[segCls(x,v)]+=(v.b-v.a); });
+    Object.keys(per).forEach(k=>cls[k].km+=per[k]);
+    const main=Object.keys(per).sort((a,b)=>per[b]-per[a])[0];
+    cls[(per[main]>0)?main:roadCls(x)].n++;
+  });
+  const hE=H.filter(x=>poleCount(x)>0||(isElectric(x)&&!x.segs.length));
+  const hB=H.filter(x=>segKmType(x,'b')>0||(histIsBridge(x)&&!isElectric(x)&&!x.segs.length));
+  const hBld=H.filter(histIsBuilding);
+  const yearOpt=years.slice().reverse().map(v=>`<option value="${v}"${v===y?' selected':''}>ปีงบ ${v}${hy.includes(v)?'':' (มีแต่คำขอ)'}</option>`).join('');
+  const agOpt=`<option value="all"${yrAgency==='all'?' selected':''}>ทุกหน่วย</option>`+agencies.map(a=>`<option value="${esc(a)}"${a===yrAgency?' selected':''}>${esc(a)}</option>`).join('');
+  const agLbl=yrAgency==='all'?'':` · เฉพาะ${esc(yrAgency)}`;
+  const noHist=!HY.length;
+
+  box.innerHTML=`
+    <div class="card" style="margin-bottom:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <b>ปีงบประมาณ</b>
+      <button class="btn ghost" type="button" id="yrPrev" ${yi<=0?'disabled':''} title="ปีก่อนหน้า">‹ ${yi>0?years[yi-1]:''}</button>
+      <select class="search" id="yrYearSel" style="max-width:200px">${yearOpt}</select>
+      <button class="btn ghost" type="button" id="yrNext" ${yi>=years.length-1?'disabled':''} title="ปีถัดไป">${yi<years.length-1?years[yi+1]:''} ›</button>
+      <b style="margin-left:8px">หน่วยดำเนินการ</b>
+      <select class="search" id="yrAgencySel" style="max-width:200px">${agOpt}</select>
+      <span class="note" style="margin:0">ส่วนสรุปแสดงเฉพาะปีและหน่วยที่เลือก · ยอดสะสมทุกปีดูที่หน้า "ประวัติสายทาง"</span>
+    </div>
+    <div class="secdiv"><h2>① สรุปปีงบ ${y}${agLbl} — งบเท่าไหร่ กี่โครงการ ทำอะไรบ้าง</h2></div>
+    ${noHist?`<div class="card" style="margin-bottom:14px"><div class="note" style="margin:0;padding:8px 2px">ปีงบ ${y} ยังไม่มีสัญญาในประวัติ — ดูส่วนเช็คคำขอด้านล่างว่าปีนี้ยื่นขออะไรไปบ้าง</div></div>`:''}
+    <div class="grid kpis kpi3">
+      ${kico('📋','#edf2fa','สัญญาปีนี้', `${H.length} <small>รายการ</small>`, `ปีงบ ${y}${agLbl} · จาก ${histData.length} สัญญาทุกปี`)}
+      ${kico('🛣️','#e6f4f2','สาย/สะพานที่มีงาน', `${codes.size} <small>รหัส</small>`, `${(100*codes.size/Math.max(1,ALL_CODES.length)).toFixed(0)}% ของบัญชี${hBld.length?` · งานอาคาร ${hBld.length}`:''}`)}
+      ${kico('💰','#e9f6ee','วงเงินตามสัญญารวม', fmtM(tot), `${withAmt} รายการที่ระบุวงเงิน · เฉลี่ย ${fmtM(tot/Math.max(1,withAmt))}`)}
+      ${kico('🛤️','#f0ecfa','ระยะทางถนนที่ทำ', `${fmt(+roadKm.toFixed(1))} <small>กม.</small>`, `ก่อสร้าง ${fmt(+cls['ก่อสร้าง'].km.toFixed(1))} · ขยาย ${fmt(+cls['ขยาย'].km.toFixed(1))} · บำรุง ${fmt(+cls['บำรุง'].km.toFixed(1))} กม.`)}
+      ${kico('💡','#fbf3df','ไฟฟ้า · สะพาน', [poles?fmt(poles)+' <small>ต้น</small>':'', brM?fmt(Math.round(brM))+' <small>ม.</small>':''].filter(Boolean).join(' · ')||'—', `${hE.length?`ไฟฟ้า ${hE.length} โครงการ (${fmt(+elecKm.toFixed(1))} กม.)`:'ไม่มีงานไฟฟ้า'} · ${hB.length?`สะพาน ${hB.length} โครงการ`:'ไม่มีงานสะพาน'}`)}
+      ${kico('✅','#e9f6ee','ส่งงานงวดสุดท้ายแล้ว', `${delivered} <small>/ ${H.length}</small>`, `${active?`ยังไม่หมดสัญญา ${active}`:'ไม่มีสัญญาที่ยังไม่หมด'}${overdue?` · <span style="color:var(--crit)">หมดแล้วยังไม่ส่งงาน ${overdue}</span>`:''}`)}
+    </div>
+    ${H.length?`
+    <div class="card" style="margin-bottom:14px">
+      <h3>แบ่งเป็นงานอะไรบ้าง</h3><div class="note">ปริมาณงานของปีนี้ แยกตามชนิดงาน — ชี้ที่ช่องเพื่อดูรายการ</div>
+      <div class="workgrid">
+        <div class="worktile" style="background:#e9f6ee"><div class="wico">🏗️</div><div style="min-width:0"><div class="wval">${fmt(+cls['ก่อสร้าง'].km.toFixed(1))} <small>กม.</small></div><div class="wlbl">ก่อสร้างใหม่</div><div class="wfoot">${cls['ก่อสร้าง'].n} โครงการ</div></div></div>
+        <div class="worktile" style="background:#e6f4f2"><div class="wico">🛤️</div><div style="min-width:0"><div class="wval">${fmt(+cls['ขยาย'].km.toFixed(1))} <small>กม.</small></div><div class="wlbl">ขยายผิวจราจร</div><div class="wfoot">${cls['ขยาย'].n} โครงการ</div></div></div>
+        <div class="worktile" style="background:#edf2fa"><div class="wico">🔧</div><div style="min-width:0"><div class="wval">${fmt(+cls['บำรุง'].km.toFixed(1))} <small>กม.</small></div><div class="wlbl">งานบำรุง</div><div class="wfoot">${cls['บำรุง'].n} โครงการ</div></div></div>
+        <div class="worktile" style="background:#fbf3df"><div class="wico">💡</div><div style="min-width:0"><div class="wval">${poles?fmt(poles):'—'}${poles?' <small>ต้น</small>':''}</div><div class="wlbl">ไฟฟ้าแสงสว่าง</div><div class="wfoot">${hE.length?`${hE.length} โครงการ · ${fmt(+elecKm.toFixed(1))} กม.`:'—'}</div></div></div>
+        <div class="worktile" style="background:#eaf2fc"><div class="wico">🌉</div><div style="min-width:0"><div class="wval">${brM?fmt(Math.round(brM)):'—'}${brM?' <small>ม.</small>':''}</div><div class="wlbl">งานสะพาน</div><div class="wfoot">${hB.length?hB.length+' โครงการ':'—'}</div></div></div>
+        <div class="worktile" style="background:#f0ecfa"><div class="wico">🏢</div><div style="min-width:0"><div class="wval">${hBld.length||'—'}${hBld.length?' <small>งาน</small>':''}</div><div class="wlbl">งานอาคาร</div><div class="wfoot">${hBld.length?fmtM(sum(hBld,x=>x.amount)):'—'}</div></div></div>
+      </div>
+    </div>
+    <div class="grid two">
+      <div class="card"><h3>กิจกรรมที่ทำปีนี้</h3><div class="note">ล้านบาท — ชี้เพื่อดูจำนวนสัญญา</div><div id="yrAct"></div></div>
+      <div class="card"><h3>วงเงินแยกตามชนิดงบ</h3><div class="note">ล้านบาท — ชี้ที่แท่งเพื่อดูจำนวนสัญญาและ % ของปี</div><div id="yrType"></div></div>
+    </div>
+    <div class="grid two" style="margin-top:14px">
+      <div class="card"><h3>วงเงินแยกตามหมวดบำรุงทาง</h3><div class="note">ล้านบาท — หมวดของสายที่ทำ · แขวงฯ = งานที่ไม่ผูกสาย</div><div id="yrMuad"></div></div>
+      <div class="card"><h3>จำแนกตามเขตเลือกตั้ง</h3><div class="note">ล้านบาท — ตามช่วง กม. ที่ทำจริง · "ไม่ระบุ" = สัญญาที่ระบุตำแหน่งไม่ได้</div><div id="yrZone"></div></div>
+    </div>
+    <div class="grid two" style="margin-top:14px">
+      <div class="card"><h3>สายทางที่ได้งบสูงสุดปีนี้ (Top 10)</h3><div class="note">ล้านบาท — คลิกเพื่อเปิดสรุปรายสาย</div><div id="yrTopRoad"></div></div>
+      <div class="card"><h3>หน่วยดำเนินการ</h3><div class="note">ล้านบาท — คลิกแท่งเพื่อกรองเฉพาะหน่วยนั้น คลิกซ้ำเพื่อดูทุกหน่วย</div><div id="yrAgency"></div></div>
+    </div>
+    <div class="card" style="margin-top:14px"><h3>ผู้รับจ้างปีนี้ (Top 10)</h3><div class="note">ล้านบาท — ชี้เพื่อดูจำนวนสัญญา</div><div id="yrContractor"></div></div>
+    <div class="card" style="margin-top:14px">
+      <h3>ช่วงเวลาสัญญาปีงบ ${y}</h3>
+      <div class="note">แถบ = ช่วงสัญญา (เริ่ม–สิ้นสุด) · เส้นแดง = วันนี้ · จุดแดงท้ายแถบ = หมดสัญญาแล้วแต่ยังไม่ส่งงานงวดสุดท้าย · เรียงตามวันเริ่ม · คลิกเพื่อเปิดในแผนที่</div>
+      <div id="yrGantt"></div>
+    </div>`:''}
+    <div class="card" style="margin-top:14px">
+      <h3>รายการสัญญาทั้งหมด ปีงบ ${y}${agLbl} (${H.length} รายการ)</h3>
+      <div class="note">คลิกแถวเพื่อเปิดสรุปรายสาย (One-Page) · คลิกหัวคอลัมน์เพื่อเรียง · แถวรวมอยู่ท้ายตาราง</div>
+      <div class="tblwrap" style="max-height:560px"><table id="yrTable"><thead><tr>
+        <th>รหัส</th><th>ชื่อสายทาง</th><th>หมวด</th><th>หน่วย</th><th>ชนิดงบ</th><th>กิจกรรม</th><th style="min-width:150px">ช่วง กม.</th><th>เลขที่สัญญา</th><th class="c">เริ่ม</th><th class="c">สิ้นสุด</th><th class="num">วงเงิน (บาท)</th><th class="c">ส่งงานงวดสุดท้าย</th>
+      </tr></thead><tbody></tbody></table></div>
+    </div>
+    <div id="gapBody"><div class="loading"><span class="spin"></span>กำลังเทียบคำของบกับสัญญาปีนี้…</div></div>`;
+
+  // ---- ตัวเลือกปี / หน่วย ----
+  const sel=document.getElementById('yrYearSel');
+  sel.addEventListener('change',()=>{ yrPick=+sel.value; renderYearly(); });
+  const step=d=>{ const v=years[yi+d]; if(v!=null){ yrPick=v; renderYearly(); } };
+  document.getElementById('yrPrev').addEventListener('click',()=>step(-1));
+  document.getElementById('yrNext').addEventListener('click',()=>step(1));
+  const asel=document.getElementById('yrAgencySel');
+  asel.addEventListener('change',()=>{ yrAgency=asel.value; renderYearly(); });
+
+  const CARDS={
+   'ชนิดงบ': ()=>{
+      if(!H.length) return;
+      const byT={}; H.forEach(x=>{ const k=normCat(x.budgetType); byT[k]=byT[k]||{amt:0,n:0}; byT[k].amt+=(x.amount||0); byT[k].n++; });
+      const ks=Object.keys(byT).sort((a,b)=>byT[b].amt-byT[a].amt);
+      const TC=btColorMap(ks);
+      hbar('yrType', ks.map(k=>({label:k, v:+(byT[k].amt/1e6).toFixed(1), color:TC[k],
+        tip:`<b>${esc(k)}</b><br>${byT[k].n} สัญญา · ${fmt(byT[k].amt)} บาท · ${tot?(100*byT[k].amt/tot).toFixed(0):0}% ของปี`})), {unit:'ลบ.', labelW:120});
+   },
+   'หมวด': ()=>{
+      if(!H.length) return;
+      const ms=[...MUAD_ORDER,'แขวงฯ','ถ่ายโอน','ไม่ระบุ'].filter(m=>H.some(x=>recMuad(x)===m));
+      hbar('yrMuad', ms.map(m=>{ const L=H.filter(x=>recMuad(x)===m), a=sum(L,x=>x.amount);
+        return {label:recMuadLabel(m), v:+(a/1e6).toFixed(1), color:recMuadColor(m),
+          tip:`<b>${esc(recMuadLabel(m))}</b><br>${L.length} สัญญา · ${new Set(L.map(x=>x.code).filter(Boolean)).size} สาย · ${fmt(a)} บาท`}; }), {unit:'ลบ.', labelW:120});
+   },
+   'สายได้งบสูงสุด': ()=>{
+      if(!H.length) return;
+      const byRd={}; H.forEach(x=>{ if(!x.code) return; byRd[x.code]=byRd[x.code]||{amt:0,n:0}; byRd[x.code].amt+=(x.amount||0); byRd[x.code].n++; });
+      const top=Object.entries(byRd).sort((a,b)=>b[1].amt-a[1].amt).slice(0,10);
+      lolli('yrTopRoad', top.map(([c,o])=>({label:c, v:+(o.amt/1e6).toFixed(1), color:muadColor(mB[c]),
+        tip:`${esc(info[c]?.name||'')}<br>${o.n} สัญญา · ${fmt(o.amt)} บาท · หมวด${esc(mB[c]||'-')}`})), {unit:'ลบ.', onClick:it=>gotoOnePage(it.label)});
+   },
+   'กิจกรรม': ()=>{
+      if(!H.length) return;
+      const byA={}; H.forEach(x=>{ const k=x.activity||'ไม่ระบุ'; byA[k]=byA[k]||{amt:0,n:0,bt:{}}; byA[k].amt+=(x.amount||0); byA[k].n++; byA[k].bt[x.budgetType]=(byA[k].bt[x.budgetType]||0)+(x.amount||0); });
+      const top=Object.entries(byA).sort((a,b)=>b[1].amt-a[1].amt).slice(0,8);
+      hbar('yrAct', top.map(([k,o])=>{ const dom=Object.entries(o.bt).sort((a,b)=>b[1]-a[1])[0]?.[0]||'';
+        return {label:k, v:+(o.amt/1e6).toFixed(1), color:btColor(dom)||C.teal, tip:`${fmt(o.amt)} บาท · ${o.n} สัญญา · ชนิดงบหลัก: ${esc(dom)||'-'}`}; }), {unit:'ลบ.', labelW:230});
+   },
+   'เขตเลือกตั้ง': ()=>{
+      if(!H.length) return;
+      const Z={};
+      H.forEach(x=>{ const sg=(x.segs||[]).find(v=>v.a!=null); const z=zoneOfRec(x.code, sg?sg.a:null, sg?(sg.b??sg.a):null);
+        const k=z==null?'':String(z); const o=Z[k]||(Z[k]={n:0,amt:0}); o.n++; o.amt+=(x.amount||0); });
+      const keys=Object.keys(Z).sort((a,b)=>(a===''?99:+a)-(b===''?99:+b));
+      hbar('yrZone', keys.map(k=>({label:k?'เขต '+k:'ไม่ระบุ', v:+(Z[k].amt/1e6).toFixed(1), color:k?zoneColor(+k):'#9aa5a3',
+        tip:k?`<b>เขต ${k}</b> ${esc(KK_ZONES[k].mp)} · ${esc(KK_ZONES[k].party)}<br>${Z[k].n} สัญญา · ${fmtM(Z[k].amt)}`:`${Z[k].n} สัญญา · ${fmtM(Z[k].amt)}`})), {unit:'ลบ.', labelW:64});
+   },
+   'หน่วยดำเนินการ': ()=>{
+      /* v31.4 ผู้ใช้: "ดูหน่วยดำเนินการด้วย" — คิดจากทั้งปี (ไม่ใช่เฉพาะหน่วยที่กรอง) เพื่อให้เห็นเทียบกันและคลิกสลับหน่วยได้ */
+      if(!HY.length) return;
+      const byU={}; HY.forEach(x=>{ const u=histAgency(x); byU[u]=byU[u]||{amt:0,n:0}; byU[u].amt+=(x.amount||0); byU[u].n++; });
+      const us=Object.keys(byU).sort((a,b)=>byU[b].amt-byU[a].amt);
+      const uColor=u=>u==='แขวงฯ'?C.navy:(u.startsWith('หมวด')?muadColor(u.replace('หมวด','')):'#9aa5a3');
+      hbar('yrAgency', us.map(u=>({label:u, v:+(byU[u].amt/1e6).toFixed(1), color:uColor(u), k:u,
+        tip:`<b>${esc(u)}</b><br>${byU[u].n} สัญญา · ${fmt(byU[u].amt)} บาท${u===yrAgency?'<br><i>กำลังกรองหน่วยนี้อยู่ — คลิกอีกครั้งเพื่อดูทุกหน่วย</i>':'<br>คลิกเพื่อกรองเฉพาะหน่วยนี้'}`})),
+        {unit:'ลบ.', labelW:110, onClick:it=>{ yrAgency=(yrAgency===it.label)?'all':it.label; renderYearly(); }});
+   },
+   'ผู้รับจ้าง': ()=>{
+      if(!H.length) return;
+      const byC={}; H.forEach(x=>{ const k=(x.contractor||'').trim()||'ไม่ระบุ'; byC[k]=byC[k]||{amt:0,n:0}; byC[k].amt+=(x.amount||0); byC[k].n++; });
+      const top=Object.entries(byC).sort((a,b)=>b[1].amt-a[1].amt).slice(0,10);
+      hbar('yrContractor', top.map(([k,o])=>({label:k.length>34?k.slice(0,33)+'…':k, v:+(o.amt/1e6).toFixed(1), color:C.navy, tip:`${esc(k)}<br>${o.n} สัญญา · ${fmt(o.amt)} บาท`})), {unit:'ลบ.', labelW:230});
+   },
+   'ช่วงเวลาสัญญา': ()=>{
+      const gb=document.getElementById('yrGantt'); if(!gb) return;
+      const DAY=864e5;
+      const rows=H.map(x=>{ const a=parseThaiDate(x.start), b=parseThaiDate(x.end); if(!b) return null;
+          const tb=b.getTime(), noStart=!a||a.getTime()>=tb; return {x, ta:noStart?tb-30*DAY:a.getTime(), tb, noStart}; })
+        .filter(Boolean).sort((p,q)=>p.ta-q.ta);
+      const GMAX=40, gs=rows.slice(0,GMAX), noDate=H.length-rows.length;
+      const goMap=code=>{ if(!code) return; const b=document.querySelector('.nav button[data-page="map"]'); if(b) b.click(); setTimeout(()=>{ if(typeof selectRoad==='function') selectRoad(code); },320); };
+      gantt('yrGantt', gs.map(g=>({
+        label:(g.x.code||'ไม่ระบุสาย')+' · '+normCat(g.x.budgetType)+(g.x.contract?' · '+String(g.x.contract).trim():''),
+        a:g.ta, b:g.tb, color:muadColor(mB[g.x.code]), late:(g.tb<now&&!g.x.delivered), code:g.x.code,
+        tip:`<b>${esc(g.x.code||'ไม่ระบุสาย')}</b> ${esc(String(g.x.activity||'').slice(0,28))}<br>สัญญา ${esc(g.x.contract||'-')}<br>${g.noStart?'<i>ไม่ระบุวันเริ่ม</i>':esc(g.x.start)} – ${esc(g.x.end)}<br>วงเงิน ${g.x.amount?fmtM(g.x.amount):'-'}`+
+            (g.x.delivered?`<br>ส่งงานงวดสุดท้าย ${esc(g.x.delivered)}`:(g.tb<now?'<br><b style="color:#ff9b9b">หมดสัญญาแล้ว ยังไม่มีวันส่งงาน</b>':''))})), {onClick:r=>goMap(r.code)});
+      const fn=document.createElement('div'); fn.className='footnote'; fn.style.marginTop='6px';
+      fn.textContent=(rows.length>GMAX?`แถบแสดง ${GMAX} จาก ${rows.length} สัญญาที่ระบุวันสิ้นสุด`:`ครบทุกสัญญาที่ระบุวันสิ้นสุด ${rows.length} รายการ`)+(noDate?` · ไม่ระบุวันสิ้นสุด ${noDate} รายการ (อยู่ในตารางด้านล่าง)`:'');
+      gb.appendChild(fn);
+   },
+   'ตารางสัญญา': ()=>{
+      const tb=document.querySelector('#yrTable tbody'); if(!tb) return;
+      const L=[...H].sort((a,b)=>(b.amount||0)-(a.amount||0));
+      tb.innerHTML=L.map(x=>{ const r=x.code?info[x.code]:null;
+        return `<tr${x.code?` data-code="${esc(x.code)}" style="cursor:pointer"`:''}>`+
+          `<td><b>${esc(x.code||'—')}</b>${x.code0?` <span class="chip" title="รหัสเดิม">${esc(x.code0)}</span>`:''}</td><td style="white-space:nowrap">${esc(r?.name||x.roadFull||'—')}</td>`+
+          `<td style="white-space:nowrap">${muadCell(recMuad(x))}</td><td style="white-space:nowrap">${esc(histAgency(x))}</td>`+
+          `<td style="white-space:nowrap">${esc(normCat(x.budgetType))}</td><td style="white-space:nowrap">${esc(x.activity||'—')}</td><td style="white-space:normal;max-width:210px;font-size:11.5px;line-height:1.35">${esc((x.kmRange||'—').replace(/,\s*/g,'\n')).replace(/\n/g,'<br>')}</td><td style="white-space:nowrap">${esc(x.contract||'—')}</td>`+
+          `<td class="c">${esc(x.start||'—')}</td><td class="c">${esc(x.end||'—')}</td><td class="num">${x.amount?fmt(x.amount):'—'}</td>`+
+          `<td class="c">${x.delivered?esc(x.delivered):'<span style="color:var(--muted)">ยังไม่ส่ง</span>'}</td></tr>`; }).join('')+
+        `<tr style="background:var(--teal-soft);font-weight:700"><td>รวม</td><td>${codes.size} สาย/สะพาน</td><td></td><td></td><td></td><td>${H.length} สัญญา</td><td></td><td></td><td></td><td></td><td class="num">${fmt(tot)}</td><td class="c">${delivered}/${H.length}</td></tr>`;
+      tb.querySelectorAll('tr[data-code]').forEach(tr=>tr.addEventListener('click',()=>gotoOnePage(tr.dataset.code)));
+   },
+   'เช็คคำขอ': ()=>renderGap()   // v31.4 ส่วนล่างของหน้า — ใช้ตัววาดเดิมของหน้าเช็คคำขอ ปี = yrPick
+  };
+  Object.keys(CARDS).forEach(k=>safeRun('โครงการประจำปี · '+k, CARDS[k]));
+  renderYearly.cards=CARDS;
+  const pills=document.getElementById('yrPills');
+  if(pills) pills.innerHTML=`<span class="hpill"><span class="dot live"></span> ประวัติสัญญา ${hy.length} ปี (${hy[0]}–${hy[hy.length-1]})</span>`+
+    `<span class="hpill">▣ ปีงบ ${y}${agLbl} · ${H.length} สัญญา · ${codes.size} สาย/สะพาน</span>`+
+    `<span class="hpill">💰 ${fmtM(tot)}</span>`+
+    (typeof reqData!=='undefined'&&reqData?`<span class="hpill">⇄ คำขอปีนี้ ${reqData.filter(r=>r.year===y).length} รายการ</span>`:`<span class="hpill"><span class="dot wait"></span> รอคำของบ</span>`);
+  enhanceSoon();
 }
 function renderZerobase(){ if(zbData) renderZbOverview(); }
 document.getElementById('zbYearSel').addEventListener('change',e=>{ zbYearPick=e.target.value; renderZerobase(); });
@@ -8150,7 +8505,7 @@ function renderZbOverview(){
     </div>
     <div class="grid two" style="margin-top:14px">
       <div class="card"><h3>คำขอแยกตามหมวดบำรุงทาง</h3><div class="note">แท่งซ้อนแบ่งตามกลุ่มกิจกรรม — ชี้ที่ท่อนเพื่อดูรายละเอียด</div><div id="chZbMuad"></div></div>
-      <div class="card"><h3>${all?'คำขอต่อปี แยกตามกลุ่มกิจกรรม':'สัดส่วนกลุ่มกิจกรรม'}</h3><div class="note">${all?'เห็นแนวโน้มความต้องการปีต่อปี':'จำนวนคำขอ และ % — ชี้เพื่อดูรายละเอียด'}</div><div id="chZbSecond"></div></div>
+      <div class="card"><h3>${all?'คำขอต่อปี แยกตามกลุ่มกิจกรรม':'สัดส่วนกลุ่มกิจกรรม'}</h3><div class="note">${all?'เห็นแนวโน้มความต้องการปีต่อปี':'แต่ละกลุ่ม ขอกี่รายการ · กี่ % · ปริมาณรวม — แถบสีด้านบน = สัดส่วนจำนวนคำขอ'}</div><div id="chZbSecond"></div></div>
     </div>
     <div class="card" style="margin-top:14px">
       <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
@@ -8198,7 +8553,8 @@ function renderZbOverview(){
       }).filter(Boolean),
       {unit:'คำขอ', stacked:true, height:300, fmtVal:v=>fmt(Math.round(v),0)});
   }else{
-    donut('chZbSecond', byG.map(x=>({label:x.g.k, v:x.n, color:x.g.c})), {unit:'คำขอ', height:300});
+    /* v31.6 ผู้ใช้: "กราฟโดนัทแบบนี้เริ่มดูรายละเอียดยาก" → กล่องละกลุ่ม (จำนวน · % · ปริมาณ) แบบเดียวกับหน้าคำของบ */
+    groupBoxes('chZbSecond', byG.map(x=>[x.g.k,{label:x.g.k, n:x.n, amt:qty(x), tip:`${x.n} คำขอ · ${qty(x)}`}]), k=>ZB_GROUPS.find(g=>g.k===k).c, {unit:'คำขอ', small:true});
   }
   // ตารางรายสาย
   const renderTbl=()=>{
@@ -8215,7 +8571,7 @@ function renderZbOverview(){
         const gs=[...new Set(list.map(r=>r.g.k))];
         const yrs=[...new Set(list.map(r=>r.year))].sort();
         return `<tr data-code="${code}" style="cursor:pointer">
-          <td><b>${code}</b></td><td>${esc(rd?.name||'—')}</td><td>${rd?.muad?'หมวด'+esc(rd.muad):'—'}</td>
+          <td><b>${code}</b></td><td style="white-space:nowrap">${esc(rd?.name||'—')}</td><td style="white-space:nowrap">${muadCell(rd?.muad)}</td>
           ${all?`<td style="font-variant-numeric:tabular-nums;font-size:11.5px">${yrs.join(', ')}</td>`:''}
           <td class="num">${fmt(rd?.len_acct)}</td><td class="num"><b>${n}</b></td>
           <td class="num">${rdKmR?fmt(+rdKmR.toFixed(2)):'–'}</td><td class="num">${plR?fmt(plR):'–'}</td><td class="num">${brR?fmt(Math.round(brR)):'–'}</td>
@@ -8949,7 +9305,7 @@ function renderRiskSum(){
         const f=l.filter(riskFixed).length;
         const ts=[...new Set(l.map(x=>x.rtype||'ไม่ระบุ'))];
         return `<tr data-code="${c}" style="cursor:pointer">
-          <td><b>${c}</b></td><td>${esc(roadInfo[c]?.name||'—')}</td><td>${esc(recMuadLabel(muadByCode()[c]||l[0]?._m||'ไม่ระบุ'))}</td>
+          <td><b>${c}</b></td><td style="white-space:nowrap">${esc(roadInfo[c]?.name||'—')}</td><td style="white-space:nowrap">${muadCell(muadByCode()[c]||l[0]?._m||'ไม่ระบุ')}</td>
           <td class="num"><b>${l.length}</b></td><td class="num" style="color:#0a6b0a">${f}</td>
           <td class="num" style="color:${l.length-f?'var(--crit)':'var(--muted)'}">${l.length-f}</td>
           <td>${ts.map(t=>`<span style="display:inline-flex;align-items:center;margin-right:8px;font-size:11.5px;color:var(--ink2)"><span style="width:9px;height:9px;border-radius:2px;background:${TC[t]};display:inline-block;margin-right:4px"></span>${riskIcon(t)} ${esc(t)} (${l.filter(x=>(x.rtype||'ไม่ระบุ')===t).length})</span>`).join('')}</td></tr>`;
