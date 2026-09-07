@@ -1373,15 +1373,14 @@ try{ const t=localStorage.getItem('drr_theme'); if(t&&t!=='default') document.do
       <!-- v24.0 — Scatter/Bubble: 3 มิติในภาพเดียว หา "สายที่รถเยอะแต่งบน้อย" ซึ่งกราฟแท่งบอกไม่ได้ -->
       <div class="card" style="margin-top:14px">
         <h3>③½ ความสำคัญ เทียบกับ เงินที่ลงไป</h3>
-        <div class="note">แกนตั้ง = PCU (คนใช้มากแค่ไหน) · แกนนอน = งบที่เคยได้ต่อ กม. (เราลงทุนไปเท่าไร)
-          · ขนาดฟอง = ระยะทาง · สีตามหมวด — <b>ช่องซ้ายบนที่แรเงาไว้ คือกลุ่มที่ควรได้งบก่อน</b> · คลิกฟองเพื่อเปิดในแผนที่</div>
+        <div class="note">แกนตั้ง = PCU · แกนนอน = งบที่เคยได้ต่อ กม. · ขนาดฟอง = ระยะทาง — <b>ช่องแรเงา = ควรได้งบก่อน</b> · คลิกเพื่อเปิดแผนที่</div>
         <div id="dcScatter"></div>
       </div>
       <!-- v29.8 — ต่อยอดจากหน้าเช็คคำขอ: สายที่ยื่นขอซ้ำหลายปีแต่ไม่เคยมีสัญญารองรับ (โมเดลเดียวกับหน้าเช็คคำขอ ไม่คำนวณซ้ำ) -->
       <div class="card" style="margin-top:14px">
         <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start">
           <div><h3>③¾ สายที่ขอบ่อยแต่ยังไม่ได้</h3>
-            <div class="note" style="margin:0">แท่ง = วงเงินที่ขอแล้วไม่ได้ (ลบ.) · แดง = พลาดมากกว่า 1 ปี · เรียงตามจำนวนปีที่พลาด · ชี้เพื่อดูรายละเอียด คลิกเพื่อเปิดในแผนที่</div></div>
+            <div class="note" style="margin:0">แท่ง = วงเงินที่ขอแล้วไม่ได้ (ลบ.) · แดง = พลาดมากกว่า 1 ปี · คลิกเพื่อเปิดในแผนที่</div></div>
           <button class="btn ghost" onclick="document.querySelector('.nav button[data-page=yearly]').click();setTimeout(()=>document.getElementById('gapBody')?.scrollIntoView({behavior:'smooth'}),400)">⇄ ดูทั้งหมดในหน้าโครงการประจำปี</button>
         </div>
         <div id="dcStuck"></div>
@@ -1724,6 +1723,36 @@ function heat(container, rowLabels, colLabels, matrix, {unit='', fmtV=fmt, onCli
 }
 
 /* ③ Bullet — ค่าจริงเทียบเป้า เห็นทันทีว่าถึงหรือไม่ถึง (แทนเกจวัด กินที่น้อยกว่า บอกมากกว่า) */
+/* v31.7 แถบหลอด (ผู้ใช้ 7 ก.ย. 69: "เหมือนแถบหลอด เต็มคือที่ขอ แล้วได้เท่าไหร่ก็โชว์เป็นขีดหลอด")
+   แถวละกลุ่ม: หลอดเต็ม = วงเงินที่ขอของกลุ่มนั้น · ส่วนสีเข้ม = ที่ได้ (พร้อม %) · ท้ายแถว = ขอ/ได้/ตัด (ลบ.)
+   rows: {label, k, a(ขอ ลบ.), askOk(ได้ ลบ.), askNo(ตัด ลบ.), n, ok, tip, idle(ไม่ได้ยื่นขอ)} — เก็บ __rows ไว้ให้ด่านตรวจเทียบ */
+function tube(container, rows, {labelW=110, height=null, rightW=150}={}){
+  const box=document.getElementById(container); if(!box) return; box.innerHTML=''; box.__rows=rows;
+  box.__fit=h=>tube(container, rows, {labelW, rightW, height:h});   // กฎ 16
+  const W=box.clientWidth||560, padT=6, padB=6;
+  const rowH=height?Math.max(30,Math.min(54,(height-padT-padB)/Math.max(1,rows.length))):36;
+  const natural=rows.length*rowH+padT+padB, H=(height&&height>natural)?height:natural, off=Math.floor((H-natural)/2);
+  const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:'100%',height:H},box);
+  const pw=W-labelW-rightW, th=18;
+  const maxCh=Math.max(8,Math.floor((labelW-8)/7.2));
+  rows.forEach((r,i)=>{
+    const y=padT+off+i*rowH, ty=y+(rowH-th)/2, cy=ty+th/2+4;
+    const t=el('text',{class:'cattext',x:labelW-8,y:cy,'text-anchor':'end'},svg); t.textContent=clipTh(r.label,maxCh);
+    const pct=r.a>0?Math.max(0,Math.min(100,100*r.askOk/r.a)):0;
+    el('rect',{x:labelW,y:ty,width:pw,height:th,rx:9,fill:r.idle?'#f4f5f4':'#e6e9e8',stroke:r.idle?'#e3e6e5':'none','stroke-dasharray':r.idle?'3 3':''},svg);
+    if(r.a>0&&pct>0){ const fw=Math.max(th,pw*pct/100);
+      el('rect',{class:'bar','data-i':i,x:labelW,y:ty,width:fw,height:th,rx:9,fill:C.teal},svg);
+      if(fw>=34) el('text',{x:labelW+fw-7,y:cy,'text-anchor':'end',fill:'#fff','font-size':11,'font-weight':700},svg).textContent=pct.toFixed(0)+'%';
+      else el('text',{x:labelW+fw+5,y:cy,fill:C.teal,'font-size':11,'font-weight':700},svg).textContent=pct.toFixed(0)+'%'; }
+    else if(!r.idle&&r.a>0) el('text',{x:labelW+8,y:cy,fill:'#e34948','font-size':11,'font-weight':700},svg).textContent='0%';
+    const rt=el('text',{class:'ticktext',x:W-4,y:cy,'text-anchor':'end'},svg);
+    rt.textContent=r.right||(r.idle?'ไม่ได้ยื่นขอ':(r.a>0?`ขอ ${fmt(r.a)} · ได้ ${fmt(r.askOk)} · ตัด ${fmt(r.askNo)} ลบ.`:`${r.n} คำขอ · ไม่ระบุวงเงิน`));
+    const hit=el('rect',{x:0,y:y,width:W,height:rowH,fill:'transparent'},svg);
+    hitOn(hit);   // กฎ 8
+    hit.addEventListener('mousemove',e=>showTip(`<b>${esc(r.label)}</b><br>${r.tip||''}`,e.clientX,e.clientY));
+    hit.addEventListener('mouseleave',hideTip);
+  });
+}
 function bullet(container, rows, {height=null, tgtText='เป้า', total=null}={}){
   const box=document.getElementById(container); if(!box) return; box.innerHTML=''; box.__rows=rows;
   box.__fit=h=>bullet(container, rows, {tgtText, height:Math.max(40,Math.min(80,(h-8)/Math.max(1,rows.length))), total:h});   // กฎ 16
@@ -2792,7 +2821,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.6', APP_DATE='7 ก.ย. 2569';
+const APP_VER='v31.7', APP_DATE='7 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -4046,10 +4075,9 @@ function renderDcScatter(rows){
   const hot=pts.filter(p=>p.y>=mY&&p.x<=mX).sort((a,b)=>b.y-a.y);
   const n=document.createElement('div'); n.className='footnote xnote'; n.style.marginTop='8px';   // .xnote = ของที่ผู้เรียกเติมท้ายกราฟ ต้องรอดตอนกราฟวาดใหม่ (กฎ 16)
   n.innerHTML=hot.length
-    ? `<b style="color:var(--crit)">${hot.length} สาย</b>อยู่ในช่องซ้ายบน (คนใช้มากกว่าค่ากลาง แต่ได้งบต่อ กม. น้อยกว่าค่ากลาง): `+
-      hot.slice(0,8).map(p=>`<b>${esc(p.label)}</b>`).join(' · ')+(hot.length>8?` และอีก ${hot.length-8} สาย`:'')+
-      `<br>ขนาดฟอง = ระยะทาง · เส้นแบ่งใช้ค่ากลางของชุดข้อมูลนี้ ไม่ใช่เกณฑ์มาตรฐานกลาง`
-    : 'ไม่มีสายที่ตกอยู่ในช่องซ้ายบน — การลงทุนสอดคล้องกับปริมาณจราจรอยู่แล้ว';
+    ? `<b style="color:var(--crit)">${hot.length} สาย</b>ในช่องซ้ายบน: `+
+      hot.slice(0,8).map(p=>`<b>${esc(p.label)}</b>`).join(' · ')+(hot.length>8?` และอีก ${hot.length-8} สาย`:'')
+    : 'ไม่มีสายในช่องซ้ายบน';
   box.appendChild(n);
 }
 
@@ -4090,12 +4118,8 @@ function renderDcFunnel(rows){
   <div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--grid)">
     <div class="fnl">${row('◷ ทำไปแล้วสะสม','ประวัติโครงการทุกปีรวมกัน',gotKm,gotB,'#0d9488',haveHist,Math.max(gotKm,0.001))}</div>
   </div>
-  <div class="footnote" style="margin-top:10px">
-    <b>เทียบเฉพาะคู่ที่ฐานเวลาเดียวกัน</b> — Zerobase คือความต้องการที่ <u>ยังเหลืออยู่</u> (ได้งบแล้วลบแถวออก)
-    จึงเทียบกับคำขอปีถัดไปได้ตรงๆ · ส่วน "ทำไปแล้วสะสม" เป็นผลงานย้อนหลังหลายปี แยกไว้เป็นบริบท
-    ไม่นำมาลบกับสองแถบบน เพราะคนละฐานเวลา ถ้าเอามาต่อกันจะได้ตัวเลขที่ตีความผิด<br>
-    ระยะทางนับจากช่วง กม. ที่ระบุไว้เท่านั้น — รายการที่ไม่ระบุช่วง กม. ไม่ถูกนับในแถบ (แต่ยังนับในยอดเงิน)
-  </div>`;
+  <!-- v31.7 กฎ 15: เหตุผลที่ไม่นำ "ทำไปแล้วสะสม" มาลบกับสองแถบบน (คนละฐานเวลา) และรายการไม่ระบุ กม. ไม่นับในแถบ — อยู่ในธรรมนูญหมวด 8½ ไม่ใช่บนจอ -->
+  <div class="footnote" style="margin-top:10px">สองแถบบนเทียบกันได้ตรงๆ · "ทำไปแล้วสะสม" เป็นบริบทย้อนหลัง ไม่นำมาลบกัน</div>`;
 }
 /* ③ สไลเดอร์น้ำหนัก */
 function renderDcWeights(){
@@ -6454,7 +6478,7 @@ function renderHistory(){
     <!-- v29.8 — เขตเลือกตั้ง "ราย กม." : สัญญาแต่ละรายการถูกวางลงเขตตามช่วง กม. บนเส้น GIS ไม่ใช่ตามอำเภอหลักของสาย -->
     <div class="grid two" style="margin-top:14px">
       <div class="card"><h3>จำแนกตามเขตเลือกตั้ง</h3>
-        <div class="note">แต่ละเขตมีสัญญากี่ฉบับ วงเงินเท่าไหร่ · สายที่คร่อมหลายเขตนับตามช่วง กม. ที่ทำจริง · "ไม่ระบุ" = สัญญาที่ระบุตำแหน่งไม่ได้</div>
+        <div class="note">แต่ละเขตมีสัญญากี่ฉบับ วงเงินเท่าไหร่ · "ไม่ระบุ" = ระบุตำแหน่งไม่ได้</div>
         <div class="tblwrap" style="max-height:420px"><table id="histZoneTable"><thead><tr><th class="c">เขต</th><th>สส. · พรรค</th><th class="num">สัญญา</th><th class="num">วงเงิน (ลบ.)</th><th class="num">% วงเงิน</th><th class="num">สาย/สะพาน</th><th class="c">ปีล่าสุด</th></tr></thead><tbody></tbody></table></div>
       </div>
       <div class="card"><h3>วงเงินสะสมตามเขตเลือกตั้ง</h3><div class="note">ล้านบาท — สีตามพรรคของ สส. เขตนั้น · ชี้เพื่อดูจำนวนสัญญา</div><div id="chHistZone"></div></div>
@@ -6462,7 +6486,7 @@ function renderHistory(){
     <!-- v24.0 Gantt → v29.8 ย้ายมาท้ายหน้า + ตารางสัญญาที่ยังไม่จบ "ครบทุกรายการ" (เดิมตัดที่ 12 แถว สัญญาที่ยังไม่หมดเลยหายไป) -->
     <div class="card" style="margin-top:14px">
       <h3>สัญญาที่ยังไม่สิ้นสุด และสิ้นสุดแล้วแต่ยังไม่ส่งงาน</h3>
-      <div class="note">แถบ = ช่วงสัญญา · เส้นแดง = วันนี้ · แถบที่ข้ามเส้นแดง = ยังไม่หมดสัญญา · จุดแดงท้ายแถบ = หมดสัญญาแล้วแต่ยังไม่ส่งงานงวดสุดท้าย · ตารางด้านล่างครบทุกรายการ เรียงจากใกล้หมดสัญญาที่สุด</div>
+      <div class="note">แถบ = ช่วงสัญญา · เส้นแดง = วันนี้ · จุดแดงท้ายแถบ = หมดสัญญาแล้วยังไม่ส่งงาน · ตารางล่างครบทุกรายการ</div>
       <div id="chGantt"></div>
       <div class="tblwrap" style="max-height:420px;margin-top:10px"><table id="histActiveTable"><thead><tr><th>รหัส</th><th>ชนิดงบ</th><th>เลขที่สัญญา</th><th class="c">เริ่ม</th><th class="c">สิ้นสุด</th><th class="num">เหลือ (วัน)</th><th class="num">วงเงิน (บาท)</th><th class="c">สถานะ</th></tr></thead><tbody></tbody></table></div>
     </div>
@@ -8094,33 +8118,28 @@ function renderGap(){
    </div>`+
 
   (noReq?'':`<div class="grid two" style="margin-top:14px">
-     <div class="card"><h3>ขอ vs ได้ — แต่ละหมวด · ${esc(yearLbl)}</h3>
-       <div class="note">แถวละหมวด · ความยาวแถบ = วงเงินที่ขอ แบ่งท่อนตามชนิดงบ · ท้ายแถบ = ได้กี่ % และโดนตัดกี่ ลบ. · ชี้ท่อนเพื่อดูวงเงิน</div>
+     <div class="card"><h3>ผลคำของบ — แต่ละหมวด · ${esc(yearLbl)}</h3>
+       <div class="note">หลอดเต็ม = วงเงินที่ขอ · สีเข้ม = ได้ · ที่เหลือ = โดนตัด</div>
        <div id="gapChMuad"></div></div>
-     <div class="card"><h3>ขอ vs ได้ — แต่ละกิจกรรม · ${esc(yearLbl)}</h3>
-       <div class="note">กิจกรรมตามที่เขียนในคำขอ (มากสุด 12 กิจกรรม) · สีเขียว = ได้ · สีแดง = โดนตัด/ยังไม่ได้ · ชี้เพื่อดูจำนวนคำขอ</div>
+     <div class="card"><h3>ผลคำของบ — แต่ละกิจกรรม · ${esc(yearLbl)}</h3>
+       <div class="note">หลอดเต็ม = วงเงินที่ขอ · สีเข้ม = ได้ · ที่เหลือ = โดนตัด · แสดง 12 กิจกรรมที่ขอมากสุด</div>
        <div id="gapChAct"></div></div>
    </div>
    <div class="grid two" style="margin-top:14px">
-     <div class="card"><h3>ขอ vs ได้ — แต่ละเขตเลือกตั้ง · ${esc(yearLbl)}</h3>
-       <div class="note">ครบทั้ง 11 เขตเสมอ · สีเขียว = ได้ · สีแดง = โดนตัด/ยังไม่ได้ · เขตที่ไม่มีแถบคือ "ไม่ได้ยื่นขอ" ไม่ใช่ได้ครบ · ชี้เพื่อดูชื่อ สส. และวงเงิน</div>
+     <div class="card"><h3>ผลคำของบ — แต่ละเขตเลือกตั้ง · ${esc(yearLbl)}</h3>
+       <div class="note">หลอดเต็ม = วงเงินที่ขอ · สีเข้ม = ได้ · หลอดประ = เขตที่ไม่ได้ยื่นขอ</div>
        <div id="gapChZone"></div></div>
-     <div class="card"><h3>ขอ vs ได้ — แต่ละแหล่งงบ · ${esc(yearLbl)}</h3>
-       <div class="note">แหล่งงบตามที่ระบุในคำขอ (จังหวัด · กรม · กลุ่มจังหวัด …) · สีเขียว = ได้ · สีแดง = โดนตัด/ยังไม่ได้ · ชี้เพื่อดูจำนวนคำขอ</div>
-       <div id="gapChSrc"></div></div>
-   </div>
-   <div class="grid two" style="margin-top:14px">
-     <div class="card"><h3>ได้ตามคำขอกี่ % — แยกชนิดงบ · ${esc(yearLbl)}</h3>
-       <div class="note">คิดภายในชนิดงบนั้นเอง: ขอ 300 ลบ. ได้ 200 ลบ. = 67% · เส้นตั้งคือค่าเฉลี่ยรวมทุกชนิดงบ ยาวเกินเส้น = ได้ดีกว่าค่าเฉลี่ย · ชี้เพื่อดูวงเงิน</div>
+     <div class="card"><h3>ผลคำของบ — แต่ละชนิดงบ · ${esc(yearLbl)}</h3>
+       <div class="note">หลอดเต็ม = วงเงินที่ขอ · สีเข้ม = ได้ · ที่เหลือ = โดนตัด</div>
        <div id="gapChCat"></div></div>
-     <div class="card"><h3>งบที่ขอ และที่ได้รับ — เทียบทุกปี (ลบ.)</h3><div class="note">แท่งละปี = วงเงินที่ขอทั้งหมด · ส่วนสีเขียว = ที่ได้ · ส่วนสีแดง = โดนตัด/ยังไม่ได้</div><div id="gapChYear"></div></div>
-   </div>`)+
+   </div>
+   <div class="card" style="margin-top:14px"><h3>ขอ และได้ — เทียบทุกปี (ลบ.)</h3><div class="note">สีเขียว = ได้ · สีแดง = โดนตัด</div><div id="gapChYear"></div></div>`)+
   /* ปีที่ไม่มีคำขอ: กราฟเทียบทุกปียังต้องมี (เป็นภาพรวมทุกปี ไม่ขึ้นกับปีที่เลือก) */
-  (noReq?`<div class="card" style="margin-top:14px"><h3>งบที่ขอ และที่ได้รับ — เทียบทุกปี (ลบ.)</h3><div class="note">แท่งละปี = วงเงินที่ขอทั้งหมด · ส่วนสีเขียว = ที่ได้ · ส่วนสีแดง = โดนตัด/ยังไม่ได้</div><div id="gapChYear"></div></div>`:'')+
+  (noReq?`<div class="card" style="margin-top:14px"><h3>ขอ และได้ — เทียบทุกปี (ลบ.)</h3><div class="note">สีเขียว = ได้ · สีแดง = โดนตัด</div><div id="gapChYear"></div></div>`:'')+
 
   `<div class="card" style="margin-top:14px">
      <h3>ตารางรายปี — ขอเท่าไหร่ ได้เท่าไหร่ (ทุกปีที่มีคำขอ)</h3>
-     <div class="note">แต่ละปี ขอกี่รายการ ได้กี่รายการ · "ได้" = คำขอที่มีสัญญาจริงรองรับในปีเดียวกัน${T.vague?` · <span style="color:var(--gold)">⚠ ${T.vague} รายการไม่ระบุ กม. เทียบได้แค่ระดับสาย</span>`:''}</div>
+     <div class="note">แต่ละปี ขอกี่รายการ ได้กี่รายการ${T.vague?` · <span style="color:var(--gold)">⚠ ${T.vague} รายการไม่ระบุ กม.</span>`:''}</div>
      <div class="tblwrap" style="max-height:380px"><table id="gapYearTable"><thead><tr>
        <th>ปีงบ</th><th class="num">คำขอ</th><th class="num">ได้</th><th class="num">ไม่ได้</th><th class="num">% ได้</th>
        <th class="num">ขอ (ลบ.)</th><th class="num">สัญญาที่ตรงคำขอ (ลบ.)</th><th class="num">คำขอที่ไม่ได้ (ลบ.)</th>
@@ -8137,7 +8156,7 @@ function renderGap(){
 
   `<div class="card" style="margin-top:14px">
      <h3>สายทางที่ขอแล้วยังไม่ได้ — เรียงตามจำนวนปีที่พลาด (ทุกปี)</h3>
-     <div class="note">สายที่โผล่ซ้ำหลายปีคือจุดที่ควรไปหาสาเหตุก่อน · "ปีที่พลาด" = ปีที่ยื่นขอแล้วไม่มีสัญญารองรับ · คลิกแถวเพื่อเปิดสายบนแผนที่</div>
+     <div class="note">"ปีที่พลาด" = ปีที่ยื่นขอแล้วไม่ได้ · คลิกแถวเพื่อเปิดสายบนแผนที่</div>
      <div class="tblwrap" style="max-height:480px"><table id="gapTable" data-sortable="1"><thead><tr>
        <th>รหัสสายทาง</th><th>ชื่อสายทาง</th><th>หมวด</th><th>เขต</th><th class="num">ปีที่ขอ</th><th class="num">ปีที่ได้</th><th class="num">ปีที่พลาด</th>
        <th class="num">วงเงินที่ไม่ได้ (บาท)</th><th>ชนิดงบที่ค้าง</th><th>ปีที่เคยขอ</th></tr></thead><tbody>
@@ -8152,23 +8171,12 @@ function renderGap(){
       a:+(M.byYear[y].ask/1e6).toFixed(2), b:+(M.byYear[y].gotAmt/1e6).toFixed(2)})),
       {unit:'ลบ.', c1:C.gold, c2:C.teal, l1:'ที่ขอ', l2:'สัญญาที่ตรงคำขอ', gapLabel:'ยังไม่ได้'});
   });
-  /* v30.4 — รูปทรงตามคำถามที่กราฟนั้นต้องตอบ (ผู้ใช้กำหนด 31 ส.ค. 69):
-       รายปี            -> แท่งตั้งซ้อน  ได้/ยังไม่ได้ (เวลาเรียงซ้ายไปขวา)
-       ชนิดงบ           -> bullet "% ที่ได้ของชนิดงบนั้นเอง" (ขอ 300 ได้ 200 = 67%) เทียบกับเส้นค่าเฉลี่ยรวม
-                           ห้ามคิด % จากยอดรวมทั้งหน้า เพราะชนิดที่ขอน้อยจะดูเหมือนปัญหาน้อยทั้งที่พลาดเกือบหมด
-       หมวด             -> แถบนอนซ้อน แบ่งท่อนตามชนิดงบ (ขนาด + ส่วนผสม ในภาพเดียว)
-       เขต              -> แถบนอนซ้อน ได้/ยังไม่ได้ ครบ 11 เขตเสมอ
-     "ไม่ได้ยื่นขอ" ต้องแยกจาก "ขอแล้วได้ครบ" ทุกใบ — กลุ่มที่ไม่มีคำขอเลยจะขึ้นเป็นรางว่าง + ข้อความบอก ไม่ใช่หายไป */
+  /* v30.4 รูปทรงตามคำถาม → v31.7 ผู้ใช้เปลี่ยน: ทุกกลุ่ม (หมวด · กิจกรรม · เขต · ชนิดงบ) เป็น "แถบหลอด" แบบเดียวกัน
+     หลอดเต็ม = วงเงินที่ขอของกลุ่มนั้น · สีเข้ม = ได้ (%) · ที่เหลือ = โดนตัด — ไม่ซ้อนชนิดงบในหมวด ("หมวดก็หมวด ชนิดงบก็ชนิดงบ")
+     % คิดภายในกลุ่มเอง (ขอ 300 ได้ 200 = 67%) ไม่ใช่ส่วนแบ่งจากยอดรวมหน้า · "ไม่ได้ยื่นขอ" = หลอดประ แยกจาก "ขอแล้วได้ครบ" */
   const OKC=C.teal, NOC='#e34948';
-  const CATC=['#0d9488','#e8a33d','#3b82f6','#7c3aed','#e34948','#0ea5e9','#64748b','#16a34a','#f97316','#a21caf'];
-  const catColor=k=>CATC[Math.max(0,catKeys.indexOf(k))%CATC.length];
   const askedCats=catKeys.filter(k=>V.byCat[k].n>0);          // ชนิดงบที่ "ยื่นขอจริง" ในมุมมองนี้
   const idleCats =catKeys.filter(k=>V.byCat[k].n===0);
-  const sumAsk=(f)=>+(V.rows.filter(f).reduce((a,r)=>a+r.ask,0)/1e6).toFixed(2);
-  const grpRows=(G,keys,lab,extra)=>keys.map(k=>{ const g=G[k]||{n:0,ok:0,ask:0,askOk:0,askNo:0,gotAmt:0,histN:0};
-    return {label:lab(k), a:+(g.ask/1e6).toFixed(2), b:+(g.gotAmt/1e6).toFixed(2), k,
-      askOk:+(g.askOk/1e6).toFixed(2), askNo:+(g.askNo/1e6).toFixed(2), n:g.n, ok:g.ok,
-      tip:`คำขอ ${g.n} รายการ · ได้ตามคำขอ ${g.ok} (${pct(g.ok,g.n)}%) · สัญญาทั้งหมดในกลุ่ม ${g.histN}`+(extra?extra(k):'')}; });
 
   safeRun('กราฟรายปี', ()=>{
     const ys=M.years;
@@ -8180,71 +8188,37 @@ function renderGap(){
     ], {unit:'ลบ.', stacked:true, height:250});
   });
 
-  safeRun('bullet % ได้ตามคำขอ แยกชนิดงบ', ()=>{
+  /* v31.7 ทุกกลุ่มใช้แถบหลอดแบบเดียวกัน (ผู้ใช้: "หมวดก็หมวด ชนิดงบก็ชนิดงบ เขตก็เขต" — ไม่ซ้อนชนิดงบในหมวด) */
+  const tubeRows=(G,keys,lab,extra)=>keys.map(k=>{ const g=G[k]||{n:0,ok:0,ask:0,askOk:0,askNo:0,gotAmt:0,histN:0};
+    const a=+(g.ask/1e6).toFixed(2), askOk=+(g.askOk/1e6).toFixed(2), askNo=+(g.askNo/1e6).toFixed(2);
+    return {label:lab?lab(k):k, k, a, askOk, askNo, b:+(g.gotAmt/1e6).toFixed(2), n:g.n, ok:g.ok, idle:!g.n, v:g.ask?+(100*g.askOk/g.ask).toFixed(1):0,
+      tip:g.n?`คำขอ ${g.n} รายการ · ได้ตามคำขอ ${g.ok} (${pct(g.ok,g.n)}%) · ขอ ${lb(g.ask)} ลบ. · ได้ ${lb(g.askOk)} ลบ. · โดนตัด ${lb(g.askNo)} ลบ. · สัญญาทั้งหมดในกลุ่ม ${g.histN}`+(extra?extra(k):''):'ไม่มีคำของบในมุมมองนี้'}; });
+  safeRun('หลอด ชนิดงบ', ()=>{
     if(noReq) return;
-    const avg=T.ask?100*T.askOk/T.ask:0;
-    const rows=askedCats.map(k=>{ const g=V.byCat[k], p=g.ask?100*g.askOk/g.ask:0;
-      return {label:k, k, v:+p.toFixed(1), target:+avg.toFixed(1), max:100, unit:'%', n:g.n, ok:g.ok,
-        a:+(g.ask/1e6).toFixed(2), b:+(g.gotAmt/1e6).toFixed(2), askOk:+(g.askOk/1e6).toFixed(2), askNo:+(g.askNo/1e6).toFixed(2),
-        tip:g.ask? `ขอ ${lb(g.ask)} ลบ. → ได้ ${lb(g.askOk)} ลบ. = ${p.toFixed(1)}%<br>ยังไม่ได้ ${lb(g.askNo)} ลบ. · คำขอ ${g.n} รายการ (ได้ ${g.ok})`
-                 : `คำขอ ${g.n} รายการ แต่ไม่ระบุวงเงิน — คิด % ไม่ได้`}; });
-    if(rows.length) bullet('gapChCat', rows, {tgtText:'เฉลี่ยรวม'});
-    else document.getElementById('gapChCat').innerHTML='<div class="note" style="padding:18px 4px;text-align:center">ยังไม่มีคำของบในมุมมองนี้</div>';
+    const rows=tubeRows(V.byCat, askedCats);
+    tube('gapChCat', rows, {labelW:110});
     if(idleCats.length) document.getElementById('gapChCat').insertAdjacentHTML('beforeend',
-      `<div class="footnote xnote">ชนิดงบที่ไม่ได้ยื่นขอในมุมมองนี้ (มีแต่สัญญา): ${idleCats.map(esc).join(' · ')}</div>`);
+      `<div class="footnote xnote">ชนิดงบที่ไม่ได้ยื่นขอ: ${idleCats.map(esc).join(' · ')}</div>`);
   });
-
-  safeRun('แถบซ้อน หมวด × ชนิดงบ', ()=>{
+  safeRun('หลอด หมวด', ()=>{
     if(noReq) return;
     const keys=muadKeys.filter(k=>V.byMuad[k].n>0), idle=muadKeys.filter(k=>V.byMuad[k].n===0);
-    const rows=keys.map(k=>{ const g=V.byMuad[k], segs={};
-      askedCats.forEach(c=>{ segs[c]=sumAsk(r=>r.muad===k&&r.cat===c); });
-      return {label:k, k, segs, a:+(g.ask/1e6).toFixed(2), b:+(g.gotAmt/1e6).toFixed(2), n:g.n, ok:g.ok,
-        askOk:+(g.askOk/1e6).toFixed(2), askNo:+(g.askNo/1e6).toFixed(2),
-        right:g.ask?`ได้ ${pct(g.askOk,g.ask)}% · ตัด ${lb(g.askNo)}`:`${g.n} คำขอ · ไม่ระบุวงเงิน`,
-        tip:`คำขอ ${g.n} รายการ · ได้ตามคำขอ ${g.ok} (${pct(g.ok,g.n)}%) · โดนตัด ${lb(g.askNo)} ลบ. · สัญญาทั้งหมดในกลุ่ม ${g.histN}`}; });
-    hstack('gapChMuad', rows, askedCats.map(c=>({k:c,label:c,color:catColor(c)})),
-      {unit:'ลบ.', labelW:104, rightW:118, showRight:true});
-    const box=document.getElementById('gapChMuad');
-    box.__cross={rows:keys, cols:askedCats, mat:rows.map(r=>askedCats.map(c=>r.segs[c]))};
-    if(idle.length) box.insertAdjacentHTML('beforeend',
-      `<div class="footnote xnote">หมวดที่ไม่ได้ยื่นขอในมุมมองนี้: ${idle.map(esc).join(' · ')}</div>`);
+    tube('gapChMuad', tubeRows(V.byMuad, keys), {labelW:96});
+    if(idle.length) document.getElementById('gapChMuad').insertAdjacentHTML('beforeend',
+      `<div class="footnote xnote">หมวดที่ไม่ได้ยื่นขอ: ${idle.map(esc).join(' · ')}</div>`);
   });
-
-  safeRun('แถบซ้อน กิจกรรม', ()=>{
-    /* v31.4 ผู้ใช้: "แต่ละกิจกรรม โดนตัดเท่าไหร่" — เอาเฉพาะกิจกรรมที่ยื่นขอจริง เรียงตามวงเงินที่ขอ มากสุด 12 */
+  safeRun('หลอด กิจกรรม', ()=>{
     if(noReq) return;
-    const keys=Object.keys(V.byAct).filter(k=>V.byAct[k].n>0).sort((a,b)=>V.byAct[b].ask-V.byAct[a].ask).slice(0,12);
-    const rows=grpRows(V.byAct, keys, k=>k.length>30?k.slice(0,29)+'…':k);
-    rows.forEach(r=>{ const g=V.byAct[r.k]; r.segs={ok:r.askOk, no:r.askNo};
-      r.right=r.a?`ได้ ${pct(r.askOk,r.a)}% · ตัด ${lb(g.askNo)}`:`${r.n} คำขอ · ไม่ระบุวงเงิน`; });
-    hstack('gapChAct', rows, [{k:'ok',label:'ขอแล้วได้',color:OKC},{k:'no',label:'โดนตัด/ยังไม่ได้',color:NOC}],
-      {unit:'ลบ.', labelW:150, rightW:118, showRight:true});
-    const more=Object.keys(V.byAct).filter(k=>V.byAct[k].n>0).length-keys.length;
-    if(more>0) document.getElementById('gapChAct').insertAdjacentHTML('beforeend',`<div class="footnote xnote">แสดง 12 กิจกรรมที่ขอมากสุด · อีก ${more} กิจกรรมอยู่ในตารางรายสาย</div>`);
+    const allK=Object.keys(V.byAct).filter(k=>V.byAct[k].n>0).sort((a,b)=>V.byAct[b].ask-V.byAct[a].ask), keys=allK.slice(0,12);
+    tube('gapChAct', tubeRows(V.byAct, keys, k=>k.length>26?k.slice(0,25)+'…':k), {labelW:150});
+    if(allK.length>keys.length) document.getElementById('gapChAct').insertAdjacentHTML('beforeend',`<div class="footnote xnote">อีก ${allK.length-keys.length} กิจกรรมอยู่ในตารางรายสาย</div>`);
   });
-
-  safeRun('แถบซ้อน แหล่งงบ', ()=>{
-    if(noReq) return;
-    const keys=Object.keys(V.bySrc).filter(k=>V.bySrc[k].n>0).sort((a,b)=>V.bySrc[b].ask-V.bySrc[a].ask);
-    const rows=grpRows(V.bySrc, keys, k=>k.replace(/^\s*\d+[.)]\s*/,''));
-    rows.forEach(r=>{ const g=V.bySrc[r.k]; r.segs={ok:r.askOk, no:r.askNo};
-      r.right=r.a?`ได้ ${pct(r.askOk,r.a)}% · ตัด ${lb(g.askNo)}`:`${r.n} คำขอ · ไม่ระบุวงเงิน`; });
-    hstack('gapChSrc', rows, [{k:'ok',label:'ขอแล้วได้',color:OKC},{k:'no',label:'โดนตัด/ยังไม่ได้',color:NOC}],
-      {unit:'ลบ.', labelW:120, rightW:118, showRight:true});
-  });
-
-  safeRun('แถบซ้อน เขตเลือกตั้ง', ()=>{
+  safeRun('หลอด เขตเลือกตั้ง', ()=>{
     if(noReq) return;
     const all=[...new Set([...Object.keys(KK_ZONES), ...zoneKeys])].sort((a,b)=>(isNaN(a)?99:+a)-(isNaN(b)?99:+b));
-    const rows=grpRows(V.byZone, all, k=>isNaN(k)?k:'เขต '+k,
-      k=>KK_ZONES[k]?`<br>สส. ${esc(KK_ZONES[k].mp)} · ${esc(KK_ZONES[k].party)}`:'');
-    rows.forEach(r=>{ const g=V.byZone[r.k];
-      r.segs={ok:r.askOk, no:r.askNo};
-      r.right = !g||!g.n ? 'ไม่ได้ยื่นขอ' : (r.a? `ได้ ${pct(r.askOk,r.a)}% · ตัด ${lb(g.askNo)}` : `${r.n} คำขอ · ไม่ระบุวงเงิน`);
-      r.tip = (!g||!g.n) ? 'ไม่มีคำของบในมุมมองนี้' : r.tip; });
-    hstack('gapChZone', rows, [{k:'ok',label:'ขอแล้วได้',color:OKC},{k:'no',label:'โดนตัด/ยังไม่ได้',color:NOC}],
-      {unit:'ลบ.', labelW:70, rightW:118, showRight:true});
+    const rows=tubeRows(V.byZone, all, k=>isNaN(k)?k:'เขต '+k, k=>KK_ZONES[k]?`<br>สส. ${esc(KK_ZONES[k].mp)} · ${esc(KK_ZONES[k].party)}`:'');
+    rows.forEach(r=>{ if(r.idle) r.right='ไม่ได้ยื่นขอ'; });
+    tube('gapChZone', rows, {labelW:70});
   });
 
   box.querySelectorAll('#gapTable tbody tr[data-code]').forEach(tr=>{
@@ -8351,7 +8325,7 @@ function renderYearly(){
     <div class="card" style="margin-top:14px"><h3>ผู้รับจ้างปีนี้ (Top 10)</h3><div class="note">ล้านบาท — ชี้เพื่อดูจำนวนสัญญา</div><div id="yrContractor"></div></div>
     <div class="card" style="margin-top:14px">
       <h3>ช่วงเวลาสัญญาปีงบ ${y}</h3>
-      <div class="note">แถบ = ช่วงสัญญา (เริ่ม–สิ้นสุด) · เส้นแดง = วันนี้ · จุดแดงท้ายแถบ = หมดสัญญาแล้วแต่ยังไม่ส่งงานงวดสุดท้าย · เรียงตามวันเริ่ม · คลิกเพื่อเปิดในแผนที่</div>
+      <div class="note">แถบ = ช่วงสัญญา · เส้นแดง = วันนี้ · จุดแดงท้ายแถบ = หมดสัญญาแล้วยังไม่ส่งงาน · คลิกเพื่อเปิดในแผนที่</div>
       <div id="yrGantt"></div>
     </div>`:''}
     <div class="card" style="margin-top:14px">
