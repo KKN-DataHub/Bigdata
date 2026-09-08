@@ -427,6 +427,11 @@ select.search{width:auto}
   background:#fff;border:1px solid var(--grid);border-radius:8px;padding:6px 9px;white-space:nowrap}
 .lyrtg input{margin:0}
 #mapSearch{max-width:188px}   /* กันแถบเครื่องมือแผนที่ล้นเป็น 2 บรรทัด */
+/* v31.13 ผู้ใช้ (8 ก.ย. 69): "เสิร์ชหาสายทางในหน้าแผนที่ ถ้าซ่อนแถบ แล้วมันไม่ขึ้นหาในกล่องเสิร์ช" — ผลค้นหาเด้งใต้กล่องค้นหาเมื่อรายชื่อซ้าย/แผงมือถือมองไม่เห็น */
+.searchdrop{position:absolute;z-index:1300;background:var(--surface,#fff);border:1px solid var(--grid);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.18);min-width:260px;max-width:min(420px,92vw);max-height:300px;overflow:auto;padding:4px}
+.searchdrop .roaditem{padding:7px 9px;border-radius:7px;cursor:pointer;display:flex;justify-content:space-between;gap:8px;font-size:12.5px}
+.searchdrop .roaditem:hover,.searchdrop .roaditem.hi{background:rgba(31,143,124,.12)}
+.searchdrop .sdhead{font-size:11px;color:var(--muted);padding:5px 9px 2px}
 /* v28.0 — ตารางสรุปตามแหล่งงบ: แถวหัวกลุ่ม 2 ระดับ + แถวรวมท้ายตาราง */
 #reqSrcTable tr.srcgrp td{background:#e9eef6;border-top:2px solid var(--navy);font-size:13px;padding-top:8px;padding-bottom:8px}
 #reqSrcTable tr.srccat td{background:#f5f2e8;font-weight:600}
@@ -1332,7 +1337,7 @@ try{ const t=localStorage.getItem('drr_theme'); if(t&&t!=='default') document.do
           <div><h2>จุดเสี่ยงอันตราย</h2><div class="desc">จุดเสี่ยงทั้งโครงข่าย — ประเภท · สถานะการแก้ไข · ตำแหน่งรายสาย</div>
             <div class="pillrow" id="riskPills"><span class="hpill"><span class="dot wait"></span> กำลังดึงข้อมูล…</span></div></div>
         </div>
-        <div class="pgh-right"><a class="hbtn" style="text-decoration:none" href="https://docs.google.com/forms/d/e/1FAIpQLScb3ZA204nQ2KkiRYTlFKIW6-7hUq2_2oSCCSHmHyJFw1ptPQ/viewform" target="_blank" rel="noopener">📸 ส่งรูปผ่านฟอร์ม</a><button class="hbtn" onclick="reloadPage()">⟳ โหลดข้อมูลใหม่</button><button class="hbtn" onclick="exportCSV()">⬇ CSV</button><button class="hbtn" onclick="printPage()">🖨 พิมพ์</button></div>
+        <div class="pgh-right"><a class="hbtn" style="text-decoration:none" href="https://docs.google.com/forms/d/e/1FAIpQLScb3ZA204nQ2KkiRYTlFKIW6-7hUq2_2oSCCSHmHyJFw1ptPQ/viewform" target="_blank" rel="noopener">📸 ส่งรูปผ่านฟอร์ม</a><a class="hbtn" id="riskFolderBefore" style="text-decoration:none" href="#" target="_blank" rel="noopener" title="โฟลเดอร์รูปก่อนแก้ไข">📁 รูปก่อน</a><a class="hbtn" id="riskFolderAfter" style="text-decoration:none" href="#" target="_blank" rel="noopener" title="โฟลเดอร์รูปหลังแก้ไข">📁 รูปหลัง</a><button class="hbtn" onclick="reloadPage()">⟳ โหลดข้อมูลใหม่</button><button class="hbtn" onclick="exportCSV()">⬇ CSV</button><button class="hbtn" onclick="printPage()">🖨 พิมพ์</button></div>
       </div>
       <div class="subtabs">
         <button data-rt="sum" class="active">① หน้าสรุปรวม</button>
@@ -1383,7 +1388,7 @@ try{ const t=localStorage.getItem('drr_theme'); if(t&&t!=='default') document.do
       <div class="card" style="margin-top:14px">
         <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start">
           <div><h3>③ สายทางที่ควรได้งบก่อน</h3>
-            <div class="note" style="margin:0">คะแนนรวมจาก 5 ปัจจัย — ปรับน้ำหนักตามนโยบายได้เอง แล้วอันดับจะเปลี่ยนทันที</div></div>
+            <div class="note" style="margin:0">คะแนนรวมจาก 5 ปัจจัย ลูกรังที่ยังไม่พัฒนาเป็นหลัก — ใส่รหัสแล้วปรับน้ำหนักได้ อันดับเปลี่ยนทันที</div></div>
           <button class="btn ghost" id="dcReset">↺ น้ำหนักค่าเริ่มต้น</button>
         </div>
         <div id="dcWeights" class="wgrid"></div>
@@ -2407,7 +2412,37 @@ function toObjects(rows){
 }
 /* ---- Google Sheets via JSONP (ไม่ติด CORS — ใช้ได้แม้เปิดไฟล์จากเครื่องโดยตรง) ---- */
 let _gvizN=0;
+/* v31.12 ผู้ใช้ (8 ก.ย. 69): "เช็คคำขอ ปี 2570 ข้อมูลหายอีกแล้ว" — ตอนโหลด ตัวอ่านยิงขอแท็บพร้อมกัน 30 กว่าครั้ง (ประวัติ 26 · คำขอ 31 · Zerobase 15)
+   บางครั้ง Google ตอบไม่ครบ (โหลดสคริปต์ล้ม/หมดเวลา) → แท็บที่หายไปถูกมองว่า "ไม่มี" แล้วปีของแท็บซ้ายสุดถูกเดาผิด ข้อมูลทั้งปีเลยหายไปเงียบๆ
+   แก้ที่ตัวเชื่อมต่อจุดเดียว (กฎ 1): ต่อคิวยิงทีละไม่เกิน 6 · ล้มแล้วลองใหม่เอง 2 ครั้ง (เว้น 0.6s / 1.5s) · ตัวอ่านแต่ละชีทถ้ายังมีคำขอที่ล้ม = เครือข่ายขัดข้อง ต้องฟ้อง ไม่ใช่เดาต่อ (กฎ 6) */
+const GVIZ_MAX_INFLIGHT=8, GVIZ_RETRY_MS=[400,1000];
+/* v31.14 ผู้ใช้ (8 ก.ย. 69): "เปิดมามันใช้เวลาโหลดข้อมูลนานพอสมควร" — วัดจริง: ยิงหาแท็บ 81 ครั้งต่อการเปิด 1 ครั้ง (ประวัติ 26 · คำขอ 31 · Zerobase 15 · จุดเสี่ยง …)
+   ส่วนใหญ่เป็นชื่อแท็บที่ไม่มีจริง (Y_60…Y_85) ทั้งที่ชีทมี 8 ปี · กูเกิลตอบทีละ ~1.8 s → คิวยาว 20 กว่าวินาที
+   แก้: จำ "ชื่อแท็บที่พบจริง" ไว้ในเครื่อง 7 วัน รอบต่อไปยิงเฉพาะแท็บที่รู้จัก + ข้างเคียง (ปีก่อน/ปีถัดไป 2 ปี เพื่อเจอแท็บใหม่เอง)
+   ข้อมูลในแท็บยังดึงสดทุกครั้ง · กด "โหลดข้อมูลใหม่" = ไล่หาครบทุกชื่ออีกรอบ · ชื่อที่จำไว้ผิดไม่มีผล (แท็บที่ไม่มีจริงถูกกรองด้วยลายนิ้วมืออยู่แล้ว) */
+const TAB_CACHE_KEY='drr_tabs_v1', TAB_CACHE_MS=7*864e5;
+function tabCacheGet(src){ try{ const c=JSON.parse(localStorage.getItem(TAB_CACHE_KEY)||'{}')[src]; if(c&&Array.isArray(c.names)&&c.names.length&&Date.now()-c.t<TAB_CACHE_MS) return c.names; }catch(e){} return null; }
+function tabCacheSet(src,names){ try{ const all=JSON.parse(localStorage.getItem(TAB_CACHE_KEY)||'{}'); all[src]={t:Date.now(),names:[...new Set(names)]}; localStorage.setItem(TAB_CACHE_KEY,JSON.stringify(all)); }catch(e){} }
+function probeNames(src, fullNames, force){
+  const known=force?null:tabCacheGet(src); if(!known) return fullNames.slice();
+  const idx=new Set(); known.forEach(n=>{ const i=fullNames.indexOf(n); if(i>=0) [i-1,i,i+1,i+2].forEach(j=>{ if(j>=0&&j<fullNames.length) idx.add(j); }); });
+  if(!idx.size) return fullNames.slice();
+  return [...idx].sort((a,b)=>a-b).map(i=>fullNames[i]);
+}
+let _gvizInflight=0; const _gvizQueue=[];
+window.__gvizStat={ok:0,fail:0,retry:0,maxInflight:0};
+function _gvizNext(){ while(_gvizInflight<GVIZ_MAX_INFLIGHT && _gvizQueue.length){ const job=_gvizQueue.shift(); _gvizInflight++; window.__gvizStat.maxInflight=Math.max(window.__gvizStat.maxInflight,_gvizInflight);
+  job().finally(()=>{ _gvizInflight--; _gvizNext(); }); } }
 function gvizJSONP(sheetId, params){
+  return new Promise((resolve,reject)=>{
+    let attempt=0;
+    const run=()=>new Promise(res=>{ _gvizQueue.push(()=>gvizJSONPRaw(sheetId,params).then(t=>{ window.__gvizStat.ok++; resolve(t); res(); },err=>{
+        if(attempt<GVIZ_RETRY_MS.length){ const wait=GVIZ_RETRY_MS[attempt++]; window.__gvizStat.retry++; res(); setTimeout(run,wait); }
+        else { window.__gvizStat.fail++; reject(err); res(); } })); _gvizNext(); });
+    run();
+  });
+}
+function gvizJSONPRaw(sheetId, params){
   return new Promise((resolve,reject)=>{
     const cb='__gviz_cb_'+(++_gvizN);
     const s=document.createElement('script');
@@ -2856,7 +2891,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.11', APP_DATE='8 ก.ย. 2569';
+const APP_VER='v31.14', APP_DATE='8 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -2991,6 +3026,7 @@ const RUNTIME_IDS={
   chBuilding   :'กราฟงานอาคาร โผล่เฉพาะปีที่ชีทมีงานอาคาร',
   printStripTmp:'กล่องซ่อนสำหรับวาดแถบก่อนคัดลอกไปหน้าพิมพ์',
   photoBox     :'กล่องดูรูป สร้างเมื่อกดดูรูปครั้งแรก',
+  mapSearchDrop:'กล่องผลค้นหาสายทาง สร้างเมื่อพิมพ์ค้นตอนรายชื่อซ้ายถูกซ่อน (v31.13)',
   phLoad       :'ตัวหมุนระหว่างโหลดรูป ถูกลบทิ้งเมื่อรูปมาถึง'
 };
 
@@ -3453,7 +3489,10 @@ function fillCards(pg){
     const rows=[...tb.querySelectorAll('tbody tr')].filter(r=>r.getBoundingClientRect().height>0);
     if(!rows.length) return;
     const key=Math.round(cr.height)+':'+Math.round(tb.getBoundingClientRect().height);
-    if(tb.dataset.fitKey===key) return;
+    /* v31.12 แถวถูกวาดใหม่ (ตารางเดิม แต่ tbody ใหม่ เช่น ตารางหมวดหลังงบมาถึง) = ยังไม่เคยยืด ต้องคิดใหม่แม้คีย์เท่าเดิม
+       (balance.js จับได้: การ์ดสรุปรายหมวดเหลือที่ว่าง 102px เพราะคีย์ติดอยู่กับตารางเก่า) */
+    const fresh=rows.some(r=>!r.dataset.baseH);
+    if(!fresh && tb.dataset.fitKey===key) return;
     tb.dataset.fitKey=key;
     /* คิดที่ว่างจาก "ความสูงแถวเดิม" เสมอ — ถ้าเคยยืดไว้แล้วแถวข้างๆ เตี้ยลง จะได้หดกลับ ไม่ค้างสูง */
     let extra=0;
@@ -3785,13 +3824,14 @@ function loadSource(key, force){
   }
   const run=(async()=>{
     try{
-      const pillHtml=await cfg.read();
+      const pillHtml=await cfg.read(force===true);   // v31.14 force = ผู้ใช้กดโหลดใหม่ → ไล่หาแท็บครบทุกชื่อ
       if(cfg.pills && pillHtml){ const pe=document.getElementById(cfg.pills); if(pe) pe.innerHTML=pillHtml; }
       netOk(boxes);
       dataArrived(cfg.key);                            // กฎ 3 — พูดประโยคเดียว ไม่สั่งวาดเอง
       if(!cfg.quiet) boxes.forEach(id=>renderStuck(id));  // ข้อมูลมาแล้วแต่ยังหมุน = วาดไม่ผ่าน
     }catch(err){
-      if(cfg.quiet){ console.warn('แหล่งข้อมูล '+cfg.key+' ยังไม่มา:', (err&&err.message)||err); }
+      if(cfg.has()){ console.warn('แหล่งข้อมูล '+cfg.key+': รอบโหลดเก่าล้มหลังจากมีข้อมูลแล้ว — ไม่ฟ้อง', (err&&err.message)||err); }   // v31.12 ข้อมูลมีอยู่แล้ว ห้ามขึ้นว่า "ยังไม่ได้ข้อมูล"
+      else if(cfg.quiet){ console.warn('แหล่งข้อมูล '+cfg.key+' ยังไม่มา:', (err&&err.message)||err); }
       else if(err && err.empty){
         /* กฎ 6 สถานะ "ไม่มีข้อมูล" — ชีทต่อติดแต่ว่าง ห้ามบอกว่าเน็ตล่ม และห้ามขึ้นแบนเนอร์แดง */
         if(cfg.pills){ const pe=document.getElementById(cfg.pills);
@@ -3911,13 +3951,15 @@ function buildTopActions(){
      zbData (ความต้องการ Zerobase) · riskData (จุดเสี่ยง)
    แหล่งไหนยังไม่มา ส่วนนั้นจะขึ้น "รอข้อมูล" แทนที่จะพัง
    ============================================================ */
-const DC_W_DEF={surf:30, age:25, risk:20, need:15, size:10};
+/* v31.13 ผู้ใช้ (8 ก.ย. 69): "ปัจจัยที่นำมาวิเคราะห์ อยากให้เอาสายทางที่ยังไม่ถูกพัฒนาจากลูกรังเป็นหลัก แล้วค่อยมีปัจจัยอื่นลดหลั่นกันไป"
+   → ลูกรังที่ยังไม่พัฒนา 50% เป็นแกน ที่เหลือลดหลั่น 20 · 15 · 10 · 5 (ปรับได้ แต่ต้องใส่รหัสก่อน — ดู dcWeightLock) */
+const DC_W_DEF={surf:50, age:20, need:15, risk:10, size:5};
 let DC_W={...DC_W_DEF};
 const DC_META=[
-  ['surf','สภาพผิวทาง','สัดส่วนลูกรังต่อความยาวสาย — ยิ่งมากยิ่งควรได้งบ'],
+  ['surf','ลูกรังที่ยังไม่พัฒนา (ปัจจัยหลัก)','สัดส่วนลูกรังต่อความยาวสาย — ยิ่งมากยิ่งควรได้งบ'],
   ['age','ระยะเวลาที่ไม่ได้งบ','นับจากปีล่าสุดที่มีสัญญาในสายนั้น'],
-  ['risk','จุดเสี่ยงต่อ กม.','ความหนาแน่นจุดเสี่ยงที่ยังไม่ได้แก้'],
   ['need','ความต้องการค้างท่อ','ระยะที่ Zerobase ระบุไว้แต่ยังไม่ได้งบ'],
+  ['risk','จุดเสี่ยงต่อ กม.','ความหนาแน่นจุดเสี่ยงที่ยังไม่ได้แก้'],
   ['size','ความยาวสาย','สายยาวกระทบผู้ใช้ทางมากกว่า']
 ];
 const dcYearNow=()=> new Date().getFullYear()+543;
@@ -4159,26 +4201,48 @@ function renderDcFunnel(rows){
 /* ③ สไลเดอร์น้ำหนัก */
 function renderDcWeights(){
   const box=document.getElementById('dcWeights'); if(!box) return;
-  if(box.dataset.built){ box.querySelectorAll('input').forEach(i=>{ i.value=DC_W[i.dataset.k];
+  if(box.dataset.built){ box.querySelectorAll('input[type=range]').forEach(i=>{ i.value=DC_W[i.dataset.k];
     box.querySelector(`[data-v="${i.dataset.k}"]`).textContent=DC_W[i.dataset.k]+'%'; }); return; }
   box.dataset.built='1';
   box.innerHTML=DC_META.map(([k,lbl,hint])=>`
     <div class="wcell">
       <div class="wlab"><span>${lbl}</span><span class="wval" data-v="${k}">${DC_W[k]}%</span></div>
       <div class="whint">${hint}</div>
-      <input type="range" min="0" max="50" step="5" value="${DC_W[k]}" data-k="${k}">
-    </div>`).join('');
-  box.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{
+      <input type="range" min="0" max="70" step="5" value="${DC_W[k]}" data-k="${k}"${dcWeightLock.open()?'':' disabled'}>
+    </div>`).join('')+dcWeightLock.html();
+  box.querySelectorAll('input[type=range]').forEach(inp=>inp.addEventListener('input',()=>{
+    if(!dcWeightLock.open()){ inp.value=DC_W[inp.dataset.k]; return; }   // กันไว้อีกชั้น (disabled อยู่แล้ว)
     DC_W[inp.dataset.k]=+inp.value;
     box.querySelector(`[data-v="${inp.dataset.k}"]`).textContent=inp.value+'%';
     const rows=dcBuild(); const {act}=dcScore(rows); renderDcRank(rows,act);
   }));
+  dcWeightLock.bind(box);
   const rs=document.getElementById('dcReset');
   if(rs&&!rs.dataset.w){ rs.dataset.w='1'; rs.addEventListener('click',()=>{
+    if(!dcWeightLock.open()){ banner('info','ต้องใส่รหัสก่อนจึงจะปรับน้ำหนักได้'); return; }
     DC_W={...DC_W_DEF}; renderDcWeights();
     const rows=dcBuild(); const {act}=dcScore(rows); renderDcRank(rows,act);
     banner('info','กลับไปใช้น้ำหนักค่าเริ่มต้นแล้ว'); }); }
 }
+/* v31.13 ผู้ใช้: "ตัวแถวเลื่อนให้มีรหัสในการใช้สิทธิ์เลื่อนด้วย" — น้ำหนักเป็นนโยบาย ใครก็เลื่อนเล่นไม่ได้
+   ใช้รหัสชุดเดียวกับหน้าข้อมูลระบบ (ตรวจด้วย sysUnlock — ไม่มีรหัสเป็นตัวอักษรในไฟล์) · ปลดแล้วอยู่จนปิดแท็บ (sessionStorage) */
+const dcWeightLock={
+  open(){ try{ return sessionStorage.getItem('drr_dcw')==='1'; }catch(e){ return !!window.__dcwOpen; } },
+  set(v){ try{ if(v) sessionStorage.setItem('drr_dcw','1'); else sessionStorage.removeItem('drr_dcw'); }catch(e){} window.__dcwOpen=!!v; },
+  html(){ return this.open()
+    ? `<div class="wcell wlock" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span>🔓 ปรับน้ำหนักได้จนกว่าจะปิดแท็บ</span><button class="btn ghost" id="dcwRelock" type="button" style="margin-left:auto">🔒 ล็อก</button></div>`
+    : `<form class="wcell wlock" id="dcwForm" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span>🔒 ใส่รหัสเพื่อปรับน้ำหนัก</span><input type="password" class="search" id="dcwPass" placeholder="รหัส" autocomplete="off" style="max-width:150px"><button class="btn" type="submit">ปลดล็อก</button><span id="dcwMsg" class="note" style="margin:0"></span></form>`; },
+  bind(box){
+    const f=box.querySelector('#dcwForm');
+    if(f) f.addEventListener('submit',async e=>{ e.preventDefault(); const msg=box.querySelector('#dcwMsg'); const pass=(box.querySelector('#dcwPass').value||'').trim();
+      if(!pass){ msg.textContent='ยังไม่ได้พิมพ์รหัส'; return; }
+      msg.textContent='กำลังตรวจ…';
+      try{ await sysUnlock(pass); this.set(true); delete box.dataset.built; renderDcWeights(); banner('info','ปลดล็อกการปรับน้ำหนักแล้ว'); }
+      catch(err){ msg.textContent='รหัสไม่ถูกต้อง'; box.querySelector('#dcwPass').select(); } });
+    const rl=box.querySelector('#dcwRelock');
+    if(rl) rl.addEventListener('click',()=>{ this.set(false); delete box.dataset.built; renderDcWeights(); });
+  }
+};
 /* ③ ตารางอันดับ */
 function renderDcRank(rows,act){
   const box=document.getElementById('dcRank'); if(!box) return;
@@ -4292,10 +4356,14 @@ document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',(
   document.body.classList.remove('moreopen','sheetup');
   syncURL();
 }));
+/* v31.12 แถบแจ้งเตือนโผล่/หายทีหลัง ดันเนื้อหาลง — แผนที่มือถือต้องวัดความสูงใหม่ (mobmap ⑥)
+   ห้ามยิง resize ทั้งหน้า: resize → pageRedraw → หน้าประวัติสั่งโหลดใหม่ → ล้ม → banner → resize … วนไม่รู้จบ (store.js ④ จับได้) */
+const bannerRelayout=()=>{ try{ if(document.getElementById('pg-map')?.classList.contains('active') && typeof sizeMapMobile==='function'){ sizeMapMobile(); redrawMap(); } }catch(e){} };
 function banner(type,msg){ const b=document.getElementById('netBanner'); b.className='banner '+type;
   b.innerHTML=esc(msg)+'<span style="float:right;cursor:pointer;font-weight:700;margin-left:12px;padding:0 4px">✕</span>';
-  b.querySelector('span').addEventListener('click',()=>{ b.className='banner'; b.innerHTML=''; });
-  if(type==='info') setTimeout(()=>{b.className='banner';},6000); }
+  b.querySelector('span').addEventListener('click',()=>{ b.className='banner'; b.innerHTML=''; bannerRelayout(); });
+  if(type==='info') setTimeout(()=>{ b.className='banner'; bannerRelayout(); },6000);
+  bannerRelayout(); }
 
 /* ================= HERO HEADER: pills + ปุ่มโหลด/พิมพ์/CSV ================= */
 const GIS_SNAP='22 ก.ค. 2569';   // v30.9 — วันที่ snapshot GIS อยู่ที่เดียว (ป้ายสถานะ + บรรทัดที่มาบนแผนที่ใช้ตัวเดียวกัน)
@@ -6213,6 +6281,29 @@ function renderMapList(q){
     if(typeof mobileMap==='function'&&mobileMap())
       setTimeout(()=>document.getElementById('map').scrollIntoView({block:'start',behavior:'smooth'}),80);
   }));
+  mapSearchDrop(q, el2);
+}
+/* v31.13 กฎ 8 — พิมพ์ค้นหาแล้วต้อง "เห็นผล" เสมอ: ถ้ารายชื่อสายซ้ายถูกซ่อน (▶) หรืออยู่ในแผงมือถือที่ยุบอยู่
+   ผลค้นหา (ชุดเดียวกับรายชื่อ) เด้งเป็นกล่องใต้ช่องค้นหา คลิกแล้วเลือกสาย/สะพานเหมือนกดในรายชื่อ */
+function mapSearchDrop(q, listEl){
+  let dd=document.getElementById('mapSearchDrop');
+  const inp=document.getElementById('mapSearch');
+  const mob=typeof mobileMap==='function'&&mobileMap();
+  const listVisible=listEl && listEl.offsetParent!==null && listEl.getBoundingClientRect().height>0 && (!mob || document.body.classList.contains('sheetup'));
+  if(!q || listVisible || !inp){ if(dd) dd.remove(); return; }
+  if(!dd){ dd=document.createElement('div'); dd.id='mapSearchDrop'; dd.className='searchdrop'; document.body.appendChild(dd);
+    document.addEventListener('pointerdown',e=>{ if(dd&&!dd.contains(e.target)&&e.target!==inp) dd.remove(); },true); }
+  const items=[...listEl.querySelectorAll('.roaditem')].slice(0,10);
+  dd.innerHTML=(items.length?`<div class="sdhead">ผลค้นหา ${listEl.querySelectorAll('.roaditem').length} รายการ${listEl.querySelectorAll('.roaditem').length>10?' · แสดง 10 แรก':''}</div>`:'<div class="sdhead">ไม่พบสายทางที่ตรงกับคำค้น</div>')+
+    items.map(it=>`<div class="roaditem" data-code="${esc(it.dataset.code||'')}" data-b="${esc(it.dataset.b||'')}">${it.innerHTML}</div>`).join('');
+  const r=inp.getBoundingClientRect();
+  dd.style.left=Math.max(6,Math.min(r.left,innerWidth-Math.max(260,r.width)-8))+'px'; dd.style.top=(r.bottom+window.scrollY+4)+'px';
+  dd.querySelectorAll('.roaditem').forEach(d=>d.addEventListener('click',()=>{
+    dd.remove(); inp.value='';   // เลือกแล้วล้างคำค้น กล่องผลจะได้ไม่เด้งซ้ำ
+    if(d.dataset.b) selectCommBridge(d.dataset.b); else selectRoad(d.dataset.code);
+    if(M&&M.closeSheet) M.closeSheet();
+    if(typeof mobileMap==='function'&&mobileMap()) setTimeout(()=>document.getElementById('map').scrollIntoView({block:'start',behavior:'smooth'}),80);
+  }));
 }
 /* v20.8 — เลือกสะพานชุมชนจากแถบรายชื่อ: ซูมไปหา แล้วเปิดกล่องรายละเอียดของหมุดนั้นเลย */
 function selectCommBridge(bcode){
@@ -6339,7 +6430,7 @@ defineSource({
   boxes:['histBody','ovBudget','yrBody'],   // การ์ดงบบนหน้าภาพรวม + หน้าโครงการประจำปี กินข้อมูลชุดเดียวกัน ต้องหยุดหมุนพร้อมกัน
   pills:'histPills',
   has:()=>!!histData,
-  read:async()=>{
+  read:async(force)=>{
     const all=[];
     const S=v=>String(v??'').trim();
     const FIELDS=[['เลขที่สัญญา','contract'],['ประเภทงบ','budgetClass'],['ชนิดงบ','budgetType'],['กิจกรรม','activity'],
@@ -6400,8 +6491,10 @@ defineSource({
     const sentinel=await sheetData(HIST_ID,'sheet=__Y_PROBE_XX99__').catch(()=>null);
     const sentinelFp=(sentinel&&sentinel.length)?fpOf(sentinel):null;
     // 2) ไล่หา tab ปีทั้งหมด Y_60 … Y_85 พร้อมกัน — เพิ่ม tab ปีใหม่ในชีทได้เลย ไม่ต้องแก้ไฟล์นี้
-    const results = await Promise.allSettled(HIST_PROBE_YEARS.map(y=>
+    const histNames=probeNames('hist', HIST_PROBE_YEARS.map(y=>'Y_'+y), force);   // v31.14 แท็บที่รู้จัก + ข้างเคียง
+    const results = await Promise.allSettled(histNames.map(n=>+n.slice(2)).map(y=>
       sheetData(HIST_ID, 'sheet=Y_'+y).then(objs=>({y, objs}))));
+    const foundTabs=[];
     let okTabs=0, lastErr=null, anyReply=false;   // anyReply = ชีทตอบกลับมาอย่างน้อย 1 ครั้ง
     const seenFingerprint=new Set();
     for(const res of results){
@@ -6413,8 +6506,9 @@ defineSource({
       if(fp===sentinelFp||seenFingerprint.has(fp)) continue; // tab ไม่มีจริง (ได้ tab แรกกลับมา) / ซ้ำ
       seenFingerprint.add(fp);
       const {recs, drop}=parseTab(objs, 2500+y);
-      if(recs.length||drop){ okTabs++; all.push(...recs); dropped+=drop; }
+      if(recs.length||drop){ okTabs++; all.push(...recs); dropped+=drop; foundTabs.push('Y_'+y); }
     }
+    if(foundTabs.length) tabCacheSet('hist', foundTabs);
     // 3) tab แรกของไฟล์ (เนื้อหาเดียวกับ sentinel) — ถ้าเป็น tab ปี อ่านปีจากเลขที่สัญญาให้เอง
     if(sentinel&&sentinel.length){
       const {recs, drop}=parseTab(sentinel, null);
@@ -6423,6 +6517,8 @@ defineSource({
     /* กฎ 6 — แยก "ต่อไม่ติด" ออกจาก "ต่อติดแต่ว่าง" ให้ชัด คนละอาการ คนละวิธีแก้
        เดิมสองเคสนี้ถูกยุบเป็นข้อความเดียวว่า "เชื่อมต่อไม่ได้" ทำให้ผู้ใช้ไปไล่หาปัญหาผิดที่ */
     if(!anyReply && !(sentinel&&sentinel.length)) throw lastErr||new Error('เชื่อมต่อ Google Sheets ไม่ได้');
+    { const nFail=results.filter(r=>r.status!=='fulfilled').length;   // v31.12 กฎ 6: ปีที่ตอบไม่ทัน ≠ ปีที่ไม่มี — ห้ามปล่อยให้ปีหายเงียบ
+      if(nFail) throw new Error(`อ่านแท็บชีทประวัติไม่ครบ (${nFail} ครั้งไม่ได้รับคำตอบ) — เครือข่ายขัดข้อง กดโหลดข้อมูลใหม่`); }
     if(!okTabs || !all.length) throw noData('ยังไม่พบแถวข้อมูลในชีท — tab ปีต้องชื่อ Y_64, Y_65, … และแชร์ "ทุกคนที่มีลิงก์"');
     // สะพานชุมชนที่รีรูทเป็นสายใหม่: ประวัติของรหัสเดิมย้ายไปนับใต้สายใหม่ (จำรหัสเดิมไว้แสดงหมายเหตุ)
     all.forEach(x=>{ if(x.code&&REROUTE[x.code]){ x.code0=x.code; x.code=REROUTE[x.code].to; } });
@@ -7333,11 +7429,13 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
       el('line',{x1:bx+o,y1:cy-5.2,x2:bx+o,y2:cy+5.2,stroke:colr,'stroke-width':2.1,'stroke-linecap':'round','pointer-events':'none'},g);
       el('line',{x1:bx+o,y1:cy-5.2,x2:bx+o+(o<0?-3.4:3.4),y2:cy-8.4,stroke:colr,'stroke-width':2.1,'stroke-linecap':'round','pointer-events':'none'},g);
       el('line',{x1:bx+o,y1:cy+5.2,x2:bx+o+(o<0?-3.4:3.4),y2:cy+8.4,stroke:colr,'stroke-width':2.1,'stroke-linecap':'round','pointer-events':'none'},g); }); };
-  const camIcon=(mx,cy,colr,g)=>{ // กล้อง CCTV (ITS)
-    el('rect',{x:mx-6,y:cy-6.5,width:12,height:7,rx:2,fill:colr,stroke:'#fcfcfb','stroke-width':1,'pointer-events':'none'},g);
-    el('circle',{cx:mx+3.1,cy:cy-3,r:1.5,fill:'#fcfcfb','pointer-events':'none'},g);
-    el('line',{x1:mx,y1:cy+0.5,x2:mx,y2:cy+5,stroke:colr,'stroke-width':1.8,'pointer-events':'none'},g);
-    el('line',{x1:mx-3.4,y1:cy+5.6,x2:mx+3.4,y2:cy+5.6,stroke:colr,'stroke-width':1.8,'stroke-linecap':'round','pointer-events':'none'},g); };
+  /* v31.13 ผู้ใช้ (8 ก.ย. 69): "ป้ายพอมันเยอะแล้วมันรก … เป็นสามเหลี่ยมเล็กๆ ด้านบนเลน ส่วน CCTV เอากล้องย่อๆ อยู่ด้านบนเลน"
+     → สัญลักษณ์จุดงาน (ป้าย/อุปกรณ์ · กล้อง) ย้ายไป "เหนือแถบ" ตัวเล็ก ไม่ทับตัวแถบ · topY = ขอบบนของแถบ */
+  const camIcon=(mx,topY,colr,g)=>{ // กล้อง CCTV ย่อ เหนือแถบ (กล่อง 8×5 + เลนส์ + ขา)
+    el('rect',{x:mx-4,y:topY-9,width:8,height:5,rx:1.4,fill:colr,stroke:'#fcfcfb','stroke-width':0.8,'pointer-events':'none'},g);
+    el('circle',{cx:mx+2,cy:topY-6.5,r:1.1,fill:'#fcfcfb','pointer-events':'none'},g);
+    el('line',{x1:mx,y1:topY-4,x2:mx,y2:topY-1,stroke:colr,'stroke-width':1.4,'pointer-events':'none'},g); };
+  const triIcon=(x,topY,colr,g)=>el('path',{d:`M${x},${topY-8} l3.6,6 h-7.2 z`,fill:colr,stroke:'#fcfcfb','stroke-width':0.8,'pointer-events':'none'},g);   // ▲ ป้าย/อุปกรณ์ เหนือแถบ
   const treeIcon=(dx,base,g)=>{ // ต้นไม้เล็ก (ฐานอยู่ที่ base)
     el('path',{d:`M${dx},${base-8} l3.4,5.2 h-6.8 z`,fill:'#2f9e57','pointer-events':'none'},g);
     el('rect',{x:dx-0.9,y:base-2.9,width:1.8,height:2.9,fill:'#8a6d4b','pointer-events':'none'},g); };
@@ -7405,9 +7503,9 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
           const dx=xa+(n===1?(xb-xa)/2:(xb-xa)*k/(n-1));
           treeIcon(dx,base,g); }});
       }else if(mk==='cctv'){
-        // ITS / กล้อง CCTV -> ไอคอนกล้อง
-        hit(mid-8,by,16,bh);
-        camIcon(mid,by+bh/2,col,g);
+        // ITS / กล้อง CCTV -> กล้องย่อเหนือแถบ (v31.13)
+        hit(mid-6,by-10,12,10);
+        camIcon(mid,by,col,g);
       }else if(mk==='rail'){
         // การ์ดเรล/ราวกันอันตราย -> เส้นประขีดยาว บางๆ นอกแถบ (v30.7 ผู้ใช้: เส้นหยักรก เอาเส้นประ แต่ต้องไม่สับสนกับรางระบายน้ำ/ไฟฟ้า)
         // ต่างจากรางระบายน้ำ 2 ทาง: ตำแหน่ง (นอกแถบ ±8 · รางอยู่ในขอบแถบ) และลาย (ขีดยาว 9 เว้น 4 · รางขีดสั้น 4 เว้น 3)
@@ -7417,11 +7515,12 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
           el('line',{x1:xa,y1:cy,x2:Math.max(xa+9,xb),y2:cy,stroke:col,'stroke-width':1.2,'stroke-dasharray':'9 4','stroke-linecap':'butt','pointer-events':'none'},g));
       }else if(mk==='sign'){
         // ป้าย/อุปกรณ์อำนวยความปลอดภัย -> สี่เหลี่ยมผืนผ้าเล็ก + เสา (v30.7 ผู้ใช้สั่ง เลิกใช้สามเหลี่ยม)
-        const signAt=x=>{ hit(x-7,by,14,bh);
-          el('rect',{x:x-5,y:by+1.5,width:10,height:6,rx:1.2,fill:col,stroke:'#fcfcfb','stroke-width':1},g);
-          el('line',{x1:x,y1:by+7.5,x2:x,y2:by+bh-1.5,stroke:col,'stroke-width':1.6},g); };
-        if(xb-xa<30) signAt(mid);
-        else{ const n=Math.min(12,Math.floor((xb-xa)/26)+1); for(let k=0;k<n;k++) signAt(xa+(xb-xa)*k/(n-1)); }
+        const signAt=x=>{ hit(x-6,by-9,12,9); triIcon(x,by,col,g); };
+        if(xb-xa<40) signAt(mid);
+        else{ // ช่วงยาว: เส้นบางใต้สามเหลี่ยมบอกช่วง + ▲ ห่างกัน ≥ 40px ไม่เกิน 8 ตัว (เดิม 12 ตัว ทุก 26px = รก)
+          hit(xa,by-4,xb-xa,4);
+          el('line',{x1:xa,y1:by-2,x2:xb,y2:by-2,stroke:col,'stroke-width':1.2,'stroke-dasharray':'3 3','pointer-events':'none'},g);
+          const n=Math.min(8,Math.floor((xb-xa)/40)+1); for(let k=0;k<n;k++) signAt(xa+(xb-xa)*k/(n-1)); }
       }else if(mk==='bridge'){
         // ก่อสร้างสะพาน -> ไอคอนสะพาน )( สีของแถว (ช่วงยาวมีเส้นฐานกำกับ)
         hit(Math.min(xa,mid-9),by-3,Math.max(18,xb-xa),bh+6);
@@ -7469,8 +7568,8 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
             HIT.add(xa-2,hy,Math.max(9,xb-xa+4),6,mq.tip);
             el('line',{x1:xa,y1:yy,x2:Math.max(xa+7,xb),y2:yy,stroke:col,'stroke-width':2,'stroke-dasharray':'4 3','stroke-linecap':'round','pointer-events':'none'},g); });
         }else{ const mid=(xa+xb)/2;
-          HIT.add(mid-8,by-2,16,bh+4,mq.tip);
-          camIcon(mid,by+bh/2,col,g);
+          HIT.add(mid-6,by-10,12,10,mq.tip);
+          camIcon(mid,by,col,g);
         }
       });
       (eqOnRoad.trans||[]).forEach(t=>{
@@ -7529,8 +7628,8 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
       li(zig,'ขีดยาวนอกแถบ = การ์ดเรล'),
       li(`<svg width="12" height="14" viewBox="0 0 12 14"><path d="M6,0.5 L10,7 H2 z" fill="#2f9e57"/><rect x="5" y="7.5" width="2" height="3.6" fill="#8a6d4b"/></svg>`,'ต้นไม้ = ภูมิทัศน์')])+
     grp('จุดงาน',[
-      li(`<svg width="14" height="14" viewBox="0 0 14 14"><rect x="1.5" y="1" width="11" height="6.5" rx="1.2" fill="${GC}"/><line x1="7" y1="7.5" x2="7" y2="13" stroke="${GC}" stroke-width="1.8"/></svg>`,'▭ = ป้าย/อุปกรณ์'),
-      li(`<svg width="16" height="15" viewBox="0 0 16 15"><rect x="1" y="1" width="13" height="7" rx="2" fill="${GC}"/><circle cx="11" cy="4.5" r="1.6" fill="#fff"/><line x1="7.5" y1="8.5" x2="7.5" y2="13" stroke="${GC}" stroke-width="1.8"/><line x1="4" y1="13.6" x2="11" y2="13.6" stroke="${GC}" stroke-width="1.8" stroke-linecap="round"/></svg>`,'กล้อง = ITS/CCTV'),
+      li(`<svg width="14" height="14" viewBox="0 0 14 14"><path d="M7,2.5 l4.2,7.5 h-8.4 z" fill="${GC}"/></svg>`,'▲ เหนือแถบ = ป้าย/อุปกรณ์'),
+      li(`<svg width="16" height="15" viewBox="0 0 16 15"><rect x="1" y="1" width="13" height="7" rx="2" fill="${GC}"/><circle cx="11" cy="4.5" r="1.6" fill="#fff"/><line x1="7.5" y1="8.5" x2="7.5" y2="13" stroke="${GC}" stroke-width="1.8"/><line x1="4" y1="13.6" x2="11" y2="13.6" stroke="${GC}" stroke-width="1.8" stroke-linecap="round"/></svg>`,'กล้องเหนือแถบ = ITS/CCTV'),
       li(`<svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#d97706"/><path d="M9.7,3.9 L6.1,8.5 h2.5 L7.1,12.2 l4,-5 h-2.5 z" fill="#fff"/></svg>`,'⚡ = หม้อแปลง'),
       li(brSvg(GC)+brSvg('#7f93b8'),')( = สะพาน (ฟ้า = สะพานเดิม)')]);
   box.appendChild(lg);
@@ -7544,7 +7643,7 @@ async function loadRequests(force){ return loadSource('requests', force); }
 defineSource({
   key:'requests', what:'คำของบประมาณ', boxes:['reqBody'], pills:'reqPills',
   has:()=>!!reqData,
-  read:async()=>{
+  read:async(force)=>{
     const S=v=>String(v??'').trim();
     reqDroppedN=0;
     /* v28.0 — อ่านหัวคอลัมน์แบบยืดหยุ่น: ตรงตัวก่อน ไม่เจอค่อยไล่หาแบบ "มีคำนี้อยู่"
@@ -7591,8 +7690,11 @@ defineSource({
        → นับเป็น "ปีก่อนหน้าปีแรกที่พบชื่อ" (ผู้ใช้เรียงแท็บเก่า→ใหม่ ซ้าย→ขวา) · ถ้าไม่พบชื่อเลย = 2571 (แบบเดิม) */
     let sentinel=null, sentinelFp=null;
     try{ sentinel=await sheetData(REQ_ID,'sheet=__Q_PROBE_XX99__'); sentinelFp=JSON.stringify(sentinel.slice(0,25)); }catch(e){}
-    const names=[]; REQ_PROBE_YEARS.forEach(y=>{ names.push({y, n:'Q_'+y}); names.push({y, n:String(2500+y)}); });
-    const probes=await Promise.allSettled(names.map(t=>sheetData(REQ_ID,'sheet='+encodeURIComponent(t.n)).then(objs=>({y:t.y,objs}))));
+    const names=[];   // v31.14 แต่ละแบบชื่อ (Q_xx · 25xx) ยิงเฉพาะที่รู้จัก + ข้างเคียง
+    const qN=probeNames('req_q', REQ_PROBE_YEARS.map(y=>'Q_'+y), force), yN=probeNames('req_y', REQ_PROBE_YEARS.map(y=>String(2500+y)), force);
+    qN.forEach(n=>names.push({y:+n.slice(2), n})); yN.forEach(n=>names.push({y:+n-2500, n}));
+    const foundQ=[], foundY=[];
+    const probes=await Promise.allSettled(names.map(t=>sheetData(REQ_ID,'sheet='+encodeURIComponent(t.n)).then(objs=>({y:t.y,n:t.n,objs}))));
     const seen=new Set(); let all=[]; const yearsFound=[]; let anyReply=!!sentinel, lastErr=null;
     for(const p of probes){
       if(p.status!=='fulfilled'){ lastErr=p.reason; continue; }
@@ -7601,9 +7703,13 @@ defineSource({
       if(fp===sentinelFp||seen.has(fp)) continue;
       seen.add(fp);
       const recs=parseReq(p.value.objs, 2500+p.value.y);
-      if(recs.length){ all=all.concat(recs); yearsFound.push(2500+p.value.y); }
+      if(recs.length){ all=all.concat(recs); yearsFound.push(2500+p.value.y); (/^Q_/.test(p.value.n)?foundQ:foundY).push(p.value.n); }
     }
+    if(foundQ.length) tabCacheSet('req_q', foundQ); if(foundY.length) tabCacheSet('req_y', foundY);
     if(!anyReply) throw lastErr||new Error('เชื่อมต่อ Google Sheets ไม่ได้');
+    /* v31.12 กฎ 6: มีคำขอที่ล้ม (หลังลองใหม่แล้ว) = อ่านแท็บไม่ครบ ปีของแท็บซ้ายสุดจะเดาผิด → ฟ้องแล้วให้กดโหลดใหม่ ไม่เดาต่อ */
+    const nFail=probes.filter(p=>p.status!=='fulfilled').length;
+    if(nFail) throw new Error(`อ่านแท็บชีทคำขอไม่ครบ (${nFail} ครั้งไม่ได้รับคำตอบ) — เครือข่ายขัดข้อง กดโหลดข้อมูลใหม่`);
     // แท็บซ้ายสุด (เนื้อหาเดียวกับ sentinel) — ยังไม่ถูกอ่านเพราะแยกชื่อไม่ได้
     if(sentinel&&sentinel.length){
       const firstYear=yearsFound.length?Math.min(...yearsFound)-1:2571;
@@ -8003,15 +8109,19 @@ defineSource({
   key:'zerobase', what:'Zerobase', boxes:['zbBody'], pills:'zbPills',
   spin:'กำลังดึงข้อมูล Zerobase…',
   has:()=>!!zbData,
-  read:async()=>{
+  read:async(force)=>{
     // 1) sentinel: ชื่อ tab ที่ไม่มีจริง gviz จะส่ง "tab แรก" กลับมา -> จำลายนิ้วมือไว้กรองปีหลอก
     let sentinelFp=null;
     zbWarn=[]; zbDroppedN=0;
     try{ sentinelFp=JSON.stringify(zbRawRows(await gvizJSONP(ZB_ID,'sheet=__ZB_PROBE_XX99__')).slice(0,25)); }catch(e){}
     // 2) ไล่หา tab ปีพร้อมกันทุกปี
-    const probes=await Promise.allSettled(ZB_PROBE_YEARS.map(y=>
+    const zbNames=probeNames('zb', ZB_PROBE_YEARS.map(y=>'Z_'+y), force);   // v31.14
+    const probes=await Promise.allSettled(zbNames.map(n=>+n.slice(2)).map(y=>
       gvizJSONP(ZB_ID,'sheet='+encodeURIComponent('Z_'+y)).then(t=>({y,t}))));
+    const foundZ=[];
     const seen=new Set(); let all=[]; const yearsFound=[]; let anyReply=(sentinelFp!=null);
+    { const nFail=probes.filter(p=>p.status!=='fulfilled').length;   // v31.12 กฎ 6
+      if(nFail && (anyReply || probes.some(p=>p.status==='fulfilled'))) throw new Error(`อ่านแท็บชีท Zerobase ไม่ครบ (${nFail} ครั้งไม่ได้รับคำตอบ) — เครือข่ายขัดข้อง กดโหลดข้อมูลใหม่`); }
     for(const p of probes){
       if(p.status!=='fulfilled') continue;
       anyReply=true;   // กฎ 6 — ชีทตอบกลับมาแล้ว ต่อให้ไม่มีแถวก็ไม่ใช่ "เน็ตล่ม"
@@ -8020,8 +8130,9 @@ defineSource({
       if(fp===sentinelFp||seen.has(fp)) continue; // tab ไม่มีจริง / ซ้ำ
       seen.add(fp);
       const recs=zbParse(rows, 2500+p.value.y, 'Z_'+p.value.y);
-      if(recs&&recs.length){ all=all.concat(recs); yearsFound.push(2500+p.value.y); }
+      if(recs&&recs.length){ all=all.concat(recs); yearsFound.push(2500+p.value.y); foundZ.push('Z_'+p.value.y); }
     }
+    if(foundZ.length) tabCacheSet('zb', foundZ);
     // 3) ยังไม่มี tab Z_71 -> อ่านโครงเดิม (5 หมวด) เป็นปี 2571
     if(!yearsFound.includes(2571)){
       const legacy=await Promise.allSettled(ZB_LEGACY_TABS.map(t=>gvizJSONP(ZB_ID,'gid='+t.gid)));
@@ -8593,30 +8704,27 @@ function renderZbOverview(){
   const muads=[...new Set(roads.map(c=>roadInfo[c]?.muad).filter(Boolean))];
   const yearLbl='เหมารวมทุกรายการ';
   const all=false; // ไม่แสดงมิติปี — Zerobase ถือเป็นคลังความต้องการรวม
+  /* v31.13 ผู้ใช้ (8 ก.ย. 69): "zerobase เรียงกล่องใหม่ เริ่มจากแบ่งตามหมวด (ไม่มีสรุปก่อน) → แยกกิจกรรมตามหมวด →
+     กิจกรรมกับสัดส่วนกลุ่มซ้ำกัน รวมเลย → สายทางต้องการมากสุด → เพิ่มว่ามีสายไหนยังไม่มีข้อมูล Zerobase"
+     ลำดับ: ① กล่องแบ่งตามหมวด (ทำหน้าที่สรุปในตัว: คำขอ · % · สาย · กม.) ② กิจกรรมตามหมวด (แท่งซ้อน) ③ กลุ่มกิจกรรม (กล่องเดียว: จำนวน · % · ปริมาณ)
+            ④ สายที่ต้องการมากสุด Top 10 ⑤ สายที่ยังไม่มีข้อมูล Zerobase ⑥ ตารางรายสาย */
   document.getElementById('zbBody').innerHTML=`
-    <div class="grid kpis">
-      <div class="card kpi"><div class="lbl">คำขอทั้งหมด</div><div class="val">${R.length} <small>ช่วง กม.</small></div><div class="foot">${esc(yearLbl)}</div></div>
-      <div class="card kpi"><div class="lbl">สายทางที่มีความต้องการ</div><div class="val">${roads.length} <small>/ ${ALL_CODES.length} สาย</small></div><div class="foot">${(100*roads.length/ALL_CODES.length).toFixed(0)}% ของโครงข่าย</div></div>
-      <div class="card kpi"><div class="lbl">งานถนน</div><div class="val">${fmt(+rdKm.toFixed(1))} <small>กม.</small></div><div class="foot">ซ่อมบำรุง · ขยาย · ก่อสร้าง · ระบายน้ำ (${nRd} คำขอ)</div></div>
-      <div class="card kpi"><div class="lbl">ไฟฟ้าแสงสว่าง</div><div class="val">${fmt(pl)} <small>ต้น</small></div><div class="foot">${nE} คำขอ · ระยะ ${fmt(+plKm.toFixed(1))} กม.</div></div>
-      <div class="card kpi"><div class="lbl">สะพาน</div><div class="val">${fmt(Math.round(brM))} <small>ม.</small></div><div class="foot">${nB} คำขอ</div></div>
-      <div class="card kpi"><div class="lbl">หมวดที่มีความต้องการ</div><div class="val">${muads.length} <small>/ ${MUAD_ORDER.length} หมวด</small></div><div class="foot">${muads.join(' · ')||'—'}</div></div>
-    </div>
-    <div class="grid two">
-      <div class="card"><h3>คำขอแยกตามกลุ่มกิจกรรม</h3><div class="note">จำนวนคำขอ — ชี้เพื่อดูปริมาณ (ถนน กม. · ไฟฟ้า ต้น · สะพาน ม.)</div><div id="chZbAct"></div></div>
-      <div class="card"><h3>สายทางที่มีความต้องการมากที่สุด (Top 10)</h3><div class="note">จำนวนคำขอ — สีตามหมวด · คลิกเพื่อเปิดสรุปรายสาย</div><div id="chZbTop"></div></div>
+    <div class="card"><h3>ความต้องการแยกตามหมวดบำรุงทาง</h3><div class="note">ทั้งหมด ${R.length} ช่วง กม. · ${roads.length} สาย · ถนน ${fmt(+rdKm.toFixed(1))} กม. · ไฟฟ้า ${fmt(pl)} ต้น · สะพาน ${fmt(Math.round(brM))} ม. — กล่องละหมวด</div><div id="chZbMuadBox"></div></div>
+    <div class="grid two" style="margin-top:14px">
+      <div class="card"><h3>กิจกรรมที่ต้องการ แยกตามหมวด</h3><div class="note">แท่งซ้อนแบ่งตามกลุ่มกิจกรรม — ชี้ที่ท่อนเพื่อดูรายละเอียด</div><div id="chZbMuad"></div></div>
+      <div class="card"><h3>กลุ่มกิจกรรม</h3><div class="note">แต่ละกลุ่ม ขอกี่รายการ · กี่ % · ปริมาณรวม — แถบสีด้านบน = สัดส่วนจำนวนคำขอ</div><div id="chZbSecond"></div></div>
     </div>
     <div class="grid two" style="margin-top:14px">
-      <div class="card"><h3>คำขอแยกตามหมวดบำรุงทาง</h3><div class="note">แท่งซ้อนแบ่งตามกลุ่มกิจกรรม — ชี้ที่ท่อนเพื่อดูรายละเอียด</div><div id="chZbMuad"></div></div>
-      <div class="card"><h3>${all?'คำขอต่อปี แยกตามกลุ่มกิจกรรม':'สัดส่วนกลุ่มกิจกรรม'}</h3><div class="note">${all?'เห็นแนวโน้มความต้องการปีต่อปี':'แต่ละกลุ่ม ขอกี่รายการ · กี่ % · ปริมาณรวม — แถบสีด้านบน = สัดส่วนจำนวนคำขอ'}</div><div id="chZbSecond"></div></div>
+      <div class="card"><h3>สายทางที่มีความต้องการมากที่สุด (Top 10)</h3><div class="note">จำนวนคำขอ — สีตามหมวด · คลิกเพื่อเปิดสรุปรายสาย</div><div id="chZbTop"></div></div>
+      <div class="card"><h3>สายที่ยังไม่มีข้อมูล Zerobase</h3><div class="note" id="zbMissNote">สายในบัญชีที่ยังไม่มีคำขอ Zerobase เลย — เรียงตามหมวด</div><div id="zbMissing" style="max-height:300px;overflow:auto"></div></div>
     </div>
     <div class="card" style="margin-top:14px">
       <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
-        <div><h3 style="margin:0">สรุปรายสายทาง (${roads.length} สายที่มีความต้องการ)</h3><div class="note" style="margin:0">คลิกแถวเพื่อเปิดสรุปรายสาย — % ของสาย = ระยะครอบคลุมรวม ÷ ระยะทางสาย</div></div>
+        <div><h3 style="margin:0">สรุปรายสายทาง (${roads.length} สายที่มีความต้องการ)</h3><div class="note" style="margin:0">คลิกแถวเพื่อเปิดสรุปรายสาย</div></div>
         <input class="search" id="zbSearch" placeholder="ค้นหา รหัส/ชื่อสาย/อำเภอ...">
       </div>
       <div class="tblwrap" style="max-height:520px"><table id="zbRoadTable"><thead><tr>
-        <th>รหัส</th><th>ชื่อสายทาง</th><th>หมวด</th>${all?'<th>ปีที่ขอ</th>':''}<th class="num">ระยะทางสาย (กม.)</th><th class="num">จำนวนคำขอ</th><th class="num">ถนน (กม.)</th><th class="num">ไฟฟ้า (ต้น)</th><th class="num">สะพาน (ม.)</th><th class="num">% ของสาย</th><th>กลุ่มกิจกรรม</th>
+        <th>รหัส</th><th>ชื่อสายทาง</th><th>หมวด</th>${all?'<th>ปีที่ขอ</th>':''}<th class="num">ระยะทางสาย (กม.)</th><th class="num">จำนวนคำขอ</th><th class="num">ถนน (กม.)</th><th class="num">ไฟฟ้า (ต้น)</th><th class="num">สะพาน (ม.)</th><th class="num">ครอบคลุม %</th><th>กลุ่มกิจกรรม</th>
       </tr></thead><tbody></tbody></table></div>
 
     </div>`;
@@ -8625,9 +8733,29 @@ function renderZbOverview(){
       return {g, n:rr.length, km:rr.reduce((s,r)=>s+(r.len||0),0), pl:rr.reduce((s,r)=>s+(zbPoles(r)||0),0)};})
     .filter(x=>x.n>0).sort((a,b)=>b.n-a.n);
   const qty=x=> x.g.k==='ไฟฟ้าแสงสว่าง' ? fmt(x.pl)+' ต้น' : x.g.k==='สะพาน' ? fmt(Math.round(x.km*1000))+' ม.' : fmt(+x.km.toFixed(1))+' กม.';
-  hbar('chZbAct', byG.map(x=>({label:x.g.k, v:x.n, color:x.g.c, tip:`${x.n} คำขอ · ${qty(x)}`})), {unit:'คำขอ', labelW:128, height:300});
   // Top 10 สาย
   const byRoad={}; R.forEach(r=>{ (byRoad[r.code]=byRoad[r.code]||[]).push(r); });
+  // ① กล่องแบ่งตามหมวด (คำขอ · % · สาย · ปริมาณ) — กติกาเดียวกับกล่องชนิดงบ/เขต หน้าอื่น
+  {
+    const byM={};
+    Object.entries(byRoad).forEach(([code,list])=>{ const m=roadInfo[code]?.muad||'ไม่ระบุ'; const o=byM[m]=byM[m]||{n:0,roads:new Set(),km:0,pl:0,br:0};
+      o.n+=list.length; o.roads.add(code); o.km+=list.filter(zbIsRd).reduce((a,r)=>a+(r.len||0),0); o.pl+=list.filter(zbIsE).reduce((a,r)=>a+(zbPoles(r)||0),0); o.br+=list.filter(zbIsB).reduce((a,r)=>a+((r.len||0)*1000),0); });
+    const keys=[...MUAD_ORDER,'ไม่ระบุ'].filter(m=>byM[m]);
+    groupBoxes('chZbMuadBox', keys.map(m=>[m,{label:m==='ไม่ระบุ'?m:'หมวด'+m, n:byM[m].n, amt:`ถนน ${fmt(+byM[m].km.toFixed(1))} กม.${byM[m].pl?` · ไฟฟ้า ${fmt(byM[m].pl)} ต้น`:''}${byM[m].br?` · สะพาน ${fmt(Math.round(byM[m].br))} ม.`:''}`,
+      foot:`${byM[m].roads.size} สาย`, tip:`${byM[m].n} คำขอ · ${byM[m].roads.size} สาย`}]), m=>m==='ไม่ระบุ'?'#9aa5a3':muadColor(m), {unit:'คำขอ'});
+  }
+  // ⑤ สายในบัญชีที่ยังไม่มีคำขอ Zerobase — เรียงตามหมวด (ผู้ใช้: "มีสายไหนยังไม่มีข้อมูล zerobase")
+  {
+    const have=new Set(Object.keys(byRoad));
+    const miss=EMB.roads.filter(r=>!have.has(r.code)).sort((a,b)=>(MUAD_ORDER.indexOf(a.muad)-MUAD_ORDER.indexOf(b.muad))||SUF3(a.code)-SUF3(b.code)||a.code.localeCompare(b.code,'th'));
+    const byMm={}; miss.forEach(r=>{ (byMm[r.muad||'ไม่ระบุ']=byMm[r.muad||'ไม่ระบุ']||[]).push(r); });
+    const host=document.getElementById('zbMissing'), note=document.getElementById('zbMissNote');
+    if(note) note.textContent=miss.length?`${miss.length} จาก ${EMB.roads.length} สายในบัญชี ยังไม่มีคำขอ Zerobase — เรียงตามหมวด · คลิกรหัสเพื่อเปิดสรุปรายสาย`:'ทุกสายในบัญชีมีคำขอ Zerobase แล้ว';
+    if(host) host.innerHTML=miss.length?Object.keys(byMm).map(m=>`<div class="listhead" style="margin:8px 2px 4px">${muadCell(m)} · ${byMm[m].length} สาย</div><div style="display:flex;flex-wrap:wrap;gap:5px">`+
+        byMm[m].map(r=>`<span class="pill" data-code="${esc(r.code)}" title="${esc(r.name||'')}" style="background:var(--page);border:1px solid var(--grid);cursor:pointer">${esc(r.code)}<small style="color:var(--muted);font-weight:500"> · ${esc(String(r.name||'').slice(0,18))}</small></span>`).join('')+`</div>`).join('')
+      :'<div class="note" style="padding:10px 0">ครบทุกสาย ✓</div>';
+    host?.querySelectorAll('.pill[data-code]').forEach(el2=>el2.addEventListener('click',()=>openZbRoad(el2.dataset.code)));
+  }
   const counts=Object.entries(byRoad).map(([c,l])=>[c,l.length]).sort((a,b)=>b[1]-a[1]);
   lolli('chZbTop', counts.slice(0,10).map(e=>{
       const m=roadInfo[e[0]]?.muad;
@@ -9024,6 +9152,10 @@ function loadRoutine(){
     <div class="footnote" style="margin-top:8px">พอผูกชีทแล้ว หน้านี้จะแสดง: ผลงานรายหมวด/รายเดือน · แยกประเภทงาน · ปริมาณสะสม · รูปผลงาน · และลงแถบใน One-Page รายสาย — ประเภทงานระบบไล่อ่านจากชีทเอง เพิ่มตัวเลือกทีหลังได้เลย</div>
   </div>`;
 }
+/* v31.14 ผู้ใช้ (8 ก.ย. 69) ส่งลิงก์โฟลเดอร์รูปของฟอร์ม (ก่อน/หลัง) — ปุ่มบนหัวหน้า + ลิงก์ในกล่องดูรูปเมื่อเปิดไม่ได้ (ไปตั้งค่าแชร์ที่โฟลเดอร์นี้) */
+const RISK_IMG_FOLDER={'ก่อน':'https://drive.google.com/drive/folders/1uDvXeyCessLZa-L5OOTrREw5Wc0imDdRmVy1ntfeedWsYysHVlEu5I_jXF0JYHLPJ6Bfmbl6',
+                       'หลัง':'https://drive.google.com/drive/folders/1uPYIeOEBHstyNdXVDNDhmaotxFzOkPFyYLVeovkvuOQX1U2QwdWqirxIdzpDFmtDyxT_0h2g'};
+{ const a=document.getElementById('riskFolderBefore'), b=document.getElementById('riskFolderAfter'); if(a) a.href=RISK_IMG_FOLDER['ก่อน']; if(b) b.href=RISK_IMG_FOLDER['หลัง']; }
 const RISK_IMG_ID='1i8pVX2nOiTNkxbWEqOl9IpPJRMAMGCeuszKISeDfJs4', RISK_IMG_GID=188489456;  // ชีทคำตอบฟอร์ม "รูปก่อนแก้ไข"
 const RISK_IMG2_ID='1y-ikalmjMXzsGQWnNTk27y-ud9tyxTvzmn4xcYmgMh8', RISK_IMG2_GID=null;       // ชีทคำตอบฟอร์ม "รูปหลังแก้ไข" (แท็บแรก)
 let riskImgs=null; // {code: [{ts,km,kind,url}]}
@@ -9214,6 +9346,30 @@ const riskMuad=x=>muadByCode()[x.code]||x._m||'ไม่ระบุ'; // หม
 /* รูปจุดเสี่ยง: แปลงลิงก์ Google Drive เป็นรูปพรีวิว + lightbox ดูในหน้าเลย */
 const driveId=u=>{ const m=String(u||'').match(/\/file\/d\/([\w-]{20,})|[?&]id=([\w-]{20,})/); return m?(m[1]||m[2]):null; };
 const driveThumb=(u,w)=>{ const id=driveId(u); return id?`https://drive.google.com/thumbnail?id=${id}&sz=w${w||1000}`:String(u||''); };
+/* v31.12 ผู้ใช้ (8 ก.ย. 69): "เช็คหน้าจุดเสี่ยง ทำไมระบบอัพรูปพัง" — ตรวจกับชีทจริง: รูป 3 รูป เปิดได้ 1 อีก 2 ไฟล์ใน Drive ไม่ได้แชร์ "ทุกคนที่มีลิงก์"
+   (ฟอร์มอัปโหลดเข้าไดรฟ์เจ้าของฟอร์ม ไฟล์ใหม่ไม่ได้รับสิทธิ์แชร์เอง) ระบบไม่พัง แต่เดิมรู้ตอนกดดูเท่านั้น
+   → ตรวจล่วงหน้าทุกรูป (โหลดรูปย่อ 64px) แล้วติดป้าย "ยังไม่ได้แชร์" ที่ลิงก์ + ป้ายสรุปบนหัวหน้า ให้เห็นก่อนกด */
+const _photoOk={};
+function probePhoto(url){
+  if(url in _photoOk) return Promise.resolve(_photoOk[url]);
+  const id=driveId(url); if(!id){ _photoOk[url]=null; return Promise.resolve(null); }   // ไม่ใช่ลิงก์ไฟล์ Drive — ตรวจไม่ได้
+  return new Promise(rs=>{ const done=v=>{ _photoOk[url]=v; rs(v); };
+    const t=setTimeout(()=>done(false),8000);
+    const im=new Image(); im.onload=()=>{ clearTimeout(t); done(true); };
+    im.onerror=()=>{ const im2=new Image(); im2.onload=()=>{ clearTimeout(t); done(true); }; im2.onerror=()=>{ clearTimeout(t); done(false); };
+      im2.src=`https://lh3.googleusercontent.com/d/${id}=w64`; };
+    im.src=`https://drive.google.com/thumbnail?id=${id}&sz=w64`; });
+}
+async function markPhotos(){
+  const links=[...document.querySelectorAll('a[data-photo]')];
+  await Promise.all(links.map(async a=>{ const v=await probePhoto(a.dataset.photo); a.dataset.share=v===false?'no':(v?'ok':'?');
+    let tag=a.nextElementSibling; if(tag&&tag.classList.contains('phtag')) tag.remove();
+    if(v===false) a.insertAdjacentHTML('afterend',' <span class="pill bad phtag" title="ไฟล์ใน Drive ยังไม่ได้แชร์ \"ทุกคนที่มีลิงก์\" — เปิดโฟลเดอร์รูปของฟอร์มแล้วตั้งค่าแชร์">⚠ ยังไม่ได้แชร์</span>'); }));
+  const urls=[...new Set((riskData||[]).flatMap(x=>[x.img1,x.img2]).filter(u=>u&&driveId(u)))];
+  const vals=await Promise.all(urls.map(probePhoto)); const bad=vals.filter(v=>v===false).length;
+  const pe=document.getElementById('riskPills'); if(pe&&urls.length){ let el=pe.querySelector('.phpill'); if(!el){ el=document.createElement('span'); el.className='hpill phpill'; pe.appendChild(el); }
+    el.className='hpill phpill'+(bad?' warn':''); el.textContent=`📷 รูป ${urls.length} · เปิดได้ ${urls.length-bad}`+(bad?` · ยังไม่ได้แชร์ ${bad}`:''); el.title=bad?'ไฟล์รูปใน Drive ต้องแชร์ "ทุกคนที่มีลิงก์" ถึงจะเปิดในหน้านี้ได้':''; }
+}
 function showPhoto(url,lbl){
   let bx=document.getElementById('photoBox');
   if(!bx){ bx=document.createElement('div'); bx.id='photoBox';
@@ -9239,7 +9395,7 @@ function showPhoto(url,lbl){
   im.addEventListener('error',()=>{
     i++;
     if(i<cands.length){ im.src=cands[i]; return; }
-    im.outerHTML='<div style="color:#ffd7d7;background:rgba(0,0,0,.4);padding:14px 18px;border-radius:10px;max-width:540px;text-align:center;line-height:1.7">โหลดรูปไม่ได้ (ลองครบ '+cands.length+' ช่องทางแล้ว)<br>เช็คว่าโฟลเดอร์/ไฟล์รูปใน Drive แชร์ "ทุกคนที่มีลิงก์" — ตั้งใหม่แล้วรอ 1–2 นาทีค่อยลองอีกครั้ง<br>(หรือคลิกลิงก์ด้านล่างเปิดดูใน Drive ตรงๆ)</div>';
+    im.outerHTML='<div style="color:#ffd7d7;background:rgba(0,0,0,.4);padding:14px 18px;border-radius:10px;max-width:540px;text-align:center;line-height:1.7">เปิดรูปไม่ได้ — ไฟล์นี้ใน Drive ยังไม่ได้แชร์ "ทุกคนที่มีลิงก์"<br>วิธีแก้: เปิดโฟลเดอร์รูปของฟอร์ม → แชร์ → ทุกคนที่มีลิงก์ (ดูได้) → รอ 1–2 นาทีแล้วลองใหม่<br><a href="'+esc(RISK_IMG_FOLDER[/หลัง/.test(lbl)?'หลัง':'ก่อน'])+'" target="_blank" rel="noopener" style="color:#9fd8ff;font-weight:600" onclick="event.stopPropagation()">📁 เปิดโฟลเดอร์รูป'+(/หลัง/.test(lbl)?'หลังแก้ไข':'ก่อนแก้ไข')+' ↗</a><br>(หรือคลิกลิงก์ด้านล่างเปิดดูใน Drive ตรงๆ)</div>';
     const l=document.getElementById('phLoad'); if(l) l.remove();
   });
   im.src=cands[0];
@@ -9474,8 +9630,8 @@ function renderRiskRoad(code){
           <td style="font-variant-numeric:tabular-nums;font-size:11.5px">${x.a?esc(x.a)+(x.b?' – '+esc(x.b):''):'—'}</td>
           <td>${x.status?`<span class="pill ${riskFixed(x)?'ok':'wait'}">${esc(x.status)}</span>`:'<span class="pill wait">ยังไม่แก้ไข</span>'}</td>
           <td style="font-size:12px">${esc(x.fix)||'—'}</td>
-          <td>${x.img1?`<a href="javascript:void(0)" onclick="showPhoto('${esc(x.img1)}','📷 ก่อนแก้ไข — ${esc(x.rtype||'')} ${esc(x.a||'')}')" style="color:var(--teal);font-weight:600">📷 ก่อน</a>`:'—'}</td>
-          <td>${x.img2?`<a href="javascript:void(0)" onclick="showPhoto('${esc(x.img2)}','📷 หลังแก้ไข — ${esc(x.rtype||'')} ${esc(x.a||'')}')" style="color:#0a6b0a;font-weight:600">📷 หลัง</a>`:'—'}</td>
+          <td style="white-space:nowrap">${x.img1?`<a href="javascript:void(0)" data-photo="${esc(x.img1)}" onclick="showPhoto('${esc(x.img1)}','📷 ก่อนแก้ไข — ${esc(x.rtype||'')} ${esc(x.a||'')}')" style="color:var(--teal);font-weight:600">📷 ก่อน</a>`:'—'}</td>
+          <td style="white-space:nowrap">${x.img2?`<a href="javascript:void(0)" data-photo="${esc(x.img2)}" onclick="showPhoto('${esc(x.img2)}','📷 หลังแก้ไข — ${esc(x.rtype||'')} ${esc(x.a||'')}')" style="color:#0a6b0a;font-weight:600">📷 หลัง</a>`:'—'}</td>
           <td style="font-size:11.5px">${x.done?`✅ ${esc(x.done)}`:'—'}</td></tr>`).join('')}
       </tbody></table></div>
     </div>`;
@@ -9487,6 +9643,7 @@ function renderRiskRoad(code){
       tip:`<b>${esc(x.rtype)||'จุดเสี่ยง'}${x.level?' · '+esc(x.level):''}</b><br>${kmLbl(x.ka)}${x.kb!=null&&x.kb>x.ka?' – '+kmLbl(x.kb):''}<br>${esc(x.detail)||''}${x.status?`<br>สถานะ: ${esc(x.status)}`:''}${x.fix?`<br>วิธีแก้: ${esc(x.fix)}`:''}`}))}));
   if(lanes.length) drawLanes('rkStrip', roadLen, lanes, code);
   else document.getElementById('rkStrip').innerHTML='<div class="note">จุดเสี่ยงของสายนี้ยังไม่ระบุ กม.</div>';
+  markPhotos().catch(()=>{});   // v31.12 ติดป้ายรูปที่ยังไม่ได้แชร์ (ทำงานเบื้องหลัง ไม่หน่วงตาราง)
   document.getElementById('rkSel').addEventListener('change',e=>renderRiskRoad(e.target.value));
   document.getElementById('rkPrev').addEventListener('click',()=>renderRiskRoad(roadsWith[(idx-1+roadsWith.length)%roadsWith.length].c));
   document.getElementById('rkNext').addEventListener('click',()=>renderRiskRoad(roadsWith[(idx+1)%roadsWith.length].c));
