@@ -2856,7 +2856,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.10', APP_DATE='8 ก.ย. 2569';
+const APP_VER='v31.11', APP_DATE='8 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -5318,10 +5318,14 @@ function initMap(){
     return {p,ring};
   });
   M.zoneLayers=[]; M.elShow=false; M.zoneSel='';
+  /* v31.11 ผู้ใช้ (8 ก.ย. 69): "กดเขตเลือกตั้งหน้าแผนที่ในมือถือมันค้าง" — เดิมทุกครั้งที่เลื่อน/ซูม สร้างเส้นขอบ 201 วง (8.8k จุด) ใหม่ทั้งหมด
+     + ระบายพื้นโปร่งแสงเส้นประซ้ำทุกเฟรม → มือถือค้าง · ใหม่: วงเขตอยู่ใน <g> เดียว คำนวณพิกัดครั้งเดียวต่อระดับซูม (ตัดจุดที่ห่างกันไม่ถึง 0.75px ทิ้ง)
+     เลื่อนแผนที่ = ขยับ transform ของกลุ่ม ไม่แตะ path เลย · เส้นประเฉพาะตอนซูมใกล้ (≥12) */
+  M.zoneG=el('g',{class:'zoneg'},M.svg); M.zoneG.__z=null;
   Object.entries(EMB.electZones||{}).forEach(([z,rings])=>{
     const col=zoneColor(+z);
     rings.forEach(ring=>{
-      const p=el('path',{stroke:col,'stroke-opacity':.5,'stroke-width':1,'stroke-dasharray':'3 3'},M.svg);
+      const p=el('path',{stroke:col,'stroke-opacity':.5,'stroke-width':1,'stroke-dasharray':'3 3'},M.zoneG);
       // ต้องใส่ fill เป็น inline style เพราะ CSS #vecpane path{fill:none} ทับ attribute ธรรมดา
       p.style.fill=col; p.style.fillOpacity=.3;
       p.style.display='none';
@@ -5338,7 +5342,7 @@ function initMap(){
   // เส้นขอบระหว่างเขตเลือกตั้ง (คำนวณจากขอบตำบลที่สองฝั่งอยู่คนละเขต + ขอบจังหวัด) — ตัดเขตพรรคเดียวกันให้เห็นชัด
   M.zoneBounds=[];
   (EMB.electBounds||[]).forEach(line=>{
-    const p=el('path',{stroke:'#273043','stroke-width':2,'stroke-opacity':.75,'stroke-linecap':'round','stroke-linejoin':'round','pointer-events':'none'},M.svg);
+    const p=el('path',{stroke:'#273043','stroke-width':2,'stroke-opacity':.75,'stroke-linecap':'round','stroke-linejoin':'round','pointer-events':'none'},M.zoneG);
     p.style.display='none';
     M.zoneBounds.push({p, line});
   });
@@ -5592,7 +5596,7 @@ function initMap(){
     if(pinch&&ptrs.size>=2){                 // สองนิ้ว: เลื่อนตามจุดกึ่งกลาง + ซูมเมื่อระยะนิ้วเปลี่ยนถึงเกณฑ์
       const m=pinchMid(), mx=m[0], my=m[1];
       const ddx=mx-pinch.mx, ddy=my-pinch.my;
-      if(Math.abs(ddx)+Math.abs(ddy)>0.5){ M.cx-=ddx; M.cy-=ddy; pinch.mx=mx; pinch.my=my; redrawMap(); }
+      if(Math.abs(ddx)+Math.abs(ddy)>0.5){ M.cx-=ddx; M.cy-=ddy; pinch.mx=mx; pinch.my=my; redrawMapSoon(); }
       const k=pinchDist()/pinch.d0;
       if(k>1.42||k<0.70){ zoomAt(k>1?1:-1,mx,my); pinch.d0=pinchDist();
         const m2=pinchMid(); pinch.mx=m2[0]; pinch.my=m2[1]; }
@@ -5605,7 +5609,7 @@ function initMap(){
     }
     const dx=e.clientX-drag.x, dy=e.clientY-drag.y;
     if(!drag.moved && Math.abs(dx)+Math.abs(dy)>3){ drag.moved=true; try{ div.setPointerCapture(drag.id); }catch(_){} }
-    M.cx-=dx; M.cy-=dy; drag.x=e.clientX; drag.y=e.clientY; redrawMap(); });
+    M.cx-=dx; M.cy-=dy; drag.x=e.clientX; drag.y=e.clientY; redrawMapSoon(); });
 
   div.addEventListener('pointerup',e=>{
     const wasPinch=!!pinch;
@@ -5645,7 +5649,11 @@ function zoomAt(dz, px, py){
   M.cx=(M.cx-w/2+px)*k-px+w/2; M.cy=(M.cy-h/2+py)*k-py+h/2; M.z=z2;
   redrawMap();   // v20.6: ซูมแล้วกล่องรายละเอียดไม่ปิดอีกต่อไป (หมุดยึด lat/lon จึงตามได้ถูก)
 }
+/* v31.11 ระหว่างลาก/บีบซูม: รวมการวาดให้เหลือเฟรมละครั้ง (rAF) — เดิมวาดทุก pointermove ต่อคิวจนค้าง · ที่อื่นยังเรียก redrawMap() ตรงๆ ได้ผลทันที */
+let _mapRaf=0;
+function redrawMapSoon(){ if(_mapRaf) return; _mapRaf=requestAnimationFrame(()=>{ _mapRaf=0; redrawMap(); }); }
 function redrawMap(){
+  if(_mapRaf){ cancelAnimationFrame(_mapRaf); _mapRaf=0; }
   const w=M.div.clientWidth||800, h=M.div.clientHeight||520, z=M.z;
   const ox=M.cx-w/2, oy=M.cy-h/2;
   // tiles
@@ -5671,28 +5679,47 @@ function redrawMap(){
   if(Object.keys(M.tileCache).length>240){ for(const key in M.tileCache){ if(!need.has(key)){} } }
   // vectors
   M.svg.setAttribute('width',w); M.svg.setAttribute('height',h);
-  for(const code in M.layers){
-    const L=M.layers[code];
-    L.path.setAttribute('d', L.coordsList.map(cs=>'M'+cs.map(c=>
-      (lon2x(c[0],z)-ox).toFixed(1)+','+(lat2y(c[1],z)-oy).toFixed(1)).join('L')).join(''));
+  /* v31.11 เส้นสายทาง 98 สาย 76k จุด: เดิมคำนวณใหม่ทุกเฟรมตอนเลื่อน — ตอนนี้คำนวณเป็นพิกัดสัมบูรณ์ครั้งเดียวต่อระดับซูม
+     (ตัดจุดที่ห่างกันไม่ถึง 0.75px ทิ้ง — ซูมไกลเหลือไม่กี่พันจุด) แล้วเลื่อนด้วย transform ของแต่ละเส้น */
+  const tr=`translate(${(-ox).toFixed(1)},${(-oy).toFixed(1)})`;
+  if(M.__absZ!==z){
+    for(const code in M.layers){
+      const L=M.layers[code];
+      L.path.setAttribute('d', L.coordsList.map(cs=>{ let out='', lx=null, ly=null;
+        for(let i=0;i<cs.length;i++){ const x=lon2x(cs[i][0],z), y=lat2y(cs[i][1],z);
+          if(lx!==null && i<cs.length-1 && Math.abs(x-lx)<0.75 && Math.abs(y-ly)<0.75) continue;
+          out+=(out?'L':'M')+x.toFixed(1)+','+y.toFixed(1); lx=x; ly=y; }
+        return out; }).join(''));
+    }
+    M.__absZ=z;
   }
-  if(M.selCasing && activeCode && M.layers[activeCode])
-    M.selCasing.setAttribute('d', M.layers[activeCode].path.getAttribute('d'));
+  for(const code in M.layers) M.layers[code].path.setAttribute('transform',tr);
+  if(M.selCasing && activeCode && M.layers[activeCode]){
+    const key=z+'|'+activeCode;
+    if(M.selCasing.__key!==key){ M.selCasing.setAttribute('d', M.layers[activeCode].path.getAttribute('d')); M.selCasing.__key=key; }
+    M.selCasing.setAttribute('transform',tr); }
   // สะพาน: โชว์ตามสวิตช์ + ตัวกรองหมวด (ซูมไกลมากย่อไอคอนลงกันรก)
   // เขตเลือกตั้ง (พื้นหลัง) + เส้นขอบระหว่างเขต
-  (M.zoneLayers||[]).forEach(L=>{
-    const show=M.elShow&&(!M.zoneSel||L.z===+M.zoneSel);
-    L.p.style.display=show?'':'none';
-    if(show) L.p.setAttribute('d','M'+L.ring.map(c=>(lon2x(c[0],z)-ox).toFixed(1)+','+(lat2y(c[1],z)-oy).toFixed(1)).join('L')+'Z');
-  });
+  if(M.zoneG){
+    M.zoneG.style.display=M.elShow?'':'none';
+    if(M.elShow){
+      if(M.zoneG.__z!==z){   // ระดับซูมเปลี่ยน: คำนวณพิกัดสัมบูรณ์ครั้งเดียว (ไม่ลบ ox/oy) แล้วให้ transform จัดการตอนเลื่อน
+        const simp=pts=>{ let out='', lx=null, ly=null; for(const c of pts){ const x=lon2x(c[0],z), y=lat2y(c[1],z);
+          if(lx!==null && Math.abs(x-lx)<0.75 && Math.abs(y-ly)<0.75) continue; out+=(out?'L':'M')+x.toFixed(1)+','+y.toFixed(1); lx=x; ly=y; } return out; };
+        (M.zoneLayers||[]).forEach(L=>{ L.p.setAttribute('d',simp(L.ring)+'Z'); L.p.setAttribute('stroke-dasharray',z>=12?'3 3':''); });
+        (M.zoneBounds||[]).forEach(B=>B.p.setAttribute('d',simp(B.line)));
+        M.zoneG.__z=z;
+      }
+      M.zoneG.setAttribute('transform',`translate(${(-ox).toFixed(1)},${(-oy).toFixed(1)})`);
+      (M.zoneLayers||[]).forEach(L=>{ L.p.style.display=(!M.zoneSel||L.z===+M.zoneSel)?'':'none'; });
+    }
+  }
   (M.provLayers||[]).forEach(P=>{
     P.p.style.display=M.provShow?'':'none';
-    if(M.provShow) P.p.setAttribute('d','M'+P.ring.map(c=>(lon2x(c[0],z)-ox).toFixed(1)+','+(lat2y(c[1],z)-oy).toFixed(1)).join('L')+'Z');
+    if(M.provShow){ if(P.__z!==z){ P.p.setAttribute('d','M'+P.ring.map(c=>lon2x(c[0],z).toFixed(1)+','+lat2y(c[1],z).toFixed(1)).join('L')+'Z'); P.__z=z; }
+      P.p.setAttribute('transform',tr); }
   });
-  (M.zoneBounds||[]).forEach(B=>{
-    B.p.style.display=M.elShow?'':'none';
-    if(M.elShow) B.p.setAttribute('d','M'+B.line.map(c=>(lon2x(c[0],z)-ox).toFixed(1)+','+(lat2y(c[1],z)-oy).toFixed(1)).join('L'));
-  });
+  (M.zoneBounds||[]).forEach(B=>{ B.p.style.display=M.elShow?'':'none'; });
   // หลัก กม. — โผล่เมื่อซูม ≥ 12 และสายนั้นมองเห็นอยู่ (จุดเล็ก ไม่รก)
   const kmOn=M.kmShow!==false&&z>=12, kmR=z>=15?3.4:(z>=13?2.9:2.4);
   (M.kmDots||[]).forEach(d2=>{
