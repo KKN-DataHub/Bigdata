@@ -1726,15 +1726,19 @@ function heat(container, rowLabels, colLabels, matrix, {unit='', fmtV=fmt, onCli
 /* v31.7 แถบหลอด (ผู้ใช้ 7 ก.ย. 69: "เหมือนแถบหลอด เต็มคือที่ขอ แล้วได้เท่าไหร่ก็โชว์เป็นขีดหลอด")
    แถวละกลุ่ม: หลอดเต็ม = วงเงินที่ขอของกลุ่มนั้น · ส่วนสีเข้ม = ที่ได้ (พร้อม %) · ท้ายแถว = ขอ/ได้/ตัด (ลบ.)
    rows: {label, k, a(ขอ ลบ.), askOk(ได้ ลบ.), askNo(ตัด ลบ.), n, ok, tip, idle(ไม่ได้ยื่นขอ)} — เก็บ __rows ไว้ให้ด่านตรวจเทียบ */
-function tube(container, rows, {labelW=110, height=null, rightW=110, colorOf=null, avg=null}={}){
+function tube(container, rows, {labelW=110, height=null, rightW=178, colorOf=null, avg=null}={}){
   const box=document.getElementById(container); if(!box) return; box.innerHTML=''; box.__rows=rows;
   box.__fit=h=>tube(container, rows, {labelW, rightW, colorOf, avg, height:h});   // กฎ 16
   const W=box.clientWidth||560, padT=avg!=null?22:6, padB=6;
+  /* v31.9 ผู้ใช้: "ตัดกี่บาท น่าจะทำเป็นกล่องข้อความ ไม่ได้ให้จางขนาดนี้ … มองป้าดเดียวรู้ว่าขอไปเท่าไหร่ ได้เท่าไหร่ กี่% โดนตัดเท่าไหร่"
+     ท้ายแถว = กล่องตัวเลข ขอ · ได้ (%) · ตัด (ลบ.) — จอแคบใช้กล่อง 3 บรรทัดแคบลง เพื่อให้หลอดยังมีที่ */
+  const compact=W<560, rw=compact?104:rightW, lines=compact?3:2, lh=12.5, bh=lines*lh+8;
   /* v31.8 ผู้ใช้: "กล่องไหนข้อมูลน้อยกว่า อัพไซส์ขึ้นมาก็ได้" — ยืดแถวได้ถึง 96px หลอดหนาตาม */
-  const rowH=height?Math.max(30,Math.min(96,(height-padT-padB)/Math.max(1,rows.length))):36;
+  const minH=bh+8;
+  const rowH=height?Math.max(minH,Math.min(96,(height-padT-padB)/Math.max(1,rows.length))):Math.max(minH,40);
   const natural=rows.length*rowH+padT+padB, H=(height&&height>natural)?height:natural, off=Math.floor((H-natural)/2);
   const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:'100%',height:H},box);
-  const pw=W-labelW-rightW, th=Math.max(18,Math.min(30,Math.round(rowH*0.5)));
+  const pw=W-labelW-rw, th=Math.max(18,Math.min(30,Math.round(rowH*0.5)));
   if(avg!=null){ const ax=labelW+pw*Math.max(0,Math.min(100,avg))/100;
     el('line',{x1:ax,y1:padT-4,x2:ax,y2:H-padB,stroke:C.navy,'stroke-width':1.4,'stroke-dasharray':'4 3',opacity:.7},svg);
     el('text',{x:ax,y:padT-8,'text-anchor':'middle',fill:C.navy,'font-size':10.5,'font-weight':700},svg).textContent=`เฉลี่ย ${avg.toFixed(0)}%`; }
@@ -1750,8 +1754,14 @@ function tube(container, rows, {labelW=110, height=null, rightW=110, colorOf=nul
       if(fw>=34) el('text',{x:labelW+fw-7,y:cy,'text-anchor':'end',fill:'#fff','font-size':11,'font-weight':700},svg).textContent=pct.toFixed(0)+'%';
       else el('text',{x:labelW+fw+5,y:cy,fill:col,'font-size':11,'font-weight':700},svg).textContent=pct.toFixed(0)+'%'; }
     else if(!r.idle&&r.a>0) el('text',{x:labelW+8,y:cy,fill:'#e34948','font-size':11,'font-weight':700},svg).textContent='0%';
-    const rt=el('text',{class:'ticktext',x:W-4,y:cy,'text-anchor':'end'},svg);
-    rt.textContent=r.right||(r.idle?'ไม่ได้ยื่นขอ':(r.a>0?`ตัด ${fmt(r.askNo)} ลบ.`:`ไม่ระบุวงเงิน`));
+    /* กล่องตัวเลขท้ายแถว */
+    const bx=W-rw+8, bw=rw-10, by=y+(rowH-bh)/2;
+    el('rect',{class:'statbox',x:bx,y:by,width:bw,height:bh,rx:6,fill:'var(--page)',stroke:'var(--grid)'},svg);
+    const line=(i,parts)=>{ const t=el('text',{class:'stattext',x:bx+7,y:by+4+lh*(i+1)-2,'font-size':10.5},svg);
+      parts.forEach(([txt,col,bold])=>{ const sp=el('tspan',{fill:col||'var(--ink)','font-weight':bold?700:500},t); sp.textContent=txt; }); return t; };
+    if(r.right||r.idle||!(r.a>0)){ const t=line(Math.floor((lines-1)/2),[[r.right||(r.idle?'ไม่ได้ยื่นขอ':'ไม่ระบุวงเงิน'),'var(--muted)',false]]); t.setAttribute('class','stattext ticktext'); }
+    else if(compact){ line(0,[[`ขอ ${fmt(r.a)}`,null,true]]); line(1,[[`ได้ ${fmt(r.askOk)} (${pct.toFixed(0)}%)`,'#0d7a4a',true]]); line(2,[[`ตัด ${fmt(r.askNo)} ลบ.`,'#c0392b',true]]); }
+    else { line(0,[[`ขอ ${fmt(r.a)} ลบ.`,null,true]]); line(1,[[`ได้ ${fmt(r.askOk)} (${pct.toFixed(0)}%)`,'#0d7a4a',true],[' · ','var(--muted)',false],[`ตัด ${fmt(r.askNo)}`,'#c0392b',true]]); }
     const hit=el('rect',{x:0,y:y,width:W,height:rowH,fill:'transparent'},svg);
     hitOn(hit);   // กฎ 8
     hit.addEventListener('mousemove',e=>showTip(`<b>${esc(r.label)}</b><br>${r.tip||''}`,e.clientX,e.clientY));
@@ -2826,7 +2836,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.8', APP_DATE='7 ก.ย. 2569';
+const APP_VER='v31.9', APP_DATE='7 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -8012,32 +8022,54 @@ const kmHit=(a1,b1,a2,b2)=>{
 const segsOf=r=>(r.segs||[]).map(sg=>({a:(typeof sg.a==='number')?sg.a:kmVal(sg.a),
                                        b:(typeof sg.b==='number')?sg.b:kmVal(sg.b)}))
                             .filter(x=>x.a!=null);
+/* v31.9 ผู้ใช้ (8 ก.ย. 69): "70 มันมีงบอาคารอยู่นะ ทำไมดูข้อมูลมั่วๆ" — งานอาคาร/งานที่ไม่ผูกสายทาง
+   ช่องรหัสสายทางเป็นชื่อหน่วย (ขทช.ขอนแก่น · บทช.น้ำพอง) ฝั่งสัญญาถอดรหัสสายไม่ได้ (code=null) จึงไม่เคยถูกจับคู่เลย
+   → คีย์จับคู่ของงานไม่ผูกสาย = ปี | หน่วย (แขวงฯ / หมวดX) แล้วเทียบชนิดงบ ไม่มี กม. ให้เทียบ */
+const unitKeyOf=t=>{ t=String(t||'');
+  if(/บทช/.test(t)){ const m=MUAD_ORDER.find(mm=>t.includes(mm)); if(m) return 'หมวด'+m; if(/ขอนแก่น|ขก/.test(t)) return 'หมวดเมือง'; }
+  if(/ขทช|แขวง/.test(t)) return 'แขวงฯ';
+  const m=MUAD_ORDER.find(mm=>t.includes(mm)); return m?'หมวด'+m:t.replace(/\s+/g,''); };
+const gapKey=(year,code,txt)=>year+'|'+(code?code:('U:'+unitKeyOf(txt)));
 function gapMatch(rec, gotList){
+  /* v31.9 ผู้ใช้ (7 ก.ย. 69): "ปี 2570 ไม่ได้รับงบจังหวัดและกลุ่มจังหวัดเลย นายดึงข้อมูลมาผิดรึเปล่า"
+     เดิมจับคู่แค่ ปี · สาย · กม. — คำขอกลุ่มจังหวัดบนสายที่ได้งบบำรุงจึงถูกนับว่า "ได้" ทั้งที่ชนิดงบคนละอย่าง
+     ใหม่: ต้อง "ชนิดงบเดียวกัน" ด้วย (เทียบหลัง normCat ทั้งสองฝั่ง เท่ากันเป๊ะ — "จังหวัด" ≠ "กลุ่มจังหวัด")
+     ฝั่งใดไม่ระบุชนิดงบ → ยังจับคู่ให้ แต่ติดธง "ไม่แน่ใจ" (vague) เหมือนกรณีไม่ระบุ กม. */
   const mine=segsOf(rec);
+  const rc=normCat(rec.cat);
   const hits=[], vague=[];
   gotList.forEach(h=>{
+    const hc=normCat(h.budgetType);
+    if(rc!==hc && rc!=='ไม่ระบุ' && hc!=='ไม่ระบุ') return;      // ชนิดงบไม่ตรง = ไม่ใช่คำขอเดียวกัน
+    if(rec.nonRoad){ if(rc==='ไม่ระบุ'||hc==='ไม่ระบุ') vague.push(h); else hits.push(h); return; }   // งานไม่ผูกสาย: หน่วย+ชนิดงบ ตรง = ได้
     const hs=segsOf(h);
-    if(!mine.length || !hs.length){ vague.push(h); return; }
-    if(mine.some(m=>hs.some(x=>kmHit(m.a,m.b,x.a,x.b)))) hits.push(h);
+    const kmOk=mine.length&&hs.length ? mine.some(m=>hs.some(x=>kmHit(m.a,m.b,x.a,x.b))) : null;
+    if(kmOk===false) return;
+    if(kmOk===null || rc==='ไม่ระบุ' || hc==='ไม่ระบุ'){ vague.push(h); return; }
+    hits.push(h);
   });
   if(hits.length) return {got:hits, exact:true};
   if(vague.length) return {got:vague, exact:false};
   return {got:[], exact:true};
 }
 let gapYearPick='all', gapStuckAll=false;   // v31.8 gapStuckAll: ตารางสายที่ขอแล้วไม่ได้ ดูทุกปี
+/* v31.9 ผู้ใช้: "รวมตารางมามั่ว น่าจะขั้นหัวข้อ หรือทำเป็นแท็บเล็กๆ บนตาราง" — ตารางรายละเอียดแยกแท็บตามกลุ่ม ลำดับเดียวกับหลอด */
+const GAP_DETAIL_TABS=['ชนิดงบ','หมวด','กิจกรรม','เขต'];
+let gapDetailTab='ชนิดงบ';
 const gapZoneOf=(code,segs)=>{ const sg=segsOf({segs});
   return sg.length ? zoneOfRec(code, sg[0].a, sg[0].b??sg[0].a) : zoneOfRec(code,null); };
 function gapModel(){
   if(!reqData||!histData) return null;
   const muadOf=muadByCode();
   const histIdx={};
-  histData.forEach(h=>{ if(!h.code) return; const k=h.year+'|'+h.code; (histIdx[k]||(histIdx[k]=[])).push(h); });
+  histData.forEach(h=>{ if(!h.year) return; const k=gapKey(h.year, h.code, (h.roadFull||'')+' '+(h.agency||'')); (histIdx[k]||(histIdx[k]=[])).push(h); });
   const rows=reqData.map(r=>{
-    const got=gapMatch(r, histIdx[r.year+'|'+r.code]||[]);
-    return {year:r.year, code:r.code, name:r.rname||roadOptName(r.code)||'',
+    const road=!!extractRoadCode(r.code), nonRoad=!road;
+    const got=gapMatch({...r, nonRoad}, histIdx[gapKey(r.year, road?r.code:null, r.code+' '+(r.rname||''))]||[]);
+    return {year:r.year, code:r.code, road, name:r.rname||roadOptName(r.code)||'',
       cat:normCat(r.cat), src:r.src||'', act:r.actv||r.act||r.proj||'',
       km:(r.segs||[]).map(x=>x.a+(x.b?(' – '+x.b):'')).filter(Boolean).join(', '),
-      ask:r.amt||0, muad:muadOf[r.code]||'ไม่ระบุ', zone:gapZoneOf(r.code,r.segs),
+      ask:r.amt||0, muad:road?(muadOf[r.code]||'ไม่ระบุ'):recMuad({roadFull:r.code}), zone:road?gapZoneOf(r.code,r.segs):null,
       got:got.got, gotN:got.got.length, exact:got.exact,
       gotAmt:got.got.reduce((a,h)=>a+(h.amount||0),0),
       status:got.got.length?'ok':'no'};
@@ -8107,6 +8139,8 @@ function renderGap(){
   const yearLbl=gapYearPick==='all'?('ทุกปี '+M.years.join(' · ')):('ปีงบ '+gapYearPick);
 
   const catKeys=Object.keys(V.byCat).sort((a,b)=>V.byCat[b].ask-V.byCat[a].ask);
+  const reqCatSet=new Set(V.rows.map(r=>r.cat).filter(c=>c&&c!=='ไม่ระบุ')), histCatSet=new Set(V.hist.map(h=>h.cat).filter(c=>c&&c!=='ไม่ระบุ'));
+  const catDrift=reqCatSet.size>0&&histCatSet.size>0&&![...reqCatSet].some(c=>histCatSet.has(c));
   const muadKeys=Object.keys(V.byMuad).sort((a,b)=>V.byMuad[b].ask-V.byMuad[a].ask);
   const zoneKeys=Object.keys(V.byZone).sort((a,b)=>(isNaN(a)?99:+a)-(isNaN(b)?99:+b));   // เขต 1..11 แล้วปิดท้ายด้วย "ไม่ระบุ" 
 
@@ -8115,9 +8149,11 @@ function renderGap(){
      <div class="note" style="margin:0">"ได้" = คำขอที่มีสัญญารองรับ · "โดนตัด" = คำขอที่ยังไม่มีสัญญารองรับ · ส่วนนี้แสดงทุกหน่วยดำเนินการ</div>
    </div>`+
   (noReq?`<div class="card" style="margin-bottom:14px;border-left:4px solid var(--gold)"><div class="note" style="margin:0;padding:6px 2px">ปีงบ ${esc(gapYearPick)} ไม่มีคำของบ · ปีที่มีคำขอ: ${M.years.join(' · ')}</div></div>`:'')+
+  /* v31.9 กันเงียบ: จับคู่ต้องชนิดงบตรงกัน — ถ้าชื่อชนิดงบของสองชีทไม่ตรงกันเลยสักชื่อ ทุกหลอดจะเป็น 0% เงียบๆ → ต้องบอกให้เห็น */
+  (catDrift?`<div class="card" style="margin-bottom:14px;border-left:4px solid #e34948"><div class="note" style="margin:0;padding:6px 2px">⚠ ชนิดงบในคำขอ (${[...reqCatSet].slice(0,3).map(esc).join(' · ')}) กับในสัญญา (${[...histCatSet].slice(0,3).map(esc).join(' · ')}) สะกดไม่ตรงกันสักชื่อ</div></div>`:'')+
 
   `<div class="grid kpis">
-     <div class="card kpi"><div class="lbl">คำของบ · ${esc(yearLbl)}</div><div class="val">${T.n}<small> รายการ</small></div><div class="foot">${new Set(V.rows.map(r=>r.code)).size} สายทาง · ขอ ${lb(T.ask)} ลบ.</div></div>
+     <div class="card kpi"><div class="lbl">คำของบ · ${esc(yearLbl)}</div><div class="val">${T.n}<small> รายการ</small></div><div class="foot">${new Set(V.rows.filter(r=>r.road).map(r=>r.code)).size} สายทาง · ขอ ${lb(T.ask)} ลบ.</div></div>
      <div class="card kpi" style="border-left:4px solid var(--teal)"><div class="lbl">ได้ตามคำขอ</div><div class="val">${T.ok}<small>/${T.n}</small></div><div class="foot">${pct(T.ok,T.n)}% · วงเงินสัญญาที่ตรงคำขอ ${lb(T.gotAmt)} ลบ.</div></div>
      <div class="card kpi" style="border-left:4px solid #e34948"><div class="lbl">โดนตัด / ยังไม่ได้</div><div class="val">${lb(T.askNo)}<small> ลบ.</small></div><div class="foot">${T.n-T.ok} รายการ ยังไม่มีสัญญารองรับ · ${pct(T.askNo,T.ask)}% ของที่ขอ</div></div>
      <div class="card kpi" style="border-left:4px solid var(--gold)"><div class="lbl">โครงการจริงในปีเดียวกัน (ทุกสาย)</div><div class="val">${T.histN}<small> โครงการ</small></div><div class="foot">${T.histN?`${lb(T.histAmt)} ลบ. — รวมงานที่ไม่ได้ผ่านคำขอด้วย`:`${esc(yearLbl)} ยังไม่มีโครงการในประวัติ`}</div></div>
@@ -8141,10 +8177,11 @@ function renderGap(){
        <div id="gapChZone"></div></div>
    </div>
    <div class="card" style="margin-top:14px">
-     <h3>ผลคำของบ — รายละเอียดทุกกลุ่ม · ${esc(yearLbl)}</h3>
-     <div class="note">ตัวเลขเต็มของทุกหลอดด้านบน · คลิกหัวคอลัมน์เพื่อเรียง</div>
+     <h3>ผลคำของบ — รายละเอียด · ${esc(yearLbl)}</h3>
+     <div class="note">ตัวเลขเต็มของหลอดด้านบน · คลิกหัวคอลัมน์เพื่อเรียง</div>
+     <div class="subtabs" id="gapDetailTabs">${GAP_DETAIL_TABS.map(t=>`<button data-gd="${t}"${t===gapDetailTab?' class="active"':''}>${t}</button>`).join('')}</div>
      <div class="tblwrap" style="max-height:460px"><table id="gapDetailTable"><thead><tr>
-       <th>ประเภท</th><th>กลุ่ม</th><th class="num">คำขอ</th><th class="num">ได้ (รายการ)</th><th class="num">ขอ (ลบ.)</th><th class="num">ได้ (ลบ.)</th><th class="num">โดนตัด (ลบ.)</th><th class="num">% ได้</th>
+       <th id="gapDetailHead">${esc(gapDetailTab)}</th><th class="num">คำขอ</th><th class="num">ได้ (รายการ)</th><th class="num">ขอ (ลบ.)</th><th class="num">ได้ (ลบ.)</th><th class="num">โดนตัด (ลบ.)</th><th class="num">% ได้</th>
      </tr></thead><tbody></tbody></table></div>
    </div>
    <div class="card" style="margin-top:14px"><h3>ผลคำของบ — เทียบทุกปี</h3><div class="note">หลอดเต็ม = ที่ขอ · สีเข้ม = ได้</div><div id="gapChYear"></div></div>`)+
@@ -8195,7 +8232,8 @@ function renderGap(){
   const tubeRows=(G,keys,lab,extra)=>keys.map(k=>{ const g=G[k]||{n:0,ok:0,ask:0,askOk:0,askNo:0,gotAmt:0,histN:0};
     const a=+(g.ask/1e6).toFixed(2), askOk=+(g.askOk/1e6).toFixed(2), askNo=+(g.askNo/1e6).toFixed(2);
     return {label:lab?lab(k):k, k, a, askOk, askNo, b:+(g.gotAmt/1e6).toFixed(2), n:g.n, ok:g.ok, idle:!g.n, v:g.ask?+(100*g.askOk/g.ask).toFixed(1):0,
-      tip:g.n?`คำขอ ${g.n} รายการ · ได้ตามคำขอ ${g.ok} (${pct(g.ok,g.n)}%) · ขอ ${lb(g.ask)} ลบ. · ได้ ${lb(g.askOk)} ลบ. · โดนตัด ${lb(g.askNo)} ลบ. · โครงการในกลุ่ม ${g.histN}`+(extra?extra(k):''):'ไม่มีคำของบในมุมมองนี้'}; });
+      /* v31.9 ผู้ใช้: "กล่องข้อมูลตอนชี้ เยอะจัง ไม่ต้องใส่ขนาดนั้น ถ้ามีตารางรายละเอียดแล้ว · โครงการในกลุ่มคืออะไร" → สั้นบรรทัดเดียว ไม่มีตัวเลขที่ไม่ได้คุยกัน */
+      tip:g.n?`ขอ ${lb(g.ask)} ลบ. · ได้ ${lb(g.askOk)} ลบ. · ได้ตามคำขอ ${g.ok}/${g.n} รายการ`+(extra?extra(k):''):'ไม่ได้ยื่นขอ'}; });
   const avgPct=T.ask?+(100*T.askOk/T.ask).toFixed(1):0;
   const detail=[];   // แถวตารางรายละเอียด (ประเภท · กลุ่ม)
   const addDetail=(type,rows)=>rows.filter(r=>!r.idle).forEach(r=>detail.push({type, ...r}));
@@ -8225,29 +8263,37 @@ function renderGap(){
   safeRun('หลอด เขตเลือกตั้ง', ()=>{
     if(noReq) return;
     const all=[...new Set([...Object.keys(KK_ZONES), ...zoneKeys])].sort((a,b)=>(isNaN(a)?99:+a)-(isNaN(b)?99:+b));
-    const rows=tubeRows(V.byZone, all, k=>isNaN(k)?k:'เขต '+k, k=>KK_ZONES[k]?`<br>สส. ${esc(KK_ZONES[k].mp)} · ${esc(KK_ZONES[k].party)}`:'');
+    const rows=tubeRows(V.byZone, all, k=>isNaN(k)?k:'เขต '+k);
     rows.forEach(r=>{ if(r.idle) r.right='ไม่ได้ยื่นขอ'; }); addDetail('เขต',rows);
     tube('gapChZone', rows, {labelW:70, colorOf:k=>isNaN(k)?'#9aa5a3':zoneColor(+k), avg:avgPct});
   });
-  safeRun('ตารางรายละเอียด', ()=>{
+  const fillDetail=()=>{
     const tb=document.querySelector('#gapDetailTable tbody'); if(!tb) return;
-    tb.innerHTML=detail.map(r=>`<tr><td>${esc(r.type)}</td><td>${esc(r.label)}</td><td class="num">${r.n}</td><td class="num">${r.ok}</td><td class="num">${fmt(r.a)}</td><td class="num">${fmt(r.askOk)}</td><td class="num">${fmt(r.askNo)}</td><td class="num"><b style="color:${r.v>=avgPct?'#0d7a4a':'var(--crit)'}">${r.a?r.v.toFixed(0)+'%':'—'}</b></td></tr>`).join('')||
-      '<tr><td colspan="8" class="c" style="color:var(--muted)">ไม่มีคำของบในปีนี้</td></tr>';
-  });
+    const hd=document.getElementById('gapDetailHead'); if(hd) hd.textContent=gapDetailTab;
+    const cell=r=>r.type==='หมวด'?muadCell(r.k):esc(r.label);   // กฎ 20: คอลัมน์หมวดมีแถบสีเหมือนทะเบียนสายทาง
+    tb.innerHTML=detail.filter(r=>r.type===gapDetailTab).map(r=>`<tr data-k="${esc(r.k)}"><td style="white-space:nowrap">${cell(r)}</td><td class="num">${r.n}</td><td class="num">${r.ok}</td><td class="num">${fmt(r.a)}</td><td class="num">${fmt(r.askOk)}</td><td class="num">${fmt(r.askNo)}</td><td class="num"><b style="color:${r.v>=avgPct?'#0d7a4a':'var(--crit)'}">${r.a?r.v.toFixed(0)+'%':'—'}</b></td></tr>`).join('')||
+      '<tr><td colspan="7" class="c" style="color:var(--muted)">ไม่มีคำของบในกลุ่มนี้</td></tr>';
+  };
+  safeRun('ตารางรายละเอียด', fillDetail);
+  box.querySelectorAll('#gapDetailTabs button').forEach(b=>b.addEventListener('click',()=>{
+    gapDetailTab=b.dataset.gd;
+    box.querySelectorAll('#gapDetailTabs button').forEach(x=>x.classList.toggle('active',x===b));
+    fillDetail();
+  }));
 
   safeRun('หลอดรายปี', ()=>{
     /* v31.8 ผู้ใช้: "กล่องรายปีก็ใช้คำ ผลคำของบ · เปลี่ยนกราฟ มันดูโล่ง" — หลอดต่อปี แบบเดียวกับกลุ่มอื่น */
     const rows=M.years.map(y=>{ const b=M.byYear[y];
       return {label:'ปี '+y, k:String(y), a:+(b.ask/1e6).toFixed(2), askOk:+(b.askOk/1e6).toFixed(2), askNo:+(b.askNo/1e6).toFixed(2), n:b.n, ok:b.ok, v:b.ask?+(100*b.askOk/b.ask).toFixed(1):0,
-        right:`ขอ ${lb(b.ask)} · ได้ ${lb(b.askOk)} · ตัด ${lb(b.askNo)} ลบ.`,
-        tip:`คำขอ ${b.n} รายการ · ได้ตามคำขอ ${b.ok} (${pct(b.ok,b.n)}%) · โครงการทั้งปี ${b.histN}`}; });
-    tube('gapChYear', rows, {labelW:70, rightW:210, colorOf:k=>String(k)===String(gapYearPick)?C.teal:'#7fb5ad'});
+        tip:`ได้ตามคำขอ ${b.ok}/${b.n} รายการ`}; });
+    tube('gapChYear', rows, {labelW:70, colorOf:k=>String(k)===String(gapYearPick)?C.teal:'#7fb5ad'});
   });
 
   const ssel=document.getElementById('gapStuckSel');
   if(ssel) ssel.addEventListener('change',()=>{ gapStuckAll=ssel.value==='all'; renderGap(); });
   box.querySelectorAll('#gapTable tbody tr[data-code]').forEach(tr=>{
     tr.style.cursor='pointer';
+    if(!extractRoadCode(tr.dataset.code)){ tr.style.cursor='default'; return; }   // งานอาคาร/ไม่ผูกสาย ไม่มีบนแผนที่
     tr.addEventListener('click',()=>{ const b=document.querySelector('.nav button[data-page="map"]');
       if(b) b.click(); setTimeout(()=>{ if(typeof selectRoad==='function') selectRoad(tr.dataset.code); },320); });
   });
