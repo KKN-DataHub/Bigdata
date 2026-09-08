@@ -2887,7 +2887,7 @@ const PAGES=[
    nocsv:'ยังไม่มีตารางข้อมูลจริงให้ส่งออก',
                                              msg:'หน้างานบำรุงปกติพร้อมแล้ว — รอผูกชีทคำตอบฟอร์ม'},
   {id:'system',   enter:()=>renderSystem(),                                                        redraw:()=>renderSystem(),
-   needs:{ history:()=>renderSystem() },     reload:()=>{ renderSystem(); if(!histData) loadHistory(true); },
+   needs:{ history:()=>renderSystem(), requests:()=>renderSystem(), zerobase:()=>renderSystem() },     reload:()=>{ renderSystem(); if(!histData) loadHistory(true); },   // กฎ 21: การ์ดแถวตกหล่นของคำขอ/Zerobase
    nocsv:'หน้านี้เป็นสถานะระบบ ไม่ใช่ข้อมูลสายทาง',
                                              msg:'โหลดสถานะระบบใหม่แล้ว'}
 ];
@@ -4494,6 +4494,13 @@ const muadByCode=()=>_MBC||(_MBC={...Object.fromEntries(Object.values(EMB.bridge
 const REROUTE=EMB.reroutes||{};
 /* ถนน/สะพานถ่ายโอนให้ท้องถิ่น (จากชีท ถนน-สะพานถ่ายโอน — รอผูกข้อมูล) */
 const TRANSFER=Object.fromEntries((EMB.transfers||[]).map(t=>[t.code,t]));
+/* กฎ 21 (v31.9) — งานไม่ผูกสายทาง (อาคาร ฯลฯ): ช่องรหัสสายทางเป็นชื่อหน่วย → "หน่วย" อ่านจากข้อความ ที่เดียวใช้ทุกหน้า
+   ขทช./แขวง = แขวงฯ · บทช.X = หมวดX · บทช.ขอนแก่น = หมวดเมือง · บทช. ไม่มีชื่อ = หมวด (บทช.) · อ่านไม่ออก = ไม่ระบุหน่วย */
+const isRoadCode=c=>!!extractRoadCode(c);
+const unitKeyOf=t=>{ t=String(t||'');
+  if(/บทช/.test(t)){ const m=MUAD_ORDER.find(mm=>t.includes(mm)); if(m) return 'หมวด'+m; if(/ขอนแก่น|ขก/.test(t)) return 'หมวดเมือง'; return 'หมวด (บทช.)'; }
+  if(/ขทช|แขวง/.test(t)) return 'แขวงฯ';
+  const m=MUAD_ORDER.find(mm=>t.includes(mm)); return m?'หมวด'+m:'ไม่ระบุหน่วย'; };
 function recMuad(x){
   if(x.code&&muadByCode()[x.code]) return muadByCode()[x.code];
   if(x.code&&REROUTE[x.code]) return muadByCode()[REROUTE[x.code].to]||'ไม่ระบุ'; // สะพานรีรูท -> หมวดของสายใหม่
@@ -5014,7 +5021,9 @@ function renderSystem(){
     <div class="card kpi"><div class="lbl">แนวประมาณ (รอสำรวจ)</div><div class="val" style="color:var(--crit)">${stubs.length} <small>สาย</small></div><div class="foot">มีแค่เส้นตรงจุดเริ่ม-จุดจบ</div></div>
     <div class="card kpi"><div class="lbl">GIS เกินบัญชี Master</div><div class="val">${(EMB.gisExtra||[]).length} <small>สาย</small></div><div class="foot">ไม่นำมาแสดง — ยึด Master เป็นหลัก</div></div>
     <div class="card kpi"><div class="lbl">HISTORY ไม่มีเลขที่สัญญา</div><div class="val">${histDropped==null?'–':histDropped} <small>แถว</small></div><div class="foot">${histDropped==null?'เปิดหน้าประวัติโครงการก่อน':'ถูกตัดออกจากรายงาน รอกรอกเพิ่ม'}</div></div>
-    <div class="card kpi"><div class="lbl">คัดออก (ไม่ใช่งบก่อสร้าง)</div><div class="val">${histData?histExcluded:'–'} <small>แถว</small></div><div class="foot">นับเฉพาะประเภทงบก่อสร้างตามข้อกำหนด</div></div>`;
+    <div class="card kpi"><div class="lbl">คัดออก (ไม่ใช่งบก่อสร้าง)</div><div class="val">${histData?histExcluded:'–'} <small>แถว</small></div><div class="foot">นับเฉพาะประเภทงบก่อสร้างตามข้อกำหนด</div></div>
+    <div class="card kpi" id="sysNonRoad"><div class="lbl">งานไม่ผูกสายทาง (อาคาร/หน่วย)</div><div class="val">${histData?histData.filter(h=>!h.code).length:'–'} <small>โครงการ</small>${reqData?` · ${reqData.filter(r=>!isRoadCode(r.code)).length} <small>คำขอ</small>`:''}</div><div class="foot">นับในทุกหน้า ใช้หน่วยแทนสาย (กฎ 21)</div></div>
+    <div class="card kpi" id="sysDropped"><div class="lbl">แถวไม่มีรหัสสาย/หน่วย</div><div class="val">${reqData?reqDroppedN:'–'} <small>คำขอ</small> · ${zbData?zbDroppedN:'–'} <small>Zerobase</small></div><div class="foot">ถูกตัดออก รอกรอกรหัสในชีท</div></div>`;
   renderVisits();
   const rowsByCode=Object.fromEntries(R.map(r=>[r.code,r]));
   document.getElementById('sysStubs').innerHTML=`<div style="display:flex;flex-wrap:wrap;gap:6px">${
@@ -5025,7 +5034,7 @@ function renderSystem(){
     const box=document.getElementById('sysCodeCheck'); if(!box) return;
     const known=new Set([...EMB.roads.map(r=>r.code), ...Object.keys(EMB.bridges||{})]);
     const sources=[['ประวัติโครงการ', histData, x=>x.code, x=>x.activity, x=>x.year],
-                   ['คำของบประมาณ', reqData, x=>x.code, x=>x.act||x.proj, ()=>''],
+                   ['คำของบประมาณ', reqData, x=>isRoadCode(x.code)?x.code:null, x=>x.act||x.proj, x=>x.year],   // กฎ 21: ชื่อหน่วยไม่ใช่รหัสนอกบัญชี
                    ['Zerobase', zbData, x=>x.code, x=>x.act, x=>x.year],
                    ['สภาพสายทาง', condData, x=>x.code, x=>x.surf, ()=>''],
                    ['Equipment', eqData, x=>x.code, x=>x.etype||x.dtype, ()=>''],
@@ -6558,21 +6567,7 @@ function renderHistory(){
       (()=>{
         const box=document.getElementById('chBuilding'); if(!box) return;
         const hBld=H.filter(histIsBuilding);
-        const unitOf=x=>{
-          // หน่วยอยู่ในช่อง "รหัสสายทาง" เช่น ขทช.ขก. (แขวงฯ) / บทช.น้ำพอง (หมวด)
-          const rf=x.roadFull||'';
-          const t=rf+' '+(x.agency||'')+' '+(x.activity||'');
-          if(/บทช/.test(rf)||/บทช/.test(t)){
-            const m=MUAD_ORDER.find(mm=>t.includes(mm));
-            if(m) return 'หมวด'+m;
-            if(/ขอนแก่น|ขก/.test(t)) return 'หมวดเมือง'; // บทช.ขอนแก่น = หมวดเมือง
-            return 'หมวด (บทช.)';
-          }
-          if(/ขทช|แขวง/.test(t)) return 'แขวงฯ';
-          const m=MUAD_ORDER.find(mm=>t.includes(mm));
-          if(m) return 'หมวด'+m;
-          return 'ไม่ระบุหน่วย';
-        };
+        const unitOf=x=>unitKeyOf((x.roadFull||'')+' '+(x.agency||'')+' '+(x.activity||''));   // กฎ 21 ตัวอ่านหน่วยตัวเดียวทุกหน้า
         const byU={};
         hBld.forEach(x=>{ const u=unitOf(x); byU[u]=byU[u]||{n:0,amt:0,y:{},c:{}}; byU[u].n++; byU[u].amt+=(x.amount||0);
           byU[u].y[x.year]=(byU[u].y[x.year]||0)+(x.amount||0); byU[u].c[x.year]=(byU[u].c[x.year]||0)+1; });
@@ -7494,13 +7489,14 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
 /* ================= REQUESTS (live — tab ต่อปี Q_71, Q_72, … หาปีอัตโนมัติ แบบเดียวกับ Zerobase) ================= */
 const REQ_ID='1kCkIzb1veaqEnPK-fHMhY-mIbEs1LpVI9E5AdzwvfI8';
 const REQ_PROBE_YEARS=Array.from({length:15},(_,i)=>68+i); // ไล่หา Q_68 … Q_82
-let reqData=null, reqYears=[], reqYearPick=null;
+let reqData=null, reqYears=[], reqYearPick=null, reqDroppedN=0;
 async function loadRequests(force){ return loadSource('requests', force); }
 defineSource({
   key:'requests', what:'คำของบประมาณ', boxes:['reqBody'], pills:'reqPills',
   has:()=>!!reqData,
   read:async()=>{
     const S=v=>String(v??'').trim();
+    reqDroppedN=0;
     /* v28.0 — อ่านหัวคอลัมน์แบบยืดหยุ่น: ตรงตัวก่อน ไม่เจอค่อยไล่หาแบบ "มีคำนี้อยู่"
        (หัวชีทจริงมีเว้นวรรค/วงเล็บปน เช่น "งบประมาณ (บาท)") */
     const G=(o,...names)=>{
@@ -7512,11 +7508,15 @@ defineSource({
     // แปลง 1 tab -> รายการคำขอของปีนั้น (หัวคอลัมน์ยืดหยุ่น: กิจกรรม/ลักษณะงาน หรือ ชื่อโครงการ/กิจกรรมโดยสังเขป)
     const parseReq=(objs, year)=>{
       const recs=[];
+      /* กฎ 21: แถวที่ไม่มีรหัสสายทาง/หน่วยเลย นับเป็น "ตกหล่น" ให้เห็นในหน้าข้อมูลระบบ ไม่ทิ้งเงียบ */
+      objs.forEach(o=>{ const c=S(o['รหัสสายทาง']); const any=Object.values(o).some(v=>S(v)!==''); if(any && !(c && c!=='0' && c.includes('.'))) reqDroppedN++; });
       objs.filter(o=>{ const c=S(o['รหัสสายทาง']); return c && c!=='0' && c.includes('.'); }).forEach(o=>{
         /* v31.6 ช่วง กม. หลายช่วงในช่องเดียว: ขึ้นบรรทัดใหม่ หรือคั่นด้วยจุลภาค ("1+700, 7+400") — ชีทรวมแผน 2570 ใช้จุลภาค */
         const starts=String(o['กม.เริ่ม']??'').split(/[\n,]/).map(s=>s.trim()).filter(s=>s), ends=String(o['กม.จบ']??'').split(/[\n,]/).map(s=>s.trim());
         const segs=(starts.length?starts:['']).map((a,i)=>({a, b:ends[i]||''}));
-        recs.push({year, code:S(o['รหัสสายทาง']),
+        let code=S(o['รหัสสายทาง']); const road=isRoadCode(code);
+        if(road && REROUTE[extractRoadCode(code)]) code=REROUTE[extractRoadCode(code)].to;   // สะพานรีรูท → นับใต้สายใหม่ เหมือนประวัติ
+        recs.push({year, code, road, unitKey:road?null:unitKeyOf(code+' '+G(o,'ชื่อสายทาง')),   // กฎ 21 (unit = หน่วยนับ อยู่ด้านล่าง)
           cat:S(o['ชนิดงบ'])||'— ไม่ระบุ',
           proj:S(o['ชื่อโครงการ']??o['กิจกรรม']),
           act:S(o['กิจกรรมโดยสังเขป']??o['ลักษณะงาน']??o['กิจกรรม']),
@@ -7734,14 +7734,18 @@ function renderRequests(){
   const totAmt=specified.reduce((a,r)=>a+r.amt,0);
   const waiting=Q.length-specified.length;
   // ระยะที่ขอรวม + join หมวด/ระยะสายจาก Master
-  const roadInfo=codeInfo();   // v22.1 รวมสะพานชุมชนเข้ามาด้วย ชื่อจะได้ไม่หาย
+  const roadInfo={...codeInfo()};   // v22.1 รวมสะพานชุมชนเข้ามาด้วย ชื่อจะได้ไม่หาย
+  /* กฎ 21: งานไม่ผูกสายทาง (อาคาร/หน่วย) ไม่ใช่สาย — หมวด = หน่วยนั้น ชื่อ = ชื่องานในคำขอ ไม่มีระยะบัญชี */
+  Object.keys(byRoad).filter(c=>!isRoadCode(c)).forEach(c=>{ roadInfo[c]={code:c, name:(byRoad[c].find(r=>r.rname)?.rname)||'งานไม่ผูกสายทาง', muad:recMuad({roadFull:c}), len_acct:0, _unit:true}; });
+  const nonRoadQ=Q.filter(r=>!isRoadCode(r.code));
   Q.forEach(r=>{ r.km=r.segs.reduce((a,s)=>a+segKm(s.a,s.b),0); });
   const totReqKm=Q.reduce((a,r)=>a+r.km,0);
-  const muadWithReq=[...new Set(Object.keys(byRoad).map(c=>roadInfo[c]?.muad).filter(Boolean))];
+  const roadCounts=counts.filter(e=>isRoadCode(e[0]));
+  const muadWithReq=[...new Set(Object.keys(byRoad).map(c=>roadInfo[c]?.muad).filter(m=>m&&MUAD_ORDER.includes(m)))];
   document.getElementById('reqBody').innerHTML=`
     <div class="grid kpis">
       <div class="card kpi"><div class="lbl">คำขอทั้งหมด</div><div class="val">${Q.length} <small>คำขอ</small></div><div class="foot">${esc(yearLbl)} — คำขอเดียวมีได้หลายช่วง กม.</div></div>
-      <div class="card kpi"><div class="lbl">สายทางที่มีคำขอ</div><div class="val">${counts.length} <small>/ ${ALL_CODES.length} สาย</small></div><div class="foot">คิดเป็น ${(100*counts.length/ALL_CODES.length).toFixed(0)}% ของโครงข่าย</div></div>
+      <div class="card kpi"><div class="lbl">สายทางที่มีคำขอ</div><div class="val">${roadCounts.length} <small>/ ${ALL_CODES.length} สาย</small></div><div class="foot">คิดเป็น ${(100*roadCounts.length/ALL_CODES.length).toFixed(0)}% ของโครงข่าย${nonRoadQ.length?` · งานไม่ผูกสาย ${nonRoadQ.length} คำขอ`:''}</div></div>
       <div class="card kpi"><div class="lbl">ระยะทางที่ขอรวม</div><div class="val">${fmt(+totReqKm.toFixed(1))} <small>กม.</small></div><div class="foot">รวมทุกช่วงที่ระบุ กม.</div></div>
       <div class="card kpi"><div class="lbl">งบที่ระบุแล้วรวม</div><div class="val">${fmtM(totAmt)}</div><div class="foot">${specified.length} คำขอ</div></div>
       <div class="card kpi"><div class="lbl">รอประเมินราคา</div><div class="val" style="color:var(--crit)">${waiting} <small>คำขอ</small></div><div class="foot">ยังไม่ระบุวงเงิน</div></div>
@@ -7833,9 +7837,9 @@ function renderRequests(){
     list.forEach(r=>{ const k=rc(r); muadRows[m].segs[k]=(muadRows[m].segs[k]||0)+1; muadRows[m].n++; });
     muadRows[m].roads.add(code);
   });
-  const mRows=[...MUAD_ORDER,'ไม่ระบุ'].filter(m=>muadRows[m])
+  const mRows=[...MUAD_ORDER,'แขวงฯ','ถ่ายโอน','ไม่ระบุ'].filter(m=>muadRows[m])
     .sort((a,b)=>muadRows[b].n-muadRows[a].n)
-    .map(m=>({label:'หมวด'+m, segs:muadRows[m].segs, right:`${muadRows[m].n} คำขอ · ${muadRows[m].roads.size} สาย`}));
+    .map(m=>({label:recMuadLabel(m), segs:muadRows[m].segs, right:`${muadRows[m].n} คำขอ · ${[...muadRows[m].roads].filter(isRoadCode).length} สาย`}));
   hstack('chReqMuad', mRows, segsOrder, {unit:'คำขอ'});
   // ตารางสรุปรายสาย
   document.querySelector('#reqRoadTable tbody').innerHTML = [...counts].sort((a,b)=>SUF3(a[0])-SUF3(b[0])||a[0].localeCompare(b[0],'th')).map(([code,n])=>{
@@ -7852,7 +7856,7 @@ function renderRequests(){
       <td class="num">${pct!=null?`<b style="color:${pct>=50?'var(--crit)':'var(--ink)'}">${pct.toFixed(0)}%</b>`:'—'}</td>
       <td class="num">${amt?fmt(amt):'<span style="color:var(--crit)">รอประเมิน</span>'}</td>
       <td style="font-size:11.5px">${catsIn.map(c=>esc(c)).join(' · ')}</td>
-      <td><a href="javascript:void(0)" class="opLink" data-code="${code}" style="color:var(--teal);font-weight:700;white-space:nowrap">📄 เปิด</a></td></tr>`;
+      <td>${r?._unit?'<span style="color:var(--muted)">—</span>':`<a href="javascript:void(0)" class="opLink" data-code="${code}" style="color:var(--teal);font-weight:700;white-space:nowrap">📄 เปิด</a>`}</td></tr>`;
   }).join('');
   document.querySelectorAll('#reqRoadTable .opLink').forEach(a=>a.addEventListener('click',e=>{
     e.stopPropagation(); gotoOnePage(a.dataset.code); }));
@@ -7871,7 +7875,7 @@ function renderReqDetail(code){
   const rows=list.flatMap(r=>r.segs.map((s,i)=>({r,s,first:i===0})));
   document.getElementById('reqDetail').innerHTML=`
     <div style="background:var(--navy);color:#fff;border-radius:8px;padding:9px 13px;font-size:13px;font-weight:600;margin-bottom:4px">
-      มุมมองรวม — สายทาง ${esc(code)} (${list.length} คำขอ) · งบระบุแล้ว ${fmtM(tot)}</div>
+      มุมมองรวม — ${isRoadCode(code)?'สายทาง':'งานไม่ผูกสาย'} ${esc(code)} (${list.length} คำขอ) · งบระบุแล้ว ${fmtM(tot)}</div>
     <div style="border:1px solid var(--grid);border-radius:8px;overflow:hidden">
     ${rows.map(({r,s,first})=>`<div class="reqrow">
         <div><div class="cat" style="color:${r.cat==='— ไม่ระบุ'?'var(--crit)':'var(--navy)'}">${esc(r.cat)}${first?` <span style="color:var(--muted);font-weight:400;font-size:11px">· ปี ${r.year}</span>`:''}</div>
@@ -7905,7 +7909,7 @@ function zbRawRows(table){ // แถวดิบ (รวมหัว) — หั
   const rows=(table.rows||[]).map(r=>(r.c||[]).map(cell=>cell==null?'':String(cell.f!=null?cell.f:(cell.v!=null?cell.v:'')).trim()));
   return [head,...rows];
 }
-let zbWarn=[];   // v31.2 แท็บที่หัวคอลัมน์ไม่ตรงแบบ (อ่านจากรูปแบบข้อมูลแทน) — โชว์เตือนบนจอ
+let zbWarn=[], zbDroppedN=0;   // v31.2 แท็บที่หัวคอลัมน์ไม่ตรงแบบ (อ่านจากรูปแบบข้อมูลแทน) — โชว์เตือนบนจอ
 function zbParse(rows, year, tabName){ // หาแถวหัวที่มี "รหัสสายทาง" แล้วอ่านคำขอทีละแถว
   /* v31.2 (ผู้ใช้ 7 ก.ย. 69: "zerobase ของหมวดพลหายไป") — แท็บหมวดพลถูกแปลงเป็นตารางของ Sheets
      หัวคอลัมน์กลายเป็น "คอลัมน์ 1 / คอลัมน์ 2" ตัวอ่านเดิมหาหัว "รหัสสายทาง" ไม่เจอจึงทิ้งทั้งแท็บเงียบๆ
@@ -7929,7 +7933,7 @@ function zbParse(rows, year, tabName){ // หาแถวหัวที่ม�
     const out=[];
     for(const row of rows.slice(i+1)){
       const code=extractRoadCode(row[map['รหัสสายทาง']]);
-      if(!code) continue;
+      if(!code){ if(row.some(v=>String(v??'').trim())) zbDroppedN++; continue; }   // กฎ 21: Zerobase เป็นรายสาย แถวไม่มีรหัสสาย = ตกหล่น นับให้เห็น
       const km1=(row[map['กม.เริ่ม']]??'').trim(), km2=(row[map['กม.จบ']]??'').trim();
       const d1=kmVal(km1), d2=kmVal(km2);
       const act=(row[map['กิจกรรม']]??'').trim();
@@ -7949,7 +7953,7 @@ defineSource({
   read:async()=>{
     // 1) sentinel: ชื่อ tab ที่ไม่มีจริง gviz จะส่ง "tab แรก" กลับมา -> จำลายนิ้วมือไว้กรองปีหลอก
     let sentinelFp=null;
-    zbWarn=[];
+    zbWarn=[]; zbDroppedN=0;
     try{ sentinelFp=JSON.stringify(zbRawRows(await gvizJSONP(ZB_ID,'sheet=__ZB_PROBE_XX99__')).slice(0,25)); }catch(e){}
     // 2) ไล่หา tab ปีพร้อมกันทุกปี
     const probes=await Promise.allSettled(ZB_PROBE_YEARS.map(y=>
@@ -8025,10 +8029,6 @@ const segsOf=r=>(r.segs||[]).map(sg=>({a:(typeof sg.a==='number')?sg.a:kmVal(sg.
 /* v31.9 ผู้ใช้ (8 ก.ย. 69): "70 มันมีงบอาคารอยู่นะ ทำไมดูข้อมูลมั่วๆ" — งานอาคาร/งานที่ไม่ผูกสายทาง
    ช่องรหัสสายทางเป็นชื่อหน่วย (ขทช.ขอนแก่น · บทช.น้ำพอง) ฝั่งสัญญาถอดรหัสสายไม่ได้ (code=null) จึงไม่เคยถูกจับคู่เลย
    → คีย์จับคู่ของงานไม่ผูกสาย = ปี | หน่วย (แขวงฯ / หมวดX) แล้วเทียบชนิดงบ ไม่มี กม. ให้เทียบ */
-const unitKeyOf=t=>{ t=String(t||'');
-  if(/บทช/.test(t)){ const m=MUAD_ORDER.find(mm=>t.includes(mm)); if(m) return 'หมวด'+m; if(/ขอนแก่น|ขก/.test(t)) return 'หมวดเมือง'; }
-  if(/ขทช|แขวง/.test(t)) return 'แขวงฯ';
-  const m=MUAD_ORDER.find(mm=>t.includes(mm)); return m?'หมวด'+m:t.replace(/\s+/g,''); };
 const gapKey=(year,code,txt)=>year+'|'+(code?code:('U:'+unitKeyOf(txt)));
 function gapMatch(rec, gotList){
   /* v31.9 ผู้ใช้ (7 ก.ย. 69): "ปี 2570 ไม่ได้รับงบจังหวัดและกลุ่มจังหวัดเลย นายดึงข้อมูลมาผิดรึเปล่า"
@@ -8069,13 +8069,13 @@ function gapModel(){
     return {year:r.year, code:r.code, road, name:r.rname||roadOptName(r.code)||'',
       cat:normCat(r.cat), src:r.src||'', act:r.actv||r.act||r.proj||'',
       km:(r.segs||[]).map(x=>x.a+(x.b?(' – '+x.b):'')).filter(Boolean).join(', '),
-      ask:r.amt||0, muad:road?(muadOf[r.code]||'ไม่ระบุ'):recMuad({roadFull:r.code}), zone:road?gapZoneOf(r.code,r.segs):null,
+      ask:r.amt||0, muad:road?recMuad({code:r.code}):recMuad({roadFull:r.code}), zone:road?gapZoneOf(r.code,r.segs):null,
       got:got.got, gotN:got.got.length, exact:got.exact,
       gotAmt:got.got.reduce((a,h)=>a+(h.amount||0),0),
       status:got.got.length?'ok':'no'};
   });
   const hist=histData.filter(h=>h.year).map(h=>({...h, cat:normCat(h.budgetType),
-      muad:muadOf[h.code]||'ไม่ระบุ', zone:h.code?gapZoneOf(h.code,h.segs):null}));
+      muad:recMuad(h), zone:h.code?gapZoneOf(h.code,h.segs):null}));   // กฎ 21: งานไม่ผูกสาย หมวด = หน่วย (เหมือนฝั่งคำขอ)
   const years=[...new Set(rows.map(r=>r.year))].sort((a,b)=>a-b);
   const sum=(list,f)=>list.reduce((a,x)=>a+(f(x)||0),0);
   const agg=(R,Hs)=>{
