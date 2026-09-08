@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#1B2A4A">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -39,8 +39,12 @@ html[data-theme="indigo"]{ --navy:#2b2f6e; --navy-d:#202355; --teal:#3a86c8; --t
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Sarabun',Tahoma,'Segoe UI',system-ui,sans-serif;background:var(--page);color:var(--ink);font-size:14px}
 .app{display:flex;min-height:100vh}
+/* v31.10 ผู้ใช้ (8 ก.ย. 69 iPad เปิดแบบแอปเต็มจอ): "เวลาเลื่อน แถบมันบังข้อมูล" — แถบสถานะ iOS (เวลา/แบต) โปร่งทับเนื้อหาที่เลื่อนขึ้นไป
+   แก้ด้วยแถบทึบสีน้ำเงินสูงเท่าแถบสถานะ (env(safe-area-inset-top)) และดันเนื้อหา/แถบเมนู/แถบเลื่อนลงมาเท่ากัน · เปิดในเบราว์เซอร์ปกติหรือคอม ค่านี้ = 0 ไม่มีอะไรเปลี่ยน */
+:root{--sat:env(safe-area-inset-top,0px)}
+body::before{content:'';position:fixed;top:0;left:0;right:0;height:var(--sat);background:var(--navy);z-index:1500;pointer-events:none}
 /* ---------- sidebar ---------- */
-.sidebar{width:230px;background:var(--navy);color:#fff;position:fixed;top:0;bottom:0;left:0;display:flex;flex-direction:column;z-index:1100}
+.sidebar{width:230px;background:var(--navy);color:#fff;position:fixed;top:0;bottom:0;left:0;display:flex;flex-direction:column;z-index:1100;padding-top:var(--sat)}
 .brand{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.12)}
 .brand h1{font-size:15px;font-weight:700;line-height:1.35;display:flex;align-items:center;gap:9px}
 /* v31.0 — ตราสัญลักษณ์ (วาดเอง ไม่ใช่ตรากรม): ถนนคดเคี้ยวบนแผ่นป้าย + หลัก กม. สีทอง */
@@ -66,10 +70,25 @@ body{font-family:'Sarabun',Tahoma,'Segoe UI',system-ui,sans-serif;background:var
 .nav button.active{background:var(--teal);color:#fff;font-weight:600}
 .nav .ico{width:18px;text-align:center;flex:none}
 .side-foot{padding:12px 16px;font-size:10.5px;color:#8d9cba;border-top:1px solid rgba(255,255,255,.12);line-height:1.5}
+/* v31.9 ผู้ใช้ (8 ก.ย. 69): "แถบซ้ายมือน่าจะออกแบบให้ซ่อนได้ เหลือแค่ไอคอน ตัวหน้าข้อมูลจะได้เต็มๆ" — จอกว้างเท่านั้น จำค่าไว้ในเครื่อง */
+.sbtoggle{position:absolute;top:calc(14px + var(--sat));right:-13px;width:26px;height:26px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:var(--teal);color:#fff;cursor:pointer;display:grid;place-items:center;padding:0;z-index:2;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.sbtoggle svg{width:14px;height:14px;transition:transform .2s}
+.sidebar,.main{transition:width .2s,margin-left .2s}
+.sidebar.collapsed{width:64px}
+.main.sbmini{margin-left:64px}
+.sidebar.collapsed .sbtoggle svg{transform:rotate(180deg)}
+.sidebar.collapsed .brand{padding:14px 0 12px;display:flex;justify-content:center}
+.sidebar.collapsed .brand h1{font-size:0;gap:0;justify-content:center}
+.sidebar.collapsed .brand .sub,.sidebar.collapsed .brand .ver,.sidebar.collapsed .brand .themesw,.sidebar.collapsed .side-foot{display:none}
+.sidebar.collapsed .nav{padding:10px 6px}
+.sidebar.collapsed .nav button{font-size:0;gap:0;justify-content:center;padding:11px 0}
+.sidebar.collapsed .nav .ico{font-size:17px;width:22px}
+.sidebar.collapsed .nav .ico svg{width:20px;height:20px}
+@media(max-width:980px){.sbtoggle{display:none}.sidebar.collapsed{width:100%}.main.sbmini{margin-left:0}}
 /* ---------- main ---------- */
 /* v20.6.1 — เดิมตันที่ 1400px จอกว้างเลยเหลือที่ว่างข้างขวา ตอนนี้ยืดเต็มจอ
    จอยิ่งกว้างยิ่งเพิ่มระยะขอบ เพื่อไม่ให้เนื้อหาชนขอบจอ */
-.main{flex:1;min-width:0;margin-left:230px;padding:20px 24px 40px;max-width:none}
+.main{flex:1;min-width:0;margin-left:230px;padding:20px 24px 40px;padding-top:calc(20px + var(--sat));max-width:none}
 @media(min-width:1700px){.main{padding:22px 40px 44px}}
 @media(min-width:2200px){.main{padding:24px 72px 48px}}
 .pagehead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
@@ -492,7 +511,7 @@ select.search{width:auto}
   #pg-map .pillrow .pill{flex:none;font-size:10.5px}
 
   /* -- แถบเครื่องมือ: โชว์แค่ช่องค้นหา + ปุ่มตัวกรอง ที่เหลือยุบไว้ -- */
-  #pg-map .actions{gap:7px;margin-bottom:8px!important;position:sticky;top:0;z-index:940;
+  #pg-map .actions{gap:7px;margin-bottom:8px!important;position:sticky;top:var(--sat);z-index:940;
     background:var(--page);padding:6px 0}
   #pg-map .actions>*{order:5}
   #pg-map .actions #mapSearch{order:1;flex:1 1 auto;min-width:0}
@@ -877,7 +896,7 @@ body.cmdopen .cmdbd{display:flex}
    v22.2 — ลูกเล่นการนำเสนอ (ใช้สีธีมเดิมล้วน ไม่มีสีใหม่)
    ============================================================ */
 /* แถบความคืบหน้าการเลื่อนหน้า — เส้นบางสีเขียวมรกตบนสุด */
-.scrollbar-top{position:fixed;top:0;left:0;height:3px;width:0;z-index:1600;
+.scrollbar-top{position:fixed;top:var(--sat);left:0;height:3px;width:0;z-index:1600;
   background:linear-gradient(90deg,var(--teal),#3fbfae);border-radius:0 3px 3px 0;
   transition:width .08s linear;pointer-events:none;box-shadow:0 0 8px rgba(13,148,136,.5)}
 
@@ -978,7 +997,7 @@ body.cmdopen .cmdbd{display:flex}
 .appstat{display:none}          /* ต้องประกาศก่อน media query ไม่งั้นทับกฎในนั้น */
 @media(max-width:900px){
   .sidebar{position:sticky;top:0;z-index:1150;background:transparent!important;
-    box-shadow:none;padding:8px 10px 0}
+    box-shadow:none;padding:8px 10px 0;padding-top:calc(8px + var(--sat))}
   .brand{
     display:flex;align-items:center;gap:9px;flex-wrap:nowrap;
     padding:9px 12px;border-radius:18px;
@@ -1130,6 +1149,7 @@ try{ const t=localStorage.getItem('drr_theme'); if(t&&t!=='default') document.do
 <div id="tooltip"></div>
 <div class="app">
   <aside class="sidebar">
+    <button class="sbtoggle" id="sbToggle" type="button" title="ย่อ/ขยายแถบเมนู" aria-label="ย่อ/ขยายแถบเมนู"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
     <div class="brand">
       <h1><span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19c3-6 5-6 8-3s5 3 8-4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 19c3-6 5-6 8-3s5 3 8-4" stroke="#fff" stroke-width="1" stroke-dasharray="1.5 2.6" opacity=".55"/><rect x="16.5" y="4" width="4" height="7" rx="1.2" fill="#d9a441"/><rect x="17.9" y="11" width="1.2" height="3.2" fill="#d9a441"/></svg></span><span>Big Data สายทาง</span></h1>
       <div class="sub">แขวงทางหลวงชนบทขอนแก่น<br>กรมทางหลวงชนบท</div>
@@ -2836,7 +2856,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.9', APP_DATE='7 ก.ย. 2569';
+const APP_VER='v31.10', APP_DATE='8 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -7001,8 +7021,11 @@ function renderHistRoad(code){
       {
         const extra=[];
         // เลน "คำของบ" จากหน้าคำของบประมาณ
+        /* v31.9 ผู้ใช้ (8 ก.ย. 69): "คำของบใน stripmap หน้าประวัติสายทาง ไม่เอาปีเก่า เอาปีล่าสุด" — เลนนี้ = ปีล่าสุดของชีทคำขอเท่านั้น
+           (ปีเก่าดูได้ที่หน้าคำของบ/โครงการประจำปี) ป้ายเลนบอกปีไว้ชัด */
+        const reqLatest=reqData&&reqData.length?Math.max(...reqData.map(r=>r.year)):null;
         if(reqData){
-          const rl=reqData.filter(r=>r.code===code);
+          const rl=reqData.filter(r=>r.code===code&&r.year===reqLatest);
           if(rl.length){
             const segs=rl.flatMap(r=>{
               const mk=segMarkTxt((r.cat||'')+' '+(r.act||'')+' '+(r.proj||''), r.amt); // สัญลักษณ์เดียวกับเลนปี
@@ -7014,7 +7037,7 @@ function renderHistRoad(code){
                   tip:`<b>คำของบปี ${r.year} · ${esc(r.cat)}</b><br>${esc(r.act||r.proj)||''}<br>${kmLbl(s.a)} – ${kmLbl(s.b)} (${fmt(+(s.b-s.a).toFixed(2))} กม.)${e?`<br>💡 ≈ ${fmt(Math.max(1,Math.round((s.b-s.a)*1000/30)))} ต้น`:''}<br>งบ ${r.amt!=null?fmt(r.amt)+' บาท':'⏳ รอประเมิน'}`}));
             });
             const noSegN=rl.filter(r=>!r.segs.some(s=>{const a=kmVal(s.a),b=kmVal(s.b);return a!=null&&b!=null&&b>a;})).length;
-            extra.push({label:'คำของบ', color:'#e87ba4', segs, noSegN});
+            extra.push({label:'คำของบ '+reqLatest, color:'#e87ba4', segs, noSegN});
           }
         } else loadRequests().catch(()=>{});
         // เลน "Zerobase" ความต้องการจริง (รวมทุกปีที่พบ)
@@ -7514,9 +7537,12 @@ defineSource({
         /* v31.6 ช่วง กม. หลายช่วงในช่องเดียว: ขึ้นบรรทัดใหม่ หรือคั่นด้วยจุลภาค ("1+700, 7+400") — ชีทรวมแผน 2570 ใช้จุลภาค */
         const starts=String(o['กม.เริ่ม']??'').split(/[\n,]/).map(s=>s.trim()).filter(s=>s), ends=String(o['กม.จบ']??'').split(/[\n,]/).map(s=>s.trim());
         const segs=(starts.length?starts:['']).map((a,i)=>({a, b:ends[i]||''}));
-        let code=S(o['รหัสสายทาง']); const road=isRoadCode(code);
-        if(road && REROUTE[extractRoadCode(code)]) code=REROUTE[extractRoadCode(code)].to;   // สะพานรีรูท → นับใต้สายใหม่ เหมือนประวัติ
-        recs.push({year, code, road, unitKey:road?null:unitKeyOf(code+' '+G(o,'ชื่อสายทาง')),   // กฎ 21 (unit = หน่วยนับ อยู่ด้านล่าง)
+        /* v31.9 ผู้ใช้ (8 ก.ย. 69): "ไม่ระบุหมวดไม่น่ามีนะ เช็คด่วน" — ช่องรหัสในชีทคำขอมีข้อความพ่วง ("ขก.3001 (ตอน 2)") หรือหลายรหัส
+           เดิมเก็บทั้งก้อน จึงหาหมวดในบัญชีไม่เจอ → ทำเหมือนประวัติ: ถอดรหัสสายออกมาเป๊ะ (เก็บของเดิมไว้ใน codeRaw) */
+        const codeRaw=S(o['รหัสสายทาง']); const rc=extractRoadCode(codeRaw); const road=!!rc;
+        let code=road?rc:codeRaw;
+        if(road && REROUTE[code]) code=REROUTE[code].to;   // สะพานรีรูท → นับใต้สายใหม่ เหมือนประวัติ
+        recs.push({year, code, codeRaw, road, unitKey:road?null:unitKeyOf(codeRaw+' '+G(o,'ชื่อสายทาง')),   // กฎ 21 (unit = หน่วยนับ อยู่ด้านล่าง)
           cat:S(o['ชนิดงบ'])||'— ไม่ระบุ',
           proj:S(o['ชื่อโครงการ']??o['กิจกรรม']),
           act:S(o['กิจกรรมโดยสังเขป']??o['ลักษณะงาน']??o['กิจกรรม']),
@@ -8252,6 +8278,10 @@ function renderGap(){
     tube('gapChMuad', rows, {labelW:96, colorOf:k=>recMuadColor(k), avg:avgPct});
     if(idle.length) document.getElementById('gapChMuad').insertAdjacentHTML('beforeend',
       `<div class="footnote xnote">หมวดที่ไม่ได้ยื่นขอ: ${idle.map(esc).join(' · ')}</div>`);
+    /* "ไม่ระบุ" = รหัสในคำขอที่ไม่พบในบัญชีสายทาง — ต้องบอกว่ารหัสไหน จะได้ไปแก้ในชีท (ผู้ใช้: "ไม่ระบุหมวดไม่น่ามีนะ") */
+    const unk=[...new Set(V.rows.filter(r=>r.muad==='ไม่ระบุ').map(r=>r.codeRaw||r.code))];
+    if(unk.length) document.getElementById('gapChMuad').insertAdjacentHTML('beforeend',
+      `<div class="footnote xnote" id="gapMuadUnk" style="color:var(--crit)">ไม่ระบุ = รหัสที่ไม่พบในบัญชีสายทาง: ${unk.slice(0,8).map(esc).join(' · ')}${unk.length>8?` … อีก ${unk.length-8}`:''}</div>`);
   });
   safeRun('หลอด กิจกรรม', ()=>{
     if(noReq) return;
@@ -9810,6 +9840,17 @@ buildAppStat();
 buildTopActions();
 svgSidebarIcons();
 { const v=document.querySelector('.brand .ver'); if(v) v.textContent=APP_VER_TXT; }   // v27.1 ป้ายเวอร์ชันจากที่เดียว
+/* v31.9 แถบเมนูย่อได้ (ผู้ใช้ 8 ก.ย. 69) — ย่อแล้วเหลือไอคอน ป้ายชื่อไปอยู่ใน title · จำค่าใน localStorage · ย่อ/ขยายแล้วสั่งวาดหน้าใหม่ (กฎ 16 กราฟต้องพอดีความกว้างใหม่) */
+function setSidebarMini(on, save=true){
+  const sb=document.querySelector('.sidebar'), mn=document.querySelector('.main'); if(!sb||!mn) return;
+  sb.classList.toggle('collapsed',!!on); mn.classList.toggle('sbmini',!!on);
+  sb.querySelectorAll('.nav button').forEach(b=>{ if(!b.dataset.lbl) b.dataset.lbl=b.textContent.replace(/\s+/g,' ').trim(); b.title=on?b.dataset.lbl:''; });
+  if(save){ try{ localStorage.setItem('drr_sbmini',on?'1':'0'); }catch(e){} }
+  window.dispatchEvent(new Event('resize'));
+}
+{ let mini=false; try{ mini=localStorage.getItem('drr_sbmini')==='1'; }catch(e){}
+  if(mini && window.innerWidth>980) setSidebarMini(true,false);
+  const tb=document.getElementById('sbToggle'); if(tb) tb.addEventListener('click',()=>setSidebarMini(!document.querySelector('.sidebar').classList.contains('collapsed'))); }
 buildThemeSwitch();   // v31.0
 try{ archCheck(); }catch(e){ console.error('archCheck พัง:',e); }   // v25.0 ด่านตรวจโครงสร้าง
 if(location.hash) setTimeout(applyURL, 120);   // v21.0 เปิดจากลิงก์ที่แชร์มา -> เด้งไปมุมมองนั้นเลย
