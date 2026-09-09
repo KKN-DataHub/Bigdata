@@ -2525,18 +2525,68 @@ function kmTokens(txt){ /* ดึง token รูปแบบ #+### ทั้ง
 const num = s => { const v = parseFloat(String(s??'').replace(/,/g,'')); return isNaN(v)?null:v; };
 /* แยกช่วง กม. พร้อมป้ายชนิดงานต่อช่วง — รองรับ "0+500, 12+025 (ไฟฟ้า), 13+209 (สะพาน), 13+246 (ถนนคอนกรีต)"
    ป้าย "(ช่วงที่ n)" ไม่ใช่ชนิดงาน -> ข้าม · ป้ายท้าย token แบบไม่มีวงเล็บก็อ่านได้ เช่น "13+209 สะพาน" */
+/* v31.16 ช่วง/แห่งเป็นตำแหน่งในกิจกรรม ไม่ใช่ชื่อกิจกรรม; เก็บแถวต้นฉบับไว้ตรวจเสมอ */
 function kmParts(txt){
-  return String(txt??'').split(/[,\n]+/).map(p=>{
-    const parens=[...p.matchAll(/\(([^)]*)\)/g)].map(m=>m[1].trim()).filter(t=>t&&!/ช่วงที่/.test(t));
-    const noParen=p.replace(/\([^)]*\)/g,' ');
-    const tokM=noParen.match(/\d+\s*\+\s*\d+/);
-    if(!tokM) return null;
-    const rest=noParen.replace(/\d+\s*\+\s*\d+/,'').replace(/[\d+\s.\-–]/g,'');
-    return {km:tokM[0].replace(/\s/g,''), lbl:parens[0]||rest||null};
-  }).filter(Boolean);
+  const pieces=String(txt??'').split(/[,;\n\r]+/).map(x=>x.trim()).filter(Boolean);
+  let site=null;
+  const parts=pieces.map(raw=>{
+    const tokens=[...raw.matchAll(/\d+\s*\+\s*\d+/g)], token=tokens[0]?.[0]||'';
+    const sectionMatch=raw.match(/ช่วง\s*(?:ที่\s*)?(\d+)/), siteMatch=raw.match(/แห่ง\s*(?:ที่\s*)?(\d+)/);
+    if(siteMatch)site=+siteMatch[1];
+    let label=raw.replace(/\d+\s*\+\s*\d+/g,'').replace(/(?:ช่วง|แห่ง)\s*(?:ที่\s*)?\d+/g,'')
+      .replace(/กม\.?/g,'').replace(/[()\s:–—]+/g,' ').trim();
+    const fields=token.split('+').map(x=>x.trim());
+    const valid=tokens.length===1&&fields[1].length<=3&&+fields[1]<1000&&!/-\s*\d+\s*\+/.test(raw)
+      &&(raw.match(/\(/g)||[]).length===(raw.match(/\)/g)||[]).length;
+    return {raw,km:valid?`${+fields[0]}+${fields[1].padStart(3,'0')}`:token.replace(/\s/g,''),valid,
+      lbl:label||null,section:sectionMatch?+sectionMatch[1]:null,site};
+  });
+  // ป้ายกิจกรรมท้ายชุด เช่น (ช่วง 1), (ช่วง 2)(ไฟฟ้า) ใช้กับชุดช่วงนั้นเท่านั้น
+  for(let i=0;i<parts.length;){
+    if(parts[i].section!==1){i++;continue;}
+    let j=i+1;while(j<parts.length&&parts[j].site===parts[i].site&&parts[j].section===parts[j-1].section+1)j++;
+    const labels=[...new Set(parts.slice(i,j).map(p=>p.lbl).filter(Boolean))];
+    if(labels.length===1)for(let k=i;k<j;k++)if(!parts[k].lbl)parts[k].lbl=labels[0];
+    i=j;
+  }
+  return parts;
 }
-const SEG_E=/ไฟฟ้า|แสงสว่าง|ไฟกระพริบ|ไฟสัญญาณ/, SEG_B=/สะพาน/;
+const SEG_E=/ไฟฟ้า|แสงสว่าง|ไฟกระพริบ|ไฟสัญญาณ|ไฟจราจร/, SEG_B=/สะพาน|Pile\s*Bent/i;
 const segTypeOf=(lbl,fallback)=>lbl?(SEG_E.test(lbl)?'e':(SEG_B.test(lbl)?'b':'r')):fallback;
+function historySegments(kmA,kmB,activity,worktype,budgetType){
+  const starts=kmParts(kmA),ends=kmParts(kmB),used=new Set(),issues=[],segs=[],display=[];
+  const main=String(activity||worktype||'').trim(),mainText=main+' '+(budgetType||'');
+  const hasRoad=/ถนน|Recycling|แอสฟัล|เสริมผิว|ซ่อมสร้างผิว|Hot\s*In|ขยายไหล่/i.test(mainText);
+  const hasBridgeLabel=starts.concat(ends).some(p=>p.lbl&&SEG_B.test(p.lbl));
+  const fallback=hasRoad?'r':SEG_E.test(mainText)?'e':(SEG_B.test(mainText)&&!hasBridgeLabel?'b':'r');
+  const compatible=(p,q)=>['section','site'].every(k=>p[k]==null||q[k]==null||p[k]===q[k])&&(!p.lbl||!q.lbl||normKey(p.lbl)===normKey(q.lbl));
+  const named=p=>!!(p.lbl||p.section!=null||p.site!=null);
+  const key=p=>[normKey(p.lbl||''),p.site??'',p.section??''].join('|');
+  const matches=new Map();
+  if(starts.length===ends.length)starts.forEach((p,i)=>{if(compatible(p,ends[i])){matches.set(i,i);used.add(i);}});
+  // จับชื่อ/ช่วงก่อน เมื่อจุดใดไม่มี กม.จบ จะไม่เลื่อนปลายช่วงอื่นมาเสียบแทน
+  starts.forEach((p,i)=>{
+    if(matches.has(i)||!named(p))return;
+    const candidates=ends.map((q,j)=>({q,j})).filter(({q,j})=>!used.has(j)&&key(p)===key(q));
+    if(candidates.length===1){matches.set(i,candidates[0].j);used.add(candidates[0].j);}
+  });
+  const plainStarts=starts.map((p,i)=>({p,i})).filter(x=>!matches.has(x.i)&&!named(x.p));
+  const plainEnds=ends.map((q,j)=>({q,j})).filter(x=>!used.has(x.j)&&!named(x.q));
+  if(plainStarts.length===plainEnds.length)plainStarts.forEach(({i},k)=>{matches.set(i,plainEnds[k].j);used.add(plainEnds[k].j);});
+  starts.forEach((p,i)=>{
+    const q=matches.has(i)?ends[matches.get(i)]:null;
+    const label=p.lbl||q?.lbl||null, section=p.section??q?.section,place=p.site??q?.site;
+    const suffix=[label,place!=null?`แห่งที่ ${place}`:'',section!=null?`ช่วงที่ ${section}`:''].filter(Boolean).join(' · ');
+    display.push(`${p.km||p.raw}${q?' - '+(q.km||q.raw):' [ไม่ระบุ กม.จบ]'}${suffix?' ('+suffix+')':''}`);
+    if(!p.valid||q&&!q.valid){issues.push(`รูปแบบ กม. ไม่ถูกต้อง: ${p.raw}${q?' / '+q.raw:''}`);return;}
+    const a=kmVal(p.km),b=q?kmVal(q.km):a;
+    if(q&&b<a){issues.push(`กม.จบก่อน กม.เริ่ม: ${p.km} - ${q.km}`);return;}
+    if(!q)issues.push(`ไม่พบ กม.จบที่ตรงกัน: ${p.raw}`);
+    segs.push({a,b,t:segTypeOf(label,fallback),lbl:label,activity:label||main,section,site:place,...(b===a?{pt:true}:{}),...(!q?{missingEnd:true}:{})});
+  });
+  ends.forEach((q,j)=>{if(!used.has(j)){issues.push(`กม.จบยังไม่จับคู่: ${q.raw}`);display.push(`[ไม่พบ กม.เริ่ม] - ${q.raw}`);}});
+  return {segs,kmRange:display.join(', ')+(issues.length?' [⚠ ตรวจช่วง กม.]':''),kmIssues:issues,kmRawA:String(kmA??''),kmRawB:String(kmB??'')};
+}
 
 
 /* v21.0 — ตารางบางหน้าไม่ได้อยู่ใน .tblwrap เลยดันหน้าให้บานบนมือถือ
@@ -2891,7 +2941,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.14', APP_DATE='8 ก.ย. 2569';
+const APP_VER='v31.16', APP_DATE='9 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -2933,7 +2983,7 @@ const PAGES=[
   {id:'zerobase', enter:()=>loadZerobase(),  body:'zbBody',                                        retry:()=>loadZerobase(true),
    needs:{ zerobase:()=>renderZerobase() },  csv:['zbRoadTable','Zerobase รายสาย']},
   {id:'risk',     enter:()=>loadRisk(),      body:'riskBody',                                      retry:()=>loadRisk(true),
-   needs:{ risk:()=>renderRisk() },          reload:()=>{ riskData=null; loadRisk(true); },
+   needs:{ risk:()=>renderRisk() },          reload:()=>{ document.getElementById('photoBox')?._close?.(); loadRisk(true); },
                                              csv:['riskRoadTable','จุดเสี่ยงรายสาย']},
   {id:'equip',    enter:()=>loadEquip(),     body:'eqBody',                                        retry:()=>loadEquip(true),
    needs:{ equip:()=>renderEquip() },        csv:['eqTable','Equipment']},
@@ -3830,7 +3880,12 @@ function loadSource(key, force){
       dataArrived(cfg.key);                            // กฎ 3 — พูดประโยคเดียว ไม่สั่งวาดเอง
       if(!cfg.quiet) boxes.forEach(id=>renderStuck(id));  // ข้อมูลมาแล้วแต่ยังหมุน = วาดไม่ผ่าน
     }catch(err){
-      if(cfg.has()){ console.warn('แหล่งข้อมูล '+cfg.key+': รอบโหลดเก่าล้มหลังจากมีข้อมูลแล้ว — ไม่ฟ้อง', (err&&err.message)||err); }   // v31.12 ข้อมูลมีอยู่แล้ว ห้ามขึ้นว่า "ยังไม่ได้ข้อมูล"
+      if(cfg.has()){
+        console.warn('โหลดใหม่ '+cfg.key+' ไม่สำเร็จ:', (err&&err.message)||err);
+        dataArrived(cfg.key);
+        if(cfg.pills){const pe=document.getElementById(cfg.pills);if(pe)pe.innerHTML='<span class="hpill warn">⚠ โหลดใหม่ไม่สำเร็จ — แสดงข้อมูลครั้งก่อน</span>';}
+        if(!cfg.quiet)banner('warn','โหลด'+(cfg.what||cfg.key)+'ใหม่ไม่สำเร็จ — แสดงข้อมูลครั้งก่อน · '+((err&&err.message)||err));
+      }
       else if(cfg.quiet){ console.warn('แหล่งข้อมูล '+cfg.key+' ยังไม่มา:', (err&&err.message)||err); }
       else if(err && err.empty){
         /* กฎ 6 สถานะ "ไม่มีข้อมูล" — ชีทต่อติดแต่ว่าง ห้ามบอกว่าเน็ตล่ม และห้ามขึ้นแบนเนอร์แดง */
@@ -6454,26 +6509,7 @@ defineSource({
         if(!year) return; // tab แรกของไฟล์ที่ไม่รู้ปี: ต้องอ่านปีจากเลขที่สัญญาเท่านั้น
         let bt=S(o.budgetType)||'ไม่ระบุ';
         bt=bt.replace(/\s*เหลือจ่าย\s*$/,'')||bt; // "บำรุงเหลือจ่าย" -> "บำรุง", "ปลอดภัยเหลือจ่าย" -> "ปลอดภัย"
-        // ช่วง กม. พร้อมชนิดงานรายช่วง — โครงการถนนที่มีช่วง (ไฟฟ้า)/(สะพาน) ปนมา แยกคิดปริมาณถูกประเภท
-        const pa=kmParts(o.kmA), pb=kmParts(o.kmB);
-        const actTxt=(S(o.activity)||S(o.worktype))+' '+bt;
-        // สะพานล้วนเท่านั้นถึงถือทั้งช่วงเป็นสะพาน — "ทางและสะพาน" ช่วงที่ไม่ติดป้ายถือเป็นถนน
-        const projType=SEG_E.test(actTxt)?'e':((SEG_B.test(actTxt)&&!/ทาง|ถนน/.test(actTxt))?'b':'r');
-        const kmRange=pa.length?pa.map((p,i)=>{
-          const q=pb[i]; const lbl=(q&&q.lbl)||p.lbl;
-          return p.km+(q?' - '+q.km:'')+(lbl?` (${lbl})`:'');
-        }).join(', '):'';
-        // กติกาป้ายวงเล็บชนะ: ถ้าโครงการติดป้าย (สะพาน)/(ไฟฟ้า) กำกับช่วงใดไว้แล้ว
-        // ช่วงที่เหลือที่ "ไม่ติดป้าย" ถือเป็นถนน — ไม่เหมาตามชื่อโครงการ (เช่น "Recycling, ก่อสร้างสะพาน")
-        const hasTypedLbl=pa.some((p,i)=>{ const q=pb[i]; const lbl=(q&&q.lbl)||p.lbl; return lbl&&(SEG_E.test(lbl)||SEG_B.test(lbl)); });
-        const fbType=hasTypedLbl?'r':projType;
-        const segs=pa.map((p,i)=>{
-          const q=pb[i]||{};
-          const lbl=q.lbl||p.lbl;
-          let a=kmVal(p.km), b=kmVal(q.km);
-          if(a!=null&&(b==null||b===a)) return {a, b:a, t:segTypeOf(lbl,fbType), lbl:lbl||null, pt:true}; // งานตำแหน่งเดียว -> ▲
-          return {a, b, t:segTypeOf(lbl,fbType), lbl:lbl||null};
-        }).filter(s=>s.a!=null&&s.b!=null&&s.b>=s.a);
+        const parsedKm=historySegments(o.kmA,o.kmB,S(o.activity),S(o.worktype),bt);
         recs.push({year, code, contract, roadFull:S(o.roadFull),
           budgetType:bt,
           activity:S(o.activity)||S(o.worktype), start:S(o.start), end:S(o.end),
@@ -6482,7 +6518,7 @@ defineSource({
           delivered:S(o.delivered),
           agency:S(o.agency),
           supervisor:S(o.supervisor).split(/[,\/]/)[0].trim(),
-          kmRange, segs});
+          ...parsedKm});
       });
       return {recs, drop};
     };
@@ -6533,9 +6569,17 @@ defineSource({
     return `<span class="hpill"><span class="dot live"></span> ข้อมูลสดจาก Google Sheets</span>`+
       `<span class="hpill">▤ ${kept.length} โครงการ · ${new Set(kept.map(x=>x.code).filter(Boolean)).size} สาย</span>`+
       `<span class="hpill">📅 พบ ${okTabs} แท็บ · ปี ${yrsFound[0]}–${yrsFound[yrsFound.length-1]}</span>`+
+      (kept.some(x=>x.kmIssues.length)?`<span class="hpill warn">⚠ ตรวจช่วง กม. ${kept.filter(x=>x.kmIssues.length).length} แถว</span>`:'')+
       `<span class="hpill">🕐 ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})} น.</span>`;
   }
 });
+function historyIssueHtml(rows){
+  const bad=rows.filter(x=>x.kmIssues?.length);if(!bad.length)return '';
+  return '<details class="card" style="margin-bottom:14px"><summary style="cursor:pointer;color:var(--crit);font-weight:700">⚠ ตรวจช่วง กม. '+bad.length+' แถว</summary>'+
+    '<p class="note">ยังนับโครงการและวงเงินตามเดิม · ช่วงที่รูปแบบผิดหรือปลายทางย้อนกลับไม่นำมาคิดระยะ · จุดที่ขาด กม.จบแสดงตำแหน่งเริ่มและไม่คิดความยาว</p>'+
+    '<div class="tblwrap"><table><thead><tr><th>ปี / สาย / สัญญา</th><th>กิจกรรมหลัก</th><th>กม.เริ่มตามชีท</th><th>กม.จบตามชีท</th><th>ต้องตรวจ</th></tr></thead><tbody>'+
+    bad.map(x=>'<tr><td>'+esc(x.year+' / '+(x.code||x.roadFull)+' / '+x.contract)+'</td><td>'+esc(x.activity)+'</td><td style="white-space:pre-wrap">'+esc(x.kmRawA)+'</td><td style="white-space:pre-wrap">'+esc(x.kmRawB)+'</td><td>'+x.kmIssues.map(esc).join('<br>')+'</td></tr>').join('')+'</tbody></table></div></details>';
+}
 function renderHistory(){
   const H=histData;
   const tot=H.reduce((a,x)=>a+(x.amount||0),0);
@@ -6571,6 +6615,7 @@ function renderHistory(){
   // งานบนถนน/สะพานที่ถ่ายโอนไปแล้ว (จากชีทถ่ายโอน — ไม่รวมสะพานรีรูทซึ่งยังเป็นของแขวงฯ)
   const hTr=H.filter(x=>x.code&&TRANSFER[x.code]);
   document.getElementById('histBody').innerHTML=`
+    ${historyIssueHtml(H)}
     <div class="grid kpis kpi3">
       ${kico('📋','#edf2fa','โครงการ/สัญญา', `${H.length} <small>รายการ</small>`, `ปี ${years[0]}–${years[years.length-1]}`)}
       ${kico('💰','#e9f6ee','วงเงินตามสัญญารวม', fmtM(tot), 'เฉพาะรายการที่ระบุวงเงิน')}
@@ -7314,7 +7359,7 @@ const segMarkTxt=(t,amt)=>{ // จำแนกจากข้อความ (�
   return roadClsTxt(t)==='บำรุง'?'thin':'full';
 };
 const segMark=(x,sg)=>{
-  const t=(sg.lbl||'')+' '+(x.activity||'')+' '+(x.budgetType||'');
+  const t=sg.lbl||((x.activity||'')+' '+(x.budgetType||''));
   if((sg.t||'r')==='b') return 'bridge';
   if((sg.t||'r')==='e') return 'elec';
   const m=segMarkTxt(t,x.amount);
@@ -7365,6 +7410,11 @@ function stripLog(container, dom, marks){
                  outExt:dom.outExt, n:(marks||[]).length, outside:out};
   return window.__strip;
 }
+function histSegCaption(sg){
+  const parts=[sg.site!=null?'แห่งที่ '+sg.site:'',sg.section!=null?'ช่วงที่ '+sg.section:''].filter(Boolean);
+  const location=sg.missingEnd?'กม.เริ่ม '+kmLbl(sg.a)+' · ⚠ ยังไม่ระบุ กม.จบ':sg.pt?'ที่ กม. '+kmLbl(sg.a)+' (ตำแหน่งเดียว)':kmLbl(sg.a)+' – '+kmLbl(sg.b)+' ('+fmt(+(sg.b-sg.a).toFixed(2))+' กม.)';
+  return location+(parts.length?' · '+parts.map(esc).join(' · '):'');
+}
 function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, extraLanes, topLanes, eqOnRoad, stripCode){
   const box=document.getElementById(container); box.innerHTML='';
   const yearsHere=[...new Set(list.map(x=>x.year))].sort(); // ทุกปีที่มีโครงการ แม้ไม่ระบุช่วง (แถวเว้นว่าง)
@@ -7378,8 +7428,8 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
     return x.segs.map(sg=>({...sg, mk:segMark(x,sg), zAlive:alive?1:0,
       color:alive?(YCOLOR[String(x.year)]||C.navy):EXPIRED,
       tip: alive
-        ? `<b>🛡 ติดค้ำประกันถึง ${we?we.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'}):('~สิ้นปี '+((+x.year||0)+2))}</b><br>ปี ${x.year} · ${esc(x.budgetType)} — ${esc(x.activity)||''}<br>${kmLbl(sg.a)} – ${kmLbl(sg.b)}${(sg.t||'r')==='e'?` · 💡 ≈ ${fmt(Math.max(1,Math.round((sg.b-sg.a)*1000/30)))} ต้น`:''}${x.delivered?` · ส่งงาน ${esc(x.delivered)}`:''}<br>${esc(x.contractor)||''}`
-        : `<b>ปี ${x.year} — หมดค้ำประกันแล้ว</b><br>${esc(x.budgetType)} — ${esc(x.activity)||''}<br>${kmLbl(sg.a)} – ${kmLbl(sg.b)}`}));
+        ? `<b>🛡 ติดค้ำประกันถึง ${we?we.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'}):('~สิ้นปี '+((+x.year||0)+2))}</b><br>ปี ${x.year} · ${esc(x.budgetType)} — ${esc(x.activity)||''}<br>${histSegCaption(sg)}${(sg.t||'r')==='e'&&!sg.missingEnd?` · 💡 ≈ ${fmt(Math.max(1,Math.round((sg.b-sg.a)*1000/30)))} ต้น`:''}${x.delivered?` · ส่งงาน ${esc(x.delivered)}`:''}<br>${esc(x.contractor)||''}`
+        : `<b>ปี ${x.year} — หมดค้ำประกันแล้ว</b><br>${esc(x.budgetType)} — ${esc(x.activity)||''}<br>${histSegCaption(sg)}`}));
   });
   const wNo=wProjAll.filter(o=>aliveOf(o)&&!o.x.segs.length).length;
   const lanes=[{label:'ภาพรวม', color:C.navy, over:true, segs:wSegs, noSegN:wNo,
@@ -7391,7 +7441,7 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
       const alive=inYear.some(x=>{ const we=warrantyEnd(x); return we?we>=today:((+y%100)+2>=beNow); });
       return {label:'ปี '+y, color:alive?YCOLOR[String(y)]:'#a9b0ba', gray:!alive, noSegN,
         segs:inYear.flatMap(x=>x.segs.map(sg=>({...sg, mk:segMark(x,sg),
-          tip:`<b>ปี ${y} · ${esc(x.budgetType)}</b>${alive?'':' <span style="color:#c8cdd4">· หมดค้ำประกันแล้ว</span>'}<br>${esc(x.activity)||''}${sg.lbl?` — <b>${esc(sg.lbl)}</b>`:''}${(sg.t||'r')==='r'?` <span style="color:var(--muted)">(${(sg.lbl&&roadClsTxt(sg.lbl))||roadCls(x)})</span>`:''}<br>${sg.pt?`ที่ กม. ${kmLbl(sg.a)} (ตำแหน่งเดียว)`:`${kmLbl(sg.a)} – ${kmLbl(sg.b)} (${fmt(+(sg.b-sg.a).toFixed(2))} กม.)`}${(sg.t||'r')==='e'?`<br>💡 ≈ ${fmt(Math.max(1,Math.round((sg.b-sg.a)*1000/30)))} ต้น`:(sg.t==='b'?`<br>🌉 ${fmt(Math.round((sg.b-sg.a)*1000))} ม.`:'')}<br>วงเงิน ${x.amount?fmt(x.amount)+' บาท':'–'} · ${esc(x.contractor)||''}`})))};
+          tip:`<b>ปี ${y} · ${esc(x.budgetType)}</b>${alive?'':' <span style="color:#c8cdd4">· หมดค้ำประกันแล้ว</span>'}<br>${esc(x.activity)||''}${sg.lbl?` — <b>${esc(sg.lbl)}</b>`:''}${(sg.t||'r')==='r'?` <span style="color:var(--muted)">(${(sg.lbl&&roadClsTxt(sg.lbl))||roadCls(x)})</span>`:''}<br>${histSegCaption(sg)}${(sg.t||'r')==='e'&&!sg.missingEnd?`<br>💡 ≈ ${fmt(Math.max(1,Math.round((sg.b-sg.a)*1000/30)))} ต้น`:(sg.t==='b'&&!sg.missingEnd?`<br>🌉 ${fmt(Math.round((sg.b-sg.a)*1000))} ม.`:'')}<br>วงเงิน ${x.amount?fmt(x.amount)+' บาท':'–'} · ${esc(x.contractor)||''}`})))};
     }),
     ...(extraLanes||[])]; // เลนอนาคต: คำของบ / Zerobase
   if(topLanes&&topLanes.length) lanes.unshift(...topLanes); // เลนสภาพผิวทาง (บนสุด)
@@ -8817,7 +8867,7 @@ function renderZbOverview(){
 }
 /* ================= สภาพสายทาง / EQUIPMENT / จุดเสี่ยง (live) ================= */
 const COND_ID='1-eB4CqX7ZEUz8cCTvkK_9pMFJWQ4uPfMca4rtZRUoFo';           // ชีทสภาพสายทาง (gid=0)
-const EQP_ID='1E4bxh9IqHv0lKixncJg0vkdmPBWyXu2zjQwgfkvQyVQ', EQP_GID=293676884; // ชีท Equipment
+const EQP_ID='1E4bxh9IqHv0lKixncJg0vkdmPBWyXu2zjQwgfkvQyVQ'; // Equipment 5 หมวด
 const RISK_ID='1TaTJNJkiS6Ai1Iz7hRA-CkQJquCqOlkyd4kemKJffcY';  // ชีทจุดเสี่ยงอันตราย
 /* ---- 💾 สำรองข้อมูลทั้งหมดเป็นไฟล์เดียว (JSON) ---- */
 async function backupAll(){
@@ -9247,21 +9297,37 @@ function drawLanes(container, roadLen, laneDefs, stripCode){
 }
 
 /* ---- EQUIPMENT ---- */
+const EQP_TABS=[{gid:293676884,name:'เมือง'},{gid:386124242,name:'น้ำพอง'},{gid:440945656,name:'หนองเรือ'},{gid:216562626,name:'มัญจาคีรี'},{gid:0,name:'พล'}];
+const EQP_FIELDS=[['รหัสสายทาง','code'],['กม.เริ่ม','a'],['กม.จบ','b'],['ประเภทอุปกรณ์','etype'],
+  ['ชนิดระบบระบายน้ำ','dtype'],['ชนิด','ekind'],['จำนวน','qty'],['ตำแหน่งหม้อแปลง','trans'],
+  ['ปีที่ติดตั้ง','yr'],['ขนาด','dsize'],['รายละเอียดเพิ่ม','note'],['วันเดือนปีสำรวจ','sdate'],
+  ['สภาพปัจจุบัน','cond'],['ผู้สำรวจ','surveyor']];
+function readEquipTable(table,tab){
+  const hdr=(table.cols||[]).map(c=>normKey(c.label));
+  for(const name of ['รหัสสายทาง','กม.เริ่ม','กม.จบ','ประเภทอุปกรณ์','จำนวน','ชนิดระบบระบายน้ำ']){
+    if(!hdr.some(h=>h.includes(normKey(name))))throw new Error(`แท็บ ${tab.name}: ไม่พบคอลัมน์ ${name}`);
+  }
+  const objs=scanObjects(table,EQP_FIELDS);
+  if(!objs)throw new Error(`แท็บ ${tab.name}: อ่านหัวตารางไม่ได้`);
+  return objs.filter(o=>EQP_FIELDS.some(([,key])=>key!=='code'&&String(o[key]??'').trim()))
+    .map(o=>({...o,code:extractRoadCode(o.code),ka:kmVal(o.a),kb:kmVal(o.b),n:num(o.qty),sourceTab:tab.name,sourceGid:tab.gid}));
+}
+async function readEquipAll(fetchTable){
+  const results=await Promise.allSettled(EQP_TABS.map(async tab=>({tab,rows:readEquipTable(await fetchTable(tab),tab)})));
+  const errors=results.flatMap((r,i)=>r.status==='rejected'?[`${EQP_TABS[i].name}: ${r.reason?.message||r.reason}`]:[]);
+  if(errors.length)throw new Error('อ่าน Equipment ไม่ครบ 5 แท็บ — '+errors.join(' · '));
+  return results.flatMap(r=>r.value.rows);
+}
+
 defineSource({
   key:'equip', what:'Equipment', boxes:['eqBody'], pills:'eqPills',
   spin:'กำลังดึงข้อมูล Equipment…',
   has:()=>!!eqData,
   read:async()=>{
-    // headers=2: ชีท Equipment มีหัวตาราง 2 ชั้น (แถวหมวดสี + แถวชื่อคอลัมน์) — ถ้าอ่านแบบหัวแถวเดียว
-    // แถวชื่อคอลัมน์จะกลายเป็นข้อมูล แล้วคอลัมน์ตัวเลข (จำนวน) จะตีค่าหัวเป็น null ทำให้จับคู่คอลัมน์ไม่ได้
-    const t=await gvizJSONP(EQP_ID,'gid='+EQP_GID+'&headers=2');
-    const objs=scanObjects(t, [['รหัสสายทาง','code'],['กม.เริ่ม','a'],['กม.จบ','b'],['ประเภทอุปกรณ์','etype'],
-      ['ชนิดระบบระบายน้ำ','dtype'],['ชนิด','ekind'],['จำนวน','qty'],['ตำแหน่งหม้อแปลง','trans'],
-      ['ปีที่ติดตั้ง','yr'],['ขนาด','dsize'],['รายละเอียดเพิ่ม','note'],['วันเดือนปีสำรวจ','sdate'],
-      ['สภาพปัจจุบัน','cond'],['ผู้สำรวจ','surveyor']])||[];
-    eqData=objs.map(o=>({...o, code:extractRoadCode(o.code), ka:kmVal(o.a), kb:kmVal(o.b), n:num(o.qty)||0}));
+    // อ่านครบทั้งห้าหมวดก่อนแทนข้อมูลเดิม หากแท็บใดล้มต้องแจ้งว่าอ่านไม่ครบ
+    eqData=await readEquipAll(tab=>gvizJSONP(EQP_ID,'gid='+tab.gid+'&headers=2&_='+Date.now()));
     return eqData.length
-      ? `<span class="hpill"><span class="dot live"></span> ข้อมูลสดจาก Google Sheets</span><span class="hpill">🔌 ${eqData.length} รายการ · ${new Set(eqData.map(x=>x.code)).size} สาย</span><span class="hpill">🕐 ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})} น.</span>`
+      ? `<span class="hpill"><span class="dot live"></span> ข้อมูลสดจาก Google Sheets</span><span class="hpill">🔌 ${eqData.length} รายการ · ${new Set(eqData.map(x=>x.code)).size} สาย · ครบ 5 แท็บ</span><span class="hpill">🕐 ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})} น.</span>`
       : `<span class="hpill"><span class="dot wait"></span> โครงพร้อมแล้ว — รอกรอกข้อมูลในชีท</span>`;
   }
 });
@@ -9275,14 +9341,16 @@ function renderEquip(){
       <div class="footnote">กติกาการกรอก ดูหน้า "ข้อมูลระบบ" → คู่มืออัปเดตข้อมูล → Equipment</div></div>`;
     return;
   }
-  const roadInfo=codeInfo();   // v22.1 รวมสะพานชุมชนเข้ามาด้วย ชื่อจะได้ไม่หาย
+  const missingQty=E.filter(x=>x.etype&&x.n==null).length;
+  const unknownCond=E.filter(x=>!x.cond).length;
   const elec=E.filter(x=>x.etype), drain=E.filter(x=>x.dtype);
   const broken=E.filter(x=>/ชำรุด|เสีย|ไม่ใช้งาน|เสื่อม/.test(x.cond||''));
   body.innerHTML=`
+    <div class="card" style="margin-bottom:14px"><div class="note">อ่านครบ 5 แท็บ · ${EQP_TABS.map(t=>esc(t.name)+' '+E.filter(x=>x.sourceGid===t.gid).length+' แถว').join(' · ')}<br>หลังกรอกข้อมูลเพิ่ม กด “โหลดข้อมูลใหม่” · ยอดจำนวนรวมเฉพาะแถวที่ระบุจำนวน</div></div>
     <div class="grid kpis kpi3">
-      ${kico('🔌','#fbf3df','อุปกรณ์ไฟฟ้า', `${fmt(elec.reduce((a,x)=>a+(x.n||0),0))} <small>หน่วย</small>`, `${elec.length} รายการ`)}
+      ${kico('🔌','#fbf3df','อุปกรณ์ไฟฟ้า', `${fmt(elec.reduce((a,x)=>a+(x.n||0),0))} <small>หน่วย</small>`, `${elec.length} รายการ${missingQty?' · ยังไม่ระบุจำนวน '+missingQty+' แถว':''}`)}
       ${kico('💧','#eaf2fc','ระบบระบายน้ำ', `${drain.length} <small>รายการ</small>`, [...new Set(drain.map(x=>x.dtype))].slice(0,3).join(' · ')||'—')}
-      ${kico('🛠️','#fdeeee','สภาพชำรุด/เสื่อม', `<span style="color:var(--crit)">${broken.length}</span> <small>รายการ</small>`, broken.length?'ควรวางแผนซ่อม':'ไม่พบรายการชำรุด')}
+      ${kico('🛠️','#fdeeee','สภาพชำรุด/เสื่อม', `<span style="color:var(--crit)">${broken.length}</span> <small>รายการ</small>`, unknownCond?'ยังไม่ระบุสภาพ '+unknownCond+' แถว':(broken.length?'ควรวางแผนซ่อม':'ไม่พบรายการชำรุด'))}
     </div>
     <div class="grid two">
       <div class="card"><h3>แยกตามประเภทอุปกรณ์</h3><div class="note">จำนวนรายการ — ชี้เพื่อดูจำนวนหน่วยรวม</div><div id="chEqType"></div></div>
@@ -9294,7 +9362,7 @@ function renderEquip(){
         <input class="search" id="eqSearch" placeholder="ค้นหา สาย/ประเภท/สภาพ...">
       </div>
       <div class="tblwrap" style="max-height:520px"><table id="eqTable"><thead><tr>
-        <th>สายทาง</th><th>ช่วง กม.</th><th>ประเภทอุปกรณ์</th><th>ชนิด</th><th class="num">จำนวน</th><th>ปีติดตั้ง</th><th>ระบายน้ำ</th><th>ขนาด</th><th>สภาพ</th><th>สำรวจ</th>
+        <th>สายทาง</th><th>แท็บต้นทาง</th><th>ช่วง กม.</th><th>ประเภทอุปกรณ์</th><th>ชนิด</th><th class="num">จำนวน</th><th>ปีติดตั้ง</th><th>ระบายน้ำ</th><th>ขนาด</th><th>สภาพ</th><th>สำรวจ</th>
       </tr></thead><tbody></tbody></table></div>
     </div>`;
   const types=[...new Set(E.map(x=>x.etype||x.dtype||'ไม่ระบุ'))];
@@ -9303,7 +9371,7 @@ function renderEquip(){
   hbar('chEqType', Object.entries(byT).sort((a,b)=>b[1].n-a[1].n).map(([t,d])=>({label:t, v:d.n, color:TC[t],
     tip:`${d.n} รายการ${d.q?` · รวม ${fmt(d.q)} หน่วย`:''}`})), {unit:'รายการ', labelW:150, showVal:false, height:280});
   const byMd={};
-  E.forEach(x=>{ const m=muadByCode()[x.code]||'ไม่ระบุ'; const t=x.etype||x.dtype||'ไม่ระบุ';
+  E.forEach(x=>{ const m=muadByCode()[x.code]||x.sourceTab||'ไม่ระบุ'; const t=x.etype||x.dtype||'ไม่ระบุ';
     byMd[m]=byMd[m]||{segs:{},n:0}; byMd[m].segs[t]=(byMd[m].segs[t]||0)+1; byMd[m].n++; });
   hstack('chEqMuad', Object.entries(byMd).sort((a,b)=>b[1].n-a[1].n).map(([m,d])=>({label:recMuadLabel(m), segs:d.segs, right:`${d.n} รายการ`})),
     types.map(t=>({k:t,label:t,color:TC[t]})), {unit:'รายการ'});
@@ -9311,10 +9379,10 @@ function renderEquip(){
     const q=(document.getElementById('eqSearch').value||'').toLowerCase();
     document.querySelector('#eqTable tbody').innerHTML=[...E]
       .sort((a,b)=>SUF3(a.code)-SUF3(b.code)||(a.ka??1e9)-(b.ka??1e9))
-      .filter(x=>((x.code||'')+' '+(x.etype||'')+' '+(x.dtype||'')+' '+(x.cond||'')).toLowerCase().includes(q))
-      .map(x=>`<tr><td><b>${esc(x.code)}</b></td>
+      .filter(x=>((x.code||'')+' '+(x.sourceTab||'')+' '+(x.etype||'')+' '+(x.dtype||'')+' '+(x.cond||'')).toLowerCase().includes(q))
+      .map(x=>`<tr><td><b>${esc(x.code)}</b></td><td>${esc(x.sourceTab)}</td>
         <td style="font-variant-numeric:tabular-nums;font-size:11.5px">${x.a?esc(x.a)+(x.b?' – '+esc(x.b):''):'—'}</td>
-        <td>${esc(x.etype)||'—'}</td><td>${esc(x.ekind)||'—'}</td><td class="num">${x.n?fmt(x.n):'—'}</td>
+        <td>${esc(x.etype)||'—'}</td><td>${esc(x.ekind)||'—'}</td><td class="num">${x.n!=null?fmt(x.n):'ไม่ระบุ'}</td>
         <td>${esc(x.yr)||'—'}</td><td>${esc(x.dtype)||'—'}</td><td>${esc(x.dsize)||'—'}</td>
         <td>${x.cond?`<span class="pill ${/ชำรุด|เสีย|เสื่อม/.test(x.cond)?'miss':'ok'}">${esc(x.cond)}</span>`:'—'}</td>
         <td style="font-size:11.5px">${esc(x.sdate)||''}${x.surveyor?' · '+esc(x.surveyor):''}</td></tr>`).join('');
@@ -9343,64 +9411,216 @@ const riskIcon=t=>{const x=String(t||'');
   if(/กลับรถ/.test(x)) return '↩️';
   return '⚠️';};
 const riskMuad=x=>muadByCode()[x.code]||x._m||'ไม่ระบุ'; // หมวดจากทะเบียนสายทางก่อน ไม่เจอใช้ชื่อแท็บที่จุดนั้นมา
-/* รูปจุดเสี่ยง: แปลงลิงก์ Google Drive เป็นรูปพรีวิว + lightbox ดูในหน้าเลย */
-const driveId=u=>{ const m=String(u||'').match(/\/file\/d\/([\w-]{20,})|[?&]id=([\w-]{20,})/); return m?(m[1]||m[2]):null; };
-const driveThumb=(u,w)=>{ const id=driveId(u); return id?`https://drive.google.com/thumbnail?id=${id}&sz=w${w||1000}`:String(u||''); };
-/* v31.12 ผู้ใช้ (8 ก.ย. 69): "เช็คหน้าจุดเสี่ยง ทำไมระบบอัพรูปพัง" — ตรวจกับชีทจริง: รูป 3 รูป เปิดได้ 1 อีก 2 ไฟล์ใน Drive ไม่ได้แชร์ "ทุกคนที่มีลิงก์"
-   (ฟอร์มอัปโหลดเข้าไดรฟ์เจ้าของฟอร์ม ไฟล์ใหม่ไม่ได้รับสิทธิ์แชร์เอง) ระบบไม่พัง แต่เดิมรู้ตอนกดดูเท่านั้น
-   → ตรวจล่วงหน้าทุกรูป (โหลดรูปย่อ 64px) แล้วติดป้าย "ยังไม่ได้แชร์" ที่ลิงก์ + ป้ายสรุปบนหัวหน้า ให้เห็นก่อนกด */
-const _photoOk={};
-function probePhoto(url){
-  if(url in _photoOk) return Promise.resolve(_photoOk[url]);
-  const id=driveId(url); if(!id){ _photoOk[url]=null; return Promise.resolve(null); }   // ไม่ใช่ลิงก์ไฟล์ Drive — ตรวจไม่ได้
-  return new Promise(rs=>{ const done=v=>{ _photoOk[url]=v; rs(v); };
-    const t=setTimeout(()=>done(false),8000);
-    const im=new Image(); im.onload=()=>{ clearTimeout(t); done(true); };
-    im.onerror=()=>{ const im2=new Image(); im2.onload=()=>{ clearTimeout(t); done(true); }; im2.onerror=()=>{ clearTimeout(t); done(false); };
-      im2.src=`https://lh3.googleusercontent.com/d/${id}=w64`; };
-    im.src=`https://drive.google.com/thumbnail?id=${id}&sz=w64`; });
+/* v31.15 ผู้ใช้ (8 ก.ย. 69): "ก็แชร์แล้ว แต่ก่อรก็ได้ยุ" และ "ลองดูเชิงลึกอีกต่อไปจะมีปัญหาไหม"
+   ตรวจจริง: ฟอร์มก่อนมี 17/7 และ 31/7 แต่เดิมเลือกแถวแรกแล้วไม่เปลี่ยน จึงเปิดไฟล์เก่า
+   เก็บทุกรูป เรียงเวลาส่งใหม่ก่อน; img1/img2 ยังคงเป็นรูปหลักให้หน้ารายสายอื่นใช้งานได้
+   ไม่สรุปสิทธิ์แชร์จาก Image.onerror; จำกัดเวลารอ/คิวและไม่จำผลล้มเหลวตลอดอายุหน้า */
+function photoURL(value){
+  try{ const u=new URL(String(value||'').trim()); return /^https?:$/.test(u.protocol)?u.href:''; }catch(_){ return ''; }
+}
+const driveId=value=>{
+  try{ const u=new URL(photoURL(value));
+    if(!/^(drive\.google\.com|lh3\.googleusercontent\.com)$/.test(u.hostname)) return null;
+    const id=u.pathname.match(/^\/(?:file\/)?d\/([\w-]+)/)?.[1]||u.searchParams.get('id');
+    return id&&/^[\w-]{20,}$/.test(id)?id:null;
+  }catch(_){ return null; }
+};
+const photoKey=url=>driveId(url)||photoURL(url);
+function photoCandidates(value,w=1600){
+  const url=photoURL(value); if(!url) return [];
+  const id=driveId(url);
+  if(!id) return /drive\.google\.com\/.*folders?\//.test(url)?[]:[url];
+  const rk=new URL(url).searchParams.get('resourcekey');
+  const extra=rk?'&resourcekey='+encodeURIComponent(rk):'';
+  return [`https://lh3.googleusercontent.com/d/${id}=w${w}`+(rk?'?resourcekey='+encodeURIComponent(rk):''),
+          `https://drive.google.com/thumbnail?id=${id}&sz=w${w}${extra}`];
+}
+const driveThumb=(url,w)=>photoCandidates(url,w||1000)[0]||'';
+function photoURLs(value){
+  return [...new Set((String(value||'').match(/https?:\/\/[^\s<>"',]+/gi)||[])
+    .map(s=>photoURL(s.replace(/[);]+$/,''))).filter(Boolean))];
+}
+function photoTime(value){
+  const s=String(value||'').trim();
+  let m=s.match(/^Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),(\d+))?\)$/);
+  if(m) return Date.UTC(+m[1],+m[2],+m[3],+m[4]||0,+m[5]||0,+m[6]||0);
+  m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})(?:[,\s]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+  if(m){ let y=+m[3]; if(y>=2400) y-=543; else if(y<100) y+=y>=50?1957:2000;
+    return Date.UTC(y,+m[2]-1,+m[1],+m[4]||0,+m[5]||0,+m[6]||0); }
+  if(/^\d{4}-\d{2}-\d{2}T/.test(s)){ const t=Date.parse(s); if(Number.isFinite(t)) return t; }
+  return 0;
+}
+function photoKm(value){
+  const s=String(value??'').trim().replace(/[๐-๙]/g,c=>String(c.charCodeAt(0)-3664));
+  return /^\d+(?:\.\d+)?(?:\+\d{1,3})?$/.test(s)?kmVal(s):null;
+}
+function readPhotoRows(table,kind){
+  const rows=[(table.cols||[]).map(c=>c.label||''),...(table.rows||[]).map(r=>(r.c||[]).map(c=>c?.v??c?.f??''))];
+  const hi=rows.findIndex(r=>r.some(v=>normKey(v).includes('รหัสสายทาง')));
+  if(hi<0) throw new Error('ไม่พบรหัสสายทางในรายการรูป'+kind);
+  const hdr=rows[hi].map(normKey), ci=hdr.findIndex(h=>h.includes('รหัสสายทาง'));
+  const ui=hdr.map((h,i)=>h.includes('รูป'+kind)?i:-1).filter(i=>i>=0);
+  if(!ui.length) throw new Error('ไม่พบช่องรูป'+kind);
+  const ti=hdr.findIndex(h=>h.includes('ประทับเวลา')), ki=hdr.findIndex(h=>h.includes('กม'));
+  const out=[];
+  rows.slice(hi+1).forEach((r,order)=>{
+    const code=extractRoadCode(r[ci]); if(!code) return;
+    ui.forEach(i=>photoURLs(r[i]).forEach(url=>out.push({code,kind,url,order,time:photoTime(r[ti]),
+      km:ki>=0?photoKm(r[ki]):null, kmInvalid:ki>=0&&String(r[ki]??'').trim()!==''&&photoKm(r[ki])==null})));
+  });
+  return out;
+}
+function photoTarget(points,im){
+  if(im.kmInvalid) return null;
+  if(im.km==null) return points.length===1?points[0]:null;
+  const hits=points.filter(p=>p.ka!=null&&im.km>=Math.min(p.ka,p.kb??p.ka)-0.001&&im.km<=Math.max(p.ka,p.kb??p.ka)+0.001);
+  return hits.length===1?hits[0]:null; // ไม่เลือกจุดไกล/ช่วงซ้อนโดยเดา แม้มีแค่จุดเดียวในสาย
+}
+function attachRiskPhotos(points,forms){
+  points.forEach(p=>{
+    p.photos={ก่อน:[],หลัง:[]};
+    ['ก่อน','หลัง'].forEach(kind=>{
+      const field=kind==='ก่อน'?'img1':'img2';
+      photoURLs(p[field]).filter(u=>photoCandidates(u).length).forEach(url=>p.photos[kind].push({url,time:0,order:0,manual:true}));
+    });
+  });
+  let unmatched=0;
+  forms.forEach(im=>{
+    const p=photoTarget(points.filter(p=>p.code===im.code),im);
+    if(p) p.photos[im.kind].push(im); else unmatched++;
+  });
+  points.forEach(p=>['ก่อน','หลัง'].forEach(kind=>{
+    const items=p.photos[kind], formKeys=new Set(items.filter(x=>!x.manual).map(x=>photoKey(x.url)));
+    // ลิงก์ที่กรอกตรงในทะเบียนยังใช้ได้; ถ้าซ้ำกับรูปจากฟอร์ม ใช้เวลาของรายการฟอร์ม
+    const sorted=items.filter(x=>!x.manual||!formKeys.has(photoKey(x.url)))
+      .sort((a,b)=>(+!!b.manual)-(+!!a.manual)||(b.time||0)-(a.time||0)||(b.order||0)-(a.order||0));
+    const seen=new Set(); p.photos[kind]=sorted.filter(x=>{const k=photoKey(x.url);if(seen.has(k))return false;seen.add(k);return true;});
+    p[kind==='ก่อน'?'img1':'img2']=p.photos[kind][0]?.url||'';
+  }));
+  return unmatched;
+}
+const _photoOk=new Map(); let _photoEpoch=0, _photoMark=0;
+function resetPhotoCache(){ _photoEpoch++; _photoMark++; _photoOk.clear(); }
+const PHOTO_TIMEOUT=6000;
+let _photoActive=0; const _photoQueue=[];
+function photoJob(fn){ return new Promise(resolve=>{_photoQueue.push({fn,resolve});photoNext();}); }
+function photoNext(){
+  while(_photoActive<4&&_photoQueue.length){const job=_photoQueue.shift();_photoActive++;
+    Promise.resolve().then(job.fn).then(job.resolve,()=>job.resolve(null)).finally(()=>{_photoActive--;photoNext();});}
+}
+function checkPhoto(url){
+  const candidates=photoCandidates(url,64); if(!candidates.length) return Promise.resolve(null);
+  return new Promise(resolve=>{
+    let im=null,timer=null,index=0,finished=false;
+    const clean=()=>{clearTimeout(timer);if(im){im.onload=im.onerror=null;im.removeAttribute('src');}};
+    const done=value=>{if(finished)return;finished=true;clean();resolve(value);};
+    const next=()=>{clean();if(index>=candidates.length)return done(false);
+      im=new Image();im.referrerPolicy='no-referrer';im.onload=()=>done(true);im.onerror=next;
+      timer=setTimeout(next,PHOTO_TIMEOUT);im.src=candidates[index++];};
+    next();
+  });
+}
+function probePhoto(url,force=false){
+  const key=photoKey(url); if(!key) return Promise.resolve(null);
+  const old=_photoOk.get(key);
+  if(!force&&old&&(old.pending||old.until>Date.now()))return old.pending||Promise.resolve(old.value);
+  const epoch=_photoEpoch, entry={};
+  entry.pending=photoJob(()=>epoch===_photoEpoch?checkPhoto(url):null).then(value=>{
+    if(epoch===_photoEpoch&&_photoOk.get(key)===entry){entry.value=value;entry.until=Date.now()+(value?300000:15000);entry.pending=null;}
+    return value;
+  });
+  _photoOk.set(key,entry);return entry.pending;
 }
 async function markPhotos(){
+  const run=++_photoMark, epoch=_photoEpoch;
   const links=[...document.querySelectorAll('a[data-photo]')];
-  await Promise.all(links.map(async a=>{ const v=await probePhoto(a.dataset.photo); a.dataset.share=v===false?'no':(v?'ok':'?');
-    let tag=a.nextElementSibling; if(tag&&tag.classList.contains('phtag')) tag.remove();
-    if(v===false) a.insertAdjacentHTML('afterend',' <span class="pill bad phtag" title="ไฟล์ใน Drive ยังไม่ได้แชร์ \"ทุกคนที่มีลิงก์\" — เปิดโฟลเดอร์รูปของฟอร์มแล้วตั้งค่าแชร์">⚠ ยังไม่ได้แชร์</span>'); }));
-  const urls=[...new Set((riskData||[]).flatMap(x=>[x.img1,x.img2]).filter(u=>u&&driveId(u)))];
-  const vals=await Promise.all(urls.map(probePhoto)); const bad=vals.filter(v=>v===false).length;
-  const pe=document.getElementById('riskPills'); if(pe&&urls.length){ let el=pe.querySelector('.phpill'); if(!el){ el=document.createElement('span'); el.className='hpill phpill'; pe.appendChild(el); }
-    el.className='hpill phpill'+(bad?' warn':''); el.textContent=`📷 รูป ${urls.length} · เปิดได้ ${urls.length-bad}`+(bad?` · ยังไม่ได้แชร์ ${bad}`:''); el.title=bad?'ไฟล์รูปใน Drive ต้องแชร์ "ทุกคนที่มีลิงก์" ถึงจะเปิดในหน้านี้ได้':''; }
-}
-function showPhoto(url,lbl){
-  let bx=document.getElementById('photoBox');
-  if(!bx){ bx=document.createElement('div'); bx.id='photoBox';
-    bx.style.cssText='position:fixed;inset:0;background:rgba(10,20,35,.82);z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;padding:30px;cursor:zoom-out';
-    bx.addEventListener('click',()=>bx.style.display='none'); document.body.appendChild(bx); }
-  // ลองดึงรูปหลายช่องทางต่อกัน (Google แต่ละ endpoint พฤติกรรมไม่เท่ากัน)
-  const id=driveId(url);
-  if(!id&&/drive\.google\.com\/(drive\/)?folders?/.test(String(url))){
-    bx.innerHTML=`<div style="color:#fff;font-weight:700">${esc(lbl)}</div>
-      <div style="color:#ffd7d7;background:rgba(0,0,0,.4);padding:14px 18px;border-radius:10px;max-width:540px;text-align:center;line-height:1.7">ลิงก์นี้เป็น "โฟลเดอร์" ไม่ใช่ไฟล์รูป — ระบบโชว์รูปจากโฟลเดอร์ตรงๆ ไม่ได้<br>ให้ทีมงานส่งรูปผ่านฟอร์ม (ปุ่ม 📸 ที่หัวหน้า) หรือวางลิงก์ "ไฟล์รูปรายตัว" ในชีท</div>
-      <a href="${esc(url)}" target="_blank" rel="noopener" style="color:#9fd8ff;font-weight:600" onclick="event.stopPropagation()">เปิดโฟลเดอร์ใน Google Drive ↗</a>`;
-    bx.style.display='flex'; return;
-  }
-  const cands=id?[`https://drive.google.com/thumbnail?id=${id}&sz=w1600`,
-                  `https://lh3.googleusercontent.com/d/${id}=w1600`,
-                  `https://drive.google.com/uc?export=view&id=${id}`]:[url];
-  bx.innerHTML=`<div style="color:#fff;font-weight:700">${esc(lbl)}</div>
-    <div style="color:#9fb0cc;font-size:12px" id="phLoad">กำลังโหลดรูป…</div>
-    <img style="max-width:92vw;max-height:74vh;border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.5);background:#fff;display:none">
-    <a href="${esc(url)}" target="_blank" rel="noopener" style="color:#9fd8ff;font-weight:600" onclick="event.stopPropagation()">เปิดต้นฉบับใน Google Drive ↗</a>`;
-  const im=bx.querySelector('img'); let i=0;
-  im.addEventListener('load',()=>{ im.style.display='block'; const l=document.getElementById('phLoad'); if(l) l.remove(); });
-  im.addEventListener('error',()=>{
-    i++;
-    if(i<cands.length){ im.src=cands[i]; return; }
-    im.outerHTML='<div style="color:#ffd7d7;background:rgba(0,0,0,.4);padding:14px 18px;border-radius:10px;max-width:540px;text-align:center;line-height:1.7">เปิดรูปไม่ได้ — ไฟล์นี้ใน Drive ยังไม่ได้แชร์ "ทุกคนที่มีลิงก์"<br>วิธีแก้: เปิดโฟลเดอร์รูปของฟอร์ม → แชร์ → ทุกคนที่มีลิงก์ (ดูได้) → รอ 1–2 นาทีแล้วลองใหม่<br><a href="'+esc(RISK_IMG_FOLDER[/หลัง/.test(lbl)?'หลัง':'ก่อน'])+'" target="_blank" rel="noopener" style="color:#9fd8ff;font-weight:600" onclick="event.stopPropagation()">📁 เปิดโฟลเดอร์รูป'+(/หลัง/.test(lbl)?'หลังแก้ไข':'ก่อนแก้ไข')+' ↗</a><br>(หรือคลิกลิงก์ด้านล่างเปิดดูใน Drive ตรงๆ)</div>';
-    const l=document.getElementById('phLoad'); if(l) l.remove();
+  const urls=[...new Map((riskData||[]).flatMap(x=>[x.img1,x.img2]).filter(Boolean).map(u=>[photoKey(u),u])).values()];
+  const vals=await Promise.all(urls.map(u=>probePhoto(u)));
+  if(run!==_photoMark||epoch!==_photoEpoch)return;
+  const results=new Map(urls.map((u,i)=>[photoKey(u),vals[i]]));
+  links.forEach(a=>{if(!a.isConnected)return;const value=results.get(photoKey(a.dataset.photo));
+    a.dataset.share=value===false?'unknown':(value?'ok':'?');
+    const tag=a.nextElementSibling;if(tag?.classList.contains('phtag'))tag.remove();
+    if(value===false)a.insertAdjacentHTML('afterend',' <span class="pill bad phtag" title="เปิดรูปหลักไม่สำเร็จ — กดดูรูปเพื่อลองใหม่หรือเปิดต้นฉบับ">⚠ เปิดไม่ได้</span>');
   });
-  im.src=cands[0];
-  bx.style.display='flex';
+  const pe=document.getElementById('riskPills');if(!pe||!urls.length)return;
+  let badge=pe.querySelector('.phpill');if(!badge){badge=document.createElement('span');pe.appendChild(badge);}
+  const good=vals.filter(v=>v===true).length,failed=vals.filter(v=>v===false).length;
+  badge.className='hpill phpill'+(failed?' warn':'');
+  const before=(riskData||[]).filter(x=>x.img1).length,after=(riskData||[]).filter(x=>x.img2).length;
+  badge.textContent=`📷 ภาพตัวอย่าง: ก่อน ${before} · หลัง ${after} · เปิดได้ ${good}`+(failed?` · เปิดไม่ได้ ${failed}`:'');
+  badge.title='ตรวจภาพแรกของแต่ละจุด แยกก่อน/หลัง · จำนวนรูปครั้งล่าสุดและย้อนหลังอยู่ที่ลิงก์ในตาราง';
 }
+function latestPhotos(photos){
+  const first=photos[0];if(!first)return [];
+  return photos.filter(p=>first.manual?p.manual:!p.manual&&p.time===first.time&&p.order===first.order);
+}
+function riskPhotoLink(p,kind){
+  const photos=p.photos?.[kind]||[],url=p[kind==='ก่อน'?'img1':'img2']; if(!url)return '—';
+  const latest=latestPhotos(photos).length||1,old=Math.max(0,photos.length-latest);
+  const label='📷 '+kind+' · ล่าสุด '+latest+' รูป'+(old?' · ย้อนหลัง '+old+' รูป':'');
+  const title='📷 '+kind+'แก้ไข — '+(p.rtype||'')+' '+(p.a||'');
+  return `<a href="${esc(url)}" target="_blank" rel="noopener" data-photo="${esc(url)}" data-photos="${esc(JSON.stringify(photos))}" data-photo-title="${esc(title)}" style="color:${kind==='ก่อน'?'var(--teal)':'#0a6b0a'};font-weight:600">${label}</a>`;
+}
+function bindRiskPhotos(root){
+  root.querySelectorAll('a[data-photo]').forEach(a=>{a.addEventListener('click',event=>{
+    if(event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
+    event.preventDefault();let photos=[];try{photos=JSON.parse(a.dataset.photos||'[]');}catch(_){}
+    showPhoto(a.dataset.photo,a.dataset.photoTitle,photos);
+  });});
+}
+function showPhoto(url,lbl,photos=[]){
+  let bx=document.getElementById('photoBox');
+  if(!bx){bx=document.createElement('div');bx.id='photoBox';document.body.appendChild(bx);}
+  if(bx._close)bx._close(false);
+  const items=(photos.length?photos:[{url}]).filter(p=>photoURL(p.url));
+  if(!items.length)return;
+  const focusBefore=document.activeElement, previousOverflow=document.body.style.overflow;
+  document.body.style.overflow='hidden';
+  let pos=0,serial=0,dispose=()=>{},closed=false;
+  bx.style.cssText='position:fixed;inset:0;background:rgba(10,20,35,.94);z-index:2100;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;padding:16px;overflow:auto;color:#fff';
+  bx.setAttribute('role','dialog');bx.setAttribute('aria-modal','true');bx.setAttribute('aria-label',lbl);
+  const close=(restore=true)=>{closed=true;serial++;dispose();document.removeEventListener('keydown',keys);bx.style.display='none';bx.onclick=null;bx._close=null;document.body.style.overflow=previousOverflow;if(restore)focusBefore?.focus();};
+  const keys=e=>{
+    if(e.key==='Escape'){e.preventDefault();close();}
+    else if(e.key==='ArrowRight'&&pos<items.length-1){e.preventDefault();pos++;draw();}
+    else if(e.key==='ArrowLeft'&&pos>0){e.preventDefault();pos--;draw();}
+    else if(e.key==='Tab'){
+      const nodes=[...bx.querySelectorAll('button:not(:disabled),a[href]')];const i=nodes.indexOf(document.activeElement);
+      if(e.shiftKey&&(i<=0)){e.preventDefault();nodes[nodes.length-1]?.focus();}
+      else if(!e.shiftKey&&(i<0||i===nodes.length-1)){e.preventDefault();nodes[0]?.focus();}
+    }
+  };
+  bx._close=close;bx.onclick=e=>{if(e.target===bx)close();};document.addEventListener('keydown',keys);
+  const draw=()=>{
+    dispose();const run=++serial, item=items[pos], candidates=photoCandidates(item.url), original=photoURL(item.url);
+    const date=item.time?new Date(item.time).toLocaleDateString('th-TH',{timeZone:'UTC',day:'numeric',month:'short',year:'numeric'}):'';
+    bx.innerHTML=`<div style="display:flex;align-items:center;gap:12px;max-width:100%;width:760px"><b style="flex:1">${esc(lbl)}</b><button class="btn ph-close" aria-label="ปิดรูป">✕ ปิด</button></div>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center"><button class="btn ph-prev" ${pos===0?'disabled':''}>◀ ก่อนหน้า</button><span>รูป ${pos+1} / ${items.length} · ${latestPhotos(items).includes(item)?'ชุดล่าสุด':'ย้อนหลัง'}${date?' · '+esc(date):''}</span><button class="btn ph-next" ${pos===items.length-1?'disabled':''}>ถัดไป ▶</button></div>
+      <div class="ph-stage" aria-live="polite" style="max-width:100%;text-align:center"><div id="phLoad">กำลังโหลดรูป…</div><img alt="${esc(lbl)}" style="display:none;max-width:92vw;max-height:65vh;object-fit:contain;border-radius:10px"></div>
+      <div class="ph-actions" style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center"><button class="btn ph-retry">↻ ลองรูปนี้ใหม่</button><a href="${esc(original)}" target="_blank" rel="noopener" style="color:#9fd8ff">เปิดต้นฉบับใน Google Drive ↗</a></div>`;
+    bx.querySelector('.ph-close').onclick=()=>close();
+    bx.querySelector('.ph-prev').onclick=()=>{pos--;draw();};bx.querySelector('.ph-next').onclick=()=>{pos++;draw();};
+    bx.querySelector('.ph-retry').onclick=()=>{_photoOk.delete(photoKey(item.url));draw();};
+    bx.querySelector('.ph-close').focus();
+    const im=bx.querySelector('img');let timer,index=0,settled=false;
+    const active=()=>!closed&&serial===run;
+    const clean=()=>{clearTimeout(timer);im.onload=im.onerror=null;im.removeAttribute('src');};
+    dispose=()=>{settled=true;clean();};
+    const fail=()=>{if(!active()||settled)return;settled=true;clean();
+      bx.querySelector('.ph-stage').innerHTML='<div style="max-width:520px;padding:18px;background:#293442;border-radius:10px;line-height:1.7">'+
+        (candidates.length?'เปิดรูปนี้ไม่สำเร็จ<br>ลองใหม่ หรือเปิดต้นฉบับเพื่อตรวจไฟล์และสิทธิ์เข้าถึง':'ลิงก์นี้ไม่ใช่ไฟล์รูปที่แสดงได้<br>เปิดต้นฉบับเพื่อตรวจลิงก์')+'</div>';
+    };
+    const next=()=>{if(!active()||settled)return;clean();if(index>=candidates.length)return fail();
+      im.onload=()=>{if(!active()||settled)return;settled=true;clearTimeout(timer);im.onload=im.onerror=null;im.style.display='block';bx.querySelector('#phLoad')?.remove();
+        _photoOk.set(photoKey(item.url),{value:true,until:Date.now()+300000});markPhotos().catch(()=>{});};
+      im.onerror=next;timer=setTimeout(next,PHOTO_TIMEOUT);im.referrerPolicy='no-referrer';im.src=candidates[index++];
+    };
+    next();
+  };
+  draw();
+}
+
 async function loadRisk(force){
   if(riskData && force!==true) return;
   const body=document.getElementById('riskBody');
@@ -9423,7 +9643,9 @@ defineSource({
   key:'risk', what:'จุดเสี่ยง', boxes:['riskBody'], pills:'riskPills',
   spin:'กำลังดึงข้อมูลจุดเสี่ยง (5 หมวด)…',
   has:()=>!!riskData,
-  read:async()=>{
+  read:async(force)=>{
+    if(force) resetPhotoCache();
+    const photoWarnings=[];
     const fpR=t=>JSON.stringify(zbRawRows(t).slice(0,30));
     const parseT=(t,m)=>(scanObjects(t, RISK_FIELDS)||[]).map(o=>({...o, _m:m, code:extractRoadCode(o.code), ka:kmVal(o.a), kb:kmVal(o.b),
       img1:/^https?:/.test(o.img1||'')?o.img1:'', img2:/^https?:/.test(o.img2||'')?o.img2:''})); // กันข้อความ placeholder ในช่องรูป
@@ -9444,40 +9666,23 @@ defineSource({
       seen.add(fp); gotMuad.add(m); tabs++;
       all.push(...parseT(t,m));
     }
-    riskData=all;
-    // 3) รูปจากฟอร์ม (ทีมงานอัปผ่าน Google Form) — จับคู่ด้วยรหัสสายทาง (+กม. ถ้าฟอร์มมีช่องนี้)
-    riskImgs={};
-    for(const src of [{id:RISK_IMG_ID,par:'gid='+RISK_IMG_GID},{id:RISK_IMG2_ID,par:RISK_IMG2_GID!=null?('gid='+RISK_IMG2_GID):''}])
-    try{
-      const rows=zbRawRows(await gvizJSONP(src.id,src.par));
-      const hi=rows.findIndex(r=>r.some(v=>normKey(v).includes('รหัสสายทาง')));
-      if(hi>=0){
-        const hdr=rows[hi].map(normKey);
-        const iC=hdr.findIndex(h=>h.includes('รหัสสายทาง'));
-        const iU=hdr.findIndex(h=>h.includes('รูป'));
-        const iT=hdr.findIndex(h=>h.includes('ประทับเวลา'));
-        const iK=hdr.findIndex(h=>h.includes('กม'));
-        for(const r of rows.slice(hi+1)){
-          const c=extractRoadCode(r[iC]); if(!c) continue;
-          String(r[iU]||'').split(/[,\s]+/).filter(u=>/^https?:/.test(u)).forEach(url=>{
-            (riskImgs[c]=riskImgs[c]||[]).push({ts:r[iT]||'', km:iK>=0?kmVal(r[iK]):null,
-              kind:hdr[iU].includes('หลัง')?'หลัง':'ก่อน', url});
-          });
-        }
-      }
-    }catch(e){} // ชีทฟอร์มใดล่ม/ยังไม่มี — ข้ามฟอร์มนั้น ไม่กระทบหน้า
-    // จับคู่รูปเข้าจุดเสี่ยง (รวมทั้งฟอร์มก่อน+หลัง): สายเดียวจุดเดียว หรือฟอร์มระบุ กม. ใกล้สุด
-    Object.entries(riskImgs).forEach(([c,imgs])=>{
-      const pts=riskData.filter(x=>x.code===c);
-      imgs.forEach(im=>{
-        let p=null;
-        if(im.km!=null&&pts.length) p=pts.reduce((a,b)=>Math.abs((a.ka??1e9)-im.km)<Math.abs((b.ka??1e9)-im.km)?a:b);
-        else if(pts.length===1) p=pts[0];
-        if(p){ const f=im.kind==='หลัง'?'img2':'img1'; if(!p[f]||!driveId(p[f])) p[f]=im.url; } // ลิงก์โฟลเดอร์/ค่าแปลกในชีท → ใช้รูปจากฟอร์มแทน
-      });
+    // v31.15: รวบรวมก่อนค่อยเผยแพร่ข้อมูล ไม่ให้หน้าอื่นเห็นรูปที่ยังจับคู่ไม่เสร็จ
+    if(probes.some(p=>p.status==='rejected')) photoWarnings.push('จุดเสี่ยงบางส่วนโหลดไม่ครบ — กดโหลดข้อมูลใหม่');
+    const sources=[{id:RISK_IMG_ID,par:'gid='+RISK_IMG_GID,kind:'ก่อน'},
+                   {id:RISK_IMG2_ID,par:RISK_IMG2_GID!=null?('gid='+RISK_IMG2_GID):'',kind:'หลัง'}];
+    const photoResults=await Promise.allSettled(sources.map(async src=>readPhotoRows(await gvizJSONP(src.id,src.par),src.kind)));
+    const forms=[];
+    photoResults.forEach((result,i)=>{
+      if(result.status==='fulfilled') forms.push(...result.value);
+      else{photoWarnings.push('รูป'+sources[i].kind+'โหลดไม่ครบ — กดโหลดข้อมูลใหม่');console.warn('รูป'+sources[i].kind+':',result.reason);}
     });
+    const unmatched=attachRiskPhotos(all,forms);
+    if(unmatched) photoWarnings.push('รูป '+unmatched+' รายการยังไม่ผูกกับจุด — ตรวจรหัสสายทางและระบุ กม. ให้ตรงจุด');
+    riskImgs={};forms.forEach(im=>(riskImgs[im.code]||(riskImgs[im.code]=[])).push(im));
+    riskData=all;
+    const photoWarningHtml=photoWarnings.map(t=>'<span class="hpill warn">⚠ '+esc(t)+'</span>').join('');
     return riskData.length
-      ? `<span class="hpill"><span class="dot live"></span> ข้อมูลสดจาก Google Sheets</span><span class="hpill">📑 อ่าน ${tabs} แท็บ</span><span class="hpill">⚠ ${riskData.length} จุด · ${new Set(riskData.map(x=>x.code)).size} สาย</span><span class="hpill">✅ แก้แล้ว ${riskData.filter(riskFixed).length} · เหลือ ${riskData.filter(x=>!riskFixed(x)).length}</span><span class="hpill">🕐 ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})} น.</span>`
+      ? `<span class="hpill"><span class="dot live"></span> ข้อมูลสดจาก Google Sheets</span><span class="hpill">📑 อ่าน ${tabs} แท็บ</span><span class="hpill">⚠ ${riskData.length} จุด · ${new Set(riskData.map(x=>x.code)).size} สาย</span><span class="hpill">✅ แก้แล้ว ${riskData.filter(riskFixed).length} · เหลือ ${riskData.filter(x=>!riskFixed(x)).length}</span><span class="hpill">🕐 ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})} น.</span>`+photoWarningHtml
       : `<span class="hpill"><span class="dot wait"></span> โครงพร้อมแล้ว — รอกรอกข้อมูลในชีท (อ่านแล้ว ${tabs} แท็บ)</span>`;
   }
 });
@@ -9630,8 +9835,8 @@ function renderRiskRoad(code){
           <td style="font-variant-numeric:tabular-nums;font-size:11.5px">${x.a?esc(x.a)+(x.b?' – '+esc(x.b):''):'—'}</td>
           <td>${x.status?`<span class="pill ${riskFixed(x)?'ok':'wait'}">${esc(x.status)}</span>`:'<span class="pill wait">ยังไม่แก้ไข</span>'}</td>
           <td style="font-size:12px">${esc(x.fix)||'—'}</td>
-          <td style="white-space:nowrap">${x.img1?`<a href="javascript:void(0)" data-photo="${esc(x.img1)}" onclick="showPhoto('${esc(x.img1)}','📷 ก่อนแก้ไข — ${esc(x.rtype||'')} ${esc(x.a||'')}')" style="color:var(--teal);font-weight:600">📷 ก่อน</a>`:'—'}</td>
-          <td style="white-space:nowrap">${x.img2?`<a href="javascript:void(0)" data-photo="${esc(x.img2)}" onclick="showPhoto('${esc(x.img2)}','📷 หลังแก้ไข — ${esc(x.rtype||'')} ${esc(x.a||'')}')" style="color:#0a6b0a;font-weight:600">📷 หลัง</a>`:'—'}</td>
+          <td style="white-space:nowrap">${riskPhotoLink(x,'ก่อน')}</td>
+          <td style="white-space:nowrap">${riskPhotoLink(x,'หลัง')}</td>
           <td style="font-size:11.5px">${x.done?`✅ ${esc(x.done)}`:'—'}</td></tr>`).join('')}
       </tbody></table></div>
     </div>`;
@@ -9643,7 +9848,8 @@ function renderRiskRoad(code){
       tip:`<b>${esc(x.rtype)||'จุดเสี่ยง'}${x.level?' · '+esc(x.level):''}</b><br>${kmLbl(x.ka)}${x.kb!=null&&x.kb>x.ka?' – '+kmLbl(x.kb):''}<br>${esc(x.detail)||''}${x.status?`<br>สถานะ: ${esc(x.status)}`:''}${x.fix?`<br>วิธีแก้: ${esc(x.fix)}`:''}`}))}));
   if(lanes.length) drawLanes('rkStrip', roadLen, lanes, code);
   else document.getElementById('rkStrip').innerHTML='<div class="note">จุดเสี่ยงของสายนี้ยังไม่ระบุ กม.</div>';
-  markPhotos().catch(()=>{});   // v31.12 ติดป้ายรูปที่ยังไม่ได้แชร์ (ทำงานเบื้องหลัง ไม่หน่วงตาราง)
+  bindRiskPhotos(document.getElementById('riskRoadBody'));
+  markPhotos().catch(()=>{});   // v31.15 ตรวจการเปิดรูป ไม่วินิจฉัยสิทธิ์แชร์จากการโหลดล้มเหลว
   document.getElementById('rkSel').addEventListener('change',e=>renderRiskRoad(e.target.value));
   document.getElementById('rkPrev').addEventListener('click',()=>renderRiskRoad(roadsWith[(idx-1+roadsWith.length)%roadsWith.length].c));
   document.getElementById('rkNext').addEventListener('click',()=>renderRiskRoad(roadsWith[(idx+1)%roadsWith.length].c));
