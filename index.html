@@ -20,24 +20,190 @@
   --surface:#fcfcfb; --page:#f4f5f2; --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
   --grid:#e1e0d9; --hairline:rgba(11,11,11,.10);
   --hero2:#23406B; --hero3:#0E5F57; --navtxt:#c8d2e4; --navsub:#9fb0cc; --navver:#cdd9f0;
+  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(35,64,107,.19), transparent 60%),
+             radial-gradient(32rem 24rem at 99% 4%, rgba(14,95,87,.16), transparent 58%),
+             radial-gradient(34rem 26rem at 6% 102%, rgba(120,160,220,.14), transparent 60%),
+             radial-gradient(36rem 26rem at 98% 98%, rgba(60,150,160,.16), transparent 60%);   /* v31.25 ลายพื้นหลังของชุดสี (ตกแต่งล้วน ไม่มีความหมายกับข้อมูล) */
+  --card:#fff;   /* v31.26 พื้นการ์ด/กล่องลอย — ชุดสว่างเป็นขาวเหมือนเดิม ชุดมืดเปลี่ยนเป็นสีเข้ม */
+  --strong:var(--navy);   /* v31.26 ตัวหนังสือเน้น (ตัวเลข KPI · หัวการ์ด) — ชุดสว่างใช้สีเดียวกับแถบซ้ายเหมือนเดิม ชุดมืดใช้สีสว่าง */
+  /* v31.26 พื้นอ่อนของกล่องสถานะ/แถบ — ยกออกมาเป็นตัวแปรเพื่อให้ชุดกลางคืนสลับเป็นพื้นเข้มได้ (ชุดสว่าง = ค่าเดิมทุกตัว) */
+  --tint-ok:#e7f6e7; --tint-ok-b:#bfe3bf; --tint-ok-ink:#0a6b0a; --tint-ok2:#f6fbf6; --tint-ok2-b:#c6e4c8; --tint-ok-chip:#dcefdd;
+  --tint-bad:#fdecec; --tint-bad-b:#f3c8c8; --tint-bad-ink:#8f1d1d; --tint-bad2:#fdf3f3; --tint-bad2-b:#f0cccc; --tint-bad2-ink:#7d2222;
+  --tint-bad3:#fdf6f6; --tint-bad-chip:#f7dede; --tint-miss-ink:#a12626;
+  --tint-warn:#fdfaf2; --tint-warn-b:#efdcb4; --tint-warn-chip:#f7ecd0; --tint-wait:#fff3d6; --tint-wait-ink:#8a5a00;
+  --tint-track:#eeede7; --tint-soft:#fbfaf8; --tint-grp:#e9eef6; --tint-cat:#f5f2e8; --tint-skel:#eceee8; --tint-neutral:#eceeee; --teal-ink:#0b6b63; --warn-ink:#8a6413; --pos-ink:#0d7a4a; --neg-ink:#c0392b; --crit-ink:var(--crit);
+  /* v31.26 พื้นกล่องงาน/ไอคอนที่เขียนสีอ่อนไว้ในเนื้อหน้า — ชุดสว่างค่าเดิมเป๊ะ ชุดกลางคืนสลับเป็นเฉดเข้มสีเดียวกัน */
+  --tile-green:#e9f6ee; --tile-teal:#e6f4f2; --tile-blue:#edf2fa; --tile-amber:#fbf3df; --tile-sky:#eaf2fc;
+  --tile-violet:#f0ecfa; --tile-sand:#f2ece4; --tile-blue2:#eef3fa; --tile-mist:#dfe8e6; --tile-slate:#e3e7eb;
+  --bar-bg:rgba(27,42,74,.93);   /* v31.25 แถบลอยจอแคบ (หัวเรื่อง · เมนูล่าง · ปุ่มรายชื่อสาย) — เดิมฝังสีน้ำเงินไว้ ชุดสีอื่นจึงไม่เปลี่ยนตาม */
 }
 /* ══ v31.0 ชุดสี (กฎ 18) — เปลี่ยนได้เฉพาะ "สีโครง" 14 ตัวนี้เท่านั้น
    สีที่มีความหมายกับข้อมูล (หมวด · ชนิดงบ · ชนิดผิว · แดง/เหลือง/เขียวเตือน · สีปี) ห้ามผูกกับชุดสี
    ผู้ใช้ 6 ก.ย. 69: "ชอบหมดเลย จะไม่กระทบข้อมูลใช่ไหม" — theme.js พิสูจน์ว่าตัวเลขบนจอเท่ากันทุกชุด ══ */
 html[data-theme="isan"]{ --navy:#4a2418; --navy-d:#3a1b11; --teal:#c2552b; --teal-soft:#f7e6dd; --gold:#d9a441;
   --surface:#fffdf9; --page:#f6f1ea; --ink:#1e1410; --ink2:#5b4a41; --muted:#8c7a70; --grid:#e6dcd2; --hairline:rgba(74,36,24,.14);
-  --hero2:#6b3a2a; --hero3:#8a4a2f; --navtxt:#e7d3c6; --navsub:#c9a996; --navver:#f0ddd0 }
+  --hero2:#6b3a2a; --hero3:#8a4a2f; --navtxt:#e7d3c6; --navsub:#c9a996; --navver:#f0ddd0; --bar-bg:rgba(74,36,24,.93);
+  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(194,85,43,.22), transparent 60%),
+             radial-gradient(32rem 24rem at 99% 4%, rgba(217,164,65,.20), transparent 58%),
+             radial-gradient(34rem 26rem at 6% 102%, rgba(150,90,60,.14), transparent 60%),
+             radial-gradient(36rem 26rem at 98% 98%, rgba(230,150,90,.17), transparent 60%) }
 html[data-theme="asphalt"]{ --navy:#23262b; --navy-d:#17191d; --teal:#8a6300; --teal-soft:#fbf1cf; --gold:#f2b705;   /* --teal เข้มกว่าเหลืองเส้นจราจร เพราะต้องรองรับตัวหนังสือขาว (ความต่าง 5.4) */
   --surface:#fbfbfc; --page:#eef0f2; --ink:#101214; --ink2:#4a4f55; --muted:#868c93; --grid:#dfe2e6; --hairline:rgba(16,18,20,.12);
-  --hero2:#33373d; --hero3:#5a4a10; --navtxt:#cfd3d8; --navsub:#9aa1a9; --navver:#e2e5e9 }
+  --hero2:#33373d; --hero3:#5a4a10; --navtxt:#cfd3d8; --navsub:#9aa1a9; --navver:#e2e5e9; --bar-bg:rgba(35,38,43,.93);
+  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(35,38,43,.16), transparent 60%),
+             radial-gradient(32rem 24rem at 99% 4%, rgba(242,183,5,.16), transparent 58%),
+             radial-gradient(34rem 26rem at 6% 102%, rgba(90,100,110,.14), transparent 60%),
+             radial-gradient(36rem 26rem at 98% 98%, rgba(160,150,120,.13), transparent 60%) }
 html[data-theme="forest"]{ --navy:#1f3d2b; --navy-d:#162d20; --teal:#3f8f4a; --teal-soft:#e2f1e4; --gold:#d9a441;
   --surface:#fcfdf9; --page:#f3f5ee; --ink:#0e1a12; --ink2:#4a5a4e; --muted:#7f8f83; --grid:#dde3d8; --hairline:rgba(31,61,43,.14);
-  --hero2:#2b5a3c; --hero3:#1f6a4e; --navtxt:#cfe0d3; --navsub:#9ab8a3; --navver:#dfeee3 }
+  --hero2:#2b5a3c; --hero3:#1f6a4e; --navtxt:#cfe0d3; --navsub:#9ab8a3; --navver:#dfeee3; --bar-bg:rgba(31,61,43,.93);
+  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(63,143,74,.20), transparent 60%),
+             radial-gradient(32rem 24rem at 99% 4%, rgba(140,190,95,.17), transparent 58%),
+             radial-gradient(34rem 26rem at 6% 102%, rgba(30,110,90,.16), transparent 60%),
+             radial-gradient(36rem 26rem at 98% 98%, rgba(200,210,120,.14), transparent 60%) }
 html[data-theme="indigo"]{ --navy:#2b2f6e; --navy-d:#202355; --teal:#3a86c8; --teal-soft:#e1edf8; --gold:#e0b04a;
   --surface:#fcfcfe; --page:#f2f3f7; --ink:#101226; --ink2:#4d5066; --muted:#868aa0; --grid:#dfe1ea; --hairline:rgba(43,47,110,.14);
-  --hero2:#3a4190; --hero3:#2f5f9e; --navtxt:#d4d7ee; --navsub:#a2a7d1; --navver:#e4e6f6 }
+  --hero2:#3a4190; --hero3:#2f5f9e; --navtxt:#d4d7ee; --navsub:#a2a7d1; --navver:#e4e6f6; --bar-bg:rgba(43,47,110,.93);
+  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(58,134,200,.20), transparent 60%),
+             radial-gradient(32rem 24rem at 99% 4%, rgba(95,85,195,.17), transparent 58%),
+             radial-gradient(34rem 26rem at 6% 102%, rgba(150,120,220,.16), transparent 60%),
+             radial-gradient(36rem 26rem at 98% 98%, rgba(70,150,200,.14), transparent 60%) }
+
+
+/* ══ v31.26 ตัวเลือกชุดสีมุมบนขวา (ผู้ใช้: "เอามาไว้ตรงบนขวาแล้วทำเป็น dropdown สวยๆ มีกิมมิคดีกว่า")
+   จุดสี 17 จุดในแถบซ้ายเด่นเกินไป — ย้ายมาเป็นปุ่มเดียว กดแล้วค่อยเห็นทั้งชุด ══ */
+.themepick{position:fixed;top:14px;right:18px;z-index:1200}
+.themepick .tp-btn{display:flex;align-items:center;gap:8px;padding:7px 12px 7px 8px;border-radius:999px;cursor:pointer;
+  border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.16);color:#fff;font-family:inherit;font-size:12.5px;font-weight:600;
+  -webkit-backdrop-filter:blur(10px) saturate(1.3);backdrop-filter:blur(10px) saturate(1.3);box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.themepick .tp-btn:hover{background:rgba(255,255,255,.26)}
+.themepick .tp-disc{width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,.75);background:var(--tp-disc,#fff);flex:none}
+.themepick .tp-caret{font-size:10px;opacity:.85}
+.themepick .tp-name{white-space:nowrap}
+.themepick .tp-menu{position:absolute;top:calc(100% + 8px);right:0;width:268px;max-height:min(74vh,560px);overflow:auto;
+  background:var(--card);border:1px solid var(--grid);border-radius:14px;box-shadow:0 18px 44px rgba(16,24,40,.30);padding:8px}
+.themepick[hidden],.themepick .tp-menu[hidden]{display:none}
+.themepick .tp-group{font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:.02em;padding:8px 8px 4px}
+.themepick .tp-item{display:flex;align-items:center;gap:10px;width:100%;padding:7px 8px;border:0;border-radius:10px;cursor:pointer;
+  background:transparent;font-family:inherit;font-size:12.5px;color:var(--ink);text-align:left}
+.themepick .tp-item:hover,.themepick .tp-item:focus-visible{background:var(--teal-soft);outline:none}
+.themepick .tp-item.on{background:var(--teal-soft);font-weight:700}
+.themepick .tp-strip{width:52px;height:22px;border-radius:7px;flex:none;border:1px solid var(--hairline);background:var(--tp-strip)}
+.themepick .tp-tick{margin-left:auto;color:var(--teal);font-weight:900}
+.themepick .tp-hint{font-size:10.5px;color:var(--muted);padding:6px 8px 2px;border-top:1px solid var(--grid);margin-top:6px}
+@media(max-width:1000px){ .themepick{display:none} }
+@media print{ .themepick{display:none!important} }
+/* ── v31.26 เฉดสว่างให้ครบวงสี (ผู้ใช้: "เอาให้ครบทุกเฉดอะ มี แดง เหลือง ส้ม เขียว ฟ้า น้ำเงิน คราม") ── */
+html[data-theme="crimson"]{ --navy:#7a1f24; --navy-d:#5c1519; --teal:#b3261e; --teal-soft:#fbe4e2; --gold:#d09a3c;
+  --surface:#fffafa; --page:#f8efee; --ink:#2a1210; --ink2:#5f3b38; --muted:#96736f; --grid:#f0dcd9; --hairline:rgba(60,18,16,.13);
+  --hero2:#b3261e; --hero3:#d4573f; --navtxt:#ffdcd8; --navsub:#e0a9a3; --navver:#fff0ee; --bar-bg:rgba(122,31,36,.93);
+  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(200,45,45,.18), transparent 60%),
+             radial-gradient(32rem 24rem at 99% 4%, rgba(235,120,90,.16), transparent 60%),
+             radial-gradient(34rem 26rem at 6% 102%, rgba(150,40,70,.13), transparent 60%),
+             radial-gradient(36rem 26rem at 98% 98%, rgba(255,140,120,.15), transparent 60%) }
+html[data-theme="gold"]{ --navy:#6b4e12; --navy-d:#513a0c; --teal:#8a6300; --teal-soft:#fbf1cf; --gold:#d9a441;
+  --surface:#fffdf5; --page:#f7f2e2; --ink:#241d08; --ink2:#574a24; --muted:#8f8156; --grid:#ece3c8; --hairline:rgba(36,29,8,.13);
+  --hero2:#a3801d; --hero3:#cbab3e; --navtxt:#f7e8c2; --navsub:#d4c08a; --navver:#fdf4dc; --bar-bg:rgba(107,78,18,.93);
+  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(220,170,40,.20), transparent 60%),
+             radial-gradient(32rem 24rem at 99% 4%, rgba(240,205,110,.17), transparent 60%),
+             radial-gradient(34rem 26rem at 6% 102%, rgba(150,130,45,.13), transparent 60%),
+             radial-gradient(36rem 26rem at 98% 98%, rgba(230,180,80,.16), transparent 60%) }
+html[data-theme="sky"]{ --navy:#14556e; --navy-d:#0e4055; --teal:#0e7490; --teal-soft:#ddf1f7; --gold:#d9a441;
+  --surface:#f9fdfe; --page:#eef6fa; --ink:#08161d; --ink2:#3d5560; --muted:#7994a1; --grid:#d9e8ef; --hairline:rgba(8,22,29,.12);
+  --hero2:#1a7a99; --hero3:#37a0c4; --navtxt:#cfeaf5; --navsub:#9cc6d9; --navver:#e6f6fc; --bar-bg:rgba(20,85,110,.93);
+  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(40,160,205,.18), transparent 60%),
+             radial-gradient(32rem 24rem at 99% 4%, rgba(130,205,235,.16), transparent 60%),
+             radial-gradient(34rem 26rem at 6% 102%, rgba(60,120,190,.13), transparent 60%),
+             radial-gradient(36rem 26rem at 98% 98%, rgba(90,200,215,.15), transparent 60%) }
+html[data-theme="violet"]{ --navy:#4a2a6b; --navy-d:#371f50; --teal:#7c3aed; --teal-soft:#efe7fd; --gold:#d9a441;
+  --surface:#fdfbff; --page:#f4f0fa; --ink:#1b1026; --ink2:#4f4160; --muted:#8a7f9c; --grid:#e5dcf0; --hairline:rgba(27,16,38,.13);
+  --hero2:#6d3fa8; --hero3:#9d5bd2; --navtxt:#e6d9f7; --navsub:#bda8d8; --navver:#f1e8fc; --bar-bg:rgba(74,42,107,.93);
+  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(140,80,220,.17), transparent 60%),
+             radial-gradient(32rem 24rem at 99% 4%, rgba(200,140,240,.15), transparent 60%),
+             radial-gradient(34rem 26rem at 6% 102%, rgba(90,70,190,.13), transparent 60%),
+             radial-gradient(36rem 26rem at 98% 98%, rgba(230,130,200,.14), transparent 60%) }
+
+/* v31.26 พื้นกล่องสถานะของชุดกลางคืน — พื้นเข้ม ตัวหนังสือสว่าง (ไม่งั้นกล่องอ่อน + ตัวหนังสือสว่าง = จมทั้งกล่อง) */
+html[data-theme="midnight"],html[data-theme="dusk"],html[data-theme="twilight"],html[data-theme="dawn"]{
+  --tint-ok:#173226; --tint-ok-b:#2f6047; --tint-ok-ink:#86e3ad; --tint-ok2:#152a20; --tint-ok2-b:#2f5c44; --tint-ok-chip:#1e4230;
+  --tint-bad:#3a1d20; --tint-bad-b:#75373d; --tint-bad-ink:#ffa3a3; --tint-bad2:#331a1d; --tint-bad2-b:#6b333a; --tint-bad2-ink:#ffb0b0;
+  --tint-bad3:#2f191c; --tint-bad-chip:#4d2429; --tint-miss-ink:#ffa8a8;
+  --tint-warn:#332a16; --tint-warn-b:#6f5a29; --tint-warn-chip:#4c3d1b; --tint-wait:#3a2f14; --tint-wait-ink:#f2c86f;
+  --tint-track:#2c3448; --tint-soft:#1c2434; --tint-grp:#202a44; --tint-cat:#2d2b1f; --tint-skel:#252f43; --tint-neutral:#242c3c; --teal-ink:#7fd8cf; --warn-ink:#f0c96a; --pos-ink:#5cd39a; --neg-ink:#ff8f8f; --crit-ink:#ff8f8f }
+/* v31.26 ตัวเลขสรุปในแคปซูล KPI ถูกระบายด้วยสีข้อมูลตอนวาด — ชุดกลางคืนบังคับใช้สีเน้นเพื่อให้อ่านออกเสมอ (สีข้อมูลยังอยู่ที่ไอคอนข้าง ๆ) */
+html[data-theme="midnight"] .kpill .val,html[data-theme="dusk"] .kpill .val,
+html[data-theme="twilight"] .kpill .val,html[data-theme="dawn"] .kpill .val{color:var(--strong)!important}
+html[data-theme="midnight"],html[data-theme="dusk"],html[data-theme="twilight"],html[data-theme="dawn"]{
+  --tile-green:#18302a; --tile-teal:#163030; --tile-blue:#1c2740; --tile-amber:#332b18; --tile-sky:#1b2942;
+  --tile-violet:#272041; --tile-sand:#302a22; --tile-blue2:#1d2841; --tile-mist:#16202c; --tile-slate:#232a35 }
+
+/* ── v31.26 ชุดกลางคืน — พื้นมืดจริง ตัวหนังสือสว่าง (ผู้ใช้: "เพิ่ม midnight … เป็นมืดแบบไล่สี หัวค่ำ โพล้เพล้ รุ่งเช้า")
+   ชุดมืดเพิ่ม --card (พื้นการ์ด/กล่องลอย) เข้าไปในสีโครง — ชุดสว่างยังเป็นขาวเหมือนเดิมทุกจุด ── */
+html[data-theme="midnight"]{ --navy:#0c1220; --navy-d:#070c16; --teal:#2f7fc4; --teal-soft:#16233b; --gold:#e0b04a;
+  --surface:#131c2e; --card:#131c2e; --strong:#eaf0fd; --page:#0a0f1b; --ink:#e9eefb; --ink2:#a8b6d2; --muted:#9aa8c4; --grid:#26314a; --hairline:rgba(255,255,255,.10);
+  --hero2:#1c3a6b; --hero3:#43286e; --navtxt:#dbe6ff; --navsub:#93a4c8; --navver:#eaf1ff; --bar-bg:rgba(12,18,32,.94);
+  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(45,90,190,.30), transparent 60%),
+             radial-gradient(32rem 24rem at 99% 4%, rgba(90,60,180,.26), transparent 60%),
+             radial-gradient(34rem 26rem at 6% 102%, rgba(20,80,120,.24), transparent 60%),
+             radial-gradient(36rem 26rem at 98% 98%, rgba(120,60,170,.26), transparent 60%) }
+html[data-theme="dusk"]{ --navy:#1b1430; --navy-d:#120d22; --teal:#b5561f; --teal-soft:#2a1e33; --gold:#e3a44a;
+  --surface:#221a35; --card:#221a35; --strong:#f7edf6; --page:#171128; --ink:#f3e9f2; --ink2:#c4b2c9; --muted:#b6a4bd; --grid:#372a48; --hairline:rgba(255,255,255,.10);
+  --hero2:#6b2f4e; --hero3:#b5561f; --navtxt:#f0dcea; --navsub:#c3a4bd; --navver:#fbeaf5; --bar-bg:rgba(27,20,48,.94);
+  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(230,110,40,.26), transparent 60%),
+             radial-gradient(32rem 24rem at 99% 4%, rgba(150,50,110,.26), transparent 60%),
+             radial-gradient(34rem 26rem at 6% 102%, rgba(90,45,130,.24), transparent 60%),
+             radial-gradient(36rem 26rem at 98% 98%, rgba(200,70,90,.22), transparent 60%) }
+html[data-theme="twilight"]{ --navy:#101a33; --navy-d:#0a1226; --teal:#4a6fd0; --teal-soft:#1a2547; --gold:#d9a441;
+  --surface:#182241; --card:#182241; --strong:#e9eefc; --page:#0e1631; --ink:#e6ecfb; --ink2:#a9b5d6; --muted:#9fabcb; --grid:#28345c; --hairline:rgba(255,255,255,.10);
+  --hero2:#2c3f7d; --hero3:#7a3f86; --navtxt:#dde5ff; --navsub:#98a6cf; --navver:#ecf1ff; --bar-bg:rgba(16,26,51,.94);
+  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(60,80,200,.30), transparent 60%),
+             radial-gradient(32rem 24rem at 99% 4%, rgba(170,60,160,.24), transparent 60%),
+             radial-gradient(34rem 26rem at 6% 102%, rgba(30,110,140,.24), transparent 60%),
+             radial-gradient(36rem 26rem at 98% 98%, rgba(110,70,190,.26), transparent 60%) }
+html[data-theme="dawn"]{ --navy:#22243f; --navy-d:#171930; --teal:#c2603c; --teal-soft:#2b2740; --gold:#e6b95e;
+  --surface:#24253d; --card:#24253d; --strong:#f8f1f3; --page:#191a30; --crit-ink:#ffa8a8; --ink:#f5eef0; --ink2:#c5bccb; --muted:#b3a9bd; --grid:#3a3a58; --hairline:rgba(255,255,255,.10);
+  --hero2:#6e4468; --hero3:#d1795e; --navtxt:#f6e3e6; --navsub:#c9b3bd; --navver:#fdeff1; --bar-bg:rgba(34,36,63,.94);
+  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(230,120,140,.26), transparent 60%),
+             radial-gradient(32rem 24rem at 99% 4%, rgba(240,180,110,.24), transparent 60%),
+             radial-gradient(34rem 26rem at 6% 102%, rgba(80,90,170,.24), transparent 60%),
+             radial-gradient(36rem 26rem at 98% 98%, rgba(210,140,190,.22), transparent 60%) }
+/* v31.25 ผู้ใช้: "เอาเพิ่มๆ ให้ทุกอันรวมอันเก่าไล่สีประมาณนี้เลย แบ่งโทน แบ่งเฉด sunset after rain winter fall"
+   3 ชุดใหม่ — โทนเย็นหลังฝน · โทนหนาว · โทนใบไม้ร่วง (สีโครง 14 ตัว + ลายพื้น เท่านั้น ตามกฎ 18) */
+html[data-theme="afterrain"]{ --navy:#14504f; --navy-d:#0e3c3b; --teal:#0f766e; --teal-soft:#dff2ef; --gold:#c99a3c;
+  --surface:#f9fdfd; --page:#eff6f6; --ink:#0c1a1a; --ink2:#41565a; --muted:#7d9295; --grid:#dbe8e7; --hairline:rgba(12,26,26,.12);
+  --hero2:#1c6f6a; --hero3:#2e8b8f; --navtxt:#cfeceb; --navsub:#9dc7c5; --navver:#e3f5f4; --bar-bg:rgba(20,80,79,.93);
+  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(20,150,140,.20), transparent 60%),
+             radial-gradient(32rem 24rem at 99% 4%, rgba(120,200,190,.19), transparent 58%),
+             radial-gradient(34rem 26rem at 6% 102%, rgba(90,140,190,.14), transparent 60%),
+             radial-gradient(36rem 26rem at 98% 98%, rgba(60,180,160,.16), transparent 60%) }
+html[data-theme="winter"]{ --navy:#2f3f5e; --navy-d:#233049; --teal:#3d6fa8; --teal-soft:#e6eef8; --gold:#b9a25f;
+  --surface:#fbfcfe; --page:#f1f4f9; --ink:#111726; --ink2:#4c5670; --muted:#8790a3; --grid:#e0e5ee; --hairline:rgba(17,23,38,.12);
+  --hero2:#3f5b86; --hero3:#6b7fae; --navtxt:#dbe4f4; --navsub:#a9b6d0; --navver:#eaf0fb; --bar-bg:rgba(47,63,94,.93);
+  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(120,150,205,.20), transparent 60%),
+             radial-gradient(32rem 24rem at 99% 4%, rgba(180,190,225,.19), transparent 58%),
+             radial-gradient(34rem 26rem at 6% 102%, rgba(150,130,200,.14), transparent 60%),
+             radial-gradient(36rem 26rem at 98% 98%, rgba(120,170,210,.16), transparent 60%) }
+html[data-theme="fall"]{ --navy:#5a3517; --navy-d:#43270f; --teal:#a85310; --teal-soft:#fbe9d8; --gold:#c98a2b;
+  --surface:#fffcf8; --page:#f7f1e8; --ink:#241609; --ink2:#59462f; --muted:#907c62; --grid:#e9ddc9; --hairline:rgba(36,22,9,.13);
+  --hero2:#9a4a17; --hero3:#b8792a; --navtxt:#f3ddc6; --navsub:#cfae8c; --navver:#fbeeda; --bar-bg:rgba(90,53,23,.93);
+  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(200,110,35,.22), transparent 60%),
+             radial-gradient(32rem 24rem at 99% 4%, rgba(215,165,60,.19), transparent 58%),
+             radial-gradient(34rem 26rem at 6% 102%, rgba(120,110,45,.14), transparent 60%),
+             radial-gradient(36rem 26rem at 98% 98%, rgba(180,70,40,.17), transparent 60%) }
+/* v31.25 ผู้ใช้: "ธีมเค้าสวยดีจังเราทำให้มีเล่นสีบ้างดีไหม สร้างความแตกต่าง"
+   ชุดเดียวที่มีลายพื้นหลังไล่เฉด — ยังเปลี่ยนแค่สีโครง 14 ตัว + ลายพื้น (กฎ 18) ตัวเลข/สีข้อมูลไม่ขยับ */
+html[data-theme="sunset"]{ --navy:#7d2646; --navy-d:#5e1b34; --teal:#c2410c; --teal-soft:#ffe7db; --gold:#e0913a;
+  --surface:#fffaf7; --page:#fdf3ec; --ink:#2b1714; --ink2:#5e4038; --muted:#95837c; --grid:#f0e0d5; --hairline:rgba(60,26,20,.13);
+  --hero2:#c2410c; --hero3:#d63f6b; --navtxt:#ffe2ec; --navsub:#e9b8c6; --navver:#fff0f4; --bar-bg:rgba(125,38,70,.93);
+  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(255,138,61,.23), transparent 60%),
+             radial-gradient(32rem 24rem at 99% 4%, rgba(255,190,110,.20), transparent 58%),
+             radial-gradient(34rem 26rem at 6% 102%, rgba(168,140,255,.16), transparent 60%),
+             radial-gradient(36rem 26rem at 98% 98%, rgba(255,90,140,.19), transparent 60%) }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Sarabun',Tahoma,'Segoe UI',system-ui,sans-serif;background:var(--page);color:var(--ink);font-size:14px}
+body{font-family:'Sarabun',Tahoma,'Segoe UI',system-ui,sans-serif;background-color:var(--page);color:var(--ink);font-size:14px;
+  /* v31.25 ลายพื้นของชุดสี (ตกแต่งล้วน · ชุดอื่นเป็น none · ปิดตอนพิมพ์) */
+  background-image:var(--page-art);background-attachment:fixed;background-repeat:no-repeat}
+@media print{ body{background-image:none} }
 .app{display:flex;min-height:100vh}
 /* v31.10 ผู้ใช้ (8 ก.ย. 69 iPad เปิดแบบแอปเต็มจอ): "เวลาเลื่อน แถบมันบังข้อมูล" — แถบสถานะ iOS (เวลา/แบต) โปร่งทับเนื้อหาที่เลื่อนขึ้นไป
    แก้ด้วยแถบทึบสีน้ำเงินสูงเท่าแถบสถานะ (env(safe-area-inset-top)) และดันเนื้อหา/แถบเมนู/แถบเลื่อนลงมาเท่ากัน · เปิดในเบราว์เซอร์ปกติหรือคอม ค่านี้ = 0 ไม่มีอะไรเปลี่ยน */
@@ -51,15 +217,15 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;height:var(--sat);ba
 .logo{width:30px;height:30px;flex:none;border-radius:8px;background:var(--teal);display:inline-flex;align-items:center;justify-content:center}
 .logo svg{width:22px;height:22px;display:block}
 /* v31.0 — สวิตช์ชุดสี: จุดสี 5 จุดใต้ป้ายเวอร์ชัน (มือถืออยู่ในหน้าข้อมูลระบบ) */
-.themesw{display:flex;gap:7px;margin-top:9px;align-items:center}
+.themesw{display:flex;gap:7px;margin-top:9px;align-items:center;flex-wrap:wrap;row-gap:6px}   /* v31.25 ชุดสี 9 ชุด — ปล่อยให้ขึ้นบรรทัดใหม่ ป้ายไม่ถูกบีบ */
 .themesw button{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.35);padding:0;cursor:pointer;background:var(--sw)}
 .themesw button.on{border-color:#fff;box-shadow:0 0 0 2px var(--navy),0 0 0 3.5px #fff}
-.themesw .tl{font-size:10px;color:var(--navsub);margin-right:2px}
+.themesw .tl{font-size:10px;color:var(--navsub);margin-right:2px;white-space:nowrap;flex:0 0 100%}
 .brand .sub{font-size:11px;color:var(--navsub);margin-top:3px}
 /* KPI แคปซูล — ไอคอนวงกลมสีแบบสไลด์ ทช. */
-.kpill{display:flex;align-items:center;gap:13px;background:#fff;border:1.6px solid #bcd3ee;border-radius:18px;padding:13px 16px;box-shadow:0 2px 8px rgba(27,42,74,.07)}
+.kpill{display:flex;align-items:center;gap:13px;background:var(--card);border:1.6px solid #bcd3ee;border-radius:18px;padding:13px 16px;box-shadow:0 2px 8px rgba(27,42,74,.07)}
 .kpill .kic{flex:0 0 50px;width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:23px;box-shadow:inset 0 -3px 6px rgba(0,0,0,.14), 0 2px 6px rgba(0,0,0,.14);border:2.5px solid #fff;outline:1.6px solid #d6e4f5}
-.kpill .lbl{font-size:12px;font-weight:700;color:var(--navy);line-height:1.3}
+.kpill .lbl{font-size:12px;font-weight:700;color:var(--strong);line-height:1.3}
 .kpill .val{font-size:21px;font-weight:800;line-height:1.25;margin-top:1px}
 .kpill .val small{font-size:12px;font-weight:600;color:var(--muted)}
 .kpill .foot{font-size:11px;color:var(--muted);margin-top:1px}
@@ -92,7 +258,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;height:var(--sat);ba
 @media(min-width:1700px){.main{padding:22px 40px 44px}}
 @media(min-width:2200px){.main{padding:24px 72px 48px}}
 .pagehead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
-.pagehead h2{font-size:20px;font-weight:700;color:var(--navy)}
+.pagehead h2{font-size:20px;font-weight:700;color:var(--strong)}
 .pagehead .desc{font-size:12.5px;color:var(--ink2);margin-top:2px}
 /* ---------- hero header (ทุกหน้า) ---------- */
 .pghero{position:relative;overflow:hidden;background:linear-gradient(118deg,var(--navy) 0%,var(--hero2) 58%,var(--hero3) 135%);color:#fff;border-radius:14px;padding:16px 20px 15px;margin-bottom:16px;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;box-shadow:0 2px 10px rgba(16,24,40,.18)}
@@ -126,21 +292,21 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;height:var(--sat);ba
 }
 .actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .btn{background:var(--teal);border:none;color:#fff;font-family:inherit;font-size:12.5px;font-weight:600;padding:7px 14px;border-radius:7px;cursor:pointer}
-.btn.ghost{background:#fff;color:var(--teal);border:1px solid var(--teal)}
+.btn.ghost{background:var(--card);color:var(--teal);border:1px solid var(--teal)}
 .stamp{font-size:11px;color:var(--muted)}
-.statuspill{display:none;align-items:center;gap:7px;background:#e7f6e7;border:1px solid #bfe3bf;color:#0a6b0a;border-radius:99px;padding:5px 14px;font-size:12px;font-weight:600}
+.statuspill{display:none;align-items:center;gap:7px;background:var(--tint-ok);border:1px solid var(--tint-ok-b);color:var(--tint-ok-ink);border-radius:99px;padding:5px 14px;font-size:12px;font-weight:600}
 .statuspill .dot{width:8px;height:8px;border-radius:50%;background:#0ca30c;box-shadow:0 0 0 3px rgba(12,163,12,.18);flex:none}
 .statuspill.on{display:inline-flex}
 .banner{border-radius:8px;padding:9px 13px;font-size:12.5px;margin-bottom:12px;display:none}
-.banner.err{display:block;background:#fdecec;color:#8f1d1d;border:1px solid #f3c8c8}
+.banner.err{display:block;background:var(--tint-bad);color:var(--tint-bad-ink);border:1px solid var(--tint-bad-b)}
 .banner.info{display:block;background:var(--teal-soft);color:#0c5955;border:1px solid #bfe3e0}
 /* v23.2 — กล่องแทนวงหมุนที่ค้าง บอกเหตุ + ให้กดลองใหม่ได้ตรงนั้นเลย */
 .netfail{display:flex;align-items:flex-start;gap:11px;padding:14px 15px;border-radius:12px;
-  background:#fdf3f3;border:1px solid #f0cccc;color:#7d2222}
-.netfail .nf-ico{flex:none;width:24px;height:24px;border-radius:50%;background:#f3caca;color:#8f1d1d;
+  background:var(--tint-bad2);border:1px solid var(--tint-bad2-b);color:var(--tint-bad2-ink)}
+.netfail .nf-ico{flex:none;width:24px;height:24px;border-radius:50%;background:var(--tint-bad-chip);color:var(--tint-bad2-ink);
   display:grid;place-items:center;font-weight:800;font-size:13px;line-height:1}
 .netfail .nf-txt{flex:1;min-width:0;font-size:12px;line-height:1.55}
-.netfail .nf-txt b{display:block;font-size:13px;color:#8f1d1d;margin-bottom:1px}
+.netfail .nf-txt b{display:block;font-size:13px;color:var(--tint-bad2-ink);margin-bottom:1px}
 .netfail .nf-retry{flex:none;white-space:nowrap;align-self:center}
 @media(max-width:640px){ .netfail{flex-wrap:wrap} .netfail .nf-retry{width:100%;margin-top:4px} }
 /* ---------- cards & grids ---------- */
@@ -155,12 +321,12 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;height:var(--sat);ba
 .kico{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;flex:none}
 .workgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(178px,1fr));gap:10px}
 .worktile{display:flex;gap:10px;align-items:center;border-radius:11px;padding:10px 13px}
-.worktile .wico{width:34px;height:34px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;flex:none;box-shadow:0 1px 3px rgba(0,0,0,.10)}
-.worktile .wval{font-size:20px;font-weight:700;color:var(--navy);line-height:1.15}
+.worktile .wico{width:34px;height:34px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:16px;flex:none;box-shadow:0 1px 3px rgba(0,0,0,.10)}
+.worktile .wval{font-size:20px;font-weight:700;color:var(--strong);line-height:1.15}
 .worktile .wval small{font-size:12.5px;font-weight:500;color:var(--muted)}
 .worktile .wlbl{font-size:12px;color:var(--ink2);margin-top:1px}
 .worktile .wfoot{font-size:11.5px;color:var(--muted)}
-.kpi .val{font-size:26px;font-weight:700;color:var(--navy);margin-top:2px;line-height:1.15}
+.kpi .val{font-size:26px;font-weight:700;color:var(--strong);margin-top:2px;line-height:1.15}
 .kpi .val small{font-size:13px;font-weight:500;color:var(--muted)}
 .kpi .foot{font-size:11.5px;color:var(--muted);margin-top:4px}
 .two{grid-template-columns:1fr 1fr}
@@ -179,7 +345,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;height:var(--sat);ba
 .ovg-c .surfgrid{margin-top:0}
 .ovg-b{display:flex;flex-direction:column} .ovg-b .surfrows{flex:1;justify-content:space-between}   /* v30.7 แถวแรกชิดบน แถวท้ายชิดล่าง ไม่เหลือแถบว่างท้ายการ์ด */
 /* v30.7 ผู้ใช้: กราฟย่อยในการ์ดงบ "ไม่มีกรอบดูสะเปะสะปะ" → ช่องกริดย่อยมีกรอบบางแบบการ์ดย่อย */
-.gcell{border:1px solid var(--hairline);border-radius:10px;padding:10px 12px 8px;background:#fff;min-width:0}
+.gcell{border:1px solid var(--hairline);border-radius:10px;padding:10px 12px 8px;background:var(--card);min-width:0}
 /* กฎ 16 — การ์ดรายการ (ไม่ใช่กราฟ/ตาราง): กล่องเนื้อในยืดเต็มการ์ด แล้วกระจายรายการเท่าๆ กัน */
 .card.fillcol{display:flex;flex-direction:column} .card.fillcol>[id]{flex:1;display:flex;flex-direction:column}
 .card.fillcol .alist{flex:1;align-content:space-evenly}
@@ -193,7 +359,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;height:var(--sat);ba
 .srow .sn i{width:9px;height:9px;border-radius:50%;flex:none}
 .srow .sbig{white-space:nowrap;font-size:11px;color:var(--ink2);flex:0 0 auto}
 .srow .sbig b{font-size:16px;color:var(--ink);font-variant-numeric:tabular-nums;margin-right:3px}
-.srow .sb{flex:1 1 70px;min-width:70px;height:11px;border-radius:6px;overflow:hidden;display:flex;background:#eceeee}
+.srow .sb{flex:1 1 70px;min-width:70px;height:11px;border-radius:6px;overflow:hidden;display:flex;background:var(--tint-neutral)}
 .srow .sb span{display:block;height:100%}
 .srow .sp{display:flex;gap:8px;font-size:11px;color:var(--ink2);font-variant-numeric:tabular-nums;white-space:nowrap;flex:0 0 auto}
 .srow .sp b{color:var(--ink)} .srow .sp .skm{color:var(--muted)}
@@ -212,7 +378,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;height:var(--sat);ba
 /* ชื่อหมวดอย่าตัดบรรทัด ตารางจะได้ไม่สูงเก้งก้างตอนคอลัมน์แคบ */
 #muadTable td:first-child,#muadTable th:first-child{white-space:nowrap}
 
-.card h3{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:2px}
+.card h3{font-size:14px;font-weight:700;color:var(--strong);margin-bottom:2px}
 .card .note{font-size:11.5px;color:var(--muted);margin-bottom:10px}
 @media(max-width:980px){.two,.ovgrid{grid-template-columns:1fr}.main{margin-left:0;padding:16px}.sidebar{position:static;width:100%;height:auto}.app{flex-direction:column}}
 /* ---------- มือถือ (จอคอมไม่กระทบ — ทำงานเฉพาะจอแคบ) ---------- */
@@ -295,17 +461,17 @@ td.num,th.num{text-align:center;font-variant-numeric:tabular-nums}  /* กฎ 14
 /* คอลัมน์สั้น (รหัส · ปี · หมวด · สถานะ · ปุ่ม) จัดกึ่งกลาง — ใส่ให้อัตโนมัติโดย alignTables() */
 td.c,th.c{text-align:center}
 .pill{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;white-space:nowrap}
-.pill.ok{background:#e7f6e7;color:#0a6b0a}
-.pill.miss{background:#fdecec;color:#a12626}
-.pill.wait{background:#fff3d6;color:#8a5a00}
-.search{width:230px;max-width:100%;font-family:inherit;font-size:13px;padding:7px 11px;border:1px solid var(--grid);border-radius:7px;background:#fff}
+.pill.ok{background:var(--tint-ok);color:var(--tint-ok-ink)}
+.pill.miss{background:var(--tint-bad);color:var(--tint-miss-ink)}
+.pill.wait{background:var(--tint-wait);color:var(--tint-wait-ink)}
+.search{width:230px;max-width:100%;font-family:inherit;font-size:13px;padding:7px 11px;border:1px solid var(--grid);border-radius:7px;background:var(--card)}
 select.search{width:auto}
 /* ---------- map ---------- */
 .maplayout{display:grid;grid-template-columns:290px 1fr;gap:14px}
 .maplayout.nolist{grid-template-columns:1fr}
 .maplayout.nolist .roadlist{display:none}
 @media(max-width:900px){.maplayout{grid-template-columns:1fr}}
-#map{height:calc(100vh - 210px);min-height:480px;border-radius:12px;border:1px solid var(--hairline);position:relative;overflow:hidden;background:#dfe8e6;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+#map{height:calc(100vh - 210px);min-height:480px;border-radius:12px;border:1px solid var(--hairline);position:relative;overflow:hidden;background:var(--tile-mist);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
 /* v23.2 — ป้ายบอกวิธีใช้สองนิ้ว โผล่เมื่อพยายามลากแผนที่ด้วยนิ้วเดียวบนมือถือ */
 .maphint{position:absolute;inset:0;display:grid;place-items:center;z-index:60;pointer-events:none;
   background:rgba(11,11,11,.42);color:#fff;font-size:13.5px;font-weight:600;text-align:center;padding:0 28px;
@@ -317,22 +483,22 @@ select.search{width:auto}
 #vecpane{position:absolute;top:0;left:0;overflow:visible}
 #vecpane path{fill:none;stroke-linecap:round;stroke-linejoin:round;cursor:pointer}
 .zoomctl{position:absolute;top:12px;left:12px;z-index:900;display:flex;flex-direction:column;border-radius:8px;overflow:hidden;box-shadow:0 1px 5px rgba(0,0,0,.25)}
-.zoomctl button{width:34px;height:34px;border:none;background:#fff;font-size:18px;cursor:pointer;color:var(--navy)}
+.zoomctl button{width:34px;height:34px;border:none;background:var(--card);font-size:18px;cursor:pointer;color:var(--strong)}
 .zoomctl button:first-child{border-bottom:1px solid var(--grid)}
-.mappopup{position:absolute;z-index:950;background:#fff;border-radius:9px;box-shadow:0 4px 14px rgba(0,0,0,.28);padding:10px 13px;font-size:12.5px;line-height:1.55;max-width:260px;transform:translate(-50%,-100%);margin-top:-10px;cursor:grab}
+.mappopup{position:absolute;z-index:950;background:var(--card);border-radius:9px;box-shadow:0 4px 14px rgba(0,0,0,.28);padding:10px 13px;font-size:12.5px;line-height:1.55;max-width:260px;transform:translate(-50%,-100%);margin-top:-10px;cursor:grab}
 .mappopup:active{cursor:grabbing}
 .mappopup button,.mappopup a{cursor:pointer}
-.mappopup b{color:var(--navy)}
+.mappopup b{color:var(--strong)}
 .mappopup .x{position:absolute;top:0;right:2px;cursor:pointer;color:var(--muted);font-size:14px;padding:3px 6px}
-.mappopup .x:hover{color:var(--navy)}
+.mappopup .x:hover{color:var(--strong)}
 .attrib{position:absolute;bottom:2px;right:6px;z-index:900;font-size:10px;color:#333;background:rgba(255,255,255,.75);padding:1px 5px;border-radius:4px}
-.listtg{position:absolute;left:0;top:50%;transform:translateY(-50%);z-index:945;width:23px;height:72px;border:1px solid var(--grid);border-left:none;border-radius:0 10px 10px 0;background:#fff;color:var(--navy);cursor:pointer;font-size:12px;font-family:inherit;box-shadow:2px 0 7px rgba(16,24,40,.14);padding:0}
+.listtg{position:absolute;left:0;top:50%;transform:translateY(-50%);z-index:945;width:23px;height:72px;border:1px solid var(--grid);border-left:none;border-radius:0 10px 10px 0;background:var(--card);color:var(--strong);cursor:pointer;font-size:12px;font-family:inherit;box-shadow:2px 0 7px rgba(16,24,40,.14);padding:0}
 .listtg:hover{background:var(--teal);color:#fff;border-color:var(--teal)}
-.basectl{position:absolute;top:10px;right:10px;z-index:930;display:flex;background:#fff;border:1px solid var(--grid);border-radius:9px;overflow:hidden;box-shadow:0 2px 8px rgba(16,24,40,.16)}
+.basectl{position:absolute;top:10px;right:10px;z-index:930;display:flex;background:var(--card);border:1px solid var(--grid);border-radius:9px;overflow:hidden;box-shadow:0 2px 8px rgba(16,24,40,.16)}
 .basectl button{border:none;background:none;font-family:inherit;font-size:12px;font-weight:600;color:var(--ink2);padding:7px 13px;cursor:pointer}
 .basectl button+button{border-left:1px solid var(--grid)}
 .basectl button.active{background:var(--navy);color:#fff}
-.legendbox{grid-column:1/-1;background:#fff;border:1px solid var(--hairline);border-radius:12px;padding:10px 16px;font-size:11.5px;line-height:1.7;display:flex;flex-wrap:wrap;gap:4px 22px;align-items:center;box-shadow:0 1px 4px rgba(16,24,40,.06)}
+.legendbox{grid-column:1/-1;background:var(--card);border:1px solid var(--hairline);border-radius:12px;padding:10px 16px;font-size:11.5px;line-height:1.7;display:flex;flex-wrap:wrap;gap:4px 22px;align-items:center;box-shadow:0 1px 4px rgba(16,24,40,.06)}
 .legendbox .lgfull{flex-basis:100%}
 .lg{display:flex;align-items:center;gap:7px}
 .lg .sw{width:22px;height:4px;border-radius:2px;flex:none}
@@ -349,7 +515,7 @@ select.search{width:auto}
 .reqrow .cat{font-weight:700}
 .reqrow .rng{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
 .reqrow .amt{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
-.amt.ok{color:#1a7a34}.amt.wait{color:var(--crit)}
+.amt.ok{color:#1a7a34}.amt.wait{color:var(--crit-ink)}
 .loading{color:var(--muted);font-size:13px;padding:30px;text-align:center}
 .spin{display:inline-block;width:14px;height:14px;border:2px solid var(--grid);border-top-color:var(--teal);border-radius:50%;animation:sp 1s linear infinite;vertical-align:-2px;margin-right:7px}
 @keyframes sp{to{transform:rotate(360deg)}}
@@ -360,7 +526,7 @@ select.search{width:auto}
 .subtabs button{background:none;border:none;font-family:inherit;font-size:13.5px;font-weight:600;color:var(--ink2);padding:9px 16px;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}
 .subtabs button.active{color:var(--teal);border-bottom-color:var(--teal)}
 .roadhead{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
-.roadhead .code{font-size:26px;font-weight:700;color:var(--navy)}
+.roadhead .code{font-size:26px;font-weight:700;color:var(--strong)}
 .roadhead .nm{font-size:14px;color:var(--ink2)}
 .chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
 .rampbar{display:inline-block;width:120px;height:10px;border-radius:5px;border:1px solid var(--hairline);vertical-align:-1px}
@@ -374,41 +540,41 @@ select.search{width:auto}
 .dsgrid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:14px}
 @media(max-width:900px){ .dsgrid{grid-template-columns:1fr} }
 .dsrow{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--grid);border-radius:10px;
-  background:#fff;cursor:pointer;transition:box-shadow .12s,transform .12s;min-width:0}
+  background:var(--card);cursor:pointer;transition:box-shadow .12s,transform .12s;min-width:0}
 .dsrow+.dsrow{margin-top:6px}
 .dsrow:hover{box-shadow:0 2px 10px rgba(16,24,40,.10);transform:translateY(-1px)}
 .dsrow .rk{flex:none;width:22px;height:22px;border-radius:7px;background:var(--navy);color:#fff;
   display:grid;place-items:center;font-size:11px;font-weight:700}
 .dsrow .rk.top{background:var(--crit)}
 .dsrow .nm{flex:1;min-width:0;font-size:12.5px}
-.dsrow .nm b{color:var(--navy)}
+.dsrow .nm b{color:var(--strong)}
 .dsrow .nm .wy{display:flex;gap:5px;flex-wrap:wrap;margin-top:2px}
 .dsrow .nm .wy span{font-size:10px;padding:1px 7px;border-radius:99px;border:1px solid var(--grid);color:var(--ink2);white-space:nowrap}
 .dsrow .sc{flex:none;display:flex;align-items:center;gap:7px}
-.dsrow .sc .bar2{width:52px;height:7px;border-radius:4px;background:#eeede7;overflow:hidden}
+.dsrow .sc .bar2{width:52px;height:7px;border-radius:4px;background:var(--tint-track);overflow:hidden}
 .dsrow .sc .bar2 span{display:block;height:100%;background:var(--teal);border-radius:4px}
-.dsrow .sc b{font-size:12px;font-variant-numeric:tabular-nums;color:var(--navy);min-width:22px;text-align:right}
-.dsnum{display:flex;gap:11px;align-items:flex-start;border:1px solid var(--grid);border-radius:10px;padding:10px 12px;background:#fff}
+.dsrow .sc b{font-size:12px;font-variant-numeric:tabular-nums;color:var(--strong);min-width:22px;text-align:right}
+.dsnum{display:flex;gap:11px;align-items:flex-start;border:1px solid var(--grid);border-radius:10px;padding:10px 12px;background:var(--card)}
 .dsnum+.dsnum{margin-top:8px}
-.dsnum.crit{border-color:#f0cccc;background:#fdf6f6} .dsnum.warn{border-color:#efdcb4;background:#fdfaf2}
-.dsnum .v{font-size:19px;font-weight:700;color:var(--navy);line-height:1.15;font-variant-numeric:tabular-nums}
-.dsnum.crit .v{color:var(--crit)}
+.dsnum.crit{border-color:var(--tint-bad2-b);background:var(--tint-bad3)} .dsnum.warn{border-color:var(--tint-warn-b);background:var(--tint-warn)}
+.dsnum .v{font-size:19px;font-weight:700;color:var(--strong);line-height:1.15;font-variant-numeric:tabular-nums}
+.dsnum.crit .v{color:var(--crit-ink)}
 .dsnum .t{font-size:11.5px;color:var(--ink2);line-height:1.45}
 .dsnum .f{font-size:10.5px;color:var(--muted);margin-top:2px}
 /* v24.1 — แถบสรุปผู้บริหาร */
 .execbar{margin-bottom:14px;padding:13px 16px}
 .execbar .eh{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
-.execbar .eh h3{margin:0;font-size:14px;color:var(--navy)}
+.execbar .eh h3{margin:0;font-size:14px;color:var(--strong)}
 .execbar .eh .sub{font-size:11.5px;color:var(--muted)}
 .exgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
-.exit{display:flex;gap:11px;align-items:flex-start;border:1px solid var(--grid);border-radius:11px;padding:11px 13px;background:#fff;min-width:0}
-.exit.crit{border-color:#f0cccc;background:#fdf6f6}
-.exit.warn{border-color:#efdcb4;background:#fdfaf2}
-.exit.ok{border-color:#c6e4c8;background:#f6fbf6}
+.exit{display:flex;gap:11px;align-items:flex-start;border:1px solid var(--grid);border-radius:11px;padding:11px 13px;background:var(--card);min-width:0}
+.exit.crit{border-color:var(--tint-bad2-b);background:var(--tint-bad3)}
+.exit.warn{border-color:var(--tint-warn-b);background:var(--tint-warn)}
+.exit.ok{border-color:var(--tint-ok2-b);background:var(--tint-ok2)}
 .exit .ei{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:15px;background:var(--teal-soft)}
-.exit.crit .ei{background:#f7dede} .exit.warn .ei{background:#f7ecd0} .exit.ok .ei{background:#dcefdd}
-.exit .en{font-size:20px;font-weight:700;line-height:1.15;color:var(--navy);font-variant-numeric:tabular-nums}
-.exit.crit .en{color:var(--crit)} .exit.ok .en{color:var(--good)}
+.exit.crit .ei{background:var(--tint-bad-chip)} .exit.warn .ei{background:var(--tint-warn-chip)} .exit.ok .ei{background:var(--tint-ok-chip)}
+.exit .en{font-size:20px;font-weight:700;line-height:1.15;color:var(--strong);font-variant-numeric:tabular-nums}
+.exit.crit .en{color:var(--crit-ink)} .exit.ok .en{color:var(--good)}
 .exit .el{font-size:11.5px;color:var(--ink2);line-height:1.45}
 .exit .ef{font-size:10.5px;color:var(--muted);margin-top:2px}
 .exit.clickable{cursor:pointer;transition:box-shadow .12s,transform .12s}
@@ -424,7 +590,7 @@ select.search{width:auto}
    เดิมเป็นสไตล์อินไลน์ก๊อปกัน พอเพิ่มสวิตช์ที่ 5 แถบล้นเป็น 2 บรรทัด
    ดันแถวตัวกรองไปซ่อนใต้หัวเพจจนกดดรอปดาวน์ไม่ได้ (ชุดทดสอบ sweep จับได้) */
 .lyrtg{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--ink2);cursor:pointer;
-  background:#fff;border:1px solid var(--grid);border-radius:8px;padding:6px 9px;white-space:nowrap}
+  background:var(--card);border:1px solid var(--grid);border-radius:8px;padding:6px 9px;white-space:nowrap}
 .lyrtg input{margin:0}
 #mapSearch{max-width:188px}   /* กันแถบเครื่องมือแผนที่ล้นเป็น 2 บรรทัด */
 /* v31.13 ผู้ใช้ (8 ก.ย. 69): "เสิร์ชหาสายทางในหน้าแผนที่ ถ้าซ่อนแถบ แล้วมันไม่ขึ้นหาในกล่องเสิร์ช" — ผลค้นหาเด้งใต้กล่องค้นหาเมื่อรายชื่อซ้าย/แผงมือถือมองไม่เห็น */
@@ -433,27 +599,27 @@ select.search{width:auto}
 .searchdrop .roaditem:hover,.searchdrop .roaditem.hi{background:rgba(31,143,124,.12)}
 .searchdrop .sdhead{font-size:11px;color:var(--muted);padding:5px 9px 2px}
 /* v28.0 — ตารางสรุปตามแหล่งงบ: แถวหัวกลุ่ม 2 ระดับ + แถวรวมท้ายตาราง */
-#reqSrcTable tr.srcgrp td{background:#e9eef6;border-top:2px solid var(--navy);font-size:13px;padding-top:8px;padding-bottom:8px}
-#reqSrcTable tr.srccat td{background:#f5f2e8;font-weight:600}
+#reqSrcTable tr.srcgrp td{background:var(--tint-grp);border-top:2px solid var(--navy);font-size:13px;padding-top:8px;padding-bottom:8px}
+#reqSrcTable tr.srccat td{background:var(--tint-cat);font-weight:600}
 #reqSrcTable tr.srctot td{background:var(--navy);color:#fff;font-size:13px}
 #reqSrcTable tbody tr[data-code]:hover td{background:var(--teal-soft)}
 .skrib{transition:fill-opacity .12s} .skrib:hover{fill-opacity:.62}
 .bubble{transition:fill-opacity .12s} .bubble:hover{fill-opacity:.9}
 .smgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
-.smcell{border:1px solid var(--grid);border-radius:9px;padding:7px 8px 6px;background:#fbfaf8;min-width:0}
+.smcell{border:1px solid var(--grid);border-radius:9px;padding:7px 8px 6px;background:var(--tint-soft);min-width:0}
 .smcell .smlab{font-size:10.5px;color:var(--ink2);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.smcell .smval{font-size:12.5px;font-weight:700;text-align:center;font-variant-numeric:tabular-nums;color:var(--navy)}
+.smcell .smval{font-size:12.5px;font-weight:700;text-align:center;font-variant-numeric:tabular-nums;color:var(--strong)}
 .smcell .smval small{font-size:9.5px;font-weight:400;color:var(--muted);margin-left:3px}
 /* แท่งในช่องตาราง — แทนกราฟแท่งแยกใบ */
 .ibar{display:flex;align-items:center;gap:8px;min-width:0}
-.ibar .trk{flex:1;height:9px;border-radius:5px;background:#eeede7;overflow:hidden;min-width:34px}
+.ibar .trk{flex:1;height:9px;border-radius:5px;background:var(--tint-track);overflow:hidden;min-width:34px}
 .ibar .trk span{display:block;height:100%;border-radius:5px}
 .ibar b{font-variant-numeric:tabular-nums;font-size:12px;white-space:nowrap}
 .ibar .ipct{font-style:normal;font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:36px;text-align:right}
 .ibar:hover .ipct{color:var(--teal);font-weight:700}
 /* ตัวเลขใหญ่ + แถบสัดส่วนเดียว — แทนโดนัท */
 .heroblk{display:flex;align-items:center;gap:14px;margin-bottom:11px}
-.heroblk .hn{font-size:42px;font-weight:700;color:var(--navy);line-height:1}
+.heroblk .hn{font-size:42px;font-weight:700;color:var(--strong);line-height:1}
 .heroblk .hn span{font-size:19px;color:var(--ink2)}
 .heroblk .hl{font-size:12.5px;color:var(--ink2);min-width:0}
 .heroblk .hl .mu{color:var(--muted);font-size:11.5px}
@@ -465,19 +631,19 @@ select.search{width:auto}
    เพื่อให้ผู้ใช้จำภาพเดียวกันได้ทั้งระบบ ไม่ใช่ต่างหน้าต่างสัญลักษณ์ */
 .surfgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(86px,1fr));gap:7px;margin-top:11px}
 .surfbox{border:1px solid var(--grid);border-left:4px solid var(--navy);border-radius:10px;
-  padding:7px 8px 6px;background:#fbfaf8;min-width:0}
+  padding:7px 8px 6px;background:var(--tint-soft);min-width:0}
 .surfbox .shead{display:flex;align-items:center;gap:5px;min-width:0}
 .surfbox .sico{flex:none;width:21px;height:21px;border-radius:7px;display:flex;align-items:center;
   justify-content:center;font-size:11.5px;line-height:1}
 .surfbox .sname{font-size:11px;font-weight:600;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.surfbox .sval{font-size:19px;font-weight:700;color:var(--navy);font-variant-numeric:tabular-nums;line-height:1.2;margin-top:1px}
+.surfbox .sval{font-size:19px;font-weight:700;color:var(--strong);font-variant-numeric:tabular-nums;line-height:1.2;margin-top:1px}
 .surfbox .sval small{font-size:11px;font-weight:400;color:var(--ink2);margin-left:3px}
 .surfbox .sfoot{font-size:10.5px;color:var(--muted);margin-top:1px;line-height:1.35}   /* v30.0 ปล่อยให้ขึ้นบรรทัดใหม่ได้ — กล่องแคบแล้ว "93 สาย" เคยถูกตัดเป็น "93…" */
 .surfbox.zero{opacity:.62}
 /* v31.2 กล่องชนิดงบในหน้าคำของบ (ต่อยอดจาก surfbox) */
 .catgrid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;margin-top:12px}
 /* v31.4 หัวส่วนในหน้าโครงการประจำปี (① สรุปปี · ② เช็คคำขอ) */
-.secdiv{margin:6px 0 12px;padding-left:2px} .secdiv h2{font-size:17px;margin:0 0 3px;color:var(--navy)} #gapBody .secdiv{margin-top:22px;padding-top:14px;border-top:2px dashed var(--grid)}
+.secdiv{margin:6px 0 12px;padding-left:2px} .secdiv h2{font-size:17px;margin:0 0 3px;color:var(--strong)} #gapBody .secdiv{margin-top:22px;padding-top:14px;border-top:2px dashed var(--grid)}
 .catbox .cdot{flex:none;width:10px;height:10px;border-radius:50%}
 .catbox .sname{font-size:12px;white-space:normal;line-height:1.25}
 .catbox .sval{font-size:22px}
@@ -489,7 +655,7 @@ select.search{width:auto}
 .catgrid-s .catbox .sval{font-size:18px} .catgrid-s .catbox .camt{font-size:13px} .catgrid-s .catbox .sname{font-size:11px}
 .onelg i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
 .chip-none{color:var(--muted);border-style:dashed;background:transparent}
-.chip{font-size:11.5px;color:var(--ink2);border:1px solid var(--grid);border-radius:99px;padding:3px 11px;background:#fff}
+.chip{font-size:11.5px;color:var(--ink2);border:1px solid var(--grid);border-radius:99px;padding:3px 11px;background:var(--card)}
 .roadnav{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .stripwrap .lanelbl{fill:var(--ink2);font-size:11.5px;font-weight:600}
 .stripwrap .lanebg{fill:#eef0ee}
@@ -579,7 +745,7 @@ select.search{width:auto}
     line-height:1.25;text-align:center;min-height:46px;border-radius:10px}
   .mappopup.mobdock .pact .lbf{display:none}          /* จอแคบใช้ป้ายสั้น */
   .mappopup.mobdock .pact .lbs{display:block}
-  .mappopup.mobdock .pact .copyc{background:#fff;color:var(--teal);border:1px solid var(--teal)}
+  .mappopup.mobdock .pact .copyc{background:var(--card);color:var(--teal);border:1px solid var(--teal)}
   .mappopup.mobdock .pact .gmDir{order:-1;background:var(--teal);border-color:var(--teal);color:#fff}
   .mappopup.mobdock .pact .cptxt{display:none}
   .mappopup.mobdock .pact .copied{grid-column:1/-1;display:none;text-align:center;margin-top:2px}
@@ -621,7 +787,7 @@ select.search{width:auto}
 
 /* v20.8 — หัวข้อคั่นกลุ่มในแถบรายชื่อสายทาง (ใช้กับบล็อกสะพานชุมชน) */
 .roadlist .listhead{margin:12px 2px 5px;padding-top:9px;border-top:1px dashed var(--grid);
-  font-size:11.5px;font-weight:700;color:var(--navy);letter-spacing:.2px}
+  font-size:11.5px;font-weight:700;color:var(--strong);letter-spacing:.2px}
 
 /* v20.9 — บรรทัดบอกว่าปุ่มลิงก์อ้างอิงจุดไหน */
 .mappopup .gmnote{margin-top:9px;padding-top:8px;border-top:1px dashed var(--grid);
@@ -681,15 +847,15 @@ select.search{width:auto}
 .filterbar{display:none;align-items:center;flex-wrap:wrap;gap:8px;margin:0 0 12px;
   background:var(--teal-soft);border:1px solid rgba(13,148,136,.28);border-radius:10px;padding:8px 12px}
 .filterbar.on{display:flex}
-.filterbar .flabel{font-size:11.5px;font-weight:700;color:#0b6b63;letter-spacing:.2px}
-.fchip{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--teal);
-  color:var(--navy);border-radius:99px;padding:4px 6px 4px 11px;font-size:12px;font-weight:600}
+.filterbar .flabel{font-size:11.5px;font-weight:700;color:var(--teal-ink);letter-spacing:.2px}
+.fchip{display:inline-flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--teal);
+  color:var(--strong);border-radius:99px;padding:4px 6px 4px 11px;font-size:12px;font-weight:600}
 .fchip b{font-weight:700}
 .fchip .fx{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;
   background:var(--teal);color:#fff;font-size:11px;cursor:pointer;line-height:1}
 .fchip .fx:hover{background:var(--navy)}
 .filterbar .fclear{margin-left:auto;background:none;border:none;font-family:inherit;font-size:11.5px;
-  font-weight:600;color:#0b6b63;cursor:pointer;text-decoration:underline}
+  font-weight:600;color:var(--teal-ink);cursor:pointer;text-decoration:underline}
 
 /* คลิกได้ตรงไหนบ้าง — บอกด้วย cursor + ไฮไลต์บาง */
 .viz .bar{cursor:pointer}
@@ -712,7 +878,7 @@ th.sortable:hover{background:var(--navy-d)}
 .kpi.clickable:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(27,42,74,.13)}
 .kpi.clickable:active{transform:none}
 .kpi .kdelta{font-size:11px;font-weight:700;margin-top:3px;display:inline-flex;align-items:center;gap:4px}
-.kpi .kdelta.up{color:var(--good)} .kpi .kdelta.down{color:var(--crit)} .kpi .kdelta.flat{color:var(--muted)}
+.kpi .kdelta.up{color:var(--good)} .kpi .kdelta.down{color:var(--crit-ink)} .kpi .kdelta.flat{color:var(--muted)}
 .kpi .spark{display:block;margin-top:5px}
 @media(max-width:900px){
   .filterbar{padding:7px 10px;gap:6px}
@@ -726,20 +892,20 @@ th.sortable:hover{background:var(--navy-d)}
    ไม่ได้แค่ซ่อนด้วย CSS — ในไฟล์มีแต่ ciphertext กด View Source ก็ไม่เห็นข้อความ
    ============================================================ */
 .lockcard{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;
-  background:linear-gradient(180deg,#fcfcfb 0%,#f7f8f5 100%);border:1px dashed var(--grid)}
+  background:var(--card);border:1px dashed var(--grid)}   /* v31.26 เดิมฝังพื้นขาวไว้ ชุดกลางคืนจึงเป็นการ์ดขาวโพลน */
 .lockcard .lockico{font-size:26px;line-height:1;margin-bottom:8px;filter:grayscale(.15)}
 .lockform{display:flex;gap:8px;flex-wrap:wrap;width:100%;margin-top:2px}
 .lockform input{flex:1 1 190px;min-width:0;font-family:inherit}
 .lockmsg{font-size:11.5px;margin-top:8px;min-height:16px}
-.lockmsg.bad{color:var(--crit);font-weight:600}
+.lockmsg.bad{color:var(--crit-ink);font-weight:600}
 .lockmsg.ok{color:var(--good);font-weight:600}
 .lockmsg.busy{color:var(--muted)}
 .relock{background:none;border:1px solid var(--grid);color:var(--ink2);font-family:inherit;
   font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:99px;cursor:pointer}
-.relock:hover{border-color:var(--crit);color:var(--crit)}
+.relock:hover{border-color:var(--crit-ink);color:var(--crit-ink)}
 .unlockbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:14px 0 0;
   background:var(--teal-soft);border:1px solid rgba(13,148,136,.28);border-radius:10px;padding:7px 12px;
-  font-size:11.5px;color:#0b6b63;font-weight:600}
+  font-size:11.5px;color:var(--teal-ink);font-weight:600}
 @media print{.lockcard,.unlockbar{display:none!important}}
 
 /* ============================================================
@@ -783,14 +949,14 @@ th.sortable:hover{background:var(--navy-d)}
     box-shadow:0 -8px 26px rgba(16,24,40,.3);max-height:76vh;overflow:auto}
   body.moreopen .moresheet{transform:translateY(0)}
   .moresheet .grip{width:38px;height:4px;border-radius:99px;background:var(--grid);margin:4px auto 10px}
-  .moresheet h4{margin:0 2px 8px;font-size:12px;font-weight:700;color:var(--navy);letter-spacing:.2px}
+  .moresheet h4{margin:0 2px 8px;font-size:12px;font-weight:700;color:var(--strong);letter-spacing:.2px}
   .moregrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
   .moregrid button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
-    padding:14px 6px;border:1px solid var(--hairline);border-radius:12px;background:#fff;
+    padding:14px 6px;border:1px solid var(--hairline);border-radius:12px;background:var(--card);
     font-family:inherit;font-size:11.5px;font-weight:600;color:var(--ink2);cursor:pointer;
     box-shadow:0 1px 2px rgba(16,24,40,.04)}
   .moregrid button .mico{font-size:20px;line-height:1}
-  .moregrid button.active{border-color:var(--teal);background:var(--teal-soft);color:var(--navy)}
+  .moregrid button.active{border-color:var(--teal);background:var(--teal-soft);color:var(--strong)}
   .moregrid button:active{transform:scale(.97)}
 
   /* ของเดิมที่ยึดขอบล่างอยู่ ต้องขยับขึ้นให้พ้นแถบใหม่ */
@@ -809,7 +975,7 @@ th.sortable:hover{background:var(--navy-d)}
 .dd-host{position:relative;display:inline-flex;min-width:0;max-width:100%}
 .dd-host>select{position:absolute;inset:0;opacity:0;pointer-events:none;width:100%;height:100%}
 .dd-btn{display:inline-flex;align-items:center;gap:8px;width:100%;min-width:0;
-  background:#fff;border:1px solid var(--grid);border-radius:9px;
+  background:var(--card);border:1px solid var(--grid);border-radius:9px;
   font-family:inherit;font-size:12.5px;color:var(--ink);
   padding:8px 11px;cursor:pointer;text-align:left;transition:border-color .13s,box-shadow .13s}
 .dd-btn:hover{border-color:#bcd3ee}
@@ -821,7 +987,7 @@ th.sortable:hover{background:var(--navy-d)}
 .dd-host.open .dd-cv{transform:rotate(-135deg) translate(-3px,-3px)}
 .dd-host.dd-set .dd-btn{border-color:#bcd3ee}
 
-.dd-pop{position:fixed;z-index:1400;background:#fff;border:1px solid var(--grid);
+.dd-pop{position:fixed;z-index:1400;background:var(--card);border:1px solid var(--grid);
   border-radius:12px;box-shadow:0 10px 30px rgba(16,24,40,.20);
   overflow:hidden;display:flex;flex-direction:column;
   opacity:0;transform:translateY(-4px) scale(.99);pointer-events:none;
@@ -829,7 +995,7 @@ th.sortable:hover{background:var(--navy-d)}
 .dd-pop.show{opacity:1;transform:none;pointer-events:auto}
 .dd-pop .dd-search{flex:none;padding:8px;border-bottom:1px solid var(--grid);background:var(--page)}
 .dd-pop .dd-search input{width:100%;font-family:inherit;font-size:12.5px;padding:7px 10px;
-  border:1px solid var(--grid);border-radius:8px;background:#fff;color:var(--ink)}
+  border:1px solid var(--grid);border-radius:8px;background:var(--card);color:var(--ink)}
 .dd-pop .dd-search input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(13,148,136,.13)}
 .dd-list{overflow:auto;padding:5px;-webkit-overflow-scrolling:touch}
 .dd-opt{padding:8px 11px;border-radius:8px;font-size:12.5px;line-height:1.45;color:var(--ink);
@@ -843,7 +1009,7 @@ th.sortable:hover{background:var(--navy-d)}
 /* v23.1 — หัวกลุ่มใน dropdown (สายทาง / สะพานชุมชน)
    ไม่ใช้ position:sticky เพราะรายการเป็น list แบน หัวกลุ่มจะซ้อนทับกันเองตอนเลื่อน */
 .dd-grp{display:flex;align-items:center;gap:8px;margin:11px 4px 5px;
-  font-size:10.5px;font-weight:700;letter-spacing:.3px;color:var(--navy);white-space:nowrap}
+  font-size:10.5px;font-weight:700;letter-spacing:.3px;color:var(--strong);white-space:nowrap}
 .dd-grp::after{content:'';flex:1;height:1px;background:var(--grid)}
 .dd-grp:first-child{margin-top:2px}
 
@@ -875,7 +1041,7 @@ body.cmdopen .cmdbd{display:flex}
   box-shadow:0 18px 50px rgba(16,24,40,.34);overflow:hidden;display:flex;flex-direction:column;
   max-height:min(70vh,560px);animation:cmdin .16s ease-out}
 @keyframes cmdin{from{opacity:0;transform:translateY(-8px) scale(.99)}to{opacity:1;transform:none}}
-.cmdtop{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--grid);background:#fff}
+.cmdtop{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--grid);background:var(--card)}
 .cmdtop .ic{font-size:15px;color:var(--teal)}
 .cmdtop input{flex:1;min-width:0;border:none;outline:none;font-family:inherit;font-size:15px;color:var(--ink);background:none}
 .cmdtop kbd{font-family:inherit;font-size:10.5px;font-weight:700;color:var(--muted);
@@ -886,7 +1052,7 @@ body.cmdopen .cmdbd{display:flex}
 .cmdit .cico{flex:none;width:26px;height:26px;border-radius:7px;display:grid;place-items:center;
   background:var(--teal-soft);color:var(--teal);font-size:13px}
 .cmdit .cmain{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cmdit .cmain b{color:var(--navy)}
+.cmdit .cmain b{color:var(--strong)}
 .cmdit .csub{flex:none;font-size:11px;color:var(--muted)}
 .cmdit.cur{background:var(--teal-soft)}
 .cmdit.cur .csub{color:var(--ink2)}
@@ -907,7 +1073,7 @@ body.cmdopen .cmdbd{display:flex}
 
 /* ปุ่มกลับขึ้นบน */
 .totop{position:fixed;right:16px;bottom:20px;z-index:1150;width:42px;height:42px;border-radius:50%;
-  border:1px solid var(--hairline);background:#fff;color:var(--navy);font-size:17px;cursor:pointer;
+  border:1px solid var(--hairline);background:var(--card);color:var(--strong);font-size:17px;cursor:pointer;
   box-shadow:0 4px 16px rgba(16,24,40,.18);display:grid;place-items:center;
   opacity:0;transform:translateY(10px) scale(.9);pointer-events:none;transition:all .2s}
 .totop.show{opacity:1;transform:none;pointer-events:auto}
@@ -917,9 +1083,9 @@ body.cmdopen .cmdbd{display:flex}
 /* โครงร่างระหว่างโหลด (skeleton) แทนสปินเนอร์เปล่าๆ */
 .loading{position:relative}
 .sk{display:grid;gap:10px;margin-top:10px}
-.sk-row{height:13px;border-radius:7px;background:linear-gradient(90deg,var(--page) 25%,#eceee8 37%,var(--page) 63%);
+.sk-row{height:13px;border-radius:7px;background:linear-gradient(90deg,var(--page) 25%,var(--tint-skel) 37%,var(--page) 63%);
   background-size:400% 100%;animation:skmove 1.25s ease-in-out infinite}
-.sk-card{height:74px;border-radius:12px;background:linear-gradient(90deg,var(--page) 25%,#eceee8 37%,var(--page) 63%);
+.sk-card{height:74px;border-radius:12px;background:linear-gradient(90deg,var(--page) 25%,var(--tint-skel) 37%,var(--page) 63%);
   background-size:400% 100%;animation:skmove 1.25s ease-in-out infinite}
 .sk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
 @keyframes skmove{0%{background-position:100% 50%}100%{background-position:0 50%}}
@@ -950,7 +1116,7 @@ body.cmdopen .cmdbd{display:flex}
     left:10px; right:10px; bottom:calc(var(--tabbar-gap) + env(safe-area-inset-bottom,0px));
     height:var(--tabbar-h); padding:6px 5px;
     border-radius:22px;
-    background:rgba(27,42,74,.93);
+    background:var(--bar-bg);
     -webkit-backdrop-filter:blur(12px) saturate(1.25);
     backdrop-filter:blur(12px) saturate(1.25);
     border:1px solid rgba(255,255,255,.11);
@@ -973,13 +1139,13 @@ body.cmdopen .cmdbd{display:flex}
   }
   .tabbar button.active::before{display:none}     /* เอาขีดบนออก — นั่นแหละที่ทำให้ดูเป็นแถบเหลี่ยม */
   .tabbar button:active .tico{transform:scale(.9)}
-  .tabbar .tdot{top:4px;right:calc(50% - 19px);box-shadow:0 0 0 2px rgba(27,42,74,.9)}
+  .tabbar .tdot{top:4px;right:calc(50% - 19px);box-shadow:0 0 0 2px var(--bar-bg)}
 
   /* ของที่ยึดขอบล่างต้องขยับตามแถบลอย */
   /* ปุ่มเปิดรายชื่อสายทาง ทำทรงลอยให้เข้าชุดกับแถบเมนู */
   .sheettg{bottom:calc(var(--tabbar-h) + var(--tabbar-gap)*2 + env(safe-area-inset-bottom,0px));
     left:10px;right:10px;height:46px;border-radius:18px;border-top:none;
-    background:rgba(27,42,74,.93);
+    background:var(--bar-bg);
     -webkit-backdrop-filter:blur(12px) saturate(1.25);backdrop-filter:blur(12px) saturate(1.25);
     border:1px solid rgba(255,255,255,.11);
     box-shadow:0 8px 22px rgba(16,24,40,.30);
@@ -1006,7 +1172,7 @@ body.cmdopen .cmdbd{display:flex}
   .brand{
     display:flex;align-items:center;gap:9px;flex-wrap:nowrap;
     padding:9px 12px;border-radius:18px;
-    background:rgba(27,42,74,.93);
+    background:var(--bar-bg);
     -webkit-backdrop-filter:blur(12px) saturate(1.25);backdrop-filter:blur(12px) saturate(1.25);
     border:1px solid rgba(255,255,255,.11);
     box-shadow:0 6px 20px rgba(16,24,40,.26)}
@@ -1014,9 +1180,9 @@ body.cmdopen .cmdbd{display:flex}
   .brand .ver{display:none}                      /* เวอร์ชันย้ายไปอยู่ในชิปสถานะ */
   .brand .themesw{display:none}                  /* v31.0 จอแคบ: จุดสีในแถบชื่อซ่อน · v31.3 ย้ายไปอยู่ในเมนู "เพิ่มเติม" (ผู้ใช้: "มือถือเลือกสียังไง") */
   .moresheet .themesw{display:flex;margin:12px 2px 2px;gap:10px;padding-top:10px;border-top:1px solid var(--grid)}
-  .moresheet .themesw .tl{font-size:12px;font-weight:700;color:var(--navy);margin-right:4px}
+  .moresheet .themesw .tl{font-size:12px;font-weight:700;color:var(--strong);margin-right:4px}
   .moresheet .themesw button{width:24px;height:24px;border:2px solid rgba(0,0,0,.12)}
-  .moresheet .themesw button.on{border-color:var(--navy);box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--navy)}
+  .moresheet .themesw button.on{border-color:var(--strong);box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--navy)}
   .appstat{display:inline-flex;align-items:center;gap:6px;flex:none;
     font-size:10.5px;font-weight:700;color:#cdd9f0;
     background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);
@@ -1049,7 +1215,7 @@ body.cmdopen .cmdbd{display:flex}
   .tabbar .tico svg{width:20px;height:20px}
   .moregrid .mico{display:grid;place-items:center;width:26px;height:26px;color:var(--teal)}
   .moregrid .mico svg{width:23px;height:23px}
-  .moregrid button.active .mico{color:var(--navy)}
+  .moregrid button.active .mico{color:var(--strong)}
   /* ปุ่มลัดบนแถบบน — แชร์มุมมอง / รายงานสรุป */
   .brand .tbtn{display:grid;place-items:center;flex:none;width:32px;height:32px;border-radius:11px;
     border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.10);color:#dbe4f5;
@@ -1075,7 +1241,7 @@ body.cmdopen .cmdbd{display:flex}
    ============================================================ */
 .wgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:12px 0 14px}
 .wcell{background:var(--page);border:1px solid var(--grid);border-radius:10px;padding:9px 11px}
-.wcell .wlab{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:11.5px;font-weight:700;color:var(--navy)}
+.wcell .wlab{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:11.5px;font-weight:700;color:var(--strong)}
 .wcell .wval{font-size:11.5px;font-weight:800;color:var(--teal);font-variant-numeric:tabular-nums}
 .wcell .whint{font-size:10.5px;color:var(--muted);margin-top:2px;line-height:1.4}
 .wcell input[type=range]{width:100%;margin-top:7px;accent-color:var(--teal);height:18px}
@@ -1083,13 +1249,13 @@ body.cmdopen .cmdbd{display:flex}
 /* กรวย 3 ชั้น */
 .fnl{display:grid;gap:9px;margin-top:10px}
 .fnrow{display:grid;grid-template-columns:132px 1fr auto;gap:11px;align-items:center}
-.fnrow .fnlab{font-size:12.5px;font-weight:700;color:var(--navy)}
+.fnrow .fnlab{font-size:12.5px;font-weight:700;color:var(--strong)}
 .fnrow .fnlab small{display:block;font-weight:400;font-size:10.5px;color:var(--muted)}
 .fnbar{height:30px;border-radius:8px;background:var(--page);overflow:hidden;position:relative}
 .fnbar>span{display:block;height:100%;border-radius:8px;transition:width .5s cubic-bezier(.3,.8,.3,1)}
-.fnval{font-size:13px;font-weight:800;color:var(--navy);font-variant-numeric:tabular-nums;white-space:nowrap}
+.fnval{font-size:13px;font-weight:800;color:var(--strong);font-variant-numeric:tabular-nums;white-space:nowrap}
 .fnval small{display:block;font-size:10.5px;font-weight:600;color:var(--muted)}
-.fngap{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--crit);font-weight:700;
+.fngap{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--crit-ink);font-weight:700;
   padding:2px 0 2px 143px}
 .fngap .gline{flex:1;height:1px;border-top:1px dashed rgba(208,59,59,.5)}
 
@@ -1099,21 +1265,21 @@ body.cmdopen .cmdbd{display:flex}
 .rk-badge.top{background:var(--crit)}
 .rk-why{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
 .rk-why span{font-size:10px;font-weight:600;padding:1px 7px;border-radius:99px;
-  background:var(--teal-soft);color:#0b6b63;white-space:nowrap}
-.rk-why span.bad{background:rgba(208,59,59,.11);color:var(--crit)}
-.rk-why span.warn{background:rgba(217,164,65,.18);color:#8a6413}
+  background:var(--teal-soft);color:var(--teal-ink);white-space:nowrap}
+.rk-why span.bad{background:rgba(208,59,59,.11);color:var(--crit-ink)}
+.rk-why span.warn{background:rgba(217,164,65,.18);color:var(--warn-ink)}
 .scorebar{height:6px;border-radius:4px;background:var(--page);overflow:hidden;min-width:64px}
 .scorebar>span{display:block;height:100%;background:linear-gradient(90deg,var(--teal),#3fbfae)}
 
 /* Alerts / ข้อเสนอแนะ */
 .alist{display:grid;gap:9px;margin-top:9px}
-.aitem{display:flex;gap:10px;padding:10px 12px;border:1px solid var(--hairline);border-radius:10px;background:#fff}
+.aitem{display:flex;gap:10px;padding:10px 12px;border:1px solid var(--hairline);border-radius:10px;background:var(--card)}
 .aitem .aico{flex:none;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:13px}
-.aitem.crit .aico{background:rgba(208,59,59,.12);color:var(--crit)}
-.aitem.warn .aico{background:rgba(217,164,65,.18);color:#8a6413}
+.aitem.crit .aico{background:rgba(208,59,59,.12);color:var(--crit-ink)}
+.aitem.warn .aico{background:rgba(217,164,65,.18);color:var(--warn-ink)}
 .aitem.info .aico{background:var(--teal-soft);color:var(--teal)}
 .aitem .atxt{flex:1;min-width:0;font-size:12.5px;line-height:1.55}
-.aitem .atxt b{color:var(--navy)}
+.aitem .atxt b{color:var(--strong)}
 .aitem .ahint{font-size:11px;color:var(--muted);margin-top:2px}
 @media(max-width:900px){
   .fnrow{grid-template-columns:96px 1fr;grid-template-areas:'l b' 'v v';gap:8px}
@@ -1127,11 +1293,11 @@ body.cmdopen .cmdbd{display:flex}
 .ct-kpi{border:1px solid var(--grid);border-radius:10px;padding:12px 14px;background:var(--card,#fff);min-width:0;font-family:inherit;color:var(--ink)}
 .ct-kpi-label,.ct-kpi-value,.ct-kpi-note{display:block}
 .ct-kpi-label{font-size:12px;color:var(--muted)}
-.ct-kpi-value{font-size:25px;font-weight:800;line-height:1.35;margin:3px 0;color:var(--navy)}
+.ct-kpi-value{font-size:25px;font-weight:800;line-height:1.35;margin:3px 0;color:var(--strong)}
 .ct-kpi-note{font-size:11px;color:var(--muted);overflow-wrap:anywhere}
 .ct-time{text-align:left;cursor:pointer;background:var(--teal-soft,#eef7f5)}
 .ct-time:hover,.ct-time.selected{border-color:var(--teal);box-shadow:inset 0 0 0 1px var(--teal)}
-.ct-time[data-time="100"] .ct-kpi-value{color:var(--crit)}
+.ct-time[data-time="100"] .ct-kpi-value{color:var(--crit-ink)}
 .ct-time-help{margin:14px 0 4px}.ct-summary{margin:10px 0}
 .yr-table-controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0}
 .yr-table-controls label{min-width:0;max-width:100%}.yr-table-controls select{max-width:270px}
@@ -1147,7 +1313,7 @@ body.cmdopen .cmdbd{display:flex}
 .yr-work-details{margin-top:12px}.yr-work-details summary{cursor:pointer;font-weight:700;padding:8px 0}.yr-work-details .tblwrap{max-height:380px}.yr-work-details td{white-space:nowrap}.worktile[role="button"]:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
 .share-bars{display:flex;flex-direction:column;gap:8px;padding:4px 1px}
 .share-total{display:flex;justify-content:space-between;align-items:baseline;color:var(--muted);padding-bottom:6px;border-bottom:1px solid var(--grid)}
-.share-total b{font-size:20px;color:var(--navy)}.share-total small{font-size:11px;font-weight:400}
+.share-total b{font-size:20px;color:var(--strong)}.share-total small{font-size:11px;font-weight:400}
 .share-list{display:grid;grid-auto-rows:minmax(28px,1fr);gap:5px;flex:1}
 .share-caption{display:flex;justify-content:space-between;gap:8px;align-items:baseline;font-size:12px;white-space:nowrap}
 .share-caption i{display:inline-block;width:7px;height:7px;border-radius:2px;margin-right:6px}
@@ -1155,11 +1321,11 @@ body.cmdopen .cmdbd{display:flex}
 .share-caption em{display:inline-block;font-style:normal;width:52px;text-align:right;color:var(--muted);font-weight:400}
 .share-track{height:5px;background:var(--grid);border-radius:4px;margin-top:4px;overflow:hidden}.share-track span{display:block;height:100%;border-radius:4px}
 .share-row:hover .share-track{filter:brightness(.94)}
-.ct-section-title{font-size:13px;margin:16px 0 6px;color:var(--navy)}
+.ct-section-title{font-size:13px;margin:16px 0 6px;color:var(--strong)}
 .ct-payment{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .ct-thresholds{grid-template-columns:repeat(6,minmax(0,1fr))}
 .ct-gap-pending{background:var(--bg);color:var(--muted)}
-.ct-time[data-time="overdue"] .ct-kpi-value{color:var(--crit)}
+.ct-time[data-time="overdue"] .ct-kpi-value{color:var(--crit-ink)}
 .ct-plan-editor{font-size:11px;margin-top:6px}.ct-plan-editor summary{cursor:pointer;color:var(--teal)}
 .ct-plan-editor form{display:flex;flex-wrap:wrap;gap:7px;padding-top:8px}.ct-plan-editor label{display:flex;flex-wrap:wrap;gap:5px;align-items:center;max-width:100%}
 .ct-plan-editor input{width:115px;max-width:100%;min-width:0}.ct-plan-editor .btn{font-size:11px;padding:5px 8px}
@@ -1190,10 +1356,10 @@ body.cmdopen .cmdbd{display:flex}
 .drr-ui-icon{display:inline-block;position:relative;flex:none;width:1.12em;height:1.12em;vertical-align:-.17em;line-height:1;font-size:inherit!important;color:inherit}
 .drr-ui-icon::before{content:'';position:absolute;inset:0;background:currentColor;-webkit-mask:var(--drr-icon) center/contain no-repeat;mask:var(--drr-icon) center/contain no-repeat;pointer-events:none}
 .drr-ui-glyph{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
-.kico{color:var(--navy)}.kpill .kic{color:#fff}.kico .drr-ui-icon,.kic .drr-ui-icon{width:1.2em;height:1.2em}
+.kico{color:var(--strong)}.kpill .kic{color:#fff}.kico .drr-ui-icon,.kic .drr-ui-icon{width:1.2em;height:1.2em}
 .hbtn .drr-ui-icon{width:16px;height:16px}.hpill .drr-ui-icon{width:13px;height:13px}
 @media(prefers-reduced-motion:reduce){.nav button{transition:none}}
-@media print{.sidebar,.pghero,th,.tabbar{background-image:none!important}.pghero{background-color:var(--navy)}}
+@media print{.sidebar,.pghero,th,.tabbar{background-image:none!important}.pghero{background-color:var(--strong)}}
 </style>
 <style>.map-print-dialog{width:min(1600px,97vw);max-width:97vw;max-height:96dvh;padding:0;border:1px solid var(--line,#d5dde2);border-radius:14px;background:var(--card,#fff);color:var(--text,#203047);font-family:inherit;overflow:auto;box-shadow:0 20px 80px #0005}
 .map-print-dialog::backdrop{background:#16233399}.mp-head,.mp-bottom{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--card,#fff);position:sticky;z-index:2}.mp-head{top:0;border-bottom:1px solid #dce3e7}.mp-bottom{bottom:0;border-top:1px solid #dce3e7;flex-wrap:wrap}.mp-bottom span{margin-right:auto;font-size:12px;color:#607481}.mp-controls{display:flex;flex-wrap:wrap;gap:12px;padding:14px 18px 8px}.mp-controls label{display:flex;flex-direction:column;gap:5px;font-size:12px}.mp-controls .search{min-width:100px;width:100%;font-size:13px}.mp-title-label{flex:1;min-width:210px}.mp-layers{display:flex;gap:16px;flex-wrap:wrap;padding:6px 18px 12px;font-size:12px}.mp-layers label{display:flex;gap:5px;align-items:center}.mp-status{font-size:12px;color:#5c6d7a;padding:0 18px 10px;min-height:24px}.mp-preview{padding:18px;background:#e3e7eb;overflow:auto}.mp-preview iframe{width:100%;height:auto;display:block;border:0;background:white;box-shadow:0 2px 12px #20304720}.mp-bottom button:disabled{opacity:.45;cursor:default}
@@ -1202,15 +1368,23 @@ body.cmdopen .cmdbd{display:flex}
 </head>
 <body>
 <script>/* v31.0 ชุดสี: ใส่ data-theme ก่อนวาดหน้า กันกระพริบ (ค่าอยู่ในเครื่องของแต่ละคน) */
-try{ const t=localStorage.getItem('drr_theme'); if(t&&t!=='default') document.documentElement.dataset.theme=t; }catch(_){}</script>
+try{ const t=localStorage.getItem('drr_theme'); if(t&&t!=='default') document.documentElement.dataset.theme=t;
+  if(['midnight','dusk','twilight','dawn'].includes(t)) document.documentElement.style.colorScheme='dark'; }catch(_){}</script>
 <div id="tooltip"></div>
+<!-- v31.26 ตัวเลือกชุดสีมุมบนขวา — เนื้อเมนูสร้างจาก THEMES ที่เดียว (กฎ 1) -->
+<div class="themepick" id="themePick">
+  <button type="button" class="tp-btn" id="themePickBtn" aria-haspopup="true" aria-expanded="false" aria-label="เลือกชุดสี">
+    <span class="tp-disc" aria-hidden="true"></span><span class="tp-name">ชุดสี</span><span class="tp-caret" aria-hidden="true">▼</span>
+  </button>
+  <div class="tp-menu" id="themeMenu" role="menu" hidden></div>
+</div>
 <div class="app">
   <aside class="sidebar">
     <button class="sbtoggle" id="sbToggle" type="button" title="ย่อ/ขยายแถบเมนู" aria-label="ย่อ/ขยายแถบเมนู"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
     <div class="brand">
       <h1><span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19c3-6 5-6 8-3s5 3 8-4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 19c3-6 5-6 8-3s5 3 8-4" stroke="#fff" stroke-width="1" stroke-dasharray="1.5 2.6" opacity=".55"/><rect x="16.5" y="4" width="4" height="7" rx="1.2" fill="#d9a441"/><rect x="17.9" y="11" width="1.2" height="3.2" fill="#d9a441"/></svg></span><span>Big Data สายทาง</span></h1>
       <div class="sub">แขวงทางหลวงชนบทขอนแก่น<br>กรมทางหลวงชนบท</div>
-      <div class="ver"></div><div class="themesw" id="themeSw"></div><!-- v27.1 — เนื้อความมาจาก APP_VER ที่เดียว (กฎ 1) ห้ามพิมพ์เลขเวอร์ชันตรงนี้ -->
+      <div class="ver"></div><!-- v27.1 — เนื้อความมาจาก APP_VER ที่เดียว (กฎ 1) ห้ามพิมพ์เลขเวอร์ชันตรงนี้ -->
     </div>
     <nav class="nav">
       <button data-page="overview" class="active"><span class="ico">▦</span> ภาพรวมโครงข่าย</button>
@@ -1310,7 +1484,7 @@ try{ const t=localStorage.getItem('drr_theme'); if(t&&t!=='default') document.do
         <label class="lyrtg"><input type="checkbox" id="mapElChk"> 🗳 เขตเลือกตั้ง</label>
         <label class="lyrtg"><input type="checkbox" id="mapPvChk" checked> 🗺 ขอบจังหวัด</label><label class="lyrtg"><input type="checkbox" id="mapBrChk" checked> 🌉 สะพาน</label>
         <label class="lyrtg"><input type="checkbox" id="mapKmChk" checked> 📍 หลัก กม.</label><label class="lyrtg"><input type="checkbox" id="mapLblChk" checked> 🏷 ป้ายรหัส</label>
-        <button class="btn ghost" onclick="openMapPrint()">🖨 พิมพ์แผนที่</button><button class="btn ghost mflt-tg" id="mapFltTg" title="ตัวกรองและชั้นข้อมูล">⚙ ตัวกรอง</button><button class="btn ghost" id="mapReset" title="กลับมุมมองภาพรวมทั้งโครงข่าย">⛶ ภาพรวม</button></div>
+        <!-- v31.23 ผู้ใช้ (10 ก.ย. 69) "แก้ทั้งหมดทันที": ปุ่มพิมพ์แผนที่เคยมี 2 ที่ (หัวเพจ+แถบนี้) ทำให้แถบล้น 2 บรรทัดบนจอคอมและกล่องกรองหลบใต้หัวเพจ → คงไว้ที่หัวเพจที่เดียว (ชุดทดสอบ maplbl/sweep) --><button class="btn ghost mflt-tg" id="mapFltTg" title="ตัวกรองและชั้นข้อมูล">⚙ ตัวกรอง</button><button class="btn ghost" id="mapReset" title="กลับมุมมองภาพรวมทั้งโครงข่าย">⛶ ภาพรวม</button></div>
       <button class="sheettg" id="mapSheetTg">▲ รายชื่อสายทาง</button>
       <div class="maplayout">
         <div class="card roadlist" id="mapRoadList"></div>
@@ -1500,7 +1674,7 @@ try{ const t=localStorage.getItem('drr_theme'); if(t&&t!=='default') document.do
         <div class="pgh-right"><button class="hbtn" onclick="backupAll()">💾 สำรองข้อมูลทั้งหมด</button><button class="hbtn" onclick="reloadPage()">⟳ โหลดข้อมูลใหม่</button><button class="hbtn" onclick="printPage()">🖨 พิมพ์</button></div>
       </div>
       <div class="card" style="margin-bottom:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-        <b style="color:var(--navy)">🎨 ชุดสีของแดชบอร์ด</b>
+        <b style="color:var(--strong)">🎨 ชุดสีของแดชบอร์ด</b>
         <select id="sysThemeSel" class="search" style="width:auto;min-width:180px" onchange="applyTheme(this.value)"></select>
         <span class="note" style="margin:0">จำค่าไว้ในเครื่องนี้ · เปลี่ยนเฉพาะสีโครง ตัวเลขและสีข้อมูลเหมือนเดิมทุกชุด</span>
       </div>
@@ -1570,7 +1744,7 @@ const ALL_CODES = ["กส.4039", "ขก.1001", "ขก.1004", "ขก.1011", "
 
 /* ================= palette (validated via dataviz six-checks) ================= */
 const C = {teal:'#0d9488', gold:'#d9a441', blue:'#2a78d6', orange:'#eb6834', violet:'#4a3aa7',
-           navy:'#1B2A4A', grid:'#e1e0d9', muted:'#898781', ink2:'#52514e', crit:'#d03b3b'};
+           navy:'#1B2A4A', strong:'#1B2A4A', card:'#ffffff', grid:'#e1e0d9', muted:'#898781', ink2:'#52514e', crit:'#d03b3b'};
 const CAT = [C.teal, C.gold, C.blue, C.orange, C.violet];
 /* 8 สี validated (CVD ΔE 36.6) — ใช้เมื่อชนิด/กลุ่มมีมากกว่า 5 · เกิน 8 เมื่อไหร่ค่อยยุบเป็น "อื่นๆ" */
 const CAT8 = [C.teal, C.gold, C.blue, C.orange, C.violet, '#008300', '#e87ba4', '#e34948'];
@@ -1584,17 +1758,51 @@ const THEMES=[
   {id:'asphalt', name:'ลาดยาง',          sw:'#23262b'},
   {id:'forest',  name:'ป่าภูเวียง',       sw:'#1f3d2b'},
   {id:'indigo',  name:'ครามอีสาน',       sw:'#2b2f6e'},
+  {id:'sunset',    name:'ไล่เฉดตะวัน',   sw:'#e2622a'},   // v31.25 ชุดเล่นสี — ทุกชุดมีพื้นหลังไล่เฉดของตัวเอง
+  {id:'afterrain', name:'หลังฝน',        sw:'#0f766e'},
+  {id:'winter',    name:'ปลายหนาว',      sw:'#3d6fa8'},
+  {id:'fall',      name:'ใบไม้ร่วง',     sw:'#a85310'},
+  {id:'crimson',   name:'แดงชาด',        sw:'#b3261e'},   // v31.26 เติมเฉดให้ครบวงสี
+  {id:'gold',      name:'เหลืองทอง',     sw:'#c9971f'},
+  {id:'sky',       name:'ฟ้าใส',         sw:'#0e7490'},
+  {id:'violet',    name:'ม่วงอินทนิล',   sw:'#7c3aed'},
+  {id:'midnight',  name:'เที่ยงคืน',      sw:'#0c1220', dark:true},   // v31.26 ชุดกลางคืน พื้นมืดจริง
+  {id:'dusk',      name:'หัวค่ำ',         sw:'#b5561f', dark:true},
+  {id:'twilight',  name:'โพล้เพล้',       sw:'#4a6fd0', dark:true},
+  {id:'dawn',      name:'รุ่งเช้า',        sw:'#c2603c', dark:true},
 ];
 function curTheme(){ return document.documentElement.dataset.theme||'default'; }
+/* v31.26 ผู้ใช้: "เช็คธีมมืดให้ดี ตัวหนังสือจมไปกับธีมรึเปล่า"
+   สีข้อมูลบางสี (ม่วงเข้ม เขียวเข้ม) เข้มเกินกว่าจะอ่านออกบนพื้นกลางคืน
+   ตัวช่วยนี้ใช้กับ "ตัวหนังสือ" เท่านั้น — จุดสี แถบ เส้นในกราฟ ยังใช้สีข้อมูลจริงตามกฎ 18 */
+function inkColor(col){
+  if(typeof col!=='string'||!/^#[0-9a-fA-F]{6}$/.test(col)) return col;
+  if(!(THEMES.find(t=>t.id===curTheme())||{}).dark) return col;
+  const hx=x=>[0,2,4].map(i=>parseInt(x.slice(1+i,3+i),16));
+  const lin=c=>{c/=255;return c<=.03928?c/12.92:Math.pow((c+.055)/1.055,2.4);};
+  const lum=c=>.2126*lin(c[0])+.7152*lin(c[1])+.0722*lin(c[2]);
+  const bg=/^#[0-9a-fA-F]{6}$/.test(C.card||'')?hx(C.card):[19,28,46], bl=lum(bg);
+  let out=hx(col);
+  for(let i=0;i<26;i++){
+    const l=lum(out), cr=(Math.max(l,bl)+.05)/(Math.min(l,bl)+.05);
+    if(cr>=4) break;
+    out=out.map(v=>Math.min(255,Math.round(v+(255-v)*0.13+5)));
+  }
+  return '#'+out.map(v=>v.toString(16).padStart(2,'0')).join('');
+}
 function syncChartColors(){   // กราฟ SVG ใช้ค่าจาก C ไม่ใช่ CSS var → ดึงค่าจริงจาก :root มาใส่ให้ตรงชุดสี
   const cs=getComputedStyle(document.documentElement), v=n=>cs.getPropertyValue(n).trim();
   if(v('--teal')) C.teal=v('--teal'); if(v('--navy')) C.navy=v('--navy'); if(v('--gold')) C.gold=v('--gold');
   if(v('--grid')) C.grid=v('--grid'); if(v('--muted')) C.muted=v('--muted'); if(v('--ink2')) C.ink2=v('--ink2');
+  if(v('--strong')) C.strong=v('--strong'); if(v('--card')) C.card=v('--card');   /* v31.26 ตัวหนังสือเน้นในกราฟ SVG — ชุดกลางคืนต้องสว่าง ไม่งั้นจมพื้น */
 }
 function applyTheme(id, opt){
   if(!THEMES.some(t=>t.id===id)) id='default';
   if(id==='default') delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme=id;
-  try{ localStorage.setItem('drr_theme', id); }catch(_){}
+  /* v31.26 ชุดกลางคืน: บอกเบราว์เซอร์ว่าเป็นพื้นมืด — ช่องกรอก แถบเลื่อน และปุ่มของระบบจะได้ไม่ขาวโพลน */
+  document.documentElement.style.colorScheme=(THEMES.find(t=>t.id===id)||{}).dark?'dark':'light';
+  paintThemePick(id);
+  if(!(opt&&opt.preview)) try{ localStorage.setItem('drr_theme', id); }catch(_){}   /* v31.26 ลองสีตอนเลื่อนทับ ไม่ต้องจำ */
   syncChartColors();
   const mc=document.querySelector('meta[name="theme-color"]'); if(mc) mc.setAttribute('content', C.navy);
   document.querySelectorAll('.themesw button').forEach(b=>b.classList.toggle('on', b.dataset.theme===id));
@@ -1604,15 +1812,78 @@ function applyTheme(id, opt){
     try{ if(pg&&pg.redraw) pg.redraw(); }catch(e){ console.warn('redraw หลังเปลี่ยนชุดสี', e); }
     if(typeof enhanceSoon==='function') enhanceSoon();
   }
+  /* v31.26 ผู้ใช้: "เช็คธีมมืดให้ดี ตัวหนังสือจมไปกับธีมรึเปล่า"
+     บางหน้าเขียนสีลงไปในเนื้อหน้าตอนวาด (สีข้อมูล) หน้าที่วาดค้างไว้ก่อนเปลี่ยนชุดสีจึงยังถือสีเก่า
+     เปลี่ยนชุดสีจริง (ไม่ใช่แค่ลองสี) = สั่งวาดใหม่ทุกหน้าที่เคยวาดแล้ว ไม่ใช่เฉพาะหน้าที่เปิดอยู่ */
+  if(!(opt&&opt.silent)&&!(opt&&opt.preview)&&typeof PAGES!=='undefined'&&Array.isArray(PAGES)){
+    const cur=activePage();
+    PAGES.forEach(pg=>{ if(!pg||pg.id===cur||!pg.redraw) return;
+      const box=pg.body&&document.getElementById(pg.body);
+      if(!box||!box.innerHTML.trim()) return;               // ยังไม่เคยวาด = ไม่ต้องทำอะไร
+      try{ pg.redraw(); }catch(e){ console.warn('redraw ชุดสี: '+pg.id, e); } });
+  }
+}
+/* v31.26 แถบตัวอย่างเฉดของแต่ละชุด — ดึงค่าจริงจาก CSS ของชุดนั้น (ความจริงชุดเดียว ไม่พิมพ์สีซ้ำ) */
+function themeVars(id){
+  /* อ่านค่าสีของ "ชุดอื่น" จากกฎ CSS ตรง ๆ — ตั้ง data-theme บน div ไม่ได้ผล เพราะกฎผูกกับ <html> เท่านั้น */
+  const want=id==='default'?':root':`html[data-theme="${id}"]`, out={};
+  for(const sheet of document.styleSheets){
+    let rules; try{ rules=sheet.cssRules; }catch(e){ continue; }
+    for(const r of rules||[]){
+      if(!r.selectorText||r.selectorText.split(',').map(x=>x.trim()).indexOf(want)<0) continue;
+      ['--navy','--hero2','--hero3','--teal','--page','--card'].forEach(k=>{ const v=r.style.getPropertyValue(k).trim(); if(v) out[k]=v; });
+    }
+  }
+  return out;
+}
+function themeStrip(id){
+  const v=themeVars(id), t=THEMES.find(x=>x.id===id)||{};
+  const a=v['--navy']||t.sw||'#1B2A4A', b=v['--hero2']||a, c=v['--hero3']||v['--teal']||b;
+  return `linear-gradient(115deg, ${a} 0%, ${b} 52%, ${c} 100%)`;
 }
 function buildThemeSwitch(){
-  /* v31.3 สร้างได้หลายที่: แถบชื่อ (จอกว้าง) + เมนูเพิ่มเติม (มือถือ) — ปุ่มชุดเดียวกัน applyTheme ติ๊ก .on ให้ทุกชุด */
-  const hosts=['themeSw','themeSwM'].map(id=>document.getElementById(id)).filter(Boolean); if(!hosts.length) return;
-  hosts.forEach(host=>{
+  /* v31.26 ผู้ใช้: "แถบชุดสีให้เลือกชักเยอะและดูเด่นไป เอามาไว้ตรงบนขวาแล้วทำเป็น dropdown สวยๆ"
+     จอกว้าง = ปุ่มลอยมุมบนขวา · จอแคบ = จุดสีในเมนู "เพิ่มเติม" เหมือนเดิม (v31.3) */
+  const host=document.getElementById('themeSwM');
+  if(host){
     host.innerHTML='<span class="tl">ชุดสี</span>'+THEMES.map(t=>`<button type="button" data-theme="${t.id}" title="${t.name}" aria-label="ชุดสี ${t.name}" style="--sw:${t.sw}"></button>`).join('');
     host.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>applyTheme(b.dataset.theme)));
-  });
+  }
+  const menu=document.getElementById('themeMenu'), btn=document.getElementById('themePickBtn');
+  if(menu&&btn&&!menu.dataset.built){
+    menu.dataset.built='1';
+    const groups=[['กลางวัน',THEMES.filter(t=>!t.dark)],['กลางคืน',THEMES.filter(t=>t.dark)]];
+    menu.innerHTML=groups.filter(g=>g[1].length).map(([label,list])=>
+      `<div class="tp-group">${label}</div>`+list.map(t=>
+        `<button type="button" class="tp-item" role="menuitem" data-theme="${t.id}" style="--tp-strip:${themeStrip(t.id)}">
+           <span class="tp-strip" aria-hidden="true"></span><span>${t.name}</span><span class="tp-tick" hidden>✓</span></button>`).join('')
+    ).join('')+'<div class="tp-hint">เลื่อนทับเพื่อลองดูทั้งหน้า · กดเพื่อใช้จริง</div>';
+    /* กิมมิค: เลื่อนเมาส์ทับ = ลองสีให้ดูก่อน · ออกจากเมนู = คืนชุดเดิม · กดถึงจะเปลี่ยนจริง */
+    let saved=null;
+    const preview=id=>{ if(saved===null) saved=curTheme(); if(curTheme()!==id) applyTheme(id,{silent:true,preview:true}); };
+    const restore=()=>{ if(saved!==null&&curTheme()!==saved) applyTheme(saved,{silent:true,preview:true}); saved=null; };
+    menu.querySelectorAll('.tp-item').forEach(it=>{
+      it.addEventListener('mouseenter',()=>preview(it.dataset.theme));
+      it.addEventListener('focus',()=>preview(it.dataset.theme));
+      it.addEventListener('click',()=>{ saved=null; applyTheme(it.dataset.theme); closeThemeMenu(); });
+    });
+    menu.addEventListener('mouseleave',restore);
+    menu.__restore=restore;
+    btn.addEventListener('click',e=>{ e.stopPropagation(); menu.hidden?openThemeMenu():closeThemeMenu(); });
+    document.addEventListener('click',e=>{ if(!menu.hidden&&!menu.contains(e.target)&&e.target!==btn) closeThemeMenu(); });
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!menu.hidden) closeThemeMenu(); });
+  }
   applyTheme(curTheme(), {silent:true});
+}
+function openThemeMenu(){ const m=document.getElementById('themeMenu'),b=document.getElementById('themePickBtn');
+  if(!m)return; m.hidden=false; b.setAttribute('aria-expanded','true'); }
+function closeThemeMenu(){ const m=document.getElementById('themeMenu'),b=document.getElementById('themePickBtn');
+  if(!m)return; if(m.__restore) m.__restore(); m.hidden=true; b.setAttribute('aria-expanded','false'); }
+function paintThemePick(id){
+  const t=THEMES.find(x=>x.id===id)||THEMES[0], b=document.getElementById('themePickBtn');
+  if(b){ b.querySelector('.tp-disc').style.setProperty('--tp-disc',t.sw); b.querySelector('.tp-name').textContent=t.name; }
+  document.querySelectorAll('#themeMenu .tp-item').forEach(it=>{
+    const on=it.dataset.theme===id; it.classList.toggle('on',on); it.querySelector('.tp-tick').hidden=!on; });
 }
 const YEAR_PALETTE=['#0d9488','#2a78d6','#d9a441','#4a3aa7','#008300','#0891b2','#a16207','#7c3aed','#c2410c','#0e7490','#6b7280'];
 const yearColorMap=years=>{const s=[...new Set(years.map(String))].sort(); const o={}; s.forEach((y,i)=>o[y]=YEAR_PALETTE[i%YEAR_PALETTE.length]); return o;};
@@ -1787,7 +2058,7 @@ function heat(container, rowLabels, colLabels, matrix, {unit='', fmtV=fmt, onCli
       const rc=el('rect',{class:'heatcell',x:lw+cw*j+1.5,y:y+1.5,width:Math.max(1,cw-3),height:ch-3,rx:5,fill:col},svg);
       rc.style.cursor='help';   // v27.1 — บอกให้รู้ว่าช่องนี้ชี้ดูรายละเอียดได้
       if(cw>34) el('text',{x:lw+cw*(j+0.5),y:y+ch/2+4,'text-anchor':'middle','font-size':10.5,'font-weight':700,
-        fill:t>0.55?'#fff':C.ink2},svg).textContent=v?fmtV(v):'';
+        fill:t>0.55?'#fff':'#1f2733'},svg).textContent=v?fmtV(v):'';   /* v31.26 สีตัวเลขตามความเข้มของช่อง (ช่องเป็นสีข้อมูล ไม่ขึ้นกับชุดสี) */
       const rTip=(rowFull&&rowFull[i])||r;
       hitOn(rc);   // กฎ 8
       const cTip=(colFull&&colFull[j])||colLabels[j];
@@ -1817,8 +2088,8 @@ function tube(container, rows, {labelW=110, height=null, rightW=178, colorOf=nul
   const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:'100%',height:H},box);
   const pw=W-labelW-rw, th=Math.max(18,Math.min(30,Math.round(rowH*0.5)));
   if(avg!=null){ const ax=labelW+pw*Math.max(0,Math.min(100,avg))/100;
-    el('line',{x1:ax,y1:padT-4,x2:ax,y2:H-padB,stroke:C.navy,'stroke-width':1.4,'stroke-dasharray':'4 3',opacity:.7},svg);
-    el('text',{x:ax,y:padT-8,'text-anchor':'middle',fill:C.navy,'font-size':10.5,'font-weight':700},svg).textContent=`เฉลี่ย ${avg.toFixed(0)}%`; }
+    el('line',{x1:ax,y1:padT-4,x2:ax,y2:H-padB,stroke:C.strong,'stroke-width':1.4,'stroke-dasharray':'4 3',opacity:.7},svg);
+    el('text',{x:ax,y:padT-8,'text-anchor':'middle',fill:C.strong,'font-size':10.5,'font-weight':700},svg).textContent=`เฉลี่ย ${avg.toFixed(0)}%`; }   /* v31.26 ตัวหนังสือใช้สีเน้นของชุดสี ไม่ใช่สีแถบซ้าย (ชุดกลางคืนจะจม) */
   const maxCh=Math.max(8,Math.floor((labelW-8)/7.2));
   rows.forEach((r,i)=>{
     const y=padT+off+i*rowH, ty=y+(rowH-th)/2, cy=ty+th/2+4;
@@ -1829,7 +2100,7 @@ function tube(container, rows, {labelW=110, height=null, rightW=178, colorOf=nul
     if(r.a>0&&pct>0){ const fw=Math.max(th,pw*pct/100);
       el('rect',{class:'bar','data-i':i,x:labelW,y:ty,width:fw,height:th,rx:9,fill:col},svg);
       if(fw>=34) el('text',{x:labelW+fw-7,y:cy,'text-anchor':'end',fill:'#fff','font-size':11,'font-weight':700},svg).textContent=pct.toFixed(0)+'%';
-      else el('text',{x:labelW+fw+5,y:cy,fill:col,'font-size':11,'font-weight':700},svg).textContent=pct.toFixed(0)+'%'; }
+      else el('text',{x:labelW+fw+5,y:cy,fill:C.strong,'font-size':11,'font-weight':700},svg).textContent=pct.toFixed(0)+'%'; }   /* v31.26 ป้ายนอกแถบใช้สีเน้น — สีข้อมูลยังอยู่ที่ตัวแถบ */
     else if(!r.idle&&r.a>0) el('text',{x:labelW+8,y:cy,fill:'#e34948','font-size':11,'font-weight':700},svg).textContent='0%';
     /* กล่องตัวเลขท้ายแถว */
     const bx=W-rw+8, bw=rw-10, by=y+(rowH-bh)/2;
@@ -1837,8 +2108,8 @@ function tube(container, rows, {labelW=110, height=null, rightW=178, colorOf=nul
     const line=(i,parts)=>{ const t=el('text',{class:'stattext',x:bx+7,y:by+4+lh*(i+1)-2,'font-size':10.5},svg);
       parts.forEach(([txt,col,bold])=>{ const sp=el('tspan',{fill:col||'var(--ink)','font-weight':bold?700:500},t); sp.textContent=txt; }); return t; };
     if(r.right||r.idle||!(r.a>0)){ const t=line(Math.floor((lines-1)/2),[[r.right||(r.idle?'ไม่ได้ยื่นขอ':'ไม่ระบุวงเงิน'),'var(--muted)',false]]); t.setAttribute('class','stattext ticktext'); }
-    else if(compact){ line(0,[[`ขอ ${fmt(r.a)}`,null,true]]); line(1,[[`ได้ ${fmt(r.askOk)} (${pct.toFixed(0)}%)`,'#0d7a4a',true]]); line(2,[[`ตัด ${fmt(r.askNo)} ลบ.`,'#c0392b',true]]); }
-    else { line(0,[[`ขอ ${fmt(r.a)} ลบ.`,null,true]]); line(1,[[`ได้ ${fmt(r.askOk)} (${pct.toFixed(0)}%)`,'#0d7a4a',true],[' · ','var(--muted)',false],[`ตัด ${fmt(r.askNo)}`,'#c0392b',true]]); }
+    else if(compact){ line(0,[[`ขอ ${fmt(r.a)}`,null,true]]); line(1,[[`ได้ ${fmt(r.askOk)} (${pct.toFixed(0)}%)`,'var(--pos-ink)',true]]); line(2,[[`ตัด ${fmt(r.askNo)} ลบ.`,'var(--neg-ink)',true]]); }
+    else { line(0,[[`ขอ ${fmt(r.a)} ลบ.`,null,true]]); line(1,[[`ได้ ${fmt(r.askOk)} (${pct.toFixed(0)}%)`,'var(--pos-ink)',true],[' · ','var(--muted)',false],[`ตัด ${fmt(r.askNo)}`,'var(--neg-ink)',true]]); }
     const hit=el('rect',{x:0,y:y,width:W,height:rowH,fill:'transparent'},svg);
     hitOn(hit);   // กฎ 8
     hit.addEventListener('mousemove',e=>showTip(`<b>${esc(r.label)}</b><br>${r.tip||''}`,e.clientX,e.clientY));
@@ -1948,7 +2219,7 @@ function scatter(container, pts, {xLab='', yLab='', height=290, refY=null, refLa
       const tx=right?x+w-6:x+6, ty=bottom?y+h-7:y+13;
       [true,false].forEach(halo=>el('text',{x:tx,y:ty,'text-anchor':right?'end':'start','font-size':9.5,
         'font-weight':700,'pointer-events':'none',
-        ...(halo?{fill:'none',stroke:'#fcfcfb','stroke-width':3.5,'stroke-linejoin':'round'}
+        ...(halo?{fill:'none',stroke:C.card,'stroke-width':3.5,'stroke-linejoin':'round'}
                 :{fill:quad.focus===k?C.crit:C.muted,opacity:quad.focus===k?1:.9})},svg).textContent=t);
     });
   }
@@ -2084,7 +2355,7 @@ function gantt(container, rows, {height=null, onClick=null}={}){
     if(r.late) el('circle',{cx:X(r.b)+7,cy:by+bh/2,r:3.6,fill:C.crit},svg);
     else if(r.b>now){ const dl=Math.ceil((r.b-now)/864e5), tx=`เหลือ ${dl} วัน`, tw=thWidth(tx)*6.2;
       const fitsR=X(r.b)+5+tw<=W-2;                               // ไม่พอทางขวา → วางไว้ในรางท้ายแถบแทน
-      el('text',{x:fitsR?X(r.b)+5:X(r.b)-4,y:by+11,'font-size':10,'font-weight':700,fill:col,'text-anchor':fitsR?'start':'end'},svg).textContent=tx; }
+      el('text',{x:fitsR?X(r.b)+5:X(r.b)-4,y:by+11,'font-size':10,'font-weight':700,fill:C.strong,'text-anchor':fitsR?'start':'end'},svg).textContent=tx; }   /* v31.26 ตัวหนังสือใช้สีเน้น สีสัญญายังอยู่ที่แถบ */
     hitOn(b);   // กฎ 8
     b.addEventListener('mousemove',e=>showTip(r.tip||`<b>${esc(r.label)}</b>`,e.clientX,e.clientY));
     b.addEventListener('mouseleave',hideTip);
@@ -2363,7 +2634,7 @@ function donut(container, slices, {unit='กม.', height=280}={}){
     a0=a1;
   });
   // ยอดรวมกลางวง
-  el('text',{x:cx,y:cy-4,'text-anchor':'middle','font-size':Math.min(21,r*0.42),'font-weight':'700',fill:'#1B2A4A'},svg).textContent=fmt(+tot.toFixed(1));
+  el('text',{x:cx,y:cy-4,'text-anchor':'middle','font-size':Math.min(21,r*0.42),'font-weight':'700',fill:C.strong},svg).textContent=fmt(+tot.toFixed(1));
   el('text',{x:cx,y:cy+15,'text-anchor':'middle','font-size':'11.5',fill:'#898781'},svg).textContent='รวม'+(unit?' ('+unit+')':'');
   // legend: ชื่ออย่างเดียว — ชี้ที่วงเพื่อดูตัวเลข
   const lg=document.createElement('div'); lg.className='legendrow'; lg.style.justifyContent='center';
@@ -3013,7 +3284,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.22', APP_DATE='9 ก.ย. 2569';
+const APP_VER='v31.26', APP_DATE='10 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -3144,7 +3415,7 @@ function dataArrived(key){
    ══════════════════════════════════════════════════════════════════════════ */
 const RUNTIME_IDS={
   yrContractPlot:'กราฟสัญญาประจำปีหลังเลือกตัวกรอง',
-  yrContractTable:'ตารางรายละเอียดสัญญาที่กรอง',
+  printStripBox :'กล่องซ่อนสำหรับวาด Strip Map ก่อนคัดลอกไปหน้าพิมพ์ One-Page (สร้างชั่วคราวตอนกดพิมพ์)',   // v31.23 ทะเบียนนับการอ้างผ่าน querySelector ด้วย
 
   sysUnlockBar :'แถบสถานะ สร้างหลังปลดล็อกหน้าข้อมูลระบบสำเร็จ',
   sysSlotA     :'ช่องเนื้อหาที่ถูกแทนที่หลังปลดล็อก',
@@ -4603,7 +4874,7 @@ const MUAD_ORDER=['เมือง','น้ำพอง','หนองเรื�
 const MUAD_COLOR={'เมือง':'#d9a441','น้ำพอง':'#2a78d6','หนองเรือ':'#008300','มัญจาคีรี':'#4a3aa7','พล':'#e87ba4'};
 const muadColor = m => MUAD_COLOR[m]||'#9aa5a3';
 /* KPI การ์ดแบบมีไอคอน (ใช้ร่วมทุกหน้า) */
-const kpill=(ico,grad,col,lbl,val,foot)=>`<div class="kpill"><div class="kic" style="background:${grad}">${ico}</div><div style="min-width:0"><div class="lbl">${lbl}</div><div class="val" style="color:${col}">${val}</div><div class="foot">${foot}</div></div></div>`;
+const kpill=(ico,grad,col,lbl,val,foot)=>`<div class="kpill"><div class="kic" style="background:${grad}">${ico}</div><div style="min-width:0"><div class="lbl">${lbl}</div><div class="val" style="color:${inkColor(col)}">${val}</div><div class="foot">${foot}</div></div></div>`;
 /* ================= v23.3 — PCU (ปริมาณจราจร) =================
    แหล่งข้อมูลตามลำดับความน่าเชื่อถือ:
      1) ชีทสภาพสายทาง (คอลัมน์ที่มีคำว่า PCU หรือ "ปริมาณจราจร") — รายช่วง กม. เอาค่าสูงสุดของสาย
@@ -4814,18 +5085,18 @@ function renderOverview(){
   const topPcu = pcuRows[0]||null;
   const ovk=document.getElementById('ovKpis'); ovk.className='grid kpis kpi3';
   ovk.innerHTML =
-    kico('🛣️','#e6f4f2','สายทางในบัญชี', `${nRoad} <small>สาย</small>`, (OVF.muad?'หมวด'+esc(OVF.muad):'บัญชีหลักของแขวงฯ')+share(nRoad,RALL.length),
+    kico('🛣️','var(--tile-teal)','สายทางในบัญชี', `${nRoad} <small>สาย</small>`, (OVF.muad?'หมวด'+esc(OVF.muad):'บัญชีหลักของแขวงฯ')+share(nRoad,RALL.length),
       {go:'roadTable', title:'ไปที่ทะเบียนสายทาง'})+
-    kico('📏','#edf2fa','ระยะทางรวม', `${fmt(totKm)} <small>กม.</small>`, `ตามบัญชี (รวมสะพาน ${fmt(+bridgeLen.toFixed(2))} กม.)`+share(totKm,totKmAll),
+    kico('📏','var(--tile-blue)','ระยะทางรวม', `${fmt(totKm)} <small>กม.</small>`, `ตามบัญชี (รวมสะพาน ${fmt(+bridgeLen.toFixed(2))} กม.)`+share(totKm,totKmAll),
       {go:'muadTable', title:'ดูระยะทางแยกรายหมวดในตาราง'})+
     kico('🚧','#f0f0f2','ผิวลาดยาง', `${fmt(lat)} <small>กม.</small>`, `${(100*lat/Math.max(surfKm,1)).toFixed(1)}% ของผิวทาง`,
       {go:'chSurface', title:'ดูสัดส่วนผิวจราจร'})+
-    kico('🌉','#eaf2fc','สะพาน', `${fmt(bridges)} <small>แห่ง</small>`, 'ตามบัญชีโครงข่าย'+share(bridges,brAll),
+    kico('🌉','var(--tile-sky)','สะพาน', `${fmt(bridges)} <small>แห่ง</small>`, 'ตามบัญชีโครงข่าย'+share(bridges,brAll),
       {go:'page:map', title:'เปิดหน้าแผนที่เพื่อดูตำแหน่งสะพาน'})+
-    kico('📐','#f0ecfa','ความยาวสะพานรวม', `${fmt(bridgeLen)} <small>กม.</small>`, 'รวมทุกหมวด'+share(bridgeLen,brKmAll),
+    kico('📐','var(--tile-violet)','ความยาวสะพานรวม', `${fmt(bridgeLen)} <small>กม.</small>`, 'รวมทุกหมวด'+share(bridgeLen,brKmAll),
       {go:'muadTable', title:'ดูความยาวสะพานแยกรายหมวด'})+
     // v23.5 — KPI งบสะสมกลับมาอยู่แถวบนตามเดิม · ส่วน "ยาวที่สุด/PCU สูงสุด" ไปเป็นกราฟ Top 10 ด้านล่างแทน
-    `<div class="card kpi iko"><div class="kico" style="background:#e9f6ee">💰</div><div style="min-width:0" id="kpiBudget"><div class="lbl">งบสะสม (ตามสัญญา)</div><div class="val">…</div><div class="foot">ทุกปีรวมกัน</div></div></div>`;
+    `<div class="card kpi iko"><div class="kico" style="background:var(--tile-green)">💰</div><div style="min-width:0" id="kpiBudget"><div class="lbl">งบสะสม (ตามสัญญา)</div><div class="val">…</div><div class="foot">ทุกปีรวมกัน</div></div></div>`;
 
   // ---- สรุปรายหมวด (ตาราง) ----
   const byM={};
@@ -4847,7 +5118,8 @@ function renderOverview(){
     tr.addEventListener('click',()=>setOvFilter(tr.dataset.muad)));
 
   // ---- ผิวจราจรรายหมวด (stacked + % ของหมวดใน tooltip) ----
-  const surfKeys=[['ลาดยาง','lat','#52525b'],['คอนกรีต','con',C.blue],['ลูกรัง','luk',C.gold]]; /* ลาดยาง = เทาเข้ม (สียางมะตอย) แยกจากคอนกรีตฟ้าชัดเจน */
+  /* v31.26 สีชนิดผิวต้องเป็นค่าคงที่ชุดเดียว (SURF_COLOR) — เดิมผูกกับ C.gold ซึ่งเปลี่ยนตามชุดสี ผิดกฎ 18 */
+  const surfKeys=[['ลาดยาง','lat',SURF_COLOR['ลาดยาง']],['คอนกรีต','con',SURF_COLOR['คอนกรีต']],['ลูกรัง','luk',SURF_COLOR['ลูกรัง']]]; /* ลาดยาง = เทาเข้ม (สียางมะตอย) แยกจากคอนกรีตฟ้าชัดเจน */
   const surfRows=[...muads].sort((a,b)=>byM[b].km-byM[a].km);
   (()=>{ const box=document.getElementById('chSurfaceMuad'); if(!box) return;
     const ico={'ลาดยาง':'🛣️','คอนกรีต':'🧱','ลูกรัง':'🪨'};
@@ -4869,9 +5141,9 @@ function renderOverview(){
   /* v24.0 — เลิกใช้โดนัท (3 ชิ้น อ่านค่าจริงไม่ได้ ต้องไปไล่ legend)
      สาระคือประโยคเดียว "ลาดยาง 90.7%" จึงเอาตัวเลขขึ้นนำ แล้วต่อแถบสัดส่วนแถบเดียวใต้ */
   (()=>{ const box=document.getElementById('chSurface'); if(!box) return;
-    const segs=[['ลาดยาง',lat,'#52525b','🛣️','#ececee'],
-                ['คอนกรีต',con,C.blue,'🧱','#e4eefb'],
-                ['ลูกรัง',luk,C.gold,'🪨','#f5ecdd']];
+    const segs=[['ลาดยาง',lat,SURF_COLOR['ลาดยาง'],'🛣️','#ececee'],
+                ['คอนกรีต',con,SURF_COLOR['คอนกรีต'],'🧱','#e4eefb'],
+                ['ลูกรัง',luk,SURF_COLOR['ลูกรัง'],'🪨','#f5ecdd']];
     const tt=lat+con+luk||1;
     box.innerHTML=
       `<div class="heroblk"><div class="hn">${(100*lat/tt).toFixed(1)}<span>%</span></div>`+
@@ -5287,7 +5559,7 @@ function renderRoadTable(){
       <td class="num">${r.bridges_acct||0}</td>
       <td class="num">${pcuOf(c)==null?'<span style="color:var(--muted)">—</span>':fmt(pcuOf(c))}</td>
       <td style="white-space:nowrap"><a href="javascript:void(0)" class="opLink" data-code="${c}" style="color:var(--teal);font-weight:700">📄 เปิด</a>
-        <a href="javascript:void(0)" class="rmLink" data-code="${c}" style="color:var(--navy);font-weight:700;margin-left:9px" title="แผนที่รายสาย A3">🗺</a></td></tr>`;
+        <a href="javascript:void(0)" class="rmLink" data-code="${c}" style="color:var(--strong);font-weight:700;margin-left:9px" title="แผนที่รายสาย A3">🗺</a></td></tr>`;
   }).join('');
   tb.querySelectorAll('.opLink').forEach(a=>a.addEventListener('click',e=>{ e.stopPropagation(); gotoOnePage(a.dataset.code); }));
   tb.querySelectorAll('.rmLink').forEach(a=>a.addEventListener('click',e=>{ e.stopPropagation(); openRoadMapA3(a.dataset.code); }));
@@ -6333,7 +6605,7 @@ function renderMapLegend(){
   let html=(M.muadsInMap||[]).map(m=>`<div class="lg"><span class="sw" style="background:${muadColor(m)}"></span> หมวด${esc(m)}</div>`).join('')+pvLg+kmLg+brLg+selLg;
   if(M.elShow){
     const zs=M.zoneSel?[M.zoneSel]:Object.keys(KK_ZONES);
-    html+=`<div class="lgfull" style="font-weight:700;color:var(--navy);font-size:12px;margin-top:3px;border-top:1px dashed var(--grid);padding-top:6px">🗳 เขตเลือกตั้ง — สส. ขอนแก่น (2569)</div>`+
+    html+=`<div class="lgfull" style="font-weight:700;color:var(--strong);font-size:12px;margin-top:3px;border-top:1px dashed var(--grid);padding-top:6px">🗳 เขตเลือกตั้ง — สส. ขอนแก่น (2569)</div>`+
       zs.map(z=>`<div class="lg" style="align-items:flex-start" title="${esc(KK_ZONES[z].area)}"><span class="sw" style="background:${zoneColor(+z)};opacity:.45;margin-top:5px"></span><b style="flex:none;white-space:nowrap">เขต ${z}</b> <span style="opacity:.85">${esc(KK_ZONES[z].party)} — ${esc(KK_ZONES[z].mp)}</span></div>`).join('')+
       `<div class="lgfull" style="font-size:10.5px;color:var(--muted)">พื้นสี = อาณาเขตเขตเลือกตั้ง (ระดับตำบล) · <b style="color:#273043">เส้นทึบเข้ม = ขอบเขตเลือกตั้ง</b> · เส้นประ = ขอบตำบล</div>`;
   }
@@ -6479,7 +6751,7 @@ function applyMapColor(mode){
       const grad=`linear-gradient(90deg, rgb(${R.from.join(',')}), rgb(${R.to.join(',')}))`;
       const nMiss=Object.values(st[MAPCOLOR]).filter(v=>v==null).length;
       box.style.display='flex';
-      box.innerHTML=`<span style="font-weight:700;color:var(--navy)">${R.lab}</span>`+
+      box.innerHTML=`<span style="font-weight:700;color:var(--strong)">${R.lab}</span>`+
         `<span class="rampbar" style="background:${grad}"></span>`+
         `<span style="color:var(--muted)">0 ถึง ${fmt(Math.round(vmax))}${MAPCOLOR==='luk'?'%':(MAPCOLOR==='last'?' ปี':'')}</span>`+
         (MAPCOLOR==='last'?`<span class="chip" style="border-color:#7a1414;color:#7a1414">แดงเข้ม = ไม่พบประวัติเลย</span>`:'')+
@@ -6531,6 +6803,24 @@ function parseProgressPercent(raw){
   const n=Number(s.replace('%','').trim());return Number.isFinite(n)&&n>=0&&n<=100?{value:n,issue:null}:{value:null,issue:'invalid'};
 }
 const validProgress=v=>typeof v==='number'&&Number.isFinite(v)&&v>=0&&v<=100;
+/* v31.25 ช่อง "แผนเบิกจ่าย" รายสัญญา — ผู้ใช้กรอกได้ 2 แบบ ระบบเดาให้ตามค่าที่กรอก
+     มีเครื่องหมาย % หรือค่า ≤ 100  → ร้อยละของวงเงินสัญญา (แผนเบิกจ่ายเป็นบาท = วงเงิน × ร้อยละ)
+     ค่ามากกว่า 100                  → จำนวนเงินบาทตรง ๆ (แผนเบิกจ่ายเงินหลักสิบหลักร้อยบาทไม่มีจริง)
+   ค่าที่อ่านไม่ออกไม่ถูกนับ และแจ้งจำนวนไว้ที่การ์ด (ห้ามเดาเป็น 0 เงียบ ๆ) */
+function parsePayPlan(raw, amount){
+  if(raw==null||String(raw).trim()==='')return {baht:null,pct:null,issue:'missing'};
+  const s=String(raw).trim().replace(/[๐-๙]/g,c=>String(c.charCodeAt(0)-0x0e50)).replace(/[,\s]/g,'').replace(/บาท$/,'');
+  const isPct=/%$/.test(s);
+  const t=s.replace(/%$/,'');
+  if(!/^(?:\d+(?:\.\d+)?|\.\d+)$/.test(t))return {baht:null,pct:null,issue:'invalid'};
+  const n=Number(t);
+  if(!Number.isFinite(n)||n<0)return {baht:null,pct:null,issue:'invalid'};
+  if(isPct||n<=100){
+    if(n>100)return {baht:null,pct:null,issue:'invalid'};
+    return {baht:(amount||0)*n/100,pct:n,issue:null};
+  }
+  return {baht:n,pct:amount>0?100*n/amount:null,issue:null};
+}
 function contractProgress(x){
   const plan=validProgress(x.planPct)?x.planPct:null,result=validProgress(x.resultPct)?x.resultPct:null;
   return {plan,result,gap:plan!=null&&result!=null?Math.max(0,plan-result):null};
@@ -6539,8 +6829,14 @@ function contractPlanMetrics(rows){
   const pending=rows.filter(x=>!contractComplete(x)),known=pending.filter(x=>contractProgress(x).gap!=null);
   const total=rows.reduce((s,x)=>s+(x.amount||0),0),withPlan=rows.filter(x=>validProgress(x.planPct));
   const complete=rows.length>0&&withPlan.length>0&&rows.every(x=>!(x.amount>0)||validProgress(x.planPct));
-  const amount=complete?withPlan.reduce((s,x)=>s+(x.amount||0)*x.planPct/100,0):null;
-  return {amount,pct:amount!=null&&total>0?100*amount/total:null,planKnown:withPlan.length,planMissing:rows.length-withPlan.length,eligible:known.length,unknown:pending.length-known.length,
+  /* v31.25 ผู้ใช้: "นายคอยมาหาแต่ช่องนี้พอ" — ถ้ามีช่องแผนเบิกจ่ายรายสัญญาแม้แถวเดียว ใช้ช่องนั้นเป็นหลัก
+     (กรอกไม่ครบก็รวมเท่าที่มี แล้วบอกจำนวนแถวที่ยังไม่กรอก — ดีกว่าขึ้น "—" ทั้งใบ)
+     ยังไม่มีช่องนี้เลย = ตกกลับไปคิดจากร้อยละแผนรายสัญญาแบบเดิม */
+  const withPay=rows.filter(x=>x.payPlan!=null);
+  const payAmount=withPay.length?withPay.reduce((s,x)=>s+x.payPlan,0):null;
+  const amount=payAmount!=null?payAmount:(complete?withPlan.reduce((s,x)=>s+(x.amount||0)*x.planPct/100,0):null);
+  return {amount,fromPayColumn:payAmount!=null,payKnown:withPay.length,payInvalid:rows.filter(x=>x.payPlanIssue==='invalid').length,
+    pct:amount!=null&&total>0?100*amount/total:null,planKnown:withPlan.length,planMissing:rows.length-withPlan.length,eligible:known.length,unknown:pending.length-known.length,
     invalid:pending.filter(x=>x.planIssue==='invalid'||x.resultIssue==='invalid').length,
     thresholds:Object.fromEntries([10,30,50,80,100].map(n=>[n,known.filter(x=>contractProgress(x).gap+1e-9>=n).length]))};
 }
@@ -6572,6 +6868,9 @@ defineSource({
       ['ลักษณะงาน','worktype'],['รหัสสายทาง','roadFull'],['เริ่มต้นสัญญา','start'],['สิ้นสุดสัญญา','end'],
       ['ส่งงานงวดสุดท้าย','delivered'],['วงเงินตามสัญญา','amount'],['ผู้รับจ้าง','contractor'],
       ['ผู้ควบคุมงาน','supervisor'],['หน่วยดำเนินการ','agency'],
+      /* v31.25 ผู้ใช้: "แผนเบิกจ่ายแขวง … col เพิ่ม 'แผนเบิกจ่าย' จะอัพเดททุกเดือน นายคอยมาหาแต่ช่องนี้พอ"
+         ค่าล่าสุดช่องเดียว ไม่มีเดือนกำกับ — ทับของเดิมทุกครั้งที่อัปเดต */
+      ['แผนเบิกจ่าย','payPlan'],
       ['ช่วงดำเนินการเริ่ม','kmA'],['ช่วงดำเนินการจบ','kmB']];
     let dropped=0, excluded=0;
     // แปลงข้อมูล 1 tab -> รายการโครงการ (tabYear = ปีสำรอง ใช้เมื่อเลขที่สัญญาไม่มีปีท้าย)
@@ -6591,6 +6890,7 @@ defineSource({
         bt=bt.replace(/\s*เหลือจ่าย\s*$/,'')||bt; // "บำรุงเหลือจ่าย" -> "บำรุง", "ปลอดภัยเหลือจ่าย" -> "ปลอดภัย"
         const parsedKm=historySegments(o.kmA,o.kmB,S(o.activity),S(o.worktype),bt);
         const planRaw=historyProgressField(raw,'แผน'),resultRaw=historyProgressField(raw,'ผล');
+        const payPlan=parsePayPlan(o.payPlan, typeof o.amount==='number'?o.amount:num(o.amount));
         const pp=parseProgressPercent(planRaw),pr=parseProgressPercent(resultRaw);
         recs.push({year, code, contract, roadFull:S(o.roadFull),
           planPct:pp.value,resultPct:pr.value,planIssue:pp.issue,resultIssue:pr.issue,planRaw:S(planRaw),resultRaw:S(resultRaw),
@@ -6602,6 +6902,7 @@ defineSource({
           agency:S(o.agency),
           supervisor:S(o.supervisor).split(/[,\/]/)[0].trim(),
           poleQty:S(o.poleQty)===''?null:num(o.poleQty),cameraQty:S(o.cameraQty)===''?null:num(o.cameraQty),
+          payPlan:payPlan.baht,payPlanPct:payPlan.pct,payPlanRaw:S(o.payPlan),payPlanIssue:payPlan.issue,
           ...parsedKm});
       });
       return {recs, drop};
@@ -6609,11 +6910,19 @@ defineSource({
     // 1) sentinel: ชื่อ tab ที่ไม่มีจริง gviz จะส่ง "tab แรกของไฟล์" กลับมา -> ใช้กรองปีหลอก
     const fpOf=objs=>JSON.stringify(objs.slice(0,3))+objs.length;
     const sentinelJob=sheetData(HIST_ID,'sheet=__Y_PROBE_XX99__').catch(()=>null);
+    const planJob=Promise.all(PLAN_TABS.map(t=>sheetData(HIST_ID,'sheet='+encodeURIComponent(t)).catch(()=>null)));   // v31.24 แผนเบิกจ่ายกลาง (ไม่มีแท็บ = ข้ามไป)
     // 2) ไล่หา tab ปีทั้งหมด Y_60 … Y_85 พร้อมกัน — เพิ่ม tab ปีใหม่ในชีทได้เลย ไม่ต้องแก้ไฟล์นี้
     const histNames=probeNames('hist', HIST_PROBE_YEARS.map(y=>'Y_'+y), force);   // v31.14 แท็บที่รู้จัก + ข้างเคียง
-    const [sentinel,results] = await Promise.all([sentinelJob,Promise.allSettled(histNames.map(n=>+n.slice(2)).map(y=>
-      sheetData(HIST_ID, 'sheet=Y_'+y).then(objs=>({y, objs}))))]);
+    const [sentinel,results,planObjs] = await Promise.all([sentinelJob,Promise.allSettled(histNames.map(n=>+n.slice(2)).map(y=>
+      sheetData(HIST_ID, 'sheet=Y_'+y).then(objs=>({y, objs})))),planJob]);
     const sentinelFp=(sentinel&&sentinel.length)?fpOf(sentinel):null;
+    /* v31.24 แท็บที่ไม่มีจริง gviz จะคืนแท็บแรกของไฟล์ → ตัดด้วยลายนิ้วมือ แล้วยังต้องมีหัวตารางที่ต้องการจริง */
+    deptPlanSheet={};
+    for(const objs of (planObjs||[])){
+      if(!objs||!objs.length||fpOf(objs)===sentinelFp) continue;
+      const got=parseDeptPlanTab(objs);
+      if(Object.keys(got).length){ deptPlanSheet=got; break; }
+    }
     const foundTabs=[];
     let okTabs=0, lastErr=null, anyReply=false;   // anyReply = ชีทตอบกลับมาอย่างน้อย 1 ครั้ง
     const seenFingerprint=new Set();
@@ -6711,37 +7020,37 @@ function renderHistory(){
   document.getElementById('histBody').innerHTML=`
     ${historyIssueHtml(H)}
     <div class="grid kpis kpi3">
-      ${kico('📋','#edf2fa','โครงการ/สัญญา', `${H.length} <small>รายการ</small>`, `ปี ${years[0]}–${years[years.length-1]}`)}
-      ${kico('💰','#e9f6ee','วงเงินตามสัญญารวม', fmtM(tot), 'เฉพาะรายการที่ระบุวงเงิน')}
-      ${kico('📈','#f0ecfa','วงเงินเฉลี่ยต่อโครงการ', fmtM(avgAmt), 'จากรายการที่ระบุวงเงิน')}
-      ${kico('✅','#e9f6ee','ส่งงานงวดสุดท้ายแล้ว', `${delivered} <small>/ ${H.length}</small>`, `${(100*delivered/H.length).toFixed(0)}% ของรายการ`)}
+      ${kico('📋','var(--tile-blue)','โครงการ/สัญญา', `${H.length} <small>รายการ</small>`, `ปี ${years[0]}–${years[years.length-1]}`)}
+      ${kico('💰','var(--tile-green)','วงเงินตามสัญญารวม', fmtM(tot), 'เฉพาะรายการที่ระบุวงเงิน')}
+      ${kico('📈','var(--tile-violet)','วงเงินเฉลี่ยต่อโครงการ', fmtM(avgAmt), 'จากรายการที่ระบุวงเงิน')}
+      ${kico('✅','var(--tile-green)','ส่งงานงวดสุดท้ายแล้ว', `${delivered} <small>/ ${H.length}</small>`, `${(100*delivered/H.length).toFixed(0)}% ของรายการ`)}
       ${kico('🛡️','#fdeeee','ยังติดค้ำประกันสัญญา', `<span style="color:var(--crit)">${underWarranty}</span> <small>โครงการ</small>`, 'ส่งงานงวดสุดท้าย + 2 ปี ยังไม่ครบ')}
       ${kico('👷','#fdf4e3','ผู้รับจ้าง', `${contractors.length} <small>ราย</small>`, 'ที่ระบุชื่อในสัญญา')}
     </div>
     <div class="card" style="margin-bottom:14px">
       <h3>ปริมาณงานสะสมที่ทำไปแล้ว</h3><div class="note">ปี ${years[0]}–${years[years.length-1]} — ชี้ที่ช่องเพื่อดูรายการโครงการ</div>
       <div class="workgrid">
-        <div class="worktile" style="background:#e9f6ee"><div class="wico">🏗️</div><div style="min-width:0">
+        <div class="worktile" style="background:var(--tile-green)"><div class="wico">🏗️</div><div style="min-width:0">
           <div class="wval">${fmt(+hRoadCls['ก่อสร้าง'].km.toFixed(1))} <small>กม.</small></div>
           <div class="wlbl">ก่อสร้างใหม่</div>
           <div class="wfoot">${hRoadCls['ก่อสร้าง'].n} โครงการ</div></div></div>
-        <div class="worktile" style="background:#e6f4f2"><div class="wico">🛤️</div><div style="min-width:0">
+        <div class="worktile" style="background:var(--tile-teal)"><div class="wico">🛤️</div><div style="min-width:0">
           <div class="wval">${fmt(+hRoadCls['ขยาย'].km.toFixed(1))} <small>กม.</small></div>
           <div class="wlbl">ขยายผิวจราจร</div>
           <div class="wfoot">${hRoadCls['ขยาย'].n} โครงการ</div></div></div>
-        <div class="worktile" style="background:#edf2fa"><div class="wico">🔧</div><div style="min-width:0">
+        <div class="worktile" style="background:var(--tile-blue)"><div class="wico">🔧</div><div style="min-width:0">
           <div class="wval">${fmt(+hRoadCls['บำรุง'].km.toFixed(1))} <small>กม.</small></div>
           <div class="wlbl">งานบำรุง</div>
           <div class="wfoot">${hRoadCls['บำรุง'].n} โครงการ</div></div></div>
-        <div class="worktile" style="background:#fbf3df"><div class="wico">💡</div><div style="min-width:0">
+        <div class="worktile" style="background:var(--tile-amber)"><div class="wico">💡</div><div style="min-width:0">
           <div class="wval">${hPoles?fmt(hPoles):'—'}${hPoles?' <small>ต้น</small>':''}</div>
           <div class="wlbl">ไฟฟ้าแสงสว่าง</div>
           <div class="wfoot">${hE.length?`${hE.length} โครงการ · ${fmt(+hElecKm.toFixed(1))} กม.`:'—'}</div></div></div>
-        <div class="worktile" style="background:#eaf2fc"><div class="wico">🌉</div><div style="min-width:0">
+        <div class="worktile" style="background:var(--tile-sky)"><div class="wico">🌉</div><div style="min-width:0">
           <div class="wval">${hBrM?fmt(Math.round(hBrM)):'—'}${hBrM?' <small>ม.</small>':''}</div>
           <div class="wlbl">งานสะพาน</div>
           <div class="wfoot">${hB.length?hB.length+' โครงการ':'—'}</div></div></div>
-        <div class="worktile" style="background:#f2ece4"><div class="wico">📤</div><div style="min-width:0">
+        <div class="worktile" style="background:var(--tile-sand)"><div class="wico">📤</div><div style="min-width:0">
           <div class="wval">${hTr.length?new Set(hTr.map(x=>x.code)).size:'—'}${hTr.length?' <small>สาย/สะพาน</small>':''}</div>
           <div class="wlbl">ถ่ายโอนไปแล้ว</div>
           <div class="wfoot">${hTr.length?hTr.length+' โครงการ (ไม่นับรีรูท)':'ยังไม่มีในชีท'}</div></div></div>
@@ -6750,7 +7059,7 @@ function renderHistory(){
     ${(()=>{ const hBld=H.filter(histIsBuilding);
       const agencyCard=`<div class="card">
         <div style="display:flex;gap:12px;align-items:flex-start">
-          <div class="kico" style="background:#e6f4f2;width:44px;height:44px;border-radius:12px;font-size:22px">🏛️</div>
+          <div class="kico" style="background:var(--tile-teal);width:44px;height:44px;border-radius:12px;font-size:22px">🏛️</div>
           <div style="flex:1;min-width:0">
             <h3 style="margin-bottom:2px">หน่วยดำเนินการ</h3>
             <div class="note">แถวละปี แท่งซ้อนแบ่งตามหน่วย (ลบ.) — ชี้ท่อนเพื่อดูรายละเอียดและ %</div>
@@ -6760,7 +7069,7 @@ function renderHistory(){
       </div>`;
       const bldCard=hBld.length?`<div class="card">
         <div style="display:flex;gap:12px;align-items:flex-start">
-          <div class="kico" style="background:#f0ecfa;width:44px;height:44px;border-radius:12px;font-size:22px">🏢</div>
+          <div class="kico" style="background:var(--tile-violet);width:44px;height:44px;border-radius:12px;font-size:22px">🏢</div>
           <div style="flex:1;min-width:0">
             <h3 style="margin-bottom:2px">งานอาคาร — ปรับปรุง/ก่อสร้าง</h3>
             <div class="note">${hBld.length} โครงการ · วงเงินรวม ${fmtM(hBld.reduce((a,x)=>a+(x.amount||0),0))} — แยกตามหน่วย</div>
@@ -7310,6 +7619,8 @@ const roadCls=x=>{ const t=(x.activity||'')+' '+(x.budgetType||'');
   return roadClsTxt(t)||'บำรุง'; };
 /* ค้ำประกันสัญญา: ส่งงานงวดสุดท้าย + 2 ปี */
 const warrantyEnd=x=>{ const d=parseThaiDate(x.delivered); if(!d) return null; const e=new Date(d); e.setFullYear(e.getFullYear()+2); return e; };
+/* ค้ำประกันยังไม่หมด: มีวันส่งงาน → ส่งงาน+2 ปี ≥ วันนี้ · ไม่มีวันส่งงาน → ปีสัญญา+2 ≥ ปีนี้ (กติกาเดียวกับ eqWarrSplit) */
+const warrAlive=x=>{ const we=warrantyEnd(x); if(we) return we>=new Date(); const beNow=(new Date().getFullYear()+543)%100; return ((+x.year)%100)+2>=beNow; };
 const poleCount=x=>{ const m=segKmType(x,'e')*1000; return m>0?Math.max(1,Math.round(m/30)):0; };
 const bridgeM=x=>Math.round(segKmType(x,'b')*1000);
 /* สัญลักษณ์รายชิ้นงานบน Strip Map (v16.8):
@@ -7408,7 +7719,16 @@ function roadAssets(code,list=(histData||[]).filter(x=>x.code===code),equipment=
     const contract=projects.flatMap(x=>(x.segs||[]).filter(s=>segMark(x,s)===kind).map(s=>({...s,x,kind,source:'สัญญา'})));
     const eq=equipment.filter(x=>equipKinds(x).includes(kind));
     const eqSegs=eq.filter(x=>x.ka!=null&&(x.kb!=null&&x.kb>=x.ka||kind==='cctv'&&x.kb==null)).map(x=>({a:x.ka,b:x.kb??x.ka,pt:x.kb==null||x.kb===x.ka,kind,x,source:'Equipment'}));
-    const positions=contract.length?contract:eqSegs;
+    /* v31.23 ผู้ใช้ (10 ก.ย. 69): "ข้อมูลไฟฟ้าใน equipment ไม่ไปแสดงใน onepage เลย กติกาคือถ้ามันช่วงซ้ำกับสัญญา ให้เอาข้อมูลโครงการจากสัญญา
+       แต่ใช้ตำแหน่งจาก equipment แต่ถ้าไม่มีในสัญญาให้ใช้ข้อมูลใน equipment พร้อมระบุว่าหมดค้ำไปแล้ว"
+       เดิม (v31.18): มีสัญญาชนิดนั้นแม้ช่วงเดียว → ทิ้งตำแหน่ง Equipment ทั้งหมด · ตอนนี้: ทุกช่วง Equipment เป็นตำแหน่งหลัก
+       ช่วงที่ซ้อนสัญญา (งานชนิดเดียวกัน) → ผูกโครงการจากสัญญาที่ใหม่สุด + สถานะค้ำประกันจากสัญญานั้น
+       ช่วงที่ไม่ซ้อนสัญญาใด → ใช้ข้อมูล Equipment เอง สถานะ "หมดค้ำประกันแล้ว" · ช่วงสัญญาที่ยังไม่มีในการสำรวจ Equipment คงไว้ (ชุดทดสอบ eqmerge) */
+    const overlaps=(s,c)=>{ const sb=s.pt?s.a:s.b, cb=c.pt?c.a:c.b; return Math.min(sb,cb)-Math.max(s.a,c.a)>=-0.05; };
+    const eqPos=eqSegs.map(s=>{ const hit=contract.filter(c=>overlaps(s,c)).sort((p,q)=>(+q.x.year||0)-(+p.x.year||0))[0];
+      return {...s, proj:hit?hit.x:null, alive:hit?warrAlive(hit.x):false, warr:hit?(warrAlive(hit.x)?'alive':'expired'):'none'}; });
+    const coveredC=new Set(eqPos.flatMap(s=>contract.filter(c=>overlaps(s,c))));
+    const positions=[...eqPos, ...contract.filter(c=>!coveredC.has(c))];
     const field=kind==='elec'?'poleQty':kind==='cctv'?'cameraQty':null;
     const cq=field?projects.map(x=>x[field]):[];
     const knownCQ=cq.filter(v=>v!=null&&Number.isFinite(+v)&&+v>=0);
@@ -7416,23 +7736,36 @@ function roadAssets(code,list=(histData||[]).filter(x=>x.code===code),equipment=
     const ranges=mergeSegs(positions.filter(s=>!s.missingEnd&&s.b>s.a));
     const length=ranges.reduce((a,s)=>a+s.b-s.a,0);
     let quantity=null,estimated=false,partial=0,quantitySource=contract.length?'สัญญา':'Equipment';
-    if(kind==='cctv'){if(positions.length){quantity=new Set(positions.map(s=>s.a+'|'+s.b)).size;quantitySource=contract.length?'สัญญา':'Equipment';}}
+    if(kind==='cctv'){if(positions.length){quantity=new Set(positions.map(s=>s.a+'|'+s.b)).size;quantitySource=eqSegs.length?'Equipment':'สัญญา';}}
     else if(kind==='drain'){if(length>0)quantity=Math.round(length*1000);}
+    else if(eqKnown){quantity=eq.reduce((a,x)=>a+x.n,0);quantitySource='Equipment';}   // v31.23 จำนวนจริงจากการสำรวจมาก่อนตัวเลขในสัญญา
     else if(knownCQ.length){quantity=knownCQ.reduce((a,v)=>a+(+v),0);partial=cq.length-knownCQ.length;quantitySource='สัญญา';}
     else if(kind==='elec'&&contract.some(s=>!s.missingEnd&&s.b>s.a)){quantity=Math.round(length*1000/30);estimated=true;quantitySource='สัญญา';}
     else if(eqKnown){quantity=eq.reduce((a,x)=>a+x.n,0);quantitySource='Equipment';}
     else if(eq.some(x=>x.n!=null&&x.n>=0)){quantity=eq.reduce((a,x)=>a+(x.n||0),0);partial=eq.filter(x=>x.n==null).length;quantitySource='Equipment';}
     else if(kind==='elec'&&!contract.length&&length>0){quantity=Math.round(length*1000/30);estimated=true;}
-    const source=contract.length?'สัญญา':eq.length?'Equipment':projects.length?'สัญญา':'';
-    out[kind]={kind,projects,equipment:eq,positions,quantity,estimated,partial,quantitySource,source,unit:kind==='elec'?'ต้น':kind==='drain'?'ม.':'จุด',length};
+    const source=eq.length?'Equipment':contract.length?'สัญญา':projects.length?'สัญญา':'';
+    const inWarr=eqPos.filter(s=>s.alive).length, outWarr=eqPos.length-inWarr;
+    out[kind]={kind,projects,equipment:eq,positions,quantity,estimated,partial,quantitySource,source,unit:kind==='elec'?'ต้น':kind==='drain'?'ม.':'จุด',length,inWarr,outWarr};
   });
   const seen=new Set();out.trans=equipment.flatMap(x=>String(x.trans||'').split(/[\n,;\/]+/).map(t=>({km:kmVal(t),x}))).filter(t=>{if(t.km==null||seen.has(t.km))return false;seen.add(t.km);return true;});
   return out;
 }
+/* v31.23 ข้อความโครงการของช่วง Equipment: ซ้อนสัญญา → ปี/เลขสัญญา/กิจกรรม/วงเงิน + สถานะค้ำ · ไม่ซ้อน → หมดค้ำประกันแล้ว */
+function eqMarkProject(s,kind){
+  const e=s.x||{}, p=s.proj;   // s.x = แถว Equipment · s.proj = โครงการจากสัญญาที่ซ้อนช่วง (ดู roadAssets)
+  const qty=e.n!=null?'<br>จำนวน '+fmt(e.n)+' '+(kind==='elec'?'ต้น':kind==='drain'?'รายการ':'จุด'):'';
+  if(!p) return qty+'<br><span style="color:#b91c1c">หมดค้ำประกันแล้ว · ไม่มีสัญญาที่ครอบช่วงนี้</span>';
+  const we=warrantyEnd(p);
+  return qty+'<br>โครงการปี '+esc(String(p.year))+' · '+esc(p.contract||'ไม่ระบุเลขสัญญา')+'<br>'+esc(p.activity||'')+(p.amount?' · '+fmtM(p.amount)+' ลบ.':'')
+    +'<br>'+(s.alive?'<span style="color:#15803d">ยังติดค้ำประกัน'+(we?' ถึง '+we.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'}):'')+'</span>':'<span style="color:#b91c1c">หมดค้ำประกันแล้ว</span>');
+}
 function assetValue(a){return a.quantity!=null?(a.partial?'≥ ':a.estimated?'≈ ':'')+fmt(a.quantity)+' <small>'+a.unit+'</small>':a.projects.length||a.equipment.length?'<span style="font-size:15px">ยังไม่ระบุจำนวน</span>':'—';}
 function assetNote(a){
   if(!a.source)return 'ยังไม่มีข้อมูล';
-  return (a.positions.length?fmt(a.positions.length)+' ช่วง / จุด':'ยังไม่ระบุตำแหน่ง')+(a.partial?' · ไม่ระบุจำนวน '+a.partial+' รายการ':'')+(a.estimated?' · จำนวนโดยประมาณ':'');
+  return (a.positions.length?fmt(a.positions.length)+' ช่วง / จุด':'ยังไม่ระบุตำแหน่ง')
+    +(a.equipment.length?' · ในค้ำ '+fmt(a.inWarr||0)+' · หมดค้ำ '+fmt(a.outWarr||0):'')   // v31.23 นับจากช่วงที่สำรวจจริง
+    +(a.partial?' · ไม่ระบุจำนวน '+a.partial+' รายการ':'')+(a.estimated?' · จำนวนโดยประมาณ':'');
 }
 function equipmentRoads(rows){
   const grouped=new Map();rows.forEach(x=>{if(!grouped.has(x.code))grouped.set(x.code,[]);grouped.get(x.code).push(x);});
@@ -7473,7 +7806,9 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
   }else{controls.className='note';controls.textContent='ปี '+(state.year==='all'?'ทั้งหมด':state.year==='plan'?'คำขอ / Zerobase':state.year)+' · '+STRIP_TYPES[state.type];}
   box.appendChild(controls);
   const assets=roadAssets(stripCode,originalList);
-  if(!eqOnRoad)eqOnRoad={marks:ASSET_KINDS.flatMap(k=>assets[k].positions.filter(s=>s.source==='Equipment').map(s=>({kind:k,a:s.a,b:s.b,color:'#a9b0ba',tip:'<b>'+esc(assetName[k])+'</b><br>'+histSegCaption(s)}))),trans:assets.trans.map(t=>({km:t.km,color:eqWarrSplit(originalList,t.km,null,'elec')[0]?.alive?'#d97706':'#a9b0ba',tip:'<b>หม้อแปลง</b><br>กม. '+kmLbl(t.km)}))};
+  if(!eqOnRoad)eqOnRoad={marks:ASSET_KINDS.flatMap(k=>assets[k].positions.filter(s=>s.source==='Equipment').map(s=>({kind:k,a:s.a,b:s.b,
+      color:s.alive?(YCOLOR[String(s.proj.year)]||'#e8a417'):'#4b5563',   // v31.23 ยังติดค้ำ = สีปีโครงการ · หมดค้ำ/ไม่มีสัญญา = เทาเข้ม
+      tip:'<b>'+esc(assetName[k])+'</b><br>'+histSegCaption(s)+eqMarkProject(s,k)}))),trans:assets.trans.map(t=>({km:t.km,color:eqWarrSplit(originalList,t.km,null,'elec')[0]?.alive?'#d97706':'#a9b0ba',tip:'<b>หม้อแปลง</b><br>กม. '+kmLbl(t.km)}))};
   const domainMarks=[...originalList.flatMap(x=>x.segs||[]),...originalExtra.flatMap(l=>l.segs||[]),...(topLanes||[]).flatMap(l=>l.segs||[]),...(eqOnRoad.marks||[]),...(eqOnRoad.trans||[]),...(bridgesOnRoad||[]).map(b=>({km:kmVal(b.km)}))];
   eqOnRoad={marks:(eqOnRoad.marks||[]).filter(m=>state.year==='all'&&(state.type==='all'||m.kind===state.type)),trans:state.year==='all'&&(state.type==='all'||state.type==='elec')?eqOnRoad.trans:[]};
   list=originalList.filter(x=>state.year==='all'||String(x.year)===state.year).map(x=>({...x,segs:x.segs.filter(s=>stripMatches({...s,mk:segMark(x,s)},state.type))})).filter(x=>state.type==='all'||x.segs.length||stripMatches({mk:segMarkTxt(x.activity||'',x.amount)},state.type));
@@ -7529,7 +7864,7 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
         ? `📍 สายนี้ไม่ได้เริ่มนับที่ 0+000 — ช่วงสถานีตามหมุด GIS คือ <b>${kmLbl(DOM.ext[0])} – ${kmLbl(DOM.ext[1])}</b> (ยาว ${fmt(+(DOM.ext[1]-DOM.ext[0]).toFixed(3))} กม. ตรงกับบัญชี)`
         : `📍 ช่วงสถานีตามหมุด GIS คือ ${kmLbl(DOM.ext[0])} – ${kmLbl(DOM.ext[1])}`)+
       (DOM.outExt?` · <span style="color:var(--bad)">⚠ มี ${DOM.outExt} ค่าอยู่นอกช่วงสายทาง — แกนขยายให้เห็นแล้ว แต่ควรตรวจข้อมูลต้นทาง</span>`:'');
-    n.style.cssText='margin:0 0 7px;padding:5px 9px;background:#eef3fa;border-left:3px solid var(--navy);border-radius:0 6px 6px 0';
+    n.style.cssText='margin:0 0 7px;padding:5px 9px;background:var(--tile-blue2);border-left:3px solid var(--navy);border-radius:0 6px 6px 0';
     box.insertBefore(n,svg);
   }
   // แกน กม. — ถ้า tick สุดท้ายชิดป้ายปลายสาย ให้ข้าม tick นั้น กันตัวหนังสือซ้อน
@@ -7757,6 +8092,46 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
 
 
 /* v31.20 ผู้ใช้: แผนเบิกจ่ายกรม (%) ให้ใส่รหัสก่อนกรอก — existing sysUnlock, per-year local setting. */
+/* v31.24 ผู้ใช้ (10 ก.ย. 69): "แผนเบิกจ่ายแขวง แสดงว่าเครื่องอื่นเปิดใหม่ก็ไม่เห็นที่ชั้นกรอกใช่ไหม สงสัยต้องเพิ่มในชีทจริงๆ"
+   เดิมแผนถูกจำไว้ใน localStorage ของเครื่องที่กรอก → เครื่องอื่น/คนอื่นเห็นเป็น "—"
+   ตอนนี้อ่านค่ากลางจากแท็บ "แผนเบิกจ่าย" ของชีทประวัติ: หัวตาราง "ปีงบ" + "แผน" (และถ้ามี แผนสะสมรายเดือน ต.ค.–ก.ย.)
+   ค่ากลางมีแล้ว = ใช้ค่ากลาง ซ่อนช่องกรอกในหน้าเว็บ (กันเลขสองชุดชนกัน)
+   ยังไม่มีแท็บ/ยังไม่มีปีนั้น = ไม่ใช่ข้อผิดพลาด ใช้ค่าที่กรอกไว้ในเครื่องเหมือนเดิม (กฎ 6: ไม่ฟ้องพังถ้าไม่ได้พัง) */
+/* ชื่อแท็บที่ยอมรับ — ผู้ใช้ตั้งชื่อเองในชีท เผื่อเรียกต่างกันเล็กน้อย (อ่านพร้อมกัน ใช้แท็บแรกที่หัวตารางถูก) */
+const PLAN_TABS=['แผนเบิกจ่าย','แผนเบิกจ่ายแขวง','แผนเบิกจ่ายกรม'];
+const PLAN_TAB=PLAN_TABS[0];
+const PLAN_MONTHS=['ต.ค.','พ.ย.','ธ.ค.','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.'];
+let deptPlanSheet={};
+function parseDeptPlanTab(objs){
+  const out={};
+  (objs||[]).forEach(raw=>{
+    /* v31.25 ชีทจริงเขียนหัวตารางว่า "แผน ต.ค." … "แผน ก.ย." (ไม่ใช่ "ต.ค." เปล่า ๆ) — รับทั้งสองแบบ */
+    const keys=Object.keys(raw), forms=n=>[n,n+'(%)',n+'%','แผน'+n,'แผน'+n+'(%)','แผน'+n+'%'];
+    const at=n=>keys.find(k=>forms(n).includes(normKey(k)));
+    const ky=at('ปีงบ')||at('ปีงบประมาณ')||at('ปี'); if(!ky)return;
+    const year=String(raw[ky]??'').trim().replace(/[,\s]/g,''); if(!/^\d{4}$/.test(year))return;
+    const kp=at('แผน');
+    const pct=kp?parseProgressPercent(raw[kp]).value:null;
+    const months=PLAN_MONTHS.map(m=>{const k=at(m);return k?parseProgressPercent(raw[k]).value:null;});
+    if(pct==null&&months.every(v=>v==null))return;
+    out[year]={pct,months:months.some(v=>v!=null)?months:null};
+  });
+  return out;
+}
+/* เดือนปัจจุบันในปีงบไทย: ต.ค. = 0 … ก.ย. = 11 */
+const fiscalMonthIndex=(d=new Date())=>(d.getMonth()+3)%12;
+/* แผนของปีนั้น: ค่ากลางมาก่อน แล้วค่อยค่าที่กรอกไว้ในเครื่อง */
+function deptPlanFor(year){
+  const c=deptPlanSheet[String(year)];
+  if(c){
+    const mi=fiscalMonthIndex();
+    let upto=null;
+    if(c.months){ for(let i=mi;i>=0;i--) if(c.months[i]!=null){ upto=c.months[i]; break; } }
+    return {pct:c.pct!=null?c.pct:(c.months?c.months.filter(v=>v!=null).pop():null), upto, monthly:!!c.months, central:true};
+  }
+  const r=readContractPlans()[year];
+  return r?{pct:r.pct,upto:null,monthly:false,central:false}:null;
+}
 const CONTRACT_PLAN_KEY='drr_department_payment_plan_v1';
 const contractPlanLock={
   open(){try{return sessionStorage.getItem('drr_contract_plan_unlock')==='1';}catch{return !!this.unlocked;}},
@@ -7777,9 +8152,17 @@ function saveContractPlan(year,value){
   localStorage.setItem(CONTRACT_PLAN_KEY,JSON.stringify({version:1,years}));return pct;
 }
 function renderContractPlanEditor(host,year){
-  if(!host)return;let row=null,error='';try{row=readContractPlans()[year]||null;}catch(e){error='อ่านแผนที่บันทึกไม่สำเร็จ';}
+  if(!host)return;let row=null,error='';try{row=deptPlanFor(year);}catch(e){error='อ่านแผนที่บันทึกไม่สำเร็จ';}
   const unlocked=contractPlanLock.open();
-  host.innerHTML='<div class="ct-kpi-label">แผนเบิกจ่ายกรม</div><div class="ct-kpi-value">'+(row?row.pct.toFixed(1)+'%':'—')+'</div><div class="ct-kpi-note">ปีงบ '+year+'</div><details class="ct-plan-editor"><summary>'+(unlocked?'แก้ไขแผน':'🔒 กรอก / แก้ไขแผน')+'</summary>'+(unlocked?'<form class="ct-plan-save"><label>แผน (%) <input class="search" type="number" min="0" max="100" step="any" required aria-label="แผนเบิกจ่ายกรม (%)" value="'+(row?row.pct:'')+'"></label><button class="btn" type="submit">บันทึก</button><button class="btn ghost ct-plan-lock" type="button">ล็อก</button></form>':'<form class="ct-plan-unlock"><label>รหัสผู้ดูแล <input class="search" type="password" autocomplete="off" required aria-label="รหัสเพื่อแก้แผนเบิกจ่าย"></label><button class="btn" type="submit">ปลดล็อก</button></form>')+'<div class="ct-plan-message" role="status">'+esc(error)+'</div></details>';
+  /* v31.24 ค่ากลาง = แสดงอย่างเดียว ไม่ต้องกรอกรายเครื่อง · ยังไม่มีค่ากลาง = ยังกรอกในเครื่องได้เหมือนเดิม */
+  if(row&&row.central){
+    const big=row.monthly&&row.upto!=null?row.upto:row.pct;
+    host.innerHTML='<div class="ct-kpi-label">แผนเบิกจ่ายกรม</div><div class="ct-kpi-value">'+(big!=null?big.toFixed(1)+'%':'—')+'</div>'+
+      '<div class="ct-kpi-note">ปีงบ '+year+(row.monthly?' · ถึงเดือน'+PLAN_MONTHS[fiscalMonthIndex()]+(row.pct!=null?' · ทั้งปี '+row.pct.toFixed(1)+'%':''):'')+'</div>'+
+      '<div class="ct-kpi-note">ตั้งไว้ส่วนกลาง ทุกเครื่องเห็นเลขเดียวกัน</div>';
+    return;
+  }
+  host.innerHTML='<div class="ct-kpi-label">แผนเบิกจ่ายกรม</div><div class="ct-kpi-value">'+(row?row.pct.toFixed(1)+'%':'—')+'</div><div class="ct-kpi-note">ปีงบ '+year+'</div><details class="ct-plan-editor"><summary>'+(unlocked?'แก้ไขแผน':'🔒 กรอก / แก้ไขแผน')+'</summary>'+(unlocked?'<form class="ct-plan-save"><label>แผน (%) <input class="search" type="number" min="0" max="100" step="any" required aria-label="แผนเบิกจ่ายกรม (%)" value="'+(row&&row.pct!=null?row.pct:'')+'"></label><button class="btn" type="submit">บันทึก</button><button class="btn ghost ct-plan-lock" type="button">ล็อก</button></form>':'<form class="ct-plan-unlock"><label>รหัสผู้ดูแล <input class="search" type="password" autocomplete="off" required aria-label="รหัสเพื่อแก้แผนเบิกจ่าย"></label><button class="btn" type="submit">ปลดล็อก</button></form>')+'<div class="ct-plan-message" role="status">'+esc(error)+'</div></details>';
   const msg=host.querySelector('.ct-plan-message');if(error)host.querySelector('details').open=true;
   host.querySelector('.ct-plan-unlock')?.addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget,input=f.querySelector('input'),button=f.querySelector('button');button.disabled=true;msg.textContent='กำลังตรวจรหัส…';
     try{await sysUnlock(input.value.trim());input.value='';contractPlanLock.set(true);renderContractPlanEditor(host,year);host.querySelector('details').open=true;}
@@ -7835,7 +8218,7 @@ function renderContractTracker(container,rows,year){
     const pct=v=>metrics.total>0?(100*v/metrics.total).toFixed(1)+'%':'—';
     const unpaid=metrics.total-metrics.paid;
     box.querySelector('.ct-kpis').innerHTML=tile('total','สัญญาทั้งหมด',fmt(metrics.count),'โครงการ')+tile('amount','มูลค่าทั้งหมด',fmtM(metrics.total),fmt(metrics.total)+' บาท')+tile('done','เสร็จแล้ว',fmtM(metrics.paid),fmt(metrics.done)+' โครงการ · '+fmt(metrics.paid)+' บาท · '+pct(metrics.paid))+tile('pending','ยังไม่เสร็จ',fmtM(unpaid),fmt(metrics.pending)+' โครงการ · '+fmt(unpaid)+' บาท · '+pct(unpaid));
-    box.querySelector('.ct-payment').innerHTML='<div class="ct-kpi ct-department-plan"></div>'+tile('paid','ผลเบิกจ่าย',fmtM(metrics.paid),fmt(metrics.paid)+' บาท · '+pct(metrics.paid))+tile('district-plan','แผนเบิกจ่ายแขวง',plans.amount==null?'—':fmtM(plans.amount),(plans.amount==null?'มีแผน '+plans.planKnown+' / '+base.length+' โครงการ':fmt(plans.amount)+' บาท · '+(plans.pct==null?'—':plans.pct.toFixed(1)+'%'))) ;
+    box.querySelector('.ct-payment').innerHTML='<div class="ct-kpi ct-department-plan"></div>'+tile('paid','ผลเบิกจ่าย',fmtM(metrics.paid),fmt(metrics.paid)+' บาท · '+pct(metrics.paid))+tile('district-plan','แผนเบิกจ่ายแขวง',plans.amount==null?'—':fmtM(plans.amount),(plans.amount==null?'มีแผน '+plans.planKnown+' / '+base.length+' โครงการ':fmt(plans.amount)+' บาท · '+(plans.pct==null?'—':plans.pct.toFixed(1)+'%')+(plans.fromPayColumn?' · มีแผน '+plans.payKnown+' / '+base.length+' โครงการ':'')+(plans.payInvalid?' · ตรวจค่า '+plans.payInvalid+' แถว':''))) ;
     renderContractPlanEditor(box.querySelector('.ct-department-plan'),year);
     box.querySelector('.ct-thresholds').innerHTML=[10,30,50,80,100].map(n=>'<button class="ct-kpi ct-time" data-time="gap:'+n+'" data-gap="'+n+'" aria-pressed="'+(st.time==='gap:'+n)+'"><span class="ct-kpi-label">ต่ำกว่าแผน '+n+'%</span><span class="ct-kpi-value">'+(plans.eligible?fmt(plans.thresholds[n]):'—')+'</span><span class="ct-kpi-note">จาก '+plans.eligible+' โครงการที่มีแผน–ผล</span></button>').join('')+'<button class="ct-kpi ct-time" data-time="overdue" aria-pressed="'+(st.time==='overdue')+'"><span class="ct-kpi-label">หมดสัญญาแล้ว</span><span class="ct-kpi-value">'+fmt(base.filter(x=>contractState(x)==='overdue').length)+'</span><span class="ct-kpi-note">โครงการยังไม่เสร็จ</span></button>';
     box.querySelectorAll('.ct-time').forEach(b=>b.classList.toggle('selected',b.dataset.time===st.time));
@@ -8284,7 +8667,7 @@ function renderReqDetail(code){
       มุมมองรวม — ${isRoadCode(code)?'สายทาง':'งานไม่ผูกสาย'} ${esc(code)} (${list.length} คำขอ) · งบระบุแล้ว ${fmtM(tot)}</div>
     <div style="border:1px solid var(--grid);border-radius:8px;overflow:hidden">
     ${rows.map(({r,s,first})=>`<div class="reqrow">
-        <div><div class="cat" style="color:${r.cat==='— ไม่ระบุ'?'var(--crit)':'var(--navy)'}">${esc(r.cat)}${first?` <span style="color:var(--muted);font-weight:400;font-size:11px">· ปี ${r.year}</span>`:''}</div>
+        <div><div class="cat" style="color:${r.cat==='— ไม่ระบุ'?'var(--crit)':'var(--strong)'}">${esc(r.cat)}${first?` <span style="color:var(--muted);font-weight:400;font-size:11px">· ปี ${r.year}</span>`:''}</div>
              <div class="rng">${esc(s.a||'—')}${s.b?' - '+esc(s.b):''}</div></div>
         <div style="font-size:12.5px">${first?esc(r.act||r.proj)||'—':''}</div>
         <div class="amt ${r.amt!=null?'ok':'wait'}">${r.amt!=null?(first?fmt(r.amt):''):'⏳ รอประเมิน'}</div>
@@ -8686,7 +9069,7 @@ function renderGap(){
     const tb=document.querySelector('#gapDetailTable tbody'); if(!tb) return;
     const hd=document.getElementById('gapDetailHead'); if(hd) hd.textContent=gapDetailTab;
     const cell=r=>r.type==='หมวด'?muadCell(r.k):esc(r.label);   // กฎ 20: คอลัมน์หมวดมีแถบสีเหมือนทะเบียนสายทาง
-    tb.innerHTML=detail.filter(r=>r.type===gapDetailTab).map(r=>`<tr data-k="${esc(r.k)}"><td style="white-space:nowrap">${cell(r)}</td><td class="num">${r.n}</td><td class="num">${r.ok}</td><td class="num">${fmt(r.a)}</td><td class="num">${fmt(r.askOk)}</td><td class="num">${fmt(r.askNo)}</td><td class="num"><b style="color:${r.v>=avgPct?'#0d7a4a':'var(--crit)'}">${r.a?r.v.toFixed(0)+'%':'—'}</b></td></tr>`).join('')||
+    tb.innerHTML=detail.filter(r=>r.type===gapDetailTab).map(r=>`<tr data-k="${esc(r.k)}"><td style="white-space:nowrap">${cell(r)}</td><td class="num">${r.n}</td><td class="num">${r.ok}</td><td class="num">${fmt(r.a)}</td><td class="num">${fmt(r.askOk)}</td><td class="num">${fmt(r.askNo)}</td><td class="num"><b style="color:${r.v>=avgPct?'var(--pos-ink)':'var(--crit)'}">${r.a?r.v.toFixed(0)+'%':'—'}</b></td></tr>`).join('')||
       '<tr><td colspan="7" class="c" style="color:var(--muted)">ไม่มีคำของบในกลุ่มนี้</td></tr>';
   };
   safeRun('ตารางรายละเอียด', fillDetail);
@@ -8800,23 +9183,23 @@ function renderYearly(){
     <div class="secdiv"><h2>① สรุปปีงบ ${y}${agLbl} — งบเท่าไหร่ กี่โครงการ ทำอะไรบ้าง</h2></div>
     ${noHist?`<div class="card" style="margin-bottom:14px"><div class="note" style="margin:0;padding:8px 2px">ปีงบ ${y} ยังไม่มีโครงการในประวัติ — ดูส่วนเช็คคำขอด้านล่างว่าปีนี้ยื่นขออะไรไปบ้าง</div></div>`:''}
     <div class="grid kpis kpi3">
-      ${kico('📋','#edf2fa','โครงการปีนี้', `${H.length} <small>โครงการ</small>`, `ปีงบ ${y}${agLbl} · จาก ${histData.length} โครงการทุกปี`)}
-      ${kico('🛣️','#e6f4f2','สาย/สะพานที่มีงาน', `${codes.size} <small>รหัส</small>`, `${(100*codes.size/Math.max(1,ALL_CODES.length)).toFixed(0)}% ของบัญชี${hBld.length?` · งานอาคาร ${hBld.length}`:''}`)}
-      ${kico('💰','#e9f6ee','วงเงินตามสัญญารวม', fmtM(tot), `${withAmt} รายการที่ระบุวงเงิน · เฉลี่ย ${fmtM(tot/Math.max(1,withAmt))}`)}
-      ${kico('🛤️','#f0ecfa','ระยะทางถนนที่ทำ', `${fmt(+roadKm.toFixed(1))} <small>กม.</small>`, `ก่อสร้าง ${fmt(+cls['ก่อสร้าง'].km.toFixed(1))} · ขยาย ${fmt(+cls['ขยาย'].km.toFixed(1))} · บำรุง ${fmt(+cls['บำรุง'].km.toFixed(1))} กม.`)}
-      ${kico('💡','#fbf3df','ไฟฟ้า · ITS / กล้อง', [poles?fmt(poles)+' <small>ต้น</small>':'', cameraPoints?fmt(cameraPoints)+' <small>จุด ITS</small>':''].filter(Boolean).join(' · ')||'—', `ไฟฟ้า ${hE.length} โครงการ · ITS ${hC.length} โครงการ`)}
-      ${kico('✅','#e9f6ee','ส่งงานงวดสุดท้ายแล้ว', `${delivered} <small>/ ${H.length}</small>`, `${active?`ยังไม่หมดสัญญา ${active}`:'ไม่มีสัญญาที่ยังไม่หมด'}${overdue?` · <span style="color:var(--crit)">หมดแล้วยังไม่ส่งงาน ${overdue}</span>`:''}`)}
+      ${kico('📋','var(--tile-blue)','โครงการปีนี้', `${H.length} <small>โครงการ</small>`, `ปีงบ ${y}${agLbl} · จาก ${histData.length} โครงการทุกปี`)}
+      ${kico('🛣️','var(--tile-teal)','สาย/สะพานที่มีงาน', `${codes.size} <small>รหัส</small>`, `${(100*codes.size/Math.max(1,ALL_CODES.length)).toFixed(0)}% ของบัญชี${hBld.length?` · งานอาคาร ${hBld.length}`:''}`)}
+      ${kico('💰','var(--tile-green)','วงเงินตามสัญญารวม', fmtM(tot), `${withAmt} รายการที่ระบุวงเงิน · เฉลี่ย ${fmtM(tot/Math.max(1,withAmt))}`)}
+      ${kico('🛤️','var(--tile-violet)','ระยะทางถนนที่ทำ', `${fmt(+roadKm.toFixed(1))} <small>กม.</small>`, `ก่อสร้าง ${fmt(+cls['ก่อสร้าง'].km.toFixed(1))} · ขยาย ${fmt(+cls['ขยาย'].km.toFixed(1))} · บำรุง ${fmt(+cls['บำรุง'].km.toFixed(1))} กม.`)}
+      ${kico('💡','var(--tile-amber)','ไฟฟ้า · ITS / กล้อง', [poles?fmt(poles)+' <small>ต้น</small>':'', cameraPoints?fmt(cameraPoints)+' <small>จุด ITS</small>':''].filter(Boolean).join(' · ')||'—', `ไฟฟ้า ${hE.length} โครงการ · ITS ${hC.length} โครงการ`)}
+      ${kico('✅','var(--tile-green)','ส่งงานงวดสุดท้ายแล้ว', `${delivered} <small>/ ${H.length}</small>`, `${active?`ยังไม่หมดสัญญา ${active}`:'ไม่มีสัญญาที่ยังไม่หมด'}${overdue?` · <span style="color:var(--crit)">หมดแล้วยังไม่ส่งงาน ${overdue}</span>`:''}`)}
     </div>
     ${H.length?`
     <div class="card" style="margin-bottom:14px">
       <h3>แบ่งเป็นงานอะไรบ้าง</h3><div class="note">ปริมาณงานของปีนี้ แยกตามชนิดงาน — ชี้ดูรายการย่อ · คลิกดูทั้งหมด</div>
       <div class="workgrid">
-        <div class="worktile" style="background:#e9f6ee"><div class="wico">🏗️</div><div style="min-width:0"><div class="wval">${fmt(+cls['ก่อสร้าง'].km.toFixed(1))} <small>กม.</small></div><div class="wlbl">ก่อสร้างใหม่</div><div class="wfoot">${cls['ก่อสร้าง'].n} โครงการ</div></div></div>
-        <div class="worktile" style="background:#e6f4f2"><div class="wico">🛤️</div><div style="min-width:0"><div class="wval">${fmt(+cls['ขยาย'].km.toFixed(1))} <small>กม.</small></div><div class="wlbl">ขยายผิวจราจร</div><div class="wfoot">${cls['ขยาย'].n} โครงการ</div></div></div>
-        <div class="worktile" style="background:#edf2fa"><div class="wico">🔧</div><div style="min-width:0"><div class="wval">${fmt(+cls['บำรุง'].km.toFixed(1))} <small>กม.</small></div><div class="wlbl">งานบำรุง</div><div class="wfoot">${cls['บำรุง'].n} โครงการ</div></div></div>
-        <div class="worktile" style="background:#fbf3df"><div class="wico">💡</div><div style="min-width:0"><div class="wval">${poles?fmt(poles):'—'}${poles?' <small>ต้น</small>':''}</div><div class="wlbl">ไฟฟ้าแสงสว่าง</div><div class="wfoot">${hE.length?`${hE.length} โครงการ · ${fmt(+elecKm.toFixed(1))} กม.`:'—'}</div></div></div>
-        <div class="worktile" style="background:#eaf2fc"><div class="wico">🌉</div><div style="min-width:0"><div class="wval">${brM?fmt(Math.round(brM)):'—'}${brM?' <small>ม.</small>':''}</div><div class="wlbl">งานสะพาน</div><div class="wfoot">${hB.length?hB.length+' โครงการ':'—'}</div></div></div>
-        <div class="worktile" style="background:#f0ecfa"><div class="wico">🏢</div><div style="min-width:0"><div class="wval">${hBld.length||'—'}${hBld.length?' <small>งาน</small>':''}</div><div class="wlbl">งานอาคาร</div><div class="wfoot">${hBld.length?fmtM(sum(hBld,x=>x.amount)):'—'}</div></div></div>
+        <div class="worktile" style="background:var(--tile-green)"><div class="wico">🏗️</div><div style="min-width:0"><div class="wval">${fmt(+cls['ก่อสร้าง'].km.toFixed(1))} <small>กม.</small></div><div class="wlbl">ก่อสร้างใหม่</div><div class="wfoot">${cls['ก่อสร้าง'].n} โครงการ</div></div></div>
+        <div class="worktile" style="background:var(--tile-teal)"><div class="wico">🛤️</div><div style="min-width:0"><div class="wval">${fmt(+cls['ขยาย'].km.toFixed(1))} <small>กม.</small></div><div class="wlbl">ขยายผิวจราจร</div><div class="wfoot">${cls['ขยาย'].n} โครงการ</div></div></div>
+        <div class="worktile" style="background:var(--tile-blue)"><div class="wico">🔧</div><div style="min-width:0"><div class="wval">${fmt(+cls['บำรุง'].km.toFixed(1))} <small>กม.</small></div><div class="wlbl">งานบำรุง</div><div class="wfoot">${cls['บำรุง'].n} โครงการ</div></div></div>
+        <div class="worktile" style="background:var(--tile-amber)"><div class="wico">💡</div><div style="min-width:0"><div class="wval">${poles?fmt(poles):'—'}${poles?' <small>ต้น</small>':''}</div><div class="wlbl">ไฟฟ้าแสงสว่าง</div><div class="wfoot">${hE.length?`${hE.length} โครงการ · ${fmt(+elecKm.toFixed(1))} กม.`:'—'}</div></div></div>
+        <div class="worktile" style="background:var(--tile-sky)"><div class="wico">🌉</div><div style="min-width:0"><div class="wval">${brM?fmt(Math.round(brM)):'—'}${brM?' <small>ม.</small>':''}</div><div class="wlbl">งานสะพาน</div><div class="wfoot">${hB.length?hB.length+' โครงการ':'—'}</div></div></div>
+        <div class="worktile" style="background:var(--tile-violet)"><div class="wico">🏢</div><div style="min-width:0"><div class="wval">${hBld.length||'—'}${hBld.length?' <small>งาน</small>':''}</div><div class="wlbl">งานอาคาร</div><div class="wfoot">${hBld.length?fmtM(sum(hBld,x=>x.amount)):'—'}</div></div></div>
       </div>
     </div>
     <!-- v31.8 ผู้ใช้เรียงใหม่: หน่วยดำเนินการ · ชนิดงบ · หมวด · กิจกรรม · เขต · ลำดับสูงสุด -->
@@ -9251,19 +9634,19 @@ async function printOnePage(code){
     <div class="kgrid" style="grid-template-columns:repeat(9,1fr)">
       ${kb('🛣️','#ececee',fmt(r?.latyang||0)+' <small>กม.</small>','ลาดยาง (AC)')}
       ${kb('🧱','#e6f0fb',fmt(r?.concrete||0)+' <small>กม.</small>','คอนกรีต (คสล.)')}
-      ${kb('🪨','#f2ece4',fmt(r?.lukrang||0)+' <small>กม.</small>','ลูกรัง')}
-      ${kb('🌉','#eaf2fc',(rb.length||r?.bridges_acct||0)+' <small>แห่ง</small>','สะพานในสายทาง')}
-      ${kb('💡','#fbf3df',assetValue(assets.elec),'ไฟฟ้าแสงสว่าง · '+assetNote(assets.elec))}
+      ${kb('🪨','var(--tile-sand)',fmt(r?.lukrang||0)+' <small>กม.</small>','ลูกรัง')}
+      ${kb('🌉','var(--tile-sky)',(rb.length||r?.bridges_acct||0)+' <small>แห่ง</small>','สะพานในสายทาง')}
+      ${kb('💡','var(--tile-amber)',assetValue(assets.elec),'ไฟฟ้าแสงสว่าง · '+assetNote(assets.elec))}
       ${kb('🕳️','#e8f1f0',assetValue(assets.drain),'ระบายน้ำ · '+assetNote(assets.drain))}
-      ${kb('📹','#f0ecfa',assetValue(assets.cctv),'ITS / กล้อง · '+assetNote(assets.cctv))}
+      ${kb('📹','var(--tile-violet)',assetValue(assets.cctv),'ITS / กล้อง · '+assetNote(assets.cctv))}
       ${kb('⚠️','#fdeeee',(rk.length||'—')+(rk.length?' <small>จุด</small>':''),'จุดเสี่ยง · แก้แล้ว '+rk.filter(riskFixed).length)}
-      ${kb('📈','#e6f4f2',cdR.length?cdR.length+' <small>ช่วง</small>':'—','สำรวจสภาพผิวแล้ว')}
+      ${kb('📈','var(--tile-teal)',cdR.length?cdR.length+' <small>ช่วง</small>':'—','สำรวจสภาพผิวแล้ว')}
     </div>
     <div class="kgrid" style="grid-template-columns:repeat(5,1fr);margin-top:8px">
-      ${kb('📋','#edf2fa',list.length+' <small>โครงการ</small>','โครงการในประวัติ')}
-      ${kb('💰','#e9f6ee',fmtM(tot),'วงเงินรวมตามสัญญา')}
-      ${kb('📏','#e6f4f2',fmt(+covKm.toFixed(1))+' <small>กม.</small>','ระยะดำเนินการรวม ('+(roadLen?Math.min(100,100*covKm/roadLen).toFixed(0):0)+'% ของสาย)')}
-      ${kb('🛡️','#f0ecfa',wl.length+' <small>โครงการ</small>','ติดค้ำประกัน · '+fmtM(wl.reduce((a,o)=>a+(o.x.amount||0),0)))}
+      ${kb('📋','var(--tile-blue)',list.length+' <small>โครงการ</small>','โครงการในประวัติ')}
+      ${kb('💰','var(--tile-green)',fmtM(tot),'วงเงินรวมตามสัญญา')}
+      ${kb('📏','var(--tile-teal)',fmt(+covKm.toFixed(1))+' <small>กม.</small>','ระยะดำเนินการรวม ('+(roadLen?Math.min(100,100*covKm/roadLen).toFixed(0):0)+'% ของสาย)')}
+      ${kb('🛡️','var(--tile-violet)',wl.length+' <small>โครงการ</small>','ติดค้ำประกัน · '+fmtM(wl.reduce((a,o)=>a+(o.x.amount||0),0)))}
       ${kb('🔮','#fdeeee',zl.length?zl.length+' <small>ช่วง</small>':'—','ความต้องการ Zerobase')}
     </div>
     <h2>แผนภาพบูรณาการ (Strip Map)</h2>
@@ -9501,11 +9884,19 @@ function readEquipTable(table,tab){
   return objs.filter(o=>EQP_FIELDS.some(([,key])=>key!=='code'&&String(o[key]??'').trim()))
     .map(o=>({...o,code:extractRoadCode(o.code),ka:kmVal(o.a),kb:kmVal(o.b),n:num(o.qty),sourceTab:tab.name,sourceGid:tab.gid}));
 }
+/* v31.23 ผู้ใช้ (10 ก.ย. 69) "แก้ทั้งหมดทันที" — เดิม (v31.16) แท็บใดอ่านหัวตารางไม่ได้ = ทิ้งทั้ง 5 แท็บ แล้วฟ้องว่า "เชื่อมต่อ Google Sheets ไม่ได้"
+   ทั้งที่เน็ตปกติ (ผิดกฎ 6) · ตอนนี้แยกสองกรณี: คำขอล้ม (เครือข่าย) = พังจริง ต้องฟ้อง+ลองใหม่ · แท็บว่าง/หัวตารางหาย = หมวดนั้นยังไม่มีข้อมูล
+   แสดงหมวดที่อ่านได้ต่อ และจดชื่อหมวดที่ว่างไว้ที่ eqTabsEmpty ให้หน้าบอกผู้ใช้ (ชุดทดสอบ rules กฎ 6 + eqtabs) */
+let eqTabsEmpty=[];
 async function readEquipAll(fetchTable){
-  const results=await Promise.allSettled(EQP_TABS.map(async tab=>({tab,rows:readEquipTable(await fetchTable(tab),tab)})));
-  const errors=results.flatMap((r,i)=>r.status==='rejected'?[`${EQP_TABS[i].name}: ${r.reason?.message||r.reason}`]:[]);
-  if(errors.length)throw new Error('อ่าน Equipment ไม่ครบ 5 แท็บ — '+errors.join(' · '));
-  return results.flatMap(r=>r.value.rows);
+  const results=await Promise.allSettled(EQP_TABS.map(async tab=>{
+    let table; try{ table=await fetchTable(tab); }catch(e){ const err=new Error(String(e?.message||e)); err.net=true; throw err; }
+    return {tab,rows:readEquipTable(table,tab)};
+  }));
+  const net=results.filter(r=>r.status==='rejected'&&r.reason?.net);
+  if(net.length) throw new Error('อ่านข้อมูล Equipment ไม่ครบ — เครือข่ายขัดข้อง ('+net.length+' จาก '+EQP_TABS.length+' ส่วน) กดลองใหม่');
+  eqTabsEmpty=results.map((r,i)=>r.status==='rejected'?EQP_TABS[i].name:null).filter(Boolean);
+  return results.filter(r=>r.status==='fulfilled').flatMap(r=>r.value.rows);
 }
 
 defineSource({
@@ -9516,7 +9907,7 @@ defineSource({
     // อ่านครบทั้งห้าหมวดก่อนแทนข้อมูลเดิม หากแท็บใดล้มต้องแจ้งว่าอ่านไม่ครบ
     eqData=await readEquipAll(tab=>gvizJSONP(EQP_ID,'gid='+tab.gid+'&headers=2&_='+Date.now()));
     return eqData.length
-      ? `<span class="hpill"><span class="dot live"></span> ข้อมูลสดจาก Google Sheets</span><span class="hpill">🔌 ${eqData.length} รายการ · ${new Set(eqData.map(x=>x.code)).size} สาย · ครบ 5 แท็บ</span><span class="hpill">🕐 ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})} น.</span>`
+      ? `<span class="hpill"><span class="dot live"></span> ข้อมูลสดจาก Google Sheets</span><span class="hpill">🔌 ${eqData.length} รายการ · ${new Set(eqData.map(x=>x.code)).size} สาย</span>${eqTabsEmpty.length?`<span class="hpill warn">ยังไม่มีรายการ: หมวด${eqTabsEmpty.join(' · หมวด')}</span>`:''}<span class="hpill">🕐 ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})} น.</span>`
       : `<span class="hpill"><span class="dot wait"></span> โครงพร้อมแล้ว — รอกรอกข้อมูลในชีท</span>`;
   }
 });
@@ -9537,8 +9928,8 @@ function renderEquip(){
   body.innerHTML=`
     <div class="card" style="margin-bottom:14px"><div class="note">กดสายทางเพื่อดูช่วง กม. จำนวนอุปกรณ์ และสภาพ · กดโหลดข้อมูลใหม่หลังเพิ่มรายการ</div></div>
     <div class="grid kpis kpi3">
-      ${kico('🔌','#fbf3df','อุปกรณ์ไฟฟ้า', `${fmt(elec.reduce((a,x)=>a+(x.n||0),0))} <small>หน่วย</small>`, `${elec.length} รายการ${missingQty?' · ยังไม่ระบุจำนวน '+missingQty+' แถว':''}`)}
-      ${kico('💧','#eaf2fc','ระบบระบายน้ำ', `${drain.length} <small>รายการ</small>`, [...new Set(drain.map(x=>x.dtype))].slice(0,3).join(' · ')||'—')}
+      ${kico('🔌','var(--tile-amber)','อุปกรณ์ไฟฟ้า', `${fmt(elec.reduce((a,x)=>a+(x.n||0),0))} <small>หน่วย</small>`, `${elec.length} รายการ${missingQty?' · ยังไม่ระบุจำนวน '+missingQty+' แถว':''}`)}
+      ${kico('💧','var(--tile-sky)','ระบบระบายน้ำ', `${drain.length} <small>รายการ</small>`, [...new Set(drain.map(x=>x.dtype))].slice(0,3).join(' · ')||'—')}
       ${kico('🛠️','#fdeeee','สภาพชำรุด/เสื่อม', `<span style="color:var(--crit)">${broken.length}</span> <small>รายการ</small>`, unknownCond?'ยังไม่ระบุสภาพ '+unknownCond+' แถว':(broken.length?'ควรวางแผนซ่อม':'ไม่พบรายการชำรุด'))}
     </div>
     <div class="grid two">
@@ -9551,7 +9942,7 @@ function renderEquip(){
         <input class="search" id="eqSearch" placeholder="ค้นหา สาย / หมวด / อุปกรณ์ / สภาพ">
       </div>
       <div class="tblwrap" style="max-height:520px"><table id="eqTable"><thead><tr>
-        <th>สายทาง</th><th>แท็บต้นทาง</th><th>ช่วง กม.</th><th>ประเภทอุปกรณ์</th><th>ชนิด</th><th class="num">จำนวน</th><th>ปีติดตั้ง</th><th>ระบายน้ำ</th><th>ขนาด</th><th>สภาพ</th><th>สำรวจ</th>
+        <th>สายทาง</th><th>หมวด</th><th>ช่วง กม.</th><th>ประเภทอุปกรณ์</th><th>ชนิด</th><th class="num">จำนวน</th><th>ปีติดตั้ง</th><th>ระบายน้ำ</th><th>ขนาด</th><th>สภาพ</th><th>สำรวจ</th>
       </tr></thead><tbody></tbody></table></div>
     </div>`;
   const types=[...new Set(E.map(x=>x.etype||x.dtype||'ไม่ระบุ'))];
@@ -9920,7 +10311,7 @@ function renderRiskSum(){
           return `<div style="display:flex;align-items:center;gap:9px;border:1.6px solid ${TC[t]}55;background:${TC[t]}12;border-radius:14px;padding:9px 14px;min-width:150px">
             <span style="font-size:22px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.15))">${riskIcon(t)}</span>
             <div><div style="font-size:12px;font-weight:700;color:var(--ink)">${esc(t)}</div>
-            <div style="font-size:16px;font-weight:800;color:${TC[t]}">${n} <small style="font-size:10.5px;font-weight:600;color:var(--muted)">จุด · แก้แล้ว ${f}</small></div></div></div>`;}).join('')}
+            <div style="font-size:16px;font-weight:800;color:${inkColor(TC[t])}">${n} <small style="font-size:10.5px;font-weight:600;color:var(--muted)">จุด · แก้แล้ว ${f}</small></div></div></div>`;}).join('')}
       </div>
     </div>
     <div class="grid two">
@@ -9969,7 +10360,7 @@ function renderRiskSum(){
         const ts=[...new Set(l.map(x=>x.rtype||'ไม่ระบุ'))];
         return `<tr data-code="${c}" style="cursor:pointer">
           <td><b>${c}</b></td><td style="white-space:nowrap">${esc(roadInfo[c]?.name||'—')}</td><td style="white-space:nowrap">${muadCell(muadByCode()[c]||l[0]?._m||'ไม่ระบุ')}</td>
-          <td class="num"><b>${l.length}</b></td><td class="num" style="color:#0a6b0a">${f}</td>
+          <td class="num"><b>${l.length}</b></td><td class="num" style="color:var(--pos-ink)">${f}</td>
           <td class="num" style="color:${l.length-f?'var(--crit)':'var(--muted)'}">${l.length-f}</td>
           <td>${ts.map(t=>`<span style="display:inline-flex;align-items:center;margin-right:8px;font-size:11.5px;color:var(--ink2)"><span style="width:9px;height:9px;border-radius:2px;background:${TC[t]};display:inline-block;margin-right:4px"></span>${riskIcon(t)} ${esc(t)} (${l.filter(x=>(x.rtype||'ไม่ระบุ')===t).length})</span>`).join('')}</td></tr>`;
       }).join('');
