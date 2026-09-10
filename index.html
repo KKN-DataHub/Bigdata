@@ -25,6 +25,9 @@
              radial-gradient(34rem 26rem at 6% 102%, rgba(120,160,220,.14), transparent 60%),
              radial-gradient(36rem 26rem at 98% 98%, rgba(60,150,160,.16), transparent 60%);   /* v31.25 ลายพื้นหลังของชุดสี (ตกแต่งล้วน ไม่มีความหมายกับข้อมูล) */
   --card:#fff;   /* v31.26 พื้นการ์ด/กล่องลอย — ชุดสว่างเป็นขาวเหมือนเดิม ชุดมืดเปลี่ยนเป็นสีเข้ม */
+  /* v31.28 ผู้ใช้: "ย้ำต้องไล่สีเฉดทุกอันนะ จะไม่มีสีเดียวทื้อๆ" · "โทนมืดพวกกล่องดูกลืนกันไปหมด"
+     ทุกชุดสีกำหนดลายไล่เฉดของพื้นการ์ดเอง + เส้นขอบและเงาที่แยกการ์ดออกจากพื้นหลังได้จริง */
+  --card-art:none; --card-line:var(--hairline); --card-shadow:0 1px 2px rgba(16,24,40,.04);
   --strong:var(--navy);   /* v31.26 ตัวหนังสือเน้น (ตัวเลข KPI · หัวการ์ด) — ชุดสว่างใช้สีเดียวกับแถบซ้ายเหมือนเดิม ชุดมืดใช้สีสว่าง */
   /* v31.26 พื้นอ่อนของกล่องสถานะ/แถบ — ยกออกมาเป็นตัวแปรเพื่อให้ชุดกลางคืนสลับเป็นพื้นเข้มได้ (ชุดสว่าง = ค่าเดิมทุกตัว) */
   --tint-ok:#e7f6e7; --tint-ok-b:#bfe3bf; --tint-ok-ink:#0a6b0a; --tint-ok2:#f6fbf6; --tint-ok2-b:#c6e4c8; --tint-ok-chip:#dcefdd;
@@ -40,47 +43,57 @@
 /* ══ v31.0 ชุดสี (กฎ 18) — เปลี่ยนได้เฉพาะ "สีโครง" 14 ตัวนี้เท่านั้น
    สีที่มีความหมายกับข้อมูล (หมวด · ชนิดงบ · ชนิดผิว · แดง/เหลือง/เขียวเตือน · สีปี) ห้ามผูกกับชุดสี
    ผู้ใช้ 6 ก.ย. 69: "ชอบหมดเลย จะไม่กระทบข้อมูลใช่ไหม" — theme.js พิสูจน์ว่าตัวเลขบนจอเท่ากันทุกชุด ══ */
-html[data-theme="isan"]{ --navy:#4a2418; --navy-d:#3a1b11; --teal:#c2552b; --teal-soft:#f7e6dd; --gold:#d9a441;
-  --surface:#fffdf9; --page:#f6f1ea; --ink:#1e1410; --ink2:#5b4a41; --muted:#8c7a70; --grid:#e6dcd2; --hairline:rgba(74,36,24,.14);
-  --hero2:#6b3a2a; --hero3:#8a4a2f; --navtxt:#e7d3c6; --navsub:#c9a996; --navver:#f0ddd0; --bar-bg:rgba(74,36,24,.93);
-  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(194,85,43,.22), transparent 60%),
-             radial-gradient(32rem 24rem at 99% 4%, rgba(217,164,65,.20), transparent 58%),
-             radial-gradient(34rem 26rem at 6% 102%, rgba(150,90,60,.14), transparent 60%),
-             radial-gradient(36rem 26rem at 98% 98%, rgba(230,150,90,.17), transparent 60%) }
-html[data-theme="asphalt"]{ --navy:#23262b; --navy-d:#17191d; --teal:#8a6300; --teal-soft:#fbf1cf; --gold:#f2b705;   /* --teal เข้มกว่าเหลืองเส้นจราจร เพราะต้องรองรับตัวหนังสือขาว (ความต่าง 5.4) */
-  --surface:#fbfbfc; --page:#eef0f2; --ink:#101214; --ink2:#4a4f55; --muted:#868c93; --grid:#dfe2e6; --hairline:rgba(16,18,20,.12);
-  --hero2:#33373d; --hero3:#5a4a10; --navtxt:#cfd3d8; --navsub:#9aa1a9; --navver:#e2e5e9; --bar-bg:rgba(35,38,43,.93);
-  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(35,38,43,.16), transparent 60%),
-             radial-gradient(32rem 24rem at 99% 4%, rgba(242,183,5,.16), transparent 58%),
-             radial-gradient(34rem 26rem at 6% 102%, rgba(90,100,110,.14), transparent 60%),
-             radial-gradient(36rem 26rem at 98% 98%, rgba(160,150,120,.13), transparent 60%) }
-html[data-theme="forest"]{ --navy:#1f3d2b; --navy-d:#162d20; --teal:#3f8f4a; --teal-soft:#e2f1e4; --gold:#d9a441;
-  --surface:#fcfdf9; --page:#f3f5ee; --ink:#0e1a12; --ink2:#4a5a4e; --muted:#7f8f83; --grid:#dde3d8; --hairline:rgba(31,61,43,.14);
-  --hero2:#2b5a3c; --hero3:#1f6a4e; --navtxt:#cfe0d3; --navsub:#9ab8a3; --navver:#dfeee3; --bar-bg:rgba(31,61,43,.93);
-  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(63,143,74,.20), transparent 60%),
-             radial-gradient(32rem 24rem at 99% 4%, rgba(140,190,95,.17), transparent 58%),
-             radial-gradient(34rem 26rem at 6% 102%, rgba(30,110,90,.16), transparent 60%),
-             radial-gradient(36rem 26rem at 98% 98%, rgba(200,210,120,.14), transparent 60%) }
-html[data-theme="indigo"]{ --navy:#2b2f6e; --navy-d:#202355; --teal:#3a86c8; --teal-soft:#e1edf8; --gold:#e0b04a;
-  --surface:#fcfcfe; --page:#f2f3f7; --ink:#101226; --ink2:#4d5066; --muted:#868aa0; --grid:#dfe1ea; --hairline:rgba(43,47,110,.14);
-  --hero2:#3a4190; --hero3:#2f5f9e; --navtxt:#d4d7ee; --navsub:#a2a7d1; --navver:#e4e6f6; --bar-bg:rgba(43,47,110,.93);
-  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(58,134,200,.20), transparent 60%),
-             radial-gradient(32rem 24rem at 99% 4%, rgba(95,85,195,.17), transparent 58%),
-             radial-gradient(34rem 26rem at 6% 102%, rgba(150,120,220,.16), transparent 60%),
-             radial-gradient(36rem 26rem at 98% 98%, rgba(70,150,200,.14), transparent 60%) }
-
-
+/* ══ v31.27 ด่านล็อกอิน (ผู้ใช้: "จะเปิดระบบล็อคอินก่อนเข้าถึงข้อมูล ถ้าไม่ล็อคอินจะโชว์แค่ภาพรวมกับแผนที่")
+   ปุ่มสถานะอยู่มุมบนขวาคู่กับปุ่มชุดสี · หน้าที่ยังไม่เปิดสิทธิ์ขึ้นกล่องเชิญล็อกอินแทนเนื้อหน้า ══ */
+.authpick{position:relative;z-index:1200}
+.authpick .ap-btn{display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border-radius:9px;cursor:pointer;
+  border:1px solid rgba(255,255,255,.32);background:rgba(255,255,255,.14);color:#fff;font-family:inherit;font-size:12.5px;font-weight:600}
+.authpick .ap-btn:hover{background:rgba(255,255,255,.26)}
+.authpick[hidden]{display:none}
+.authbox{position:fixed;inset:0;z-index:1600;display:flex;align-items:center;justify-content:center;background:rgba(9,14,24,.55);
+  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);padding:18px}
+.authbox[hidden]{display:none}
+.authcard{width:min(400px,100%);background:var(--card);border:1px solid var(--grid);border-radius:16px;padding:22px 22px 18px;
+  box-shadow:0 22px 60px rgba(9,14,24,.38)}
+.authcard h3{font-size:17px;color:var(--strong);margin-bottom:4px}
+.authcard .asub{font-size:12.5px;color:var(--muted);margin-bottom:14px;line-height:1.7}
+.authcard label{display:block;font-size:12px;color:var(--ink2);margin:10px 0 4px;font-weight:600}
+.authcard input{width:100%;font-family:inherit;font-size:13.5px;padding:9px 11px;border:1px solid var(--grid);border-radius:9px;background:var(--card);color:var(--ink)}
+.authcard input:focus{outline:2px solid var(--teal);outline-offset:1px}
+.authrow{display:flex;gap:9px;align-items:center;margin-top:16px;flex-wrap:wrap}
+.authrow .btn{flex:1 1 auto;justify-content:center}
+.authmsg{font-size:12.5px;margin-top:12px;min-height:18px;line-height:1.6}
+.authmsg.bad{color:var(--crit-ink);font-weight:600}
+.authmsg.ok{color:var(--pos-ink);font-weight:600}
+.authmsg.busy{color:var(--muted)}
+.authfoot{margin-top:14px;padding-top:11px;border-top:1px solid var(--grid);font-size:11.5px;color:var(--muted);line-height:1.7}
+.authlink{background:none;border:0;padding:0;font-family:inherit;font-size:11.5px;color:var(--teal-ink);cursor:pointer;text-decoration:underline}
+.nav button .lockdot{margin-left:auto;font-size:11px;opacity:.72}
+.sidebar.collapsed .nav button .lockdot{display:none}
+.lockpage{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:11px;
+  padding:52px 22px;border:1px dashed var(--grid);border-radius:14px;background:var(--card);color:var(--ink2)}
+.lockpage .lp-ico{font-size:34px;line-height:1}
+.lockpage b{font-size:16px;color:var(--strong)}
+.lockpage .lp-sub{font-size:13px;max-width:430px;line-height:1.8}
+@media(max-width:1000px){ .authpick{display:none} }
+.authrowm{display:none}
+@media(max-width:1000px){
+  .moresheet .authrowm{display:flex;align-items:center;gap:9px;margin:12px 2px 2px;padding-top:11px;border-top:1px solid var(--grid)}
+  .moresheet .authrowm .who{font-size:12px;color:var(--ink2);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .moresheet .authrowm .btn{margin-left:auto;flex:none}
+}
+@media print{ .authpick,.authbox{display:none!important} }
 /* ══ v31.26 ตัวเลือกชุดสีมุมบนขวา (ผู้ใช้: "เอามาไว้ตรงบนขวาแล้วทำเป็น dropdown สวยๆ มีกิมมิคดีกว่า")
    จุดสี 17 จุดในแถบซ้ายเด่นเกินไป — ย้ายมาเป็นปุ่มเดียว กดแล้วค่อยเห็นทั้งชุด ══ */
-.themepick{position:fixed;top:14px;right:18px;z-index:1200}
-.themepick .tp-btn{display:flex;align-items:center;gap:8px;padding:7px 12px 7px 8px;border-radius:999px;cursor:pointer;
-  border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.16);color:#fff;font-family:inherit;font-size:12.5px;font-weight:600;
-  -webkit-backdrop-filter:blur(10px) saturate(1.3);backdrop-filter:blur(10px) saturate(1.3);box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.themepick{position:relative;z-index:1200}
+.pgh-right .themepick,.pgh-right .authpick{margin:0}
+.themepick .tp-btn{display:inline-flex;align-items:center;gap:7px;padding:8px 11px 8px 9px;border-radius:9px;cursor:pointer;
+  border:1px solid rgba(255,255,255,.32);background:rgba(255,255,255,.14);color:#fff;font-family:inherit;font-size:12.5px;font-weight:600}
 .themepick .tp-btn:hover{background:rgba(255,255,255,.26)}
-.themepick .tp-disc{width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,.75);background:var(--tp-disc,#fff);flex:none}
+.themepick .tp-disc{width:15px;height:15px;border-radius:50%;border:2px solid rgba(255,255,255,.75);background:var(--tp-disc,#fff);flex:none}
 .themepick .tp-caret{font-size:10px;opacity:.85}
 .themepick .tp-name{white-space:nowrap}
-.themepick .tp-menu{position:absolute;top:calc(100% + 8px);right:0;width:268px;max-height:min(74vh,560px);overflow:auto;
+.themepick .tp-menu{position:fixed;width:268px;max-height:min(74vh,560px);overflow:auto;z-index:1500;
   background:var(--card);border:1px solid var(--grid);border-radius:14px;box-shadow:0 18px 44px rgba(16,24,40,.30);padding:8px}
 .themepick[hidden],.themepick .tp-menu[hidden]{display:none}
 .themepick .tp-group{font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:.02em;padding:8px 8px 4px}
@@ -88,117 +101,114 @@ html[data-theme="indigo"]{ --navy:#2b2f6e; --navy-d:#202355; --teal:#3a86c8; --t
   background:transparent;font-family:inherit;font-size:12.5px;color:var(--ink);text-align:left}
 .themepick .tp-item:hover,.themepick .tp-item:focus-visible{background:var(--teal-soft);outline:none}
 .themepick .tp-item.on{background:var(--teal-soft);font-weight:700}
+.themepick .tp-item.off{opacity:.42;cursor:not-allowed}
+.themepick .tp-item.off:hover{background:transparent}
 .themepick .tp-strip{width:52px;height:22px;border-radius:7px;flex:none;border:1px solid var(--hairline);background:var(--tp-strip)}
 .themepick .tp-tick{margin-left:auto;color:var(--teal);font-weight:900}
 .themepick .tp-hint{font-size:10.5px;color:var(--muted);padding:6px 8px 2px;border-top:1px solid var(--grid);margin-top:6px}
 @media(max-width:1000px){ .themepick{display:none} }
+@media print{ .themepick,.authpick{display:none!important} }
 @media print{ .themepick{display:none!important} }
-/* ── v31.26 เฉดสว่างให้ครบวงสี (ผู้ใช้: "เอาให้ครบทุกเฉดอะ มี แดง เหลือง ส้ม เขียว ฟ้า น้ำเงิน คราม") ── */
-html[data-theme="crimson"]{ --navy:#7a1f24; --navy-d:#5c1519; --teal:#b3261e; --teal-soft:#fbe4e2; --gold:#d09a3c;
-  --surface:#fffafa; --page:#f8efee; --ink:#2a1210; --ink2:#5f3b38; --muted:#96736f; --grid:#f0dcd9; --hairline:rgba(60,18,16,.13);
-  --hero2:#b3261e; --hero3:#d4573f; --navtxt:#ffdcd8; --navsub:#e0a9a3; --navver:#fff0ee; --bar-bg:rgba(122,31,36,.93);
-  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(200,45,45,.18), transparent 60%),
-             radial-gradient(32rem 24rem at 99% 4%, rgba(235,120,90,.16), transparent 60%),
-             radial-gradient(34rem 26rem at 6% 102%, rgba(150,40,70,.13), transparent 60%),
-             radial-gradient(36rem 26rem at 98% 98%, rgba(255,140,120,.15), transparent 60%) }
-html[data-theme="gold"]{ --navy:#6b4e12; --navy-d:#513a0c; --teal:#8a6300; --teal-soft:#fbf1cf; --gold:#d9a441;
-  --surface:#fffdf5; --page:#f7f2e2; --ink:#241d08; --ink2:#574a24; --muted:#8f8156; --grid:#ece3c8; --hairline:rgba(36,29,8,.13);
-  --hero2:#a3801d; --hero3:#cbab3e; --navtxt:#f7e8c2; --navsub:#d4c08a; --navver:#fdf4dc; --bar-bg:rgba(107,78,18,.93);
-  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(220,170,40,.20), transparent 60%),
-             radial-gradient(32rem 24rem at 99% 4%, rgba(240,205,110,.17), transparent 60%),
-             radial-gradient(34rem 26rem at 6% 102%, rgba(150,130,45,.13), transparent 60%),
-             radial-gradient(36rem 26rem at 98% 98%, rgba(230,180,80,.16), transparent 60%) }
-html[data-theme="sky"]{ --navy:#14556e; --navy-d:#0e4055; --teal:#0e7490; --teal-soft:#ddf1f7; --gold:#d9a441;
-  --surface:#f9fdfe; --page:#eef6fa; --ink:#08161d; --ink2:#3d5560; --muted:#7994a1; --grid:#d9e8ef; --hairline:rgba(8,22,29,.12);
-  --hero2:#1a7a99; --hero3:#37a0c4; --navtxt:#cfeaf5; --navsub:#9cc6d9; --navver:#e6f6fc; --bar-bg:rgba(20,85,110,.93);
-  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(40,160,205,.18), transparent 60%),
-             radial-gradient(32rem 24rem at 99% 4%, rgba(130,205,235,.16), transparent 60%),
-             radial-gradient(34rem 26rem at 6% 102%, rgba(60,120,190,.13), transparent 60%),
-             radial-gradient(36rem 26rem at 98% 98%, rgba(90,200,215,.15), transparent 60%) }
-html[data-theme="violet"]{ --navy:#4a2a6b; --navy-d:#371f50; --teal:#7c3aed; --teal-soft:#efe7fd; --gold:#d9a441;
-  --surface:#fdfbff; --page:#f4f0fa; --ink:#1b1026; --ink2:#4f4160; --muted:#8a7f9c; --grid:#e5dcf0; --hairline:rgba(27,16,38,.13);
-  --hero2:#6d3fa8; --hero3:#9d5bd2; --navtxt:#e6d9f7; --navsub:#bda8d8; --navver:#f1e8fc; --bar-bg:rgba(74,42,107,.93);
-  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(140,80,220,.17), transparent 60%),
-             radial-gradient(32rem 24rem at 99% 4%, rgba(200,140,240,.15), transparent 60%),
-             radial-gradient(34rem 26rem at 6% 102%, rgba(90,70,190,.13), transparent 60%),
-             radial-gradient(36rem 26rem at 98% 98%, rgba(230,130,200,.14), transparent 60%) }
+/* ══ v31.28 ชุดสี 10 ชุด (ผู้ใช้: "เฉดสีเยอะไป เคลียร์อันเก่าออก … โทนสว่าง 5 โทนมืด 5")
+   สว่าง: ตะวัน · หลังฝน · ปลายหนาว · ทุ่งดอกไม้ · โซนป่า
+   มืด  : พระอาทิตย์ตก · หัวค่ำ · เที่ยงคืน · รุ่งเช้า · ดวงตก   — เลือกได้เฉพาะช่วงค่ำถึงเช้ามืด (กิมมิคตามเวลาจริง)
+   เปลี่ยนได้เฉพาะสีโครง — สีข้อมูล (หมวด · ชนิดงบ · ชนิดผิว · แดง/เหลือง/เขียวเตือน · สีปี) ห้ามผูกกับชุดสี (กฎ 18) ══ */
+html[data-theme="sunset"]{
+  --card-art:linear-gradient(158deg,rgba(255,255,255,.92) 0%,rgba(255,241,231,.85) 55%,rgba(255,228,214,.9) 100%); --card-line:rgba(194,65,12,.16); --card-shadow:0 2px 10px rgba(125,38,70,.07); --navy:#7d2646; --navy-d:#5e1b34; --teal:#c2410c; --teal-soft:#ffe7db; --gold:#e0913a;
+  --surface:#fffaf7; --page:#fdf3ec; --ink:#2b1714; --ink2:#5e4038; --muted:#95837c; --grid:#f0e0d5; --hairline:rgba(60,26,20,.13);
+  --hero2:#c2410c; --hero3:#d63f6b; --navtxt:#ffe2ec; --navsub:#e9b8c6; --navver:#fff0f4; --bar-bg:rgba(125,38,70,.93);
+  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(255,138,61,.23), transparent 60%),
+             radial-gradient(32rem 24rem at 99% 4%, rgba(255,190,110,.20), transparent 60%),
+             radial-gradient(34rem 26rem at 6% 102%, rgba(168,140,255,.16), transparent 60%),
+             radial-gradient(36rem 26rem at 98% 98%, rgba(255,90,140,.19), transparent 60%) }
+html[data-theme="afterrain"]{
+  --card-art:linear-gradient(158deg,rgba(255,255,255,.94) 0%,rgba(230,246,244,.85) 55%,rgba(214,240,236,.9) 100%); --card-line:rgba(15,118,110,.16); --card-shadow:0 2px 10px rgba(20,80,79,.07); --navy:#14504f; --navy-d:#0e3c3b; --teal:#0f766e; --teal-soft:#dff2ef; --gold:#c99a3c;
+  --surface:#f9fdfd; --page:#eff6f6; --ink:#0c1a1a; --ink2:#41565a; --muted:#7d9295; --grid:#dbe8e7; --hairline:rgba(12,26,26,.12);
+  --hero2:#1c6f6a; --hero3:#2e8b8f; --navtxt:#cfeceb; --navsub:#9dc7c5; --navver:#e3f5f4; --bar-bg:rgba(20,80,79,.93);
+  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(20,150,140,.20), transparent 60%),
+             radial-gradient(32rem 24rem at 99% 4%, rgba(120,200,190,.19), transparent 60%),
+             radial-gradient(34rem 26rem at 6% 102%, rgba(90,140,190,.14), transparent 60%),
+             radial-gradient(36rem 26rem at 98% 98%, rgba(60,180,160,.16), transparent 60%) }
+html[data-theme="winter"]{
+  --card-art:linear-gradient(158deg,rgba(255,255,255,.95) 0%,rgba(235,241,250,.85) 55%,rgba(223,232,246,.9) 100%); --card-line:rgba(61,111,168,.16); --card-shadow:0 2px 10px rgba(47,63,94,.08); --navy:#2f3f5e; --navy-d:#233049; --teal:#3d6fa8; --teal-soft:#e6eef8; --gold:#b9a25f;
+  --surface:#fbfcfe; --page:#f1f4f9; --ink:#111726; --ink2:#4c5670; --muted:#8790a3; --grid:#e0e5ee; --hairline:rgba(17,23,38,.12);
+  --hero2:#3f5b86; --hero3:#6b7fae; --navtxt:#dbe4f4; --navsub:#a9b6d0; --navver:#eaf0fb; --bar-bg:rgba(47,63,94,.93);
+  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(120,150,205,.20), transparent 60%),
+             radial-gradient(32rem 24rem at 99% 4%, rgba(180,190,225,.19), transparent 60%),
+             radial-gradient(34rem 26rem at 6% 102%, rgba(150,130,200,.14), transparent 60%),
+             radial-gradient(36rem 26rem at 98% 98%, rgba(120,170,210,.16), transparent 60%) }
+html[data-theme="bloom"]{
+  --card-art:linear-gradient(158deg,rgba(255,255,255,.94) 0%,rgba(253,235,247,.85) 55%,rgba(255,228,222,.9) 100%); --card-line:rgba(168,58,134,.15); --card-shadow:0 2px 10px rgba(109,47,99,.08); --navy:#6d2f63; --navy-d:#52234b; --teal:#a83a86; --teal-soft:#fbe7f5; --gold:#d99a3f;
+  --surface:#fffafd; --page:#f9f0f7; --ink:#241026; --ink2:#5b4058; --muted:#94809a; --grid:#eddced; --hairline:rgba(36,16,38,.13);
+  --hero2:#a83a86; --hero3:#e2734f; --navtxt:#fbdcf3; --navsub:#d5a8cd; --navver:#fdeefa; --bar-bg:rgba(109,47,99,.93);
+  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(230,110,180,.20), transparent 60%),
+             radial-gradient(32rem 24rem at 99% 4%, rgba(255,180,150,.18), transparent 60%),
+             radial-gradient(34rem 26rem at 6% 102%, rgba(150,200,120,.15), transparent 60%),
+             radial-gradient(36rem 26rem at 98% 98%, rgba(190,120,230,.17), transparent 60%) }
+html[data-theme="forest"]{
+  --card-art:linear-gradient(158deg,rgba(255,255,255,.94) 0%,rgba(232,245,235,.85) 55%,rgba(224,241,214,.9) 100%); --card-line:rgba(47,125,79,.16); --card-shadow:0 2px 10px rgba(30,66,50,.08); --navy:#1e4232; --navy-d:#153124; --teal:#2f7d4f; --teal-soft:#e0f2e6; --gold:#c79a3c;
+  --surface:#fafdfa; --page:#eef5ef; --ink:#0d1a12; --ink2:#405449; --muted:#7d9184; --grid:#dbe8de; --hairline:rgba(13,26,18,.12);
+  --hero2:#2f7d4f; --hero3:#79a83a; --navtxt:#d4eddc; --navsub:#a2c7ae; --navver:#e8f7ec; --bar-bg:rgba(30,66,50,.93);
+  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(60,150,80,.20), transparent 60%),
+             radial-gradient(32rem 24rem at 99% 4%, rgba(150,200,90,.18), transparent 60%),
+             radial-gradient(34rem 26rem at 6% 102%, rgba(30,120,110,.15), transparent 60%),
+             radial-gradient(36rem 26rem at 98% 98%, rgba(200,190,90,.15), transparent 60%) }
 
-/* v31.26 พื้นกล่องสถานะของชุดกลางคืน — พื้นเข้ม ตัวหนังสือสว่าง (ไม่งั้นกล่องอ่อน + ตัวหนังสือสว่าง = จมทั้งกล่อง) */
-html[data-theme="midnight"],html[data-theme="dusk"],html[data-theme="twilight"],html[data-theme="dawn"]{
-  --tint-ok:#173226; --tint-ok-b:#2f6047; --tint-ok-ink:#86e3ad; --tint-ok2:#152a20; --tint-ok2-b:#2f5c44; --tint-ok-chip:#1e4230;
-  --tint-bad:#3a1d20; --tint-bad-b:#75373d; --tint-bad-ink:#ffa3a3; --tint-bad2:#331a1d; --tint-bad2-b:#6b333a; --tint-bad2-ink:#ffb0b0;
-  --tint-bad3:#2f191c; --tint-bad-chip:#4d2429; --tint-miss-ink:#ffa8a8;
-  --tint-warn:#332a16; --tint-warn-b:#6f5a29; --tint-warn-chip:#4c3d1b; --tint-wait:#3a2f14; --tint-wait-ink:#f2c86f;
-  --tint-track:#2c3448; --tint-soft:#1c2434; --tint-grp:#202a44; --tint-cat:#2d2b1f; --tint-skel:#252f43; --tint-neutral:#242c3c; --teal-ink:#7fd8cf; --warn-ink:#f0c96a; --pos-ink:#5cd39a; --neg-ink:#ff8f8f; --crit-ink:#ff8f8f }
-/* v31.26 ตัวเลขสรุปในแคปซูล KPI ถูกระบายด้วยสีข้อมูลตอนวาด — ชุดกลางคืนบังคับใช้สีเน้นเพื่อให้อ่านออกเสมอ (สีข้อมูลยังอยู่ที่ไอคอนข้าง ๆ) */
-html[data-theme="midnight"] .kpill .val,html[data-theme="dusk"] .kpill .val,
-html[data-theme="twilight"] .kpill .val,html[data-theme="dawn"] .kpill .val{color:var(--strong)!important}
-html[data-theme="midnight"],html[data-theme="dusk"],html[data-theme="twilight"],html[data-theme="dawn"]{
-  --tile-green:#18302a; --tile-teal:#163030; --tile-blue:#1c2740; --tile-amber:#332b18; --tile-sky:#1b2942;
-  --tile-violet:#272041; --tile-sand:#302a22; --tile-blue2:#1d2841; --tile-mist:#16202c; --tile-slate:#232a35 }
-
-/* ── v31.26 ชุดกลางคืน — พื้นมืดจริง ตัวหนังสือสว่าง (ผู้ใช้: "เพิ่ม midnight … เป็นมืดแบบไล่สี หัวค่ำ โพล้เพล้ รุ่งเช้า")
-   ชุดมืดเพิ่ม --card (พื้นการ์ด/กล่องลอย) เข้าไปในสีโครง — ชุดสว่างยังเป็นขาวเหมือนเดิมทุกจุด ── */
-html[data-theme="midnight"]{ --navy:#0c1220; --navy-d:#070c16; --teal:#2f7fc4; --teal-soft:#16233b; --gold:#e0b04a;
-  --surface:#131c2e; --card:#131c2e; --strong:#eaf0fd; --page:#0a0f1b; --ink:#e9eefb; --ink2:#a8b6d2; --muted:#9aa8c4; --grid:#26314a; --hairline:rgba(255,255,255,.10);
-  --hero2:#1c3a6b; --hero3:#43286e; --navtxt:#dbe6ff; --navsub:#93a4c8; --navver:#eaf1ff; --bar-bg:rgba(12,18,32,.94);
-  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(45,90,190,.30), transparent 60%),
-             radial-gradient(32rem 24rem at 99% 4%, rgba(90,60,180,.26), transparent 60%),
-             radial-gradient(34rem 26rem at 6% 102%, rgba(20,80,120,.24), transparent 60%),
-             radial-gradient(36rem 26rem at 98% 98%, rgba(120,60,170,.26), transparent 60%) }
-html[data-theme="dusk"]{ --navy:#1b1430; --navy-d:#120d22; --teal:#b5561f; --teal-soft:#2a1e33; --gold:#e3a44a;
+/* ── ชุดกลางคืน — พื้นมืดจริง ตัวหนังสือสว่าง (ตัวแปรพื้น/ตัวหนังสือร่วมกันอยู่ในบล็อกถัดไป) ── */
+html[data-theme="sundown"]{
+  --card-art:linear-gradient(158deg,rgba(255,170,110,.16) 0%,rgba(255,255,255,.03) 42%,rgba(150,40,80,.16) 100%); --card-line:rgba(255,190,150,.20); --card-shadow:0 6px 20px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.09); --navy:#2c1526; --navy-d:#1e0e1a; --teal:#c2571f; --teal-soft:#33202b; --gold:#e3a44a;
+  --surface:#301826; --card:#301826; --strong:#fbeadf; --page:#241220; --ink:#f8ece4; --ink2:#cbb0a8; --muted:#a08d92; --grid:#472a3a; --hairline:rgba(255,255,255,.10);
+  --hero2:#8f2f4a; --hero3:#d1622a; --navtxt:#ffe0d2; --navsub:#d6aaa6; --navver:#fff0e8; --bar-bg:rgba(44,21,38,.94);
+  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(240,120,40,.30), transparent 60%),
+             radial-gradient(32rem 24rem at 99% 4%, rgba(200,60,90,.26), transparent 60%),
+             radial-gradient(34rem 26rem at 6% 102%, rgba(120,40,90,.24), transparent 60%),
+             radial-gradient(36rem 26rem at 98% 98%, rgba(240,150,70,.22), transparent 60%) }
+html[data-theme="dusk"]{
+  --card-art:linear-gradient(158deg,rgba(255,150,90,.13) 0%,rgba(255,255,255,.03) 42%,rgba(120,60,160,.18) 100%); --card-line:rgba(233,180,215,.18); --card-shadow:0 6px 20px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.09); --navy:#1b1430; --navy-d:#120d22; --teal:#b5561f; --teal-soft:#2a1e33; --gold:#e3a44a;
   --surface:#221a35; --card:#221a35; --strong:#f7edf6; --page:#171128; --ink:#f3e9f2; --ink2:#c4b2c9; --muted:#b6a4bd; --grid:#372a48; --hairline:rgba(255,255,255,.10);
   --hero2:#6b2f4e; --hero3:#b5561f; --navtxt:#f0dcea; --navsub:#c3a4bd; --navver:#fbeaf5; --bar-bg:rgba(27,20,48,.94);
   --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(230,110,40,.26), transparent 60%),
              radial-gradient(32rem 24rem at 99% 4%, rgba(150,50,110,.26), transparent 60%),
              radial-gradient(34rem 26rem at 6% 102%, rgba(90,45,130,.24), transparent 60%),
              radial-gradient(36rem 26rem at 98% 98%, rgba(200,70,90,.22), transparent 60%) }
-html[data-theme="twilight"]{ --navy:#101a33; --navy-d:#0a1226; --teal:#4a6fd0; --teal-soft:#1a2547; --gold:#d9a441;
-  --surface:#182241; --card:#182241; --strong:#e9eefc; --page:#0e1631; --ink:#e6ecfb; --ink2:#a9b5d6; --muted:#9fabcb; --grid:#28345c; --hairline:rgba(255,255,255,.10);
-  --hero2:#2c3f7d; --hero3:#7a3f86; --navtxt:#dde5ff; --navsub:#98a6cf; --navver:#ecf1ff; --bar-bg:rgba(16,26,51,.94);
-  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(60,80,200,.30), transparent 60%),
-             radial-gradient(32rem 24rem at 99% 4%, rgba(170,60,160,.24), transparent 60%),
-             radial-gradient(34rem 26rem at 6% 102%, rgba(30,110,140,.24), transparent 60%),
-             radial-gradient(36rem 26rem at 98% 98%, rgba(110,70,190,.26), transparent 60%) }
-html[data-theme="dawn"]{ --navy:#22243f; --navy-d:#171930; --teal:#c2603c; --teal-soft:#2b2740; --gold:#e6b95e;
-  --surface:#24253d; --card:#24253d; --strong:#f8f1f3; --page:#191a30; --crit-ink:#ffa8a8; --ink:#f5eef0; --ink2:#c5bccb; --muted:#b3a9bd; --grid:#3a3a58; --hairline:rgba(255,255,255,.10);
+html[data-theme="midnight"]{
+  --card-art:linear-gradient(158deg,rgba(90,140,255,.14) 0%,rgba(255,255,255,.03) 42%,rgba(120,60,190,.16) 100%); --card-line:rgba(150,180,240,.18); --card-shadow:0 6px 20px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.08); --navy:#0c1220; --navy-d:#070c16; --teal:#2f7fc4; --teal-soft:#16233b; --gold:#e0b04a;
+  --surface:#131c2e; --card:#131c2e; --strong:#eaf0fd; --page:#0a0f1b; --ink:#e9eefb; --ink2:#a8b6d2; --muted:#9aa8c4; --grid:#26314a; --hairline:rgba(255,255,255,.10);
+  --hero2:#1c3a6b; --hero3:#43286e; --navtxt:#dbe6ff; --navsub:#93a4c8; --navver:#eaf1ff; --bar-bg:rgba(12,18,32,.94);
+  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(45,90,190,.30), transparent 60%),
+             radial-gradient(32rem 24rem at 99% 4%, rgba(90,60,180,.26), transparent 60%),
+             radial-gradient(34rem 26rem at 6% 102%, rgba(20,80,120,.24), transparent 60%),
+             radial-gradient(36rem 26rem at 98% 98%, rgba(120,60,170,.26), transparent 60%) }
+html[data-theme="moonset"]{
+  --card-art:linear-gradient(158deg,rgba(90,190,180,.13) 0%,rgba(255,255,255,.03) 42%,rgba(40,90,120,.18) 100%); --card-line:rgba(140,200,195,.18); --card-shadow:0 6px 20px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.08); --navy:#0d1518; --navy-d:#070d0f; --teal:#3c8f8a; --teal-soft:#152528; --gold:#c9a95e;
+  --surface:#14201f; --card:#14201f; --strong:#e6f1ee; --page:#0b1416; --ink:#e4efec; --ink2:#a5bcb7; --muted:#8fa6a2; --grid:#26383a; --hairline:rgba(255,255,255,.10);
+  --hero2:#1d4a4d; --hero3:#2f6f63; --navtxt:#d5ecea; --navsub:#94b6b4; --navver:#e7f6f4; --bar-bg:rgba(13,21,24,.94);
+  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(40,110,120,.26), transparent 60%),
+             radial-gradient(32rem 24rem at 99% 4%, rgba(70,140,120,.22), transparent 60%),
+             radial-gradient(34rem 26rem at 6% 102%, rgba(30,70,100,.24), transparent 60%),
+             radial-gradient(36rem 26rem at 98% 98%, rgba(90,130,150,.20), transparent 60%) }
+html[data-theme="dawn"]{
+  --card-art:linear-gradient(158deg,rgba(255,170,180,.15) 0%,rgba(255,255,255,.03) 42%,rgba(120,110,190,.17) 100%); --card-line:rgba(255,190,195,.18); --card-shadow:0 6px 20px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.09); --navy:#22243f; --navy-d:#171930; --teal:#c2603c; --teal-soft:#2b2740; --gold:#e6b95e;
+  --surface:#24253d; --card:#24253d; --strong:#f8f1f3; --crit-ink:#ffa8a8; --page:#191a30; --ink:#f5eef0; --ink2:#c5bccb; --muted:#b3a9bd; --grid:#3a3a58; --hairline:rgba(255,255,255,.10);
   --hero2:#6e4468; --hero3:#d1795e; --navtxt:#f6e3e6; --navsub:#c9b3bd; --navver:#fdeff1; --bar-bg:rgba(34,36,63,.94);
   --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(230,120,140,.26), transparent 60%),
              radial-gradient(32rem 24rem at 99% 4%, rgba(240,180,110,.24), transparent 60%),
              radial-gradient(34rem 26rem at 6% 102%, rgba(80,90,170,.24), transparent 60%),
              radial-gradient(36rem 26rem at 98% 98%, rgba(210,140,190,.22), transparent 60%) }
-/* v31.25 ผู้ใช้: "เอาเพิ่มๆ ให้ทุกอันรวมอันเก่าไล่สีประมาณนี้เลย แบ่งโทน แบ่งเฉด sunset after rain winter fall"
-   3 ชุดใหม่ — โทนเย็นหลังฝน · โทนหนาว · โทนใบไม้ร่วง (สีโครง 14 ตัว + ลายพื้น เท่านั้น ตามกฎ 18) */
-html[data-theme="afterrain"]{ --navy:#14504f; --navy-d:#0e3c3b; --teal:#0f766e; --teal-soft:#dff2ef; --gold:#c99a3c;
-  --surface:#f9fdfd; --page:#eff6f6; --ink:#0c1a1a; --ink2:#41565a; --muted:#7d9295; --grid:#dbe8e7; --hairline:rgba(12,26,26,.12);
-  --hero2:#1c6f6a; --hero3:#2e8b8f; --navtxt:#cfeceb; --navsub:#9dc7c5; --navver:#e3f5f4; --bar-bg:rgba(20,80,79,.93);
-  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(20,150,140,.20), transparent 60%),
-             radial-gradient(32rem 24rem at 99% 4%, rgba(120,200,190,.19), transparent 58%),
-             radial-gradient(34rem 26rem at 6% 102%, rgba(90,140,190,.14), transparent 60%),
-             radial-gradient(36rem 26rem at 98% 98%, rgba(60,180,160,.16), transparent 60%) }
-html[data-theme="winter"]{ --navy:#2f3f5e; --navy-d:#233049; --teal:#3d6fa8; --teal-soft:#e6eef8; --gold:#b9a25f;
-  --surface:#fbfcfe; --page:#f1f4f9; --ink:#111726; --ink2:#4c5670; --muted:#8790a3; --grid:#e0e5ee; --hairline:rgba(17,23,38,.12);
-  --hero2:#3f5b86; --hero3:#6b7fae; --navtxt:#dbe4f4; --navsub:#a9b6d0; --navver:#eaf0fb; --bar-bg:rgba(47,63,94,.93);
-  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(120,150,205,.20), transparent 60%),
-             radial-gradient(32rem 24rem at 99% 4%, rgba(180,190,225,.19), transparent 58%),
-             radial-gradient(34rem 26rem at 6% 102%, rgba(150,130,200,.14), transparent 60%),
-             radial-gradient(36rem 26rem at 98% 98%, rgba(120,170,210,.16), transparent 60%) }
-html[data-theme="fall"]{ --navy:#5a3517; --navy-d:#43270f; --teal:#a85310; --teal-soft:#fbe9d8; --gold:#c98a2b;
-  --surface:#fffcf8; --page:#f7f1e8; --ink:#241609; --ink2:#59462f; --muted:#907c62; --grid:#e9ddc9; --hairline:rgba(36,22,9,.13);
-  --hero2:#9a4a17; --hero3:#b8792a; --navtxt:#f3ddc6; --navsub:#cfae8c; --navver:#fbeeda; --bar-bg:rgba(90,53,23,.93);
-  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(200,110,35,.22), transparent 60%),
-             radial-gradient(32rem 24rem at 99% 4%, rgba(215,165,60,.19), transparent 58%),
-             radial-gradient(34rem 26rem at 6% 102%, rgba(120,110,45,.14), transparent 60%),
-             radial-gradient(36rem 26rem at 98% 98%, rgba(180,70,40,.17), transparent 60%) }
-/* v31.25 ผู้ใช้: "ธีมเค้าสวยดีจังเราทำให้มีเล่นสีบ้างดีไหม สร้างความแตกต่าง"
-   ชุดเดียวที่มีลายพื้นหลังไล่เฉด — ยังเปลี่ยนแค่สีโครง 14 ตัว + ลายพื้น (กฎ 18) ตัวเลข/สีข้อมูลไม่ขยับ */
-html[data-theme="sunset"]{ --navy:#7d2646; --navy-d:#5e1b34; --teal:#c2410c; --teal-soft:#ffe7db; --gold:#e0913a;
-  --surface:#fffaf7; --page:#fdf3ec; --ink:#2b1714; --ink2:#5e4038; --muted:#95837c; --grid:#f0e0d5; --hairline:rgba(60,26,20,.13);
-  --hero2:#c2410c; --hero3:#d63f6b; --navtxt:#ffe2ec; --navsub:#e9b8c6; --navver:#fff0f4; --bar-bg:rgba(125,38,70,.93);
-  --page-art:radial-gradient(36rem 26rem at 2% -4%, rgba(255,138,61,.23), transparent 60%),
-             radial-gradient(32rem 24rem at 99% 4%, rgba(255,190,110,.20), transparent 58%),
-             radial-gradient(34rem 26rem at 6% 102%, rgba(168,140,255,.16), transparent 60%),
-             radial-gradient(36rem 26rem at 98% 98%, rgba(255,90,140,.19), transparent 60%) }
+
+/* พื้นกล่องสถานะ/กล่องงาน/ตัวหนังสือสถานะ ของชุดกลางคืน (ก้อนเดียวใช้ร่วมกันทุกชุดมืด) */
+html[data-theme="sundown"],html[data-theme="dusk"],html[data-theme="midnight"],html[data-theme="moonset"],html[data-theme="dawn"]{
+  --tint-ok:#173226; --tint-ok-b:#2f6047; --tint-ok-ink:#86e3ad; --tint-ok2:#152a20; --tint-ok2-b:#2f5c44; --tint-ok-chip:#1e4230;
+  --tint-bad:#3a1d20; --tint-bad-b:#75373d; --tint-bad-ink:#ffa3a3; --tint-bad2:#331a1d; --tint-bad2-b:#6b333a; --tint-bad2-ink:#ffb0b0;
+  --tint-bad3:#2f191c; --tint-bad-chip:#4d2429; --tint-miss-ink:#ffa8a8;
+  --tint-warn:#332a16; --tint-warn-b:#6f5a29; --tint-warn-chip:#4c3d1b; --tint-wait:#3a2f14; --tint-wait-ink:#f2c86f;
+  --tint-track:#2c3448; --tint-soft:#1c2434; --tint-grp:#202a44; --tint-cat:#2d2b1f; --tint-skel:#252f43; --tint-neutral:#242c3c;
+  --teal-ink:#7fd8cf; --warn-ink:#f0c96a; --pos-ink:#5cd39a; --neg-ink:#ff8f8f; --crit-ink:#ff8f8f;
+  --tile-green:#18302a; --tile-teal:#163030; --tile-blue:#1c2740; --tile-amber:#332b18; --tile-sky:#1b2942;
+  --tile-violet:#272041; --tile-sand:#302a22; --tile-blue2:#1d2841; --tile-mist:#16202c; --tile-slate:#232a35 }
+/* ตัวเลขสรุปในแคปซูล KPI ถูกระบายด้วยสีข้อมูลตอนวาด — ชุดกลางคืนบังคับใช้สีเน้นเพื่อให้อ่านออกเสมอ */
+html[data-theme="sundown"] .kpill .val,html[data-theme="dusk"] .kpill .val,html[data-theme="midnight"] .kpill .val,
+html[data-theme="moonset"] .kpill .val,html[data-theme="dawn"] .kpill .val{color:var(--strong)!important}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Sarabun',Tahoma,'Segoe UI',system-ui,sans-serif;background-color:var(--page);color:var(--ink);font-size:14px;
   /* v31.25 ลายพื้นของชุดสี (ตกแต่งล้วน · ชุดอื่นเป็น none · ปิดตอนพิมพ์) */
@@ -223,7 +233,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;height:var(--sat);ba
 .themesw .tl{font-size:10px;color:var(--navsub);margin-right:2px;white-space:nowrap;flex:0 0 100%}
 .brand .sub{font-size:11px;color:var(--navsub);margin-top:3px}
 /* KPI แคปซูล — ไอคอนวงกลมสีแบบสไลด์ ทช. */
-.kpill{display:flex;align-items:center;gap:13px;background:var(--card);border:1.6px solid #bcd3ee;border-radius:18px;padding:13px 16px;box-shadow:0 2px 8px rgba(27,42,74,.07)}
+.kpill{display:flex;align-items:center;gap:13px;background-color:var(--card);background-image:var(--card-art);border:1.6px solid var(--card-line,#bcd3ee);border-radius:18px;padding:13px 16px;box-shadow:var(--card-shadow,0 2px 8px rgba(27,42,74,.07))}
 .kpill .kic{flex:0 0 50px;width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:23px;box-shadow:inset 0 -3px 6px rgba(0,0,0,.14), 0 2px 6px rgba(0,0,0,.14);border:2.5px solid #fff;outline:1.6px solid #d6e4f5}
 .kpill .lbl{font-size:12px;font-weight:700;color:var(--strong);line-height:1.3}
 .kpill .val{font-size:21px;font-weight:800;line-height:1.25;margin-top:1px}
@@ -312,7 +322,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;height:var(--sat);ba
 /* ---------- cards & grids ---------- */
 .grid{display:grid;gap:14px}
 .kpis{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-bottom:14px}
-.card{background:var(--surface);border:1px solid var(--hairline);border-radius:12px;padding:14px 16px;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+.card{background-color:var(--surface);background-image:var(--card-art);border:1px solid var(--card-line,var(--hairline));border-radius:12px;padding:14px 16px;box-shadow:var(--card-shadow,0 1px 2px rgba(16,24,40,.04))}
 .kpi .lbl{font-size:12px;color:var(--ink2)}
 .kpi.iko{display:flex;gap:12px;align-items:center}
 .kpi3{grid-template-columns:repeat(3,1fr)}
@@ -1290,7 +1300,7 @@ body.cmdopen .cmdbd{display:flex}
 .strip-controls label,.contract-controls label{min-width:0;max-width:100%}.strip-controls select,.contract-controls select{max-width:100%}.contract-controls .ct-act{max-width:310px}@media(max-width:640px){.contract-controls label{display:flex;align-items:center;gap:6px;flex:1 1 100%}.contract-controls select{min-width:0;flex:1;width:100%}.contract-controls .ct-act{max-width:100%}}
 /* v31.19: local presentation rules; keep the existing theme and shared table alignment. */
 .ct-kpis,.ct-thresholds{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:10px 0}
-.ct-kpi{border:1px solid var(--grid);border-radius:10px;padding:12px 14px;background:var(--card,#fff);min-width:0;font-family:inherit;color:var(--ink)}
+.ct-kpi{border:1px solid var(--card-line,var(--grid));border-radius:10px;padding:12px 14px;background-color:var(--card,#fff);background-image:var(--card-art);box-shadow:var(--card-shadow,none);min-width:0;font-family:inherit;color:var(--ink)}
 .ct-kpi-label,.ct-kpi-value,.ct-kpi-note{display:block}
 .ct-kpi-label{font-size:12px;color:var(--muted)}
 .ct-kpi-value{font-size:25px;font-weight:800;line-height:1.35;margin:3px 0;color:var(--strong)}
@@ -1368,9 +1378,37 @@ body.cmdopen .cmdbd{display:flex}
 </head>
 <body>
 <script>/* v31.0 ชุดสี: ใส่ data-theme ก่อนวาดหน้า กันกระพริบ (ค่าอยู่ในเครื่องของแต่ละคน) */
-try{ const t=localStorage.getItem('drr_theme'); if(t&&t!=='default') document.documentElement.dataset.theme=t;
-  if(['midnight','dusk','twilight','dawn'].includes(t)) document.documentElement.style.colorScheme='dark'; }catch(_){}</script>
+try{ const DARK=['sundown','dusk','midnight','moonset','dawn'], DAYS=['sunset','afterrain','winter','bloom','forest'];
+  const h=new Date().getHours()+new Date().getMinutes()/60, night=(h>=18||h<6);
+  let t=null; try{ t=localStorage.getItem('drr_theme'); }catch(e){}
+  let day=null; try{ day=localStorage.getItem('drr_theme_day'); }catch(e){}
+  if(!DAYS.includes(day)) day='sunset';
+  let use;
+  if(night) use=(h>=18&&h<19.5)?'sundown':(h<21.5&&h>=19.5)?'dusk':(h>=21.5||h<1)?'midnight':(h<4)?'moonset':'dawn';
+  else use=DAYS.includes(t)?t:day;
+  document.documentElement.dataset.theme=use;
+  if(DARK.includes(use)) document.documentElement.style.colorScheme='dark'; }catch(_){}</script>
 <div id="tooltip"></div>
+<!-- v31.27 ปุ่มสถานะผู้ใช้ (ซ่อนไว้จนกว่าจะตั้งค่าระบบล็อกอิน) -->
+<div class="authpick" id="authPick" hidden>
+  <button type="button" class="ap-btn" id="authBtn"><span class="ap-ico" aria-hidden="true">🔑</span><span class="ap-txt">เข้าสู่ระบบ</span></button>
+</div>
+<div class="authbox" id="authBox" hidden role="dialog" aria-modal="true" aria-label="เข้าสู่ระบบ">
+  <form class="authcard" id="authForm" autocomplete="on">
+    <h3>เข้าสู่ระบบ</h3>
+    <div class="asub" id="authSub">เข้าสู่ระบบเพื่อดูข้อมูลส่วนที่เหลือ · ภาพรวมและแผนที่เปิดดูได้โดยไม่ต้องเข้าสู่ระบบ</div>
+    <label for="authEmail">อีเมล</label>
+    <input id="authEmail" type="email" autocomplete="username" required placeholder="name@example.com">
+    <label for="authPass">รหัสผ่าน</label>
+    <input id="authPass" type="password" autocomplete="current-password" required>
+    <div class="authrow">
+      <button class="btn" type="submit" id="authGo">เข้าสู่ระบบ</button>
+      <button class="btn ghost" type="button" id="authCancel">ปิด</button>
+    </div>
+    <div class="authmsg" id="authMsg" role="status" aria-live="polite"></div>
+    <div class="authfoot">ลืมรหัสผ่าน — <button type="button" class="authlink" id="authReset">ส่งลิงก์ตั้งรหัสใหม่เข้าอีเมล</button><br>บัญชีผู้ใช้ออกให้โดยผู้ดูแลระบบของแขวงฯ</div>
+  </form>
+</div>
 <!-- v31.26 ตัวเลือกชุดสีมุมบนขวา — เนื้อเมนูสร้างจาก THEMES ที่เดียว (กฎ 1) -->
 <div class="themepick" id="themePick">
   <button type="button" class="tp-btn" id="themePickBtn" aria-haspopup="true" aria-expanded="false" aria-label="เลือกชุดสี">
@@ -1753,25 +1791,42 @@ const colorByOrder = names => Object.fromEntries(names.map((n,i)=>[n, i<8?CAT8[i
 /* ══ v31.0 ชุดสี — ทะเบียนเดียว (กฎ 1) · CSS เป็นคนถือค่าสี JS แค่สลับชื่อ ══
    ผู้ใช้ 6 ก.ย. 69 เลือกทั้ง 5 ชุด ("ชอบหมดเลย") · โหมดมืดยังไม่ทำ — ต้องไล่เช็คสีขาวตายตัว 117 จุดก่อน */
 const THEMES=[
-  {id:'default', name:'น้ำเงินขอนแก่น', sw:'#1B2A4A'},
-  {id:'isan',    name:'ดินอีสาน',        sw:'#4a2418'},
-  {id:'asphalt', name:'ลาดยาง',          sw:'#23262b'},
-  {id:'forest',  name:'ป่าภูเวียง',       sw:'#1f3d2b'},
-  {id:'indigo',  name:'ครามอีสาน',       sw:'#2b2f6e'},
-  {id:'sunset',    name:'ไล่เฉดตะวัน',   sw:'#e2622a'},   // v31.25 ชุดเล่นสี — ทุกชุดมีพื้นหลังไล่เฉดของตัวเอง
-  {id:'afterrain', name:'หลังฝน',        sw:'#0f766e'},
-  {id:'winter',    name:'ปลายหนาว',      sw:'#3d6fa8'},
-  {id:'fall',      name:'ใบไม้ร่วง',     sw:'#a85310'},
-  {id:'crimson',   name:'แดงชาด',        sw:'#b3261e'},   // v31.26 เติมเฉดให้ครบวงสี
-  {id:'gold',      name:'เหลืองทอง',     sw:'#c9971f'},
-  {id:'sky',       name:'ฟ้าใส',         sw:'#0e7490'},
-  {id:'violet',    name:'ม่วงอินทนิล',   sw:'#7c3aed'},
-  {id:'midnight',  name:'เที่ยงคืน',      sw:'#0c1220', dark:true},   // v31.26 ชุดกลางคืน พื้นมืดจริง
-  {id:'dusk',      name:'หัวค่ำ',         sw:'#b5561f', dark:true},
-  {id:'twilight',  name:'โพล้เพล้',       sw:'#4a6fd0', dark:true},
-  {id:'dawn',      name:'รุ่งเช้า',        sw:'#c2603c', dark:true},
+  /* v31.28 ผู้ใช้: "จัดให้มีโทนสว่าง 5 โทนมืด 5" — dark:true = เลือกได้เฉพาะช่วงค่ำถึงเช้ามืด
+     from/to = ช่วงเวลาที่ชุดนั้น "เป็นเจ้าของ" ใช้เลือกชุดให้อัตโนมัติตามนาฬิกาจริง */
+  {id:'sunset',    name:'ตะวัน',          sw:'#e2622a'},
+  {id:'afterrain', name:'หลังฝน',         sw:'#0f766e'},
+  {id:'winter',    name:'ปลายหนาว',       sw:'#3d6fa8'},
+  {id:'bloom',     name:'ทุ่งดอกไม้',      sw:'#a83a86'},
+  {id:'forest',    name:'โซนป่า',         sw:'#2f7d4f'},
+  {id:'sundown',   name:'พระอาทิตย์ตก',   sw:'#d1622a', dark:true, from:18,   to:19.5},
+  {id:'dusk',      name:'หัวค่ำ',          sw:'#b5561f', dark:true, from:19.5, to:21.5},
+  {id:'midnight',  name:'เที่ยงคืน',       sw:'#2f7fc4', dark:true, from:21.5, to:25},
+  {id:'moonset',   name:'ดวงตก',          sw:'#3c8f8a', dark:true, from:1,    to:4},
+  {id:'dawn',      name:'รุ่งเช้า',         sw:'#c2603c', dark:true, from:4,   to:6},
 ];
-function curTheme(){ return document.documentElement.dataset.theme||'default'; }
+const DEFAULT_THEME='sunset';
+function curTheme(){ const t=document.documentElement.dataset.theme||''; return THEMES.some(x=>x.id===t)?t:DEFAULT_THEME; }
+/* ══ v31.28 กิมมิคตามเวลาจริง (ผู้ใช้: "ถ้าเปิด dash เวลาค่ำ ให้เปลี่ยนเป็นเฉดค่ำทันที
+   คือกลางวันก็ไม่ให้เลือกเฉดค่ำ พอกลางคืนในเวลาจริงถึงมีให้เลือกเฉดค่ำ")
+   กลางคืน = 18:00–06:00 ตามนาฬิกาเครื่อง · ชุดกลางคืนแต่ละชุดมีช่วงเวลาของตัวเอง
+   เลือกชุดกลางคืนเองได้ระหว่างกลางคืน (ระบบจะไม่ไปเปลี่ยนทับ) แต่พอถึงเช้าจะกลับชุดสว่างที่เคยใช้ ══ */
+let nowHour=()=>{ const d=new Date(); return d.getHours()+d.getMinutes()/60; };   // ชุดทดสอบสลับนาฬิกาผ่านตัวนี้
+const isNight=h=>{ const t=(h==null?nowHour():h); return t>=18||t<6; };
+function nightTheme(h){
+  const t=(h==null?nowHour():h), tt=t<6?t+24:t;                                    // ข้ามเที่ยงคืนให้เป็นเส้นตรงเดียว
+  const hit=THEMES.filter(x=>x.dark&&x.from!=null).find(x=>{ const a=x.from<6?x.from+24:x.from, b=x.to<=6?x.to+24:x.to; return tt>=a&&tt<b; });
+  return (hit||THEMES.find(x=>x.dark)).id;
+}
+const themeSelectable=id=>{ const t=THEMES.find(x=>x.id===id); return !!t&&(!t.dark||isNight()); };
+const DAY_KEY='drr_theme_day';                                                     // ชุดสว่างที่ผู้ใช้เลือกไว้ ใช้คืนให้ตอนเช้า
+function dayTheme(){ try{ const v=localStorage.getItem(DAY_KEY); if(v&&THEMES.some(x=>x.id===v&&!x.dark)) return v; }catch(e){}
+  return DEFAULT_THEME; }
+/* เรียกตอนเปิดหน้า และทุก 5 นาที — ตัดสินว่าเวลาตอนนี้ควรอยู่ชุดไหน */
+function themeByClock(force){
+  const cur=curTheme(), curDark=!!(THEMES.find(x=>x.id===cur)||{}).dark;
+  if(isNight()){ if(!curDark||force) applyTheme(nightTheme()); }
+  else if(curDark) applyTheme(dayTheme());
+}
 /* v31.26 ผู้ใช้: "เช็คธีมมืดให้ดี ตัวหนังสือจมไปกับธีมรึเปล่า"
    สีข้อมูลบางสี (ม่วงเข้ม เขียวเข้ม) เข้มเกินกว่าจะอ่านออกบนพื้นกลางคืน
    ตัวช่วยนี้ใช้กับ "ตัวหนังสือ" เท่านั้น — จุดสี แถบ เส้นในกราฟ ยังใช้สีข้อมูลจริงตามกฎ 18 */
@@ -1797,11 +1852,15 @@ function syncChartColors(){   // กราฟ SVG ใช้ค่าจาก C 
   if(v('--strong')) C.strong=v('--strong'); if(v('--card')) C.card=v('--card');   /* v31.26 ตัวหนังสือเน้นในกราฟ SVG — ชุดกลางคืนต้องสว่าง ไม่งั้นจมพื้น */
 }
 function applyTheme(id, opt){
-  if(!THEMES.some(t=>t.id===id)) id='default';
-  if(id==='default') delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme=id;
+  if(!THEMES.some(t=>t.id===id)) id=isNight()?nightTheme():DEFAULT_THEME;
+  /* กลางวันเลือกชุดกลางคืนไม่ได้ (กิมมิคของผู้ใช้) — ยกเว้นตอนระบบเปลี่ยนให้เองตามเวลา */
+  if(!themeSelectable(id)&&!(opt&&opt.byClock)) id=dayTheme();
+  document.documentElement.dataset.theme=id;
+  const _t=THEMES.find(x=>x.id===id)||{};
+  if(!_t.dark&&!(opt&&opt.preview)) try{ localStorage.setItem(DAY_KEY,id); }catch(e){}
   /* v31.26 ชุดกลางคืน: บอกเบราว์เซอร์ว่าเป็นพื้นมืด — ช่องกรอก แถบเลื่อน และปุ่มของระบบจะได้ไม่ขาวโพลน */
   document.documentElement.style.colorScheme=(THEMES.find(t=>t.id===id)||{}).dark?'dark':'light';
-  paintThemePick(id);
+  paintThemePick(id); try{ authPaint(); }catch(e){}
   if(!(opt&&opt.preview)) try{ localStorage.setItem('drr_theme', id); }catch(_){}   /* v31.26 ลองสีตอนเลื่อนทับ ไม่ต้องจำ */
   syncChartColors();
   const mc=document.querySelector('meta[name="theme-color"]'); if(mc) mc.setAttribute('content', C.navy);
@@ -1841,6 +1900,156 @@ function themeStrip(id){
   const a=v['--navy']||t.sw||'#1B2A4A', b=v['--hero2']||a, c=v['--hero3']||v['--teal']||b;
   return `linear-gradient(115deg, ${a} 0%, ${b} 52%, ${c} 100%)`;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   v31.27 ด่านล็อกอิน — ผู้ใช้ 10 ก.ย. 69: "ตอนนี้ชั้นมี firebase ล่ะ จะเปิดระบบล็อคอินก่อนเข้าถึงข้อมูล
+   ถ้าไม่ล็อคอินจะโชว์แค่ภาพรวมกับแผนที่"
+
+   • ไม่โหลดไลบรารีของ Firebase — เรียก REST ตรง ๆ (กฎไฟล์เดียว: ห้ามพึ่งไฟล์นอก)
+     เข้าสู่ระบบ  POST identitytoolkit.googleapis.com/v1/accounts:signInWithPassword
+     ต่ออายุ      POST securetoken.googleapis.com/v1/token   (refresh_token)
+     ตั้งรหัสใหม่  POST identitytoolkit.googleapis.com/v1/accounts:sendOobCode
+   • apiKey ของ Firebase ไม่ใช่ความลับ (ฝังในหน้าเว็บได้ตามปกติ) สิทธิ์จริงอยู่ที่ฝั่ง Google
+   • ยังไม่ใส่ apiKey = ไม่มีด่าน ทุกอย่างเหมือนเดิม — ของเดิมต้องไม่พังระหว่างรอตั้งค่า
+   • ขอบเขตที่ต้องพูดตรง: นี่คือ "ด่านหน้าจอ" ซ่อนหน้าที่ยังไม่มีสิทธิ์
+     ข้อมูลจริงยังมาจากชีทที่แชร์ทุกคนที่มีลิงก์ — ปิดชีทต้องย้ายข้อมูลเข้า Firestore (งานรอบหน้า)
+   ══════════════════════════════════════════════════════════════════════════ */
+/* ค่าจากโครงการ Firebase ของแขวงฯ (ผู้ใช้ส่งมา 10 ก.ย. 69) — apiKey ของ Firebase ไม่ใช่ความลับ
+   ฝังในหน้าเว็บได้ตามปกติ สิทธิ์จริงอยู่ที่บัญชีผู้ใช้ + การตั้งค่าฝั่ง Google */
+const FIREBASE={ apiKey:'AIzaSyBPNnNYLd7_p0v3K4NdVCTPwrnfrHRItw0', projectId:'wichakarn-flow' };
+const PUBLIC_PAGES=['overview','map'];               // หน้าที่เปิดดูได้โดยไม่ต้องเข้าสู่ระบบ
+const AUTH_KEY='drr_auth_v1';
+const AUTH={ on:false, user:null, idToken:null, exp:0, refresh:null };
+
+/* v31.28 ด่านทำงานเฉพาะตอนเปิดผ่านเว็บ (http/https)
+   เปิดไฟล์จากเครื่องตรง ๆ (file://) = ไม่มีด่าน — ไฟล์อยู่ในมือเจ้าของอยู่แล้ว
+   และปลายทางล็อกอินของ Google ไม่รับคำขอจากหน้าที่เปิดแบบไฟล์ (Origin: null) อยู่ดี */
+const authOn=()=>!!(FIREBASE.apiKey||'').trim()&&/^https?:$/.test(location.protocol);
+const authed=()=>!authOn()||!!AUTH.user;             // ยังไม่ตั้งค่า = ถือว่าเปิดสิทธิ์ทุกหน้า
+const pageAllowed=id=>authed()||PUBLIC_PAGES.includes(id);
+
+function authSave(){ try{ AUTH.refresh?localStorage.setItem(AUTH_KEY,JSON.stringify({r:AUTH.refresh,u:AUTH.user})):localStorage.removeItem(AUTH_KEY); }catch(e){} }
+function authLoad(){ try{ const j=JSON.parse(localStorage.getItem(AUTH_KEY)||'null'); if(j&&j.r){AUTH.refresh=j.r;AUTH.user=j.u||null;} }catch(e){} }
+
+async function authPost(url,body){
+  const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error((j&&j.error&&j.error.message)||('HTTP '+r.status));
+  return j;
+}
+const AUTH_ERR={ EMAIL_NOT_FOUND:'ไม่พบบัญชีนี้ — ตรวจอีเมลอีกครั้ง หรือขอให้ผู้ดูแลระบบเพิ่มบัญชีให้',
+  INVALID_PASSWORD:'รหัสผ่านไม่ถูกต้อง', INVALID_LOGIN_CREDENTIALS:'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
+  INVALID_EMAIL:'รูปแบบอีเมลไม่ถูกต้อง', USER_DISABLED:'บัญชีนี้ถูกระงับ — ติดต่อผู้ดูแลระบบ',
+  TOO_MANY_ATTEMPTS_TRY_LATER:'ลองผิดหลายครั้งเกินไป รอสักครู่แล้วลองใหม่',
+  MISSING_PASSWORD:'ยังไม่ได้กรอกรหัสผ่าน' };
+const authMsgOf=e=>{ const k=String(e&&e.message||'').split(' ')[0];
+  return AUTH_ERR[k]||(/Failed to fetch|NetworkError/i.test(String(e&&e.message))?'เชื่อมต่อไม่ได้ — ตรวจอินเทอร์เน็ตแล้วลองใหม่':'เข้าสู่ระบบไม่สำเร็จ ลองใหม่อีกครั้ง'); };
+
+async function authSignIn(email,password){
+  const j=await authPost('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key='+encodeURIComponent(FIREBASE.apiKey),
+    {email,password,returnSecureToken:true});
+  AUTH.idToken=j.idToken; AUTH.refresh=j.refreshToken; AUTH.user=j.email||email;
+  AUTH.exp=Date.now()+(+j.expiresIn||3600)*1000; authSave(); authPaint(); return AUTH.user;
+}
+async function authRenew(){
+  if(!AUTH.refresh) return false;
+  try{
+    const j=await authPost('https://securetoken.googleapis.com/v1/token?key='+encodeURIComponent(FIREBASE.apiKey),
+      {grant_type:'refresh_token',refresh_token:AUTH.refresh});
+    AUTH.idToken=j.id_token||j.access_token; AUTH.refresh=j.refresh_token||AUTH.refresh;
+    AUTH.exp=Date.now()+(+j.expires_in||3600)*1000; authSave(); return true;
+  }catch(e){
+    /* รหัสถูกเพิกถอน/หมดอายุจริงเท่านั้นจึงตัดออกจากระบบ — เน็ตล่มต้องไม่เตะผู้ใช้ออก (กฎ 6) */
+    if(/TOKEN_EXPIRED|USER_DISABLED|USER_NOT_FOUND|INVALID_REFRESH_TOKEN/.test(String(e.message))){ authSignOut(true); }
+    return false;
+  }
+}
+function authSignOut(quiet){
+  AUTH.user=null; AUTH.idToken=null; AUTH.refresh=null; AUTH.exp=0; authSave(); authPaint();
+  if(!quiet && typeof banner==='function') banner('info','ออกจากระบบแล้ว — ยังดูภาพรวมและแผนที่ได้ตามปกติ');
+  if(!pageAllowed((activePage()||{}).id)) document.querySelector('.nav button[data-page="overview"]').click();
+}
+async function authSendReset(email){
+  await authPost('https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key='+encodeURIComponent(FIREBASE.apiKey),
+    {requestType:'PASSWORD_RESET',email});
+}
+
+/* ---- หน้าจอ ---- */
+function authOpen(msg){
+  if(!authOn()) return;
+  const box=document.getElementById('authBox'); if(!box) return;
+  document.getElementById('authMsg').textContent=''; document.getElementById('authMsg').className='authmsg';
+  document.getElementById('authSub').textContent=msg||'เข้าสู่ระบบเพื่อดูข้อมูลส่วนที่เหลือ · ภาพรวมและแผนที่เปิดดูได้โดยไม่ต้องเข้าสู่ระบบ';
+  box.hidden=false; setTimeout(()=>document.getElementById('authEmail').focus(),40);
+}
+function authClose(){ const box=document.getElementById('authBox'); if(box) box.hidden=true; }
+function authPaint(){
+  const pick=document.getElementById('authPick'), btn=document.getElementById('authBtn');
+  if(pick) pick.hidden=!authOn();
+  if(btn){ btn.querySelector('.ap-txt').textContent=AUTH.user?String(AUTH.user).split('@')[0]:'เข้าสู่ระบบ';
+           btn.querySelector('.ap-ico').textContent=AUTH.user?'👤':'🔑';
+           btn.title=AUTH.user?(AUTH.user+' — กดเพื่อออกจากระบบ'):'เข้าสู่ระบบเพื่อดูข้อมูลส่วนที่เหลือ'; }
+  document.querySelectorAll('.nav button[data-page]').forEach(b=>{
+    const need=authOn()&&!pageAllowed(b.dataset.page);
+    b.classList.toggle('locked',need);
+    let dot=b.querySelector('.lockdot');
+    if(need&&!dot){ dot=document.createElement('span'); dot.className='lockdot'; dot.textContent='🔒'; dot.setAttribute('aria-hidden','true'); b.appendChild(dot); }
+    if(!need&&dot) dot.remove();
+    b.setAttribute('aria-disabled',need?'true':'false');
+  });
+  const rowM=document.getElementById('authRowM');
+  if(rowM){
+    rowM.innerHTML=!authOn()?'':(AUTH.user
+      ?`<span class="who">👤 ${esc(String(AUTH.user))}</span><button class="btn ghost" type="button" onclick="authSignOut()">ออกจากระบบ</button>`
+      :`<span class="who">🔑 ยังไม่ได้เข้าสู่ระบบ</span><button class="btn" type="button" onclick="document.body.classList.remove('moreopen');authOpen()">เข้าสู่ระบบ</button>`);
+  }
+  const cur=(activePage()||{}).id;
+  if(cur&&!pageAllowed(cur)) authLockPage(cur); else authUnlockPage();
+}
+/* หน้าเนื้อหาที่ยังไม่มีสิทธิ์: ซ่อนของจริงไว้ แล้ววางกล่องเชิญล็อกอินแทน */
+function authLockPage(id){
+  const sec=document.getElementById('pg-'+id); if(!sec) return;
+  if(sec.querySelector('.lockpage')) return;
+  [...sec.children].forEach(el=>{ if(!el.classList.contains('lockpage')){ el.dataset.authHidden='1'; el.style.display='none'; } });
+  const d=document.createElement('div'); d.className='lockpage';
+  d.innerHTML='<div class="lp-ico" aria-hidden="true">🔒</div><b>ส่วนนี้ต้องเข้าสู่ระบบก่อน</b>'+
+    '<div class="lp-sub">ภาพรวมและแผนที่เปิดดูได้ทุกคน · ส่วนที่เหลือเปิดให้เฉพาะเจ้าหน้าที่ที่มีบัญชี</div>'+
+    '<button class="btn" type="button" onclick="authOpen()">เข้าสู่ระบบ</button>';
+  sec.appendChild(d);
+}
+function authUnlockPage(){
+  document.querySelectorAll('.page .lockpage').forEach(d=>d.remove());
+  document.querySelectorAll('[data-auth-hidden]').forEach(el=>{ el.style.display=''; delete el.dataset.authHidden; });
+}
+function authInit(){
+  authLoad(); authPaint();
+  const f=document.getElementById('authForm'), btn=document.getElementById('authBtn');
+  if(btn) btn.addEventListener('click',()=>{ AUTH.user?authSignOut():authOpen(); });
+  document.getElementById('authCancel')?.addEventListener('click',authClose);
+  document.getElementById('authBox')?.addEventListener('click',e=>{ if(e.target.id==='authBox') authClose(); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') authClose(); });
+  document.getElementById('authReset')?.addEventListener('click',async()=>{
+    const m=document.getElementById('authMsg'), email=document.getElementById('authEmail').value.trim();
+    if(!email){ m.className='authmsg bad'; m.textContent='กรอกอีเมลก่อน แล้วกดส่งลิงก์อีกครั้ง'; return; }
+    m.className='authmsg busy'; m.textContent='กำลังส่งลิงก์…';
+    try{ await authSendReset(email); m.className='authmsg ok'; m.textContent='ส่งลิงก์ตั้งรหัสใหม่ไปที่อีเมลแล้ว'; }
+    catch(e){ m.className='authmsg bad'; m.textContent=authMsgOf(e); }
+  });
+  if(f) f.addEventListener('submit',async e=>{
+    e.preventDefault();
+    const m=document.getElementById('authMsg'), go=document.getElementById('authGo');
+    const email=document.getElementById('authEmail').value.trim(), pw=document.getElementById('authPass').value;
+    go.disabled=true; m.className='authmsg busy'; m.textContent='กำลังตรวจสอบ…';
+    try{
+      await authSignIn(email,pw);
+      document.getElementById('authPass').value='';
+      m.className='authmsg ok'; m.textContent='เข้าสู่ระบบแล้ว';
+      setTimeout(()=>{ authClose(); if(typeof banner==='function') banner('info','เข้าสู่ระบบแล้ว — เปิดดูได้ทุกหน้า'); },260);
+    }catch(err){ m.className='authmsg bad'; m.textContent=authMsgOf(err); }
+    finally{ go.disabled=false; }
+  });
+  if(authOn()&&AUTH.refresh){ authRenew().then(()=>authPaint()); setInterval(()=>{ if(AUTH.refresh&&Date.now()>AUTH.exp-300000) authRenew(); },240000); }
+}
 function buildThemeSwitch(){
   /* v31.26 ผู้ใช้: "แถบชุดสีให้เลือกชักเยอะและดูเด่นไป เอามาไว้ตรงบนขวาแล้วทำเป็น dropdown สวยๆ"
      จอกว้าง = ปุ่มลอยมุมบนขวา · จอแคบ = จุดสีในเมนู "เพิ่มเติม" เหมือนเดิม (v31.3) */
@@ -1852,20 +2061,22 @@ function buildThemeSwitch(){
   const menu=document.getElementById('themeMenu'), btn=document.getElementById('themePickBtn');
   if(menu&&btn&&!menu.dataset.built){
     menu.dataset.built='1';
-    const groups=[['กลางวัน',THEMES.filter(t=>!t.dark)],['กลางคืน',THEMES.filter(t=>t.dark)]];
+    const groups=[['กลางวัน',THEMES.filter(t=>!t.dark)],['กลางคืน (หลังหกโมงเย็น)',THEMES.filter(t=>t.dark)]];
     menu.innerHTML=groups.filter(g=>g[1].length).map(([label,list])=>
       `<div class="tp-group">${label}</div>`+list.map(t=>
-        `<button type="button" class="tp-item" role="menuitem" data-theme="${t.id}" style="--tp-strip:${themeStrip(t.id)}">
+        `<button type="button" class="tp-item" role="menuitem" data-theme="${t.id}" data-dark="${t.dark?1:0}" style="--tp-strip:${themeStrip(t.id)}">
            <span class="tp-strip" aria-hidden="true"></span><span>${t.name}</span><span class="tp-tick" hidden>✓</span></button>`).join('')
-    ).join('')+'<div class="tp-hint">เลื่อนทับเพื่อลองดูทั้งหน้า · กดเพื่อใช้จริง</div>';
+    ).join('')+'<div class="tp-hint" id="tpHint"></div>';
     /* กิมมิค: เลื่อนเมาส์ทับ = ลองสีให้ดูก่อน · ออกจากเมนู = คืนชุดเดิม · กดถึงจะเปลี่ยนจริง */
     let saved=null;
     const preview=id=>{ if(saved===null) saved=curTheme(); if(curTheme()!==id) applyTheme(id,{silent:true,preview:true}); };
     const restore=()=>{ if(saved!==null&&curTheme()!==saved) applyTheme(saved,{silent:true,preview:true}); saved=null; };
     menu.querySelectorAll('.tp-item').forEach(it=>{
-      it.addEventListener('mouseenter',()=>preview(it.dataset.theme));
-      it.addEventListener('focus',()=>preview(it.dataset.theme));
-      it.addEventListener('click',()=>{ saved=null; applyTheme(it.dataset.theme); closeThemeMenu(); });
+      const usable=()=>themeSelectable(it.dataset.theme);
+      it.addEventListener('mouseenter',()=>{ if(usable()) preview(it.dataset.theme); });
+      it.addEventListener('focus',()=>{ if(usable()) preview(it.dataset.theme); });
+      it.addEventListener('click',()=>{ if(!usable()){ if(typeof banner==='function') banner('info','ชุดกลางคืนเลือกได้ตั้งแต่หกโมงเย็นถึงหกโมงเช้า'); return; }
+        saved=null; applyTheme(it.dataset.theme); closeThemeMenu(); });
     });
     menu.addEventListener('mouseleave',restore);
     menu.__restore=restore;
@@ -1874,16 +2085,39 @@ function buildThemeSwitch(){
     document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!menu.hidden) closeThemeMenu(); });
   }
   applyTheme(curTheme(), {silent:true});
+  try{ mountHeadControls(); }catch(e){}
+  /* v31.28 กิมมิคเวลาจริง: เปิดตอนค่ำ = เข้าชุดกลางคืนให้เลย · ถึงเช้า = คืนชุดสว่างที่เคยใช้ · ตรวจทุก 5 นาที */
+  try{ themeByClock(); setInterval(()=>{ try{ themeByClock(); }catch(e){} },300000); }catch(e){}
+  try{ authInit(); }catch(e){ console.warn('เริ่มระบบล็อกอินไม่สำเร็จ', e); }   /* v31.27 */
+}
+/* v31.28 ผู้ใช้: "หมายถึงอยู่ตรงนี้ เล็กๆ เป็นแค่ส่วนประกอบไม่ต้องขยับตามหน้า"
+   ปุ่มชุดสี/เข้าสู่ระบบ ไม่ลอยทับหน้าอีกต่อไป — ย้ายเข้าไปต่อท้ายแถวปุ่มบนหัวเพจที่เปิดอยู่ */
+function mountHeadControls(){
+  const sec=document.querySelector('.page.active'); if(!sec) return;
+  const row=sec.querySelector('.pgh-right'); if(!row) return;
+  const ap=document.getElementById('authPick'), tp=document.getElementById('themePick');
+  if(ap&&ap.parentElement!==row) row.appendChild(ap);
+  if(tp&&tp.parentElement!==row) row.appendChild(tp);
 }
 function openThemeMenu(){ const m=document.getElementById('themeMenu'),b=document.getElementById('themePickBtn');
-  if(!m)return; m.hidden=false; b.setAttribute('aria-expanded','true'); }
+  if(!m)return; m.hidden=false; b.setAttribute('aria-expanded','true');
+  /* หัวเพจตัดขอบ (overflow:hidden) เมนูจึงลอยตามพิกัดปุ่มแทน ไม่งั้นถูกตัดหาย */
+  const r=b.getBoundingClientRect();
+  m.style.top=Math.round(r.bottom+8)+'px';
+  m.style.right=Math.max(8,Math.round(innerWidth-r.right))+'px'; }
 function closeThemeMenu(){ const m=document.getElementById('themeMenu'),b=document.getElementById('themePickBtn');
   if(!m)return; if(m.__restore) m.__restore(); m.hidden=true; b.setAttribute('aria-expanded','false'); }
 function paintThemePick(id){
   const t=THEMES.find(x=>x.id===id)||THEMES[0], b=document.getElementById('themePickBtn');
   if(b){ b.querySelector('.tp-disc').style.setProperty('--tp-disc',t.sw); b.querySelector('.tp-name').textContent=t.name; }
   document.querySelectorAll('#themeMenu .tp-item').forEach(it=>{
-    const on=it.dataset.theme===id; it.classList.toggle('on',on); it.querySelector('.tp-tick').hidden=!on; });
+    const on=it.dataset.theme===id, off=!themeSelectable(it.dataset.theme);
+    it.classList.toggle('on',on); it.classList.toggle('off',off);
+    it.setAttribute('aria-disabled',off?'true':'false');
+    it.querySelector('.tp-tick').hidden=!on; });
+  const hint=document.getElementById('tpHint');
+  if(hint) hint.textContent=isNight()?'เลื่อนทับเพื่อลองดูทั้งหน้า · กดเพื่อใช้จริง'
+                                     :'ชุดกลางคืนจะเลือกได้ตั้งแต่หกโมงเย็น · เปิดตอนค่ำระบบเปลี่ยนให้เอง';
 }
 const YEAR_PALETTE=['#0d9488','#2a78d6','#d9a441','#4a3aa7','#008300','#0891b2','#a16207','#7c3aed','#c2410c','#0e7490','#6b7280'];
 const yearColorMap=years=>{const s=[...new Set(years.map(String))].sort(); const o={}; s.forEach((y,i)=>o[y]=YEAR_PALETTE[i%YEAR_PALETTE.length]); return o;};
@@ -3284,7 +3518,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.26', APP_DATE='10 ก.ย. 2569';
+const APP_VER='v31.28', APP_DATE='10 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -3417,6 +3651,7 @@ const RUNTIME_IDS={
   yrContractPlot:'กราฟสัญญาประจำปีหลังเลือกตัวกรอง',
   printStripBox :'กล่องซ่อนสำหรับวาด Strip Map ก่อนคัดลอกไปหน้าพิมพ์ One-Page (สร้างชั่วคราวตอนกดพิมพ์)',   // v31.23 ทะเบียนนับการอ้างผ่าน querySelector ด้วย
 
+  authRowM     :'แถวเข้าสู่ระบบในเมนู “เพิ่มเติม” — สร้างเฉพาะจอแคบ (จอกว้างใช้ปุ่มมุมบนขวาแทน)',
   sysUnlockBar :'แถบสถานะ สร้างหลังปลดล็อกหน้าข้อมูลระบบสำเร็จ',
   sysSlotA     :'ช่องเนื้อหาที่ถูกแทนที่หลังปลดล็อก',
   chBuilding   :'กราฟงานอาคาร โผล่เฉพาะปีที่ชีทมีงานอาคาร',
@@ -3610,7 +3845,8 @@ function buildTabBar(){
   const sh=document.createElement('div'); sh.className='moresheet'; sh.id='moreSheet';
   sh.innerHTML=`<div class="grip"></div><h4>เมนูทั้งหมด</h4><div class="moregrid">`+
     all.map(p=>`<button data-go="${p}"><span class="mico">${NAV_SVG[p]||NAV_SVG.more}</span>${esc(navLabel(p))}</button>`).join('')+
-    `</div><div class="themesw" id="themeSwM"></div>`;   /* v31.3 จุดสีในเมนูเพิ่มเติม (มือถือ) */
+    `</div><div class="themesw" id="themeSwM"></div>`+
+    `<div class="authrowm" id="authRowM"></div>`;   /* v31.3 จุดสีในเมนูเพิ่มเติม (มือถือ) · v31.27 แถวเข้าสู่ระบบ */
   document.body.appendChild(sh);
 
   const closeMore=()=>document.body.classList.remove('moreopen');
@@ -4696,6 +4932,8 @@ function renderDcAlerts(rows,act){
 
 /* ================= NAV ================= */
 document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>{
+  /* v31.27 หน้าที่ยังไม่มีสิทธิ์: ไม่เปลี่ยนหน้า แต่เปิดกล่องล็อกอินให้เลย (กฎ 8 — กดแล้วต้องมีอะไรตอบ) */
+  if(!pageAllowed(b.dataset.page)){ authOpen('เข้าสู่ระบบเพื่อเปิดดูส่วนนี้'); return; }
   // v22.1 — กดเมนูหน้าที่เปิดอยู่ซ้ำ = รีเซ็ตหน้านั้นกลับสู่ภาพรวม (พฤติกรรมเดียวกับแอปทั่วไป)
   const wasActive=b.classList.contains('active');
   if(wasActive && b.dataset.page==='overview' && typeof OVF!=='undefined' && OVF.muad){
@@ -4715,6 +4953,7 @@ document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',(
     try{ Promise.resolve(_pg.enter()).catch(e=>console.error('เข้าหน้า '+_pg.id+' ไม่สำเร็จ:',e)); }
     catch(e){ console.error('เข้าหน้า '+_pg.id+' ไม่สำเร็จ:',e); }
   }
+  try{ mountHeadControls(); }catch(e){}   /* v31.28 ปุ่มมุมขวาบนตามไปอยู่หัวเพจที่เปิดอยู่ */
   setTimeout(()=>{ try{ ensureRendered(); }catch(e){} enhanceNow(); },60);
   if(typeof syncTabBar==='function') syncTabBar();
   if(typeof ddClose==='function') ddClose();
@@ -8129,47 +8368,21 @@ function deptPlanFor(year){
     if(c.months){ for(let i=mi;i>=0;i--) if(c.months[i]!=null){ upto=c.months[i]; break; } }
     return {pct:c.pct!=null?c.pct:(c.months?c.months.filter(v=>v!=null).pop():null), upto, monthly:!!c.months, central:true};
   }
-  const r=readContractPlans()[year];
-  return r?{pct:r.pct,upto:null,monthly:false,central:false}:null;
+  return null;   /* v31.28 ไม่มีทางถอยเป็นค่าที่กรอกในเครื่องแล้ว — แผนมาจากส่วนกลางที่เดียว */
 }
-const CONTRACT_PLAN_KEY='drr_department_payment_plan_v1';
-const contractPlanLock={
-  open(){try{return sessionStorage.getItem('drr_contract_plan_unlock')==='1';}catch{return !!this.unlocked;}},
-  set(v){this.unlocked=!!v;try{v?sessionStorage.setItem('drr_contract_plan_unlock','1'):sessionStorage.removeItem('drr_contract_plan_unlock');}catch{}}
-};
-function readContractPlans(){
-  const raw=localStorage.getItem(CONTRACT_PLAN_KEY);if(raw===null)return {};
-  const data=JSON.parse(raw);if(!data||data.version!==1||!data.years||Array.isArray(data.years)||typeof data.years!=='object')throw Error('แผนที่บันทึกมีรูปแบบไม่ถูกต้อง');
-  for(const [year,row] of Object.entries(data.years))if(!/^\d{4}$/.test(year)||!row||typeof row.pct!=='number'||!Number.isFinite(row.pct)||row.pct<0||row.pct>100)throw Error('แผนที่บันทึกมีค่าไม่ถูกต้อง');
-  return data.years;
-}
-function saveContractPlan(year,value){
-  if(!contractPlanLock.open())throw Error('กรุณาปลดล็อกก่อนแก้ไข');
-  if(!/^\d{4}$/.test(String(year)))throw Error('ปีงบไม่ถูกต้อง');
-  const text=String(value).trim();if(!text)throw Error('กรอกแผน 0–100%');
-  const pct=Number(text);if(!Number.isFinite(pct)||pct<0||pct>100)throw Error('กรอกแผน 0–100%');
-  const years=readContractPlans();years[year]={pct,updatedAt:new Date().toISOString()};
-  localStorage.setItem(CONTRACT_PLAN_KEY,JSON.stringify({version:1,years}));return pct;
-}
+/* ══ แผนเบิกจ่ายกรม — เลขกลางจากชีทอย่างเดียว (v31.28)
+   ผู้ใช้ 10 ก.ย. 69: "ทำไมช่องกรอกแผนกรมยังมาอีก บอกให้ไปลิงค์ใน gg sheet แล้วนี่"
+   v31.20 เคยให้กรอกในหน้าเว็บ (เก็บในเครื่องใครเครื่องมัน) · v31.24 เพิ่มเลขกลางแต่ยังเหลือช่องกรอกไว้เผื่อ
+   ตอนนี้ตัดช่องกรอกกับรหัสผู้ดูแลออกหมด — แผนมาจากที่เดียว ทุกเครื่องเห็นเลขเดียวกันเสมอ
+   ยังไม่ได้กรอกปีไหน = ขึ้น "—" พร้อมบอกว่ายังไม่ได้ตั้งแผนของปีนั้น (ไม่ใช่ช่องให้กรอกทับ) ══ */
 function renderContractPlanEditor(host,year){
-  if(!host)return;let row=null,error='';try{row=deptPlanFor(year);}catch(e){error='อ่านแผนที่บันทึกไม่สำเร็จ';}
-  const unlocked=contractPlanLock.open();
-  /* v31.24 ค่ากลาง = แสดงอย่างเดียว ไม่ต้องกรอกรายเครื่อง · ยังไม่มีค่ากลาง = ยังกรอกในเครื่องได้เหมือนเดิม */
-  if(row&&row.central){
-    const big=row.monthly&&row.upto!=null?row.upto:row.pct;
-    host.innerHTML='<div class="ct-kpi-label">แผนเบิกจ่ายกรม</div><div class="ct-kpi-value">'+(big!=null?big.toFixed(1)+'%':'—')+'</div>'+
-      '<div class="ct-kpi-note">ปีงบ '+year+(row.monthly?' · ถึงเดือน'+PLAN_MONTHS[fiscalMonthIndex()]+(row.pct!=null?' · ทั้งปี '+row.pct.toFixed(1)+'%':''):'')+'</div>'+
-      '<div class="ct-kpi-note">ตั้งไว้ส่วนกลาง ทุกเครื่องเห็นเลขเดียวกัน</div>';
-    return;
-  }
-  host.innerHTML='<div class="ct-kpi-label">แผนเบิกจ่ายกรม</div><div class="ct-kpi-value">'+(row?row.pct.toFixed(1)+'%':'—')+'</div><div class="ct-kpi-note">ปีงบ '+year+'</div><details class="ct-plan-editor"><summary>'+(unlocked?'แก้ไขแผน':'🔒 กรอก / แก้ไขแผน')+'</summary>'+(unlocked?'<form class="ct-plan-save"><label>แผน (%) <input class="search" type="number" min="0" max="100" step="any" required aria-label="แผนเบิกจ่ายกรม (%)" value="'+(row&&row.pct!=null?row.pct:'')+'"></label><button class="btn" type="submit">บันทึก</button><button class="btn ghost ct-plan-lock" type="button">ล็อก</button></form>':'<form class="ct-plan-unlock"><label>รหัสผู้ดูแล <input class="search" type="password" autocomplete="off" required aria-label="รหัสเพื่อแก้แผนเบิกจ่าย"></label><button class="btn" type="submit">ปลดล็อก</button></form>')+'<div class="ct-plan-message" role="status">'+esc(error)+'</div></details>';
-  const msg=host.querySelector('.ct-plan-message');if(error)host.querySelector('details').open=true;
-  host.querySelector('.ct-plan-unlock')?.addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget,input=f.querySelector('input'),button=f.querySelector('button');button.disabled=true;msg.textContent='กำลังตรวจรหัส…';
-    try{await sysUnlock(input.value.trim());input.value='';contractPlanLock.set(true);renderContractPlanEditor(host,year);host.querySelector('details').open=true;}
-    catch(err){msg.textContent='ปลดล็อกไม่สำเร็จ กรุณาตรวจรหัส';input.value='';button.disabled=false;}
-  });
-  host.querySelector('.ct-plan-save')?.addEventListener('submit',e=>{e.preventDefault();try{saveContractPlan(year,e.currentTarget.querySelector('input').value);renderContractPlanEditor(host,year);host.querySelector('.ct-plan-message').textContent='บันทึกแผนแล้ว';host.querySelector('details').open=true;}catch(err){msg.textContent=err.message==='กรอกแผน 0–100%'?err.message:'บันทึกไม่สำเร็จ กรุณาลองใหม่';}});
-  host.querySelector('.ct-plan-lock')?.addEventListener('click',()=>{contractPlanLock.set(false);renderContractPlanEditor(host,year);});
+  if(!host)return;
+  const row=deptPlanFor(year);
+  const big=row&&row.monthly&&row.upto!=null?row.upto:(row?row.pct:null);
+  host.innerHTML='<div class="ct-kpi-label">แผนเบิกจ่ายกรม</div>'+
+    '<div class="ct-kpi-value">'+(big!=null?big.toFixed(1)+'%':'—')+'</div>'+
+    '<div class="ct-kpi-note">ปีงบ '+year+(row&&row.monthly?' · ถึงเดือน'+PLAN_MONTHS[fiscalMonthIndex()]+(row.pct!=null?' · ทั้งปี '+row.pct.toFixed(1)+'%':''):'')+'</div>'+
+    '<div class="ct-kpi-note">'+(big!=null?'ตั้งไว้ส่วนกลาง ทุกเครื่องเห็นเลขเดียวกัน':'ยังไม่ได้ตั้งแผนของปีงบนี้')+'</div>';
 }
 
 /* v31.19 ผู้ใช้: "โครงที่มีวันส่งงานก็ถือว่าเบิกจ่ายแล้ว ยังไม่มีก็ยังไม่เบิกจ่าย"
