@@ -1914,9 +1914,12 @@ function themeStrip(id){
    • ขอบเขตที่ต้องพูดตรง: นี่คือ "ด่านหน้าจอ" ซ่อนหน้าที่ยังไม่มีสิทธิ์
      ข้อมูลจริงยังมาจากชีทที่แชร์ทุกคนที่มีลิงก์ — ปิดชีทต้องย้ายข้อมูลเข้า Firestore (งานรอบหน้า)
    ══════════════════════════════════════════════════════════════════════════ */
-/* ค่าจากโครงการ Firebase ของแขวงฯ (ผู้ใช้ส่งมา 10 ก.ย. 69) — apiKey ของ Firebase ไม่ใช่ความลับ
-   ฝังในหน้าเว็บได้ตามปกติ สิทธิ์จริงอยู่ที่บัญชีผู้ใช้ + การตั้งค่าฝั่ง Google */
-const FIREBASE={ apiKey:'AIzaSyBPNnNYLd7_p0v3K4NdVCTPwrnfrHRItw0', projectId:'wichakarn-flow' };
+/* v31.30 ผู้ใช้ 10 ก.ย. 69: "ถอดระบบล็อคอินก่อน เดี๋ยวคุยกันใหม่"
+   → ปิดด่านล็อกอินทั้งหมด: ไม่มีปุ่มเข้าสู่ระบบ ไม่มีแม่กุญแจ ทุกหน้าเปิดได้เหมือนก่อนมีระบบนี้
+   โครงยังอยู่ในไฟล์แต่หลับสนิท (ไม่ยิงเน็ต ไม่แตะที่เก็บข้อมูล) — เปิดใช้อีกครั้งเมื่อไหร่
+   แค่ใส่ค่าสองบรรทัดนี้กลับเข้าไป (โครงการเดิมคือ wichakarn-flow)
+   ถ้าอยากให้ถอดโค้ดออกจากไฟล์ทั้งก้อนจริง ๆ บอกได้ ผมลบให้หมดในรอบเดียว */
+const FIREBASE={ apiKey:'', projectId:'' };
 const PUBLIC_PAGES=['overview','map'];               // หน้าที่เปิดดูได้โดยไม่ต้องเข้าสู่ระบบ
 const AUTH_KEY='drr_auth_v1';
 const AUTH={ on:false, user:null, idToken:null, exp:0, refresh:null };
@@ -2022,6 +2025,9 @@ function authUnlockPage(){
   document.querySelectorAll('[data-auth-hidden]').forEach(el=>{ el.style.display=''; delete el.dataset.authHidden; });
 }
 function authInit(){
+  /* v31.30 ปิดด่านอยู่ = หลับสนิทจริง ๆ ไม่อ่านที่เก็บข้อมูลในเครื่อง ไม่ผูกปุ่ม ไม่ยิงเน็ต
+     (เรียก authPaint รอบเดียวเพื่อลบร่องรอยแม่กุญแจ/ปุ่มออกให้หมด แล้วจบ) */
+  if(!authOn()){ authPaint(); return; }
   authLoad(); authPaint();
   const f=document.getElementById('authForm'), btn=document.getElementById('authBtn');
   if(btn) btn.addEventListener('click',()=>{ AUTH.user?authSignOut():authOpen(); });
@@ -3518,7 +3524,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.28', APP_DATE='10 ก.ย. 2569';
+const APP_VER='v31.30', APP_DATE='10 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -4149,8 +4155,26 @@ const DECOR=[
 ];
 let _enhT=null;
 const _enhObs=[];
+/* ══ v31.28 ผู้ใช้: "โทนมืดไอคอนบางอันหายแฮะ"
+   ไอคอนวาดด้วยสีตัวหนังสือปัจจุบัน (currentColor) แต่กล่องไอคอนบางใบระบายด้วย "สีข้อมูล" ที่สว่าง
+   ชุดกลางคืนตัวหนังสือเป็นสีสว่าง → ไอคอนสว่างบนกล่องสว่าง = หายไปเลย
+   แก้ที่เดียว: หลังวาดทุกครั้ง วัดความสว่างของพื้นกล่องไอคอนจริง แล้วเลือกสีไอคอนเข้ม/สว่างให้เอง
+   (สีกล่องยังเป็นสีข้อมูลเหมือนเดิมตามกฎ 18 — เปลี่ยนเฉพาะสีไอคอนที่วางทับ) ══ */
+function fixIconInk(root){
+  const px=v=>{const n=(String(v).match(/[\d.]+/g)||[]).map(Number); return n.length>=3?{r:n[0],g:n[1],b:n[2],a:n.length>3?n[3]:1}:null;};
+  const lin=c=>{c/=255;return c<=.03928?c/12.92:Math.pow((c+.055)/1.055,2.4);};
+  const lum=c=>.2126*lin(c.r)+.7152*lin(c.g)+.0722*lin(c.b);
+  const mix=(f,b)=>({r:f.r*f.a+b.r*(1-f.a),g:f.g*f.a+b.g*(1-f.a),b:f.b*f.a+b.b*(1-f.a),a:1});
+  const pageBg=px(getComputedStyle(document.body).backgroundColor)||{r:255,g:255,b:255,a:1};
+  (root||document).querySelectorAll('.kico,.kpill .kic,.worktile .wico,.exit .ei,.aitem .aico').forEach(el=>{
+    let c=px(getComputedStyle(el).backgroundColor); if(!c||c.a===0) return;
+    if(c.a<1) c=mix(c,pageBg);
+    el.style.color=lum(c)>0.42?'#1f2733':'#f7fafc';      // พื้นสว่าง = ไอคอนเข้ม · พื้นเข้ม = ไอคอนสว่าง
+  });
+}
 function enhanceNow(){
   const pg=document.querySelector('.page.active'); if(!pg) return;
+  try{ fixIconInk(document); }catch(e){}   /* ทั้งเอกสาร — หน้าที่ยังไม่เปิดก็ต้องถูกต้องเมื่อเปิด */
   DECOR.forEach(d=>{ try{ d.fn(pg); }catch(err){ console.warn('ตกแต่ง "'+d.name+'" ไม่ผ่าน:',err); } });
   // ทิ้งรอยที่ตัวตกแต่งเพิ่งทำเอง ไม่ให้ปลุกตัวเองวนซ้ำ
   _enhObs.forEach(o=>{ try{ o.takeRecords(); }catch(e){} });
