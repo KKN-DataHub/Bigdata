@@ -34,6 +34,7 @@
   --tint-bad:#fdecec; --tint-bad-b:#f3c8c8; --tint-bad-ink:#8f1d1d; --tint-bad2:#fdf3f3; --tint-bad2-b:#f0cccc; --tint-bad2-ink:#7d2222;
   --tint-bad3:#fdf6f6; --tint-bad-chip:#f7dede; --tint-miss-ink:#a12626;
   --tint-warn:#fdfaf2; --tint-warn-b:#efdcb4; --tint-warn-chip:#f7ecd0; --tint-wait:#fff3d6; --tint-wait-ink:#8a5a00;
+  --strip-f1:#f0f3f5; --strip-f2:#f8f9fa; --strip-band:#dae4ec;   /* v31.37 กรอบแถว/แถบบน-ล่างของ Strip Map */
   --tint-track:#eeede7; --tint-soft:#fbfaf8; --tint-grp:#e9eef6; --tint-cat:#f5f2e8; --tint-skel:#eceee8; --tint-neutral:#eceeee; --teal-ink:#0b6b63; --warn-ink:#8a6413; --pos-ink:#0d7a4a; --neg-ink:#c0392b; --crit-ink:var(--crit);
   /* v31.26 พื้นกล่องงาน/ไอคอนที่เขียนสีอ่อนไว้ในเนื้อหน้า — ชุดสว่างค่าเดิมเป๊ะ ชุดกลางคืนสลับเป็นเฉดเข้มสีเดียวกัน */
   --tile-green:#e9f6ee; --tile-teal:#e6f4f2; --tile-blue:#edf2fa; --tile-amber:#fbf3df; --tile-sky:#eaf2fc;
@@ -68,6 +69,13 @@
 .authmsg.busy{color:var(--muted)}
 .authfoot{margin-top:14px;padding-top:11px;border-top:1px solid var(--grid);font-size:11.5px;color:var(--muted);line-height:1.7}
 .authlink{background:none;border:0;padding:0;font-family:inherit;font-size:11.5px;color:var(--teal-ink);cursor:pointer;text-decoration:underline}
+/* v31.32 ปุ่มเข้าสู่ระบบด้วย Google + แถวบอกบัญชีที่กำลังใช้อยู่ */
+.authcard .gbtn{gap:9px}
+.authcard .gmark{display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:50%;
+  background:#fff;color:#1a73e8;font-weight:800;font-size:12.5px;line-height:1;flex:none}
+.authwho{font-size:12px;color:var(--ink2);background:var(--tint-blue,rgba(127,160,200,.12));border:1px solid var(--grid);
+  border-radius:9px;padding:8px 10px;margin-bottom:4px;word-break:break-all}
+.authwho[hidden]{display:none}
 .nav button .lockdot{margin-left:auto;font-size:11px;opacity:.72}
 .sidebar.collapsed .nav button .lockdot{display:none}
 .lockpage{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:11px;
@@ -202,6 +210,9 @@ html[data-theme="sundown"],html[data-theme="dusk"],html[data-theme="midnight"],h
   --tint-bad:#3a1d20; --tint-bad-b:#75373d; --tint-bad-ink:#ffa3a3; --tint-bad2:#331a1d; --tint-bad2-b:#6b333a; --tint-bad2-ink:#ffb0b0;
   --tint-bad3:#2f191c; --tint-bad-chip:#4d2429; --tint-miss-ink:#ffa8a8;
   --tint-warn:#332a16; --tint-warn-b:#6f5a29; --tint-warn-chip:#4c3d1b; --tint-wait:#3a2f14; --tint-wait-ink:#f2c86f;
+  /* v31.37 ผู้ใช้ 12 ก.ย. 69: "กล่อง strip line ในธีมทึบชั้นไม่ได้บอกให้เอาสีขาวนะ ดูไม่สวยเลย ดูเด่นเกิน
+     พื้นหลังเราทึบ ตัวหนังสือขาวถูกแล้ว แต่กล่องมันควรกลืนกันสวยๆ" — กรอบแถวจางลงให้เป็นแค่เส้นแบ่งสายตา */
+  --strip-f1:#1a2334; --strip-f2:#151e2d; --strip-band:#222c42;
   --tint-track:#2c3448; --tint-soft:#1c2434; --tint-grp:#202a44; --tint-cat:#2d2b1f; --tint-skel:#252f43; --tint-neutral:#242c3c;
   --teal-ink:#7fd8cf; --warn-ink:#f0c96a; --pos-ink:#5cd39a; --neg-ink:#ff8f8f; --crit-ink:#ff8f8f;
   --tile-green:#18302a; --tile-teal:#163030; --tile-blue:#1c2740; --tile-amber:#332b18; --tile-sky:#1b2942;
@@ -230,6 +241,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;height:var(--sat);ba
 .themesw{display:flex;gap:7px;margin-top:9px;align-items:center;flex-wrap:wrap;row-gap:6px}   /* v31.25 ชุดสี 9 ชุด — ปล่อยให้ขึ้นบรรทัดใหม่ ป้ายไม่ถูกบีบ */
 .themesw button{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.35);padding:0;cursor:pointer;background:var(--sw)}
 .themesw button.on{border-color:#fff;box-shadow:0 0 0 2px var(--navy),0 0 0 3.5px #fff}
+.themesw button.off{opacity:.32;filter:grayscale(.55)}   /* v31.31 ชุดนอกช่วงเวลา — หรี่ไว้ให้เห็นว่ายังเลือกไม่ได้ */
 .themesw .tl{font-size:10px;color:var(--navsub);margin-right:2px;white-space:nowrap;flex:0 0 100%}
 .brand .sub{font-size:11px;color:var(--navsub);margin-top:3px}
 /* KPI แคปซูล — ไอคอนวงกลมสีแบบสไลด์ ทช. */
@@ -450,7 +462,7 @@ svg.viz *{pointer-events:none}
 svg.viz .hit, svg.viz .hit *{pointer-events:auto}
 .viz .bar{cursor:pointer}
 .viz .gridline{stroke:var(--grid);stroke-width:1}
-.viz .axisline{stroke:#c3c2b7;stroke-width:1}
+.viz .axisline{stroke:var(--grid);stroke-width:1}
 .viz .ticktext{fill:var(--muted);font-size:11px}
 .viz .cattext{fill:var(--ink2);font-size:11.5px}
 .viz .vallabel{fill:var(--ink2);font-size:11px;font-weight:600}
@@ -590,9 +602,9 @@ select.search{width:auto}
 .exit.clickable{cursor:pointer;transition:box-shadow .12s,transform .12s}
 .exit.clickable:hover{box-shadow:0 2px 10px rgba(16,24,40,.10);transform:translateY(-1px)}
 /* ---- v24.0 รูปทรงกราฟใหม่ ---- */
-.lolli-track{stroke:#eeede7;stroke-width:1}
-.lolli-stem{stroke-width:2;opacity:.42;transition:opacity .12s}
-.lolli-dot{stroke:#fcfcfb;stroke-width:2;transition:r .12s,opacity .12s}
+.lolli-track{stroke:var(--tint-track);stroke-width:2}
+.lolli-stem{stroke-width:4.5;opacity:.9;stroke-linecap:round;transition:opacity .12s}   /* v31.36 เดิมบางและจาง (2px opacity .42) อ่านยาก */
+.lolli-dot{stroke:var(--surface);stroke-width:2;transition:r .12s,opacity .12s}
 .viz .lolli-dot:hover{r:7}
 .lolli-stem.dimmed,.lolli-dot.dimmed{opacity:.22}
 .heatcell{transition:opacity .12s} .heatcell:hover{opacity:.82}
@@ -662,13 +674,29 @@ select.search{width:auto}
 .catbar{height:26px;border-radius:7px;margin-top:8px}
 .catbar span{display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;letter-spacing:.2px;text-shadow:0 1px 2px rgba(0,0,0,.55);overflow:hidden;white-space:nowrap;min-width:0}
 .catgrid-s{grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:7px}
+/* v31.37 ตารางช่วงวงเงิน (เรทงบ) — ช่องละ "จำนวน + % ของแถวนั้น" ความเข้มไล่ตาม % */
+.bandtbl{width:100%;table-layout:fixed;border-collapse:collapse;font-variant-numeric:tabular-nums}   /* v31.37 ผู้ใช้: "จัดคอลั่มให้เท่ากันนะ" */
+.bandtbl th{font-size:10.5px;font-weight:700;background:var(--card);color:var(--ink2);text-align:center;padding:5px 4px;border-bottom:1px solid var(--grid);white-space:nowrap;line-height:1.3}
+.bandtbl th:first-child{text-align:left}
+.bandtbl .bdot{display:inline-block;width:7px;height:7px;border-radius:2px;margin-right:4px;vertical-align:middle}
+.bandtbl td{padding:5px 4px;border-bottom:1px solid var(--grid);text-align:center}
+.bandtbl .bname{text-align:left;font-size:12px;color:var(--ink);font-weight:600;white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+.bandtbl .bc{border-radius:5px}
+.bandtbl .bc b{display:block;font-size:13.5px;color:var(--strong);line-height:1.15}
+.bandtbl .bc i{font-style:normal;font-size:10px;color:var(--ink)}   /* v31.37 ตัวเลข % ในช่องต้องไม่จมกับสีพื้นช่องในชุดกลางคืน (กฎ 18) */
+.bandtbl .bc .bz{color:var(--muted);opacity:.5}
+.bandtbl .btot b{display:block;font-size:13.5px;color:var(--strong)}
+.bandtbl .btot i{font-style:normal;font-size:10px;color:var(--teal-ink);white-space:normal;display:block;line-height:1.25}
+.bandtbl .bsum td{border-top:2px solid var(--grid);border-bottom:0;background:var(--tint-soft)}
+.bandtbl .bsum .bname{color:var(--strong)}
+@media(max-width:700px){ .bandtbl th,.bandtbl td{padding:4px 2px} .bandtbl .bc b,.bandtbl .btot b{font-size:12px} .bandtbl .bname{font-size:11px;max-width:96px} }
 .catgrid-s .catbox .sval{font-size:18px} .catgrid-s .catbox .camt{font-size:13px} .catgrid-s .catbox .sname{font-size:11px}
 .onelg i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
 .chip-none{color:var(--muted);border-style:dashed;background:transparent}
 .chip{font-size:11.5px;color:var(--ink2);border:1px solid var(--grid);border-radius:99px;padding:3px 11px;background:var(--card)}
 .roadnav{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.stripwrap .lanelbl{fill:var(--ink2);font-size:11.5px;font-weight:600}
-.stripwrap .lanebg{fill:#eef0ee}
+.stripwrap .lanelbl{fill:var(--ink);font-size:11.5px;font-weight:600}   /* v31.36 ชื่อแถวคือตัวบอกว่าแถบไหนของปีไหน ต้องอ่านชัด */
+.stripwrap .lanebg{fill:var(--tint-track)}
 .stripwrap .seg{cursor:pointer}
 .stripwrap .kmtick{fill:var(--muted);font-size:10.5px}
 
@@ -1325,12 +1353,18 @@ body.cmdopen .cmdbd{display:flex}
 .share-total{display:flex;justify-content:space-between;align-items:baseline;color:var(--muted);padding-bottom:6px;border-bottom:1px solid var(--grid)}
 .share-total b{font-size:20px;color:var(--strong)}.share-total small{font-size:11px;font-weight:400}
 .share-list{display:grid;grid-auto-rows:minmax(28px,1fr);gap:5px;flex:1}
+.share-2col{grid-template-columns:1fr 1fr;column-gap:22px}
+@media(max-width:760px){ .share-2col{grid-template-columns:1fr} }
 .share-caption{display:flex;justify-content:space-between;gap:8px;align-items:baseline;font-size:12px;white-space:nowrap}
 .share-caption i{display:inline-block;width:7px;height:7px;border-radius:2px;margin-right:6px}
 .share-caption strong{font-size:12px;font-variant-numeric:tabular-nums}.share-caption small{font-size:10px;font-weight:400;color:var(--muted)}
 .share-caption em{display:inline-block;font-style:normal;width:52px;text-align:right;color:var(--muted);font-weight:400}
 .share-track{height:5px;background:var(--grid);border-radius:4px;margin-top:4px;overflow:hidden}.share-track span{display:block;height:100%;border-radius:4px}
 .share-row:hover .share-track{filter:brightness(.94)}
+/* v31.36 บรรทัดรอง (ชื่อ สส. · พรรค) และบรรทัดท้าย (ตัวเลขประกอบ) ของแถวสัดส่วน */
+.share-sub{font-size:11px;color:var(--ink2);margin:1px 0 0 13px;line-height:1.35;white-space:normal}
+.share-foot{font-size:10.5px;color:var(--muted);margin:3px 0 0 13px;line-height:1.3;white-space:normal}
+@media(max-width:700px){ .share-caption{flex-wrap:wrap;white-space:normal} }
 .ct-section-title{font-size:13px;margin:16px 0 6px;color:var(--strong)}
 .ct-payment{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .ct-thresholds{grid-template-columns:repeat(6,minmax(0,1fr))}
@@ -1394,20 +1428,18 @@ try{ const DARK=['sundown','dusk','midnight','moonset','dawn'], DAYS=['sunset','
   <button type="button" class="ap-btn" id="authBtn"><span class="ap-ico" aria-hidden="true">🔑</span><span class="ap-txt">เข้าสู่ระบบ</span></button>
 </div>
 <div class="authbox" id="authBox" hidden role="dialog" aria-modal="true" aria-label="เข้าสู่ระบบ">
-  <form class="authcard" id="authForm" autocomplete="on">
-    <h3>เข้าสู่ระบบ</h3>
-    <div class="asub" id="authSub">เข้าสู่ระบบเพื่อดูข้อมูลส่วนที่เหลือ · ภาพรวมและแผนที่เปิดดูได้โดยไม่ต้องเข้าสู่ระบบ</div>
-    <label for="authEmail">อีเมล</label>
-    <input id="authEmail" type="email" autocomplete="username" required placeholder="name@example.com">
-    <label for="authPass">รหัสผ่าน</label>
-    <input id="authPass" type="password" autocomplete="current-password" required>
+  <div class="authcard">
+    <h3 id="authHead">เข้าสู่ระบบ</h3>
+    <div class="asub" id="authSub">ภาพรวมและแผนที่เปิดดูได้ทุกคน · ส่วนที่เหลือเปิดให้เฉพาะเจ้าหน้าที่ที่ผู้ดูแลอนุมัติแล้ว</div>
+    <div class="authwho" id="authWho" hidden></div>
     <div class="authrow">
-      <button class="btn" type="submit" id="authGo">เข้าสู่ระบบ</button>
+      <button class="btn gbtn" type="button" id="authGo"><span class="gmark" aria-hidden="true">G</span>ดำเนินการต่อด้วยบัญชี Google</button>
       <button class="btn ghost" type="button" id="authCancel">ปิด</button>
     </div>
     <div class="authmsg" id="authMsg" role="status" aria-live="polite"></div>
-    <div class="authfoot">ลืมรหัสผ่าน — <button type="button" class="authlink" id="authReset">ส่งลิงก์ตั้งรหัสใหม่เข้าอีเมล</button><br>บัญชีผู้ใช้ออกให้โดยผู้ดูแลระบบของแขวงฯ</div>
-  </form>
+    <div class="authfoot">ใช้บัญชี Google ของหน่วยงาน · เข้าครั้งแรกต้องรอผู้ดูแลอนุมัติก่อนจึงจะเห็นข้อมูล
+      <button type="button" class="authlink" id="authOut" hidden>ออกจากระบบ</button></div>
+  </div>
 </div>
 <!-- v31.26 ตัวเลือกชุดสีมุมบนขวา — เนื้อเมนูสร้างจาก THEMES ที่เดียว (กฎ 1) -->
 <div class="themepick" id="themePick">
@@ -1474,6 +1506,10 @@ try{ const DARK=['sundown','dusk','midnight','moonset','dawn'], DAYS=['sunset','
       </div>
       <!-- v24.6 — "ต้องจับตาตอนนี้" ย้ายลงมาอยู่ติดกับ "สายทางที่ควรได้งบก่อน"
                     สองอันนี้เป็นเรื่องเดียวกัน (ต้องลงมือทำอะไร) วางคู่กันอ่านต่อเนื่องกว่าอยู่บนสุด -->
+      <!-- v31.37 ผู้ใช้ 12 ก.ย. 69: "หน้าภาพรวมยังไม่มีกล่องสายทางแบ่งตามเขตเลือกตั้งเลย
+           อาจจะใช้รูปแบบเดียวกันกับงบก็ได้" — ชื่อ สส. กับจำนวนสาย ที่ถอดออกจากหน้าประวัติมาอยู่ที่นี่
+           การ์ดเต็มบรรทัด แบ่งสองคอลัมน์ในกล่อง (ถ้าไปอยู่ในกริด 12 คอลัมน์จะแคบจนชื่อ สส. ตกบรรทัด) -->
+      <div class="card" style="margin-top:14px"><h3>สายทางแบ่งตามเขตเลือกตั้ง</h3><div class="note">จำนวนสายทางในเขตนั้น · สีตามพรรคของ สส. · สายที่คร่อมหลายเขตนับที่เขตที่มีระยะทางมากที่สุด</div><div id="chOvZone"></div></div>
       <div class="card execbar" id="ovExec" style="display:none;margin-top:14px"></div>
       <!-- v24.4 — สรุปการตัดสินใจแบบย่อ วางก่อนทะเบียนสายทาง · รายละเอียดเต็ม (สไลเดอร์ถ่วงน้ำหนัก, 20 อันดับ,
                     quadrant, alerts ครบ) ยังอยู่หน้า "วิเคราะห์ตัดสินใจ" เพราะเป็นพื้นที่ทำงาน ไม่ใช่พื้นที่กวาดตา -->
@@ -1564,7 +1600,7 @@ try{ const DARK=['sundown','dusk','midnight','moonset','dawn'], DAYS=['sunset','
     <section class="page" id="pg-requests">
       <div class="pghero">
         <div class="pgh-left"><div class="pgh-ico">▥</div>
-          <div><h2>คำของบประมาณ</h2><div class="desc">คำขอ / แผนงบประมาณต่อสายทาง — แสดงปีล่าสุดเสมอ</div>
+          <div><h2>คำของบประมาณ</h2><div class="desc">คำขอ / แผนงบประมาณต่อสายทาง — เลือกดูทีละปีงบ (รวมคำขอเงินเหลือจ่าย)</div>
             <div class="pillrow" id="reqPills"><span class="hpill"><span class="dot wait"></span> กำลังดึงข้อมูล…</span></div></div>
         </div>
         <div class="pgh-right"><button class="hbtn" onclick="reloadPage()">⟳ โหลดข้อมูลใหม่</button><button class="hbtn" onclick="exportCSV()">⬇ CSV</button><button class="hbtn" onclick="printPage()">🖨 พิมพ์</button></div>
@@ -1782,7 +1818,11 @@ const ALL_CODES = ["กส.4039", "ขก.1001", "ขก.1004", "ขก.1011", "
 
 /* ================= palette (validated via dataviz six-checks) ================= */
 const C = {teal:'#0d9488', gold:'#d9a441', blue:'#2a78d6', orange:'#eb6834', violet:'#4a3aa7',
-           navy:'#1B2A4A', strong:'#1B2A4A', card:'#ffffff', grid:'#e1e0d9', muted:'#898781', ink2:'#52514e', crit:'#d03b3b'};
+           navy:'#1B2A4A', strong:'#1B2A4A', card:'#ffffff', grid:'#e1e0d9', muted:'#898781', ink2:'#52514e', crit:'#d03b3b',
+           /* v31.36 ผู้ใช้ 12 ก.ย. 69: "ธีมกลางคืน สีพวกแถบเละไปหมดเลย ทั้งตัวขาว เส้นขาว กล่องขาวไปหมด"
+              รางของแถบ กับ ขอบรอบสัญลักษณ์ เคยฝังสีอ่อนไว้ในโค้ด ชุดกลางคืนจึงกลายเป็นกล่องขาวโพลนกลางการ์ดมืด
+              สองค่านี้เป็น "สีโครง" ไม่ใช่สีข้อมูล (กฎ 18) จึงต้องวิ่งตามชุดสีเสมอ */
+           track:'#eeede7', halo:'#fcfcfb', stripF1:'#f0f3f5', stripF2:'#f8f9fa', stripBand:'#dae4ec'};
 const CAT = [C.teal, C.gold, C.blue, C.orange, C.violet];
 /* 8 สี validated (CVD ΔE 36.6) — ใช้เมื่อชนิด/กลุ่มมีมากกว่า 5 · เกิน 8 เมื่อไหร่ค่อยยุบเป็น "อื่นๆ" */
 const CAT8 = [C.teal, C.gold, C.blue, C.orange, C.violet, '#008300', '#e87ba4', '#e34948'];
@@ -1817,7 +1857,10 @@ function nightTheme(h){
   const hit=THEMES.filter(x=>x.dark&&x.from!=null).find(x=>{ const a=x.from<6?x.from+24:x.from, b=x.to<=6?x.to+24:x.to; return tt>=a&&tt<b; });
   return (hit||THEMES.find(x=>x.dark)).id;
 }
-const themeSelectable=id=>{ const t=THEMES.find(x=>x.id===id); return !!t&&(!t.dark||isNight()); };
+/* v31.31 ผู้ใช้ 11 ก.ย. 69: "ตัวเฉดให้เลือก กลางวัน กลางคืน พอหกโมงเย็นก็ไม่สามารถเลือกกลางวันได้ เหมือนกันนะ"
+   เดิมกันทางเดียว (กลางวันห้ามเลือกชุดค่ำ) · ตอนนี้กันสองทางให้เท่ากัน —
+   หกโมงเช้า–หกโมงเย็น เลือกได้เฉพาะชุดกลางวัน · หกโมงเย็น–หกโมงเช้า เลือกได้เฉพาะชุดกลางคืน */
+const themeSelectable=id=>{ const t=THEMES.find(x=>x.id===id); return !!t&&(!!t.dark===isNight()); };
 const DAY_KEY='drr_theme_day';                                                     // ชุดสว่างที่ผู้ใช้เลือกไว้ ใช้คืนให้ตอนเช้า
 function dayTheme(){ try{ const v=localStorage.getItem(DAY_KEY); if(v&&THEMES.some(x=>x.id===v&&!x.dark)) return v; }catch(e){}
   return DEFAULT_THEME; }
@@ -1825,7 +1868,7 @@ function dayTheme(){ try{ const v=localStorage.getItem(DAY_KEY); if(v&&THEMES.so
 function themeByClock(force){
   const cur=curTheme(), curDark=!!(THEMES.find(x=>x.id===cur)||{}).dark;
   if(isNight()){ if(!curDark||force) applyTheme(nightTheme()); }
-  else if(curDark) applyTheme(dayTheme());
+  else if(curDark||force) applyTheme(dayTheme());
 }
 /* v31.26 ผู้ใช้: "เช็คธีมมืดให้ดี ตัวหนังสือจมไปกับธีมรึเปล่า"
    สีข้อมูลบางสี (ม่วงเข้ม เขียวเข้ม) เข้มเกินกว่าจะอ่านออกบนพื้นกลางคืน
@@ -1850,11 +1893,15 @@ function syncChartColors(){   // กราฟ SVG ใช้ค่าจาก C 
   if(v('--teal')) C.teal=v('--teal'); if(v('--navy')) C.navy=v('--navy'); if(v('--gold')) C.gold=v('--gold');
   if(v('--grid')) C.grid=v('--grid'); if(v('--muted')) C.muted=v('--muted'); if(v('--ink2')) C.ink2=v('--ink2');
   if(v('--strong')) C.strong=v('--strong'); if(v('--card')) C.card=v('--card');   /* v31.26 ตัวหนังสือเน้นในกราฟ SVG — ชุดกลางคืนต้องสว่าง ไม่งั้นจมพื้น */
+  if(v('--tint-track')) C.track=v('--tint-track');   /* v31.36 รางของแถบ */
+  if(v('--surface')) C.halo=v('--surface');          /* v31.36 ขอบรอบจุด/ไอคอนในกราฟ — เดิมขาวตายตัว */
+  if(v('--strip-f1')) C.stripF1=v('--strip-f1'); if(v('--strip-f2')) C.stripF2=v('--strip-f2');
+  if(v('--strip-band')) C.stripBand=v('--strip-band');   /* v31.37 กรอบแถวของ Strip Map */
 }
 function applyTheme(id, opt){
   if(!THEMES.some(t=>t.id===id)) id=isNight()?nightTheme():DEFAULT_THEME;
-  /* กลางวันเลือกชุดกลางคืนไม่ได้ (กิมมิคของผู้ใช้) — ยกเว้นตอนระบบเปลี่ยนให้เองตามเวลา */
-  if(!themeSelectable(id)&&!(opt&&opt.byClock)) id=dayTheme();
+  /* v31.31 เลือกผิดช่วงเวลา = เด้งกลับชุดของช่วงนั้น (ยกเว้นตอนระบบเปลี่ยนให้เองตามเวลา) */
+  if(!themeSelectable(id)&&!(opt&&opt.byClock)) id=isNight()?nightTheme():dayTheme();
   document.documentElement.dataset.theme=id;
   const _t=THEMES.find(x=>x.id===id)||{};
   if(!_t.dark&&!(opt&&opt.preview)) try{ localStorage.setItem(DAY_KEY,id); }catch(e){}
@@ -1864,7 +1911,8 @@ function applyTheme(id, opt){
   if(!(opt&&opt.preview)) try{ localStorage.setItem('drr_theme', id); }catch(_){}   /* v31.26 ลองสีตอนเลื่อนทับ ไม่ต้องจำ */
   syncChartColors();
   const mc=document.querySelector('meta[name="theme-color"]'); if(mc) mc.setAttribute('content', C.navy);
-  document.querySelectorAll('.themesw button').forEach(b=>b.classList.toggle('on', b.dataset.theme===id));
+  document.querySelectorAll('.themesw button').forEach(b=>{ b.classList.toggle('on', b.dataset.theme===id);
+    b.classList.toggle('off', !themeSelectable(b.dataset.theme)); });
   const sel=document.getElementById('sysThemeSel'); if(sel) sel.value=id;
   if(!(opt&&opt.silent)){                                     // วาดหน้าที่เปิดอยู่ใหม่ให้กราฟรับสีใหม่
     const pg=(typeof PAGE==='function')?PAGE(activePage()):null;
@@ -1902,96 +1950,227 @@ function themeStrip(id){
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   v31.27 ด่านล็อกอิน — ผู้ใช้ 10 ก.ย. 69: "ตอนนี้ชั้นมี firebase ล่ะ จะเปิดระบบล็อคอินก่อนเข้าถึงข้อมูล
-   ถ้าไม่ล็อคอินจะโชว์แค่ภาพรวมกับแผนที่"
+   v31.32 ด่านล็อกอิน + กรองคน — ผู้ใช้ 11 ก.ย. 69: "เริ่ม เอาเลย ชั้นต้องการกรองคนจริงๆ"
+   ตามเอกสาร "แนวทางระบบล็อกอินและสิทธิ์ Wichakarn Flow" ที่ผู้ใช้ส่งมา
 
-   • ไม่โหลดไลบรารีของ Firebase — เรียก REST ตรง ๆ (กฎไฟล์เดียว: ห้ามพึ่งไฟล์นอก)
-     เข้าสู่ระบบ  POST identitytoolkit.googleapis.com/v1/accounts:signInWithPassword
-     ต่ออายุ      POST securetoken.googleapis.com/v1/token   (refresh_token)
-     ตั้งรหัสใหม่  POST identitytoolkit.googleapis.com/v1/accounts:sendOobCode
-   • apiKey ของ Firebase ไม่ใช่ความลับ (ฝังในหน้าเว็บได้ตามปกติ) สิทธิ์จริงอยู่ที่ฝั่ง Google
-   • ยังไม่ใส่ apiKey = ไม่มีด่าน ทุกอย่างเหมือนเดิม — ของเดิมต้องไม่พังระหว่างรอตั้งค่า
+   สามชั้นที่แยกกันชัด ๆ (ตามเอกสารข้อ 1)
+     ① ยืนยันตัวตน  — เข้าสู่ระบบด้วยบัญชี Google ของหน่วยงาน
+     ② อนุมัติ       — ผู้ดูแลต้องเปลี่ยนสถานะสมาชิกเป็น active ก่อน (เข้าครั้งแรกได้ pending อัตโนมัติ)
+     ③ สิทธิ์รายระบบ — ต้องมี systems.bigdata.access = true จึงเปิดหน้าที่เหลือ
+   ล็อกอินผ่าน ≠ มีสิทธิ์ · รายชื่อในหน้า Authentication ≠ รายชื่อผู้มีสิทธิ์
+
+   • ข้อยกเว้นกฎไฟล์เดียวข้อเดียวในไฟล์นี้: ปุ่ม "ดำเนินการต่อด้วยบัญชี Google"
+     ต้องใช้หน้าต่างของ Google จึงโหลดสคริปต์ของ Google "เฉพาะตอนกดเข้าสู่ระบบ"
+     เปิดดูตามปกติไม่โหลดอะไรจากภายนอกเลย (ชุดตรวจ auth ข้อ ⑦ ยืนยันข้อนี้)
+   • ที่เหลือเรียก REST ตรง ไม่โหลดไลบรารีเพิ่ม
+     ต่ออายุ   POST securetoken.googleapis.com/v1/token          (refresh token)
+     สมาชิก    GET/PATCH firestore.googleapis.com/v1/.../members/{uid}
+   • apiKey ไม่ใช่ความลับ (ฝังในหน้าเว็บได้ตามปกติ) — ความปลอดภัยจริงอยู่ที่กฎฝั่ง Google
    • ขอบเขตที่ต้องพูดตรง: นี่คือ "ด่านหน้าจอ" ซ่อนหน้าที่ยังไม่มีสิทธิ์
      ข้อมูลจริงยังมาจากชีทที่แชร์ทุกคนที่มีลิงก์ — ปิดชีทต้องย้ายข้อมูลเข้า Firestore (งานรอบหน้า)
    ══════════════════════════════════════════════════════════════════════════ */
-/* v31.30 ผู้ใช้ 10 ก.ย. 69: "ถอดระบบล็อคอินก่อน เดี๋ยวคุยกันใหม่"
-   → ปิดด่านล็อกอินทั้งหมด: ไม่มีปุ่มเข้าสู่ระบบ ไม่มีแม่กุญแจ ทุกหน้าเปิดได้เหมือนก่อนมีระบบนี้
-   โครงยังอยู่ในไฟล์แต่หลับสนิท (ไม่ยิงเน็ต ไม่แตะที่เก็บข้อมูล) — เปิดใช้อีกครั้งเมื่อไหร่
-   แค่ใส่ค่าสองบรรทัดนี้กลับเข้าไป (โครงการเดิมคือ wichakarn-flow)
-   ถ้าอยากให้ถอดโค้ดออกจากไฟล์ทั้งก้อนจริง ๆ บอกได้ ผมลบให้หมดในรอบเดียว */
-const FIREBASE={ apiKey:'', projectId:'' };
-const PUBLIC_PAGES=['overview','map'];               // หน้าที่เปิดดูได้โดยไม่ต้องเข้าสู่ระบบ
-const AUTH_KEY='drr_auth_v1';
-const AUTH={ on:false, user:null, idToken:null, exp:0, refresh:null };
+const FIREBASE={ apiKey:'AIzaSyBPNnNYLd7_p0v3K4NdVCTPwrnfrHRItw0',
+                 authDomain:'wichakarn-flow.firebaseapp.com',
+                 projectId:'wichakarn-flow' };
+const SYSTEM_KEY='bigdata';                          // ชื่อระบบนี้ในเอกสารสมาชิก (systems.bigdata)
+const PUBLIC_PAGES=['overview','map'];               // เปิดดูได้โดยไม่ต้องเข้าสู่ระบบ
+const AUTH_KEY='drr_auth_v2';
+/* สถานะ: out=ยังไม่เข้าสู่ระบบ · wait=รออนุมัติ · stop=ถูกระงับ · nosys=ไม่มีสิทธิ์ระบบนี้ · ok=เปิดครบ */
+const AUTH={ state:'out', user:null, name:null, uid:null, idToken:null, exp:0, refresh:null, stale:false };
 
-/* v31.28 ด่านทำงานเฉพาะตอนเปิดผ่านเว็บ (http/https)
-   เปิดไฟล์จากเครื่องตรง ๆ (file://) = ไม่มีด่าน — ไฟล์อยู่ในมือเจ้าของอยู่แล้ว
-   และปลายทางล็อกอินของ Google ไม่รับคำขอจากหน้าที่เปิดแบบไฟล์ (Origin: null) อยู่ดี */
-const authOn=()=>!!(FIREBASE.apiKey||'').trim()&&/^https?:$/.test(location.protocol);
-const authed=()=>!authOn()||!!AUTH.user;             // ยังไม่ตั้งค่า = ถือว่าเปิดสิทธิ์ทุกหน้า
+/* ด่านทำงานเฉพาะตอนเปิดผ่านเว็บ (http/https) — เปิดไฟล์จากเครื่องตรง ๆ = ไม่มีด่าน
+   (ไฟล์อยู่ในมือเจ้าของอยู่แล้ว และปลายทางของ Google ไม่รับคำขอจากหน้าที่เปิดแบบไฟล์อยู่ดี) */
+const authOn=()=>!!(FIREBASE.apiKey||'').trim()&&!!(FIREBASE.projectId||'').trim()&&/^https?:$/.test(location.protocol);
+const authed=()=>!authOn()||AUTH.state==='ok';
 const pageAllowed=id=>authed()||PUBLIC_PAGES.includes(id);
+const firstName=e=>String(AUTH.name||e||'').split('@')[0].split(' ')[0];
 
-function authSave(){ try{ AUTH.refresh?localStorage.setItem(AUTH_KEY,JSON.stringify({r:AUTH.refresh,u:AUTH.user})):localStorage.removeItem(AUTH_KEY); }catch(e){} }
-function authLoad(){ try{ const j=JSON.parse(localStorage.getItem(AUTH_KEY)||'null'); if(j&&j.r){AUTH.refresh=j.r;AUTH.user=j.u||null;} }catch(e){} }
+function authSave(){ try{ AUTH.refresh
+    ?localStorage.setItem(AUTH_KEY,JSON.stringify({r:AUTH.refresh,u:AUTH.user,n:AUTH.name,i:AUTH.uid,s:AUTH.state}))
+    :localStorage.removeItem(AUTH_KEY); }catch(e){} }
+function authLoad(){ try{ const j=JSON.parse(localStorage.getItem(AUTH_KEY)||'null');
+  if(j&&j.r){ AUTH.refresh=j.r; AUTH.user=j.u||null; AUTH.name=j.n||null; AUTH.uid=j.i||null;
+              AUTH.state=['ok','wait','stop','nosys'].includes(j.s)?j.s:'wait'; } }catch(e){} }
 
-async function authPost(url,body){
-  const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+/* ---- คุยกับปลายทางของ Google ---- */
+async function authPost(url,body,tok){
+  const h={'Content-Type':'application/json'}; if(tok) h.Authorization='Bearer '+tok;
+  const r=await fetch(url,{method:'POST',headers:h,body:JSON.stringify(body)});
   const j=await r.json().catch(()=>({}));
   if(!r.ok) throw new Error((j&&j.error&&j.error.message)||('HTTP '+r.status));
   return j;
 }
-const AUTH_ERR={ EMAIL_NOT_FOUND:'ไม่พบบัญชีนี้ — ตรวจอีเมลอีกครั้ง หรือขอให้ผู้ดูแลระบบเพิ่มบัญชีให้',
-  INVALID_PASSWORD:'รหัสผ่านไม่ถูกต้อง', INVALID_LOGIN_CREDENTIALS:'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
-  INVALID_EMAIL:'รูปแบบอีเมลไม่ถูกต้อง', USER_DISABLED:'บัญชีนี้ถูกระงับ — ติดต่อผู้ดูแลระบบ',
-  TOO_MANY_ATTEMPTS_TRY_LATER:'ลองผิดหลายครั้งเกินไป รอสักครู่แล้วลองใหม่',
-  MISSING_PASSWORD:'ยังไม่ได้กรอกรหัสผ่าน' };
-const authMsgOf=e=>{ const k=String(e&&e.message||'').split(' ')[0];
-  return AUTH_ERR[k]||(/Failed to fetch|NetworkError/i.test(String(e&&e.message))?'เชื่อมต่อไม่ได้ — ตรวจอินเทอร์เน็ตแล้วลองใหม่':'เข้าสู่ระบบไม่สำเร็จ ลองใหม่อีกครั้ง'); };
+const AUTH_ERR={ 'auth/popup-blocked':'เบราว์เซอร์บล็อกหน้าต่างของ Google — อนุญาตป๊อปอัปของเว็บนี้แล้วลองใหม่',
+  'auth/popup-closed-by-user':'ปิดหน้าต่างก่อนเลือกบัญชี — กดเข้าสู่ระบบอีกครั้งได้เลย',
+  'auth/cancelled-popup-request':'', 'auth/unauthorized-domain':'ที่อยู่เว็บนี้ยังไม่ได้รับอนุญาต — แจ้งผู้ดูแลระบบ',
+  'auth/network-request-failed':'เชื่อมต่อไม่ได้ — ตรวจอินเทอร์เน็ตแล้วลองใหม่',
+  'auth/user-disabled':'บัญชีนี้ถูกระงับ — ติดต่อผู้ดูแลระบบ' };
+const authMsgOf=e=>{ const c=String((e&&(e.code||e.message))||'');
+  if(AUTH_ERR[c]!=null) return AUTH_ERR[c];
+  if(/Failed to fetch|NetworkError|network/i.test(c)) return 'เชื่อมต่อไม่ได้ — ตรวจอินเทอร์เน็ตแล้วลองใหม่';
+  if(/PERMISSION_DENIED|Missing or insufficient/i.test(c)) return 'บัญชีนี้ยังไม่ได้รับอนุญาตให้อ่านข้อมูลสมาชิก — แจ้งผู้ดูแลระบบ';
+  return 'เข้าสู่ระบบไม่สำเร็จ ลองใหม่อีกครั้ง'; };
 
-async function authSignIn(email,password){
-  const j=await authPost('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key='+encodeURIComponent(FIREBASE.apiKey),
-    {email,password,returnSecureToken:true});
-  AUTH.idToken=j.idToken; AUTH.refresh=j.refreshToken; AUTH.user=j.email||email;
-  AUTH.exp=Date.now()+(+j.expiresIn||3600)*1000; authSave(); authPaint(); return AUTH.user;
+/* ---- โหลดสคริปต์ของ Google เฉพาะตอนจะเข้าสู่ระบบ ---- */
+const GVERS=['10.12.2','9.23.0'];                    // เผื่อรุ่นแรกโหลดไม่ได้ ให้ถอยไปรุ่นถัดไป
+function loadOne(src){ return new Promise((res,rej)=>{
+  const s=document.createElement('script'); s.src=src; s.async=true;
+  s.onload=()=>res(); s.onerror=()=>{ s.remove(); rej(new Error('script')); }; document.head.appendChild(s); }); }
+let _sdk=null;
+function authSdk(){
+  if(_sdk) return _sdk;
+  _sdk=(async()=>{
+    let last=null;
+    for(const v of GVERS){
+      try{
+        const b='https://www.gstatic.com/firebasejs/'+v+'/';
+        await loadOne(b+'firebase-app-compat.js'); await loadOne(b+'firebase-auth-compat.js');
+        if(!window.firebase||!firebase.auth) throw new Error('sdk');
+        if(!firebase.apps.length) firebase.initializeApp({apiKey:FIREBASE.apiKey,authDomain:FIREBASE.authDomain,projectId:FIREBASE.projectId});
+        return firebase.auth();
+      }catch(e){ last=e; }
+    }
+    throw (last||new Error('sdk'));
+  })().catch(e=>{ _sdk=null; throw e; });
+  return _sdk;
 }
+
+/* ---- อ่าน/สร้างเอกสารสมาชิก (Firestore REST) ---- */
+const FS_BASE=()=>'https://firestore.googleapis.com/v1/projects/'+encodeURIComponent(FIREBASE.projectId)+'/databases/(default)/documents/members/';
+function fsVal(v){                                   // แปลงค่าแบบ Firestore ให้เป็นค่าธรรมดา
+  if(v==null||typeof v!=='object') return v;
+  if('stringValue' in v) return v.stringValue;
+  if('booleanValue' in v) return !!v.booleanValue;
+  if('integerValue' in v) return +v.integerValue;
+  if('doubleValue' in v) return +v.doubleValue;
+  if('timestampValue' in v) return v.timestampValue;
+  if('nullValue' in v) return null;
+  if('mapValue' in v){ const o={},f=(v.mapValue&&v.mapValue.fields)||{}; for(const k in f) o[k]=fsVal(f[k]); return o; }
+  if('arrayValue' in v) return ((v.arrayValue&&v.arrayValue.values)||[]).map(fsVal);
+  return null;
+}
+async function memberRead(){
+  const r=await fetch(FS_BASE()+encodeURIComponent(AUTH.uid),{headers:{Authorization:'Bearer '+AUTH.idToken}});
+  if(r.status===404) return null;
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error((j&&j.error&&j.error.message)||('HTTP '+r.status));
+  const f=j.fields||{}, o={}; for(const k in f) o[k]=fsVal(f[k]);
+  return o;
+}
+/* เข้าครั้งแรก = สร้างข้อมูลขั้นต่ำเป็น "รออนุมัติ" (เอกสารข้อ 4 ขั้นที่ 3)
+   ไม่เขียนสิทธิ์ใด ๆ ลงไป — สิทธิ์เป็นเรื่องของผู้ดูแลเท่านั้น และกฎฝั่ง Google ก็กันไว้อีกชั้น */
+async function memberCreatePending(){
+  const now=new Date().toISOString();
+  const body={fields:{ uid:{stringValue:AUTH.uid}, email:{stringValue:AUTH.user||''},
+    displayName:{stringValue:AUTH.name||''}, status:{stringValue:'pending'},
+    systems:{mapValue:{fields:{}}}, createdAt:{timestampValue:now}, updatedAt:{timestampValue:now} }};
+  const r=await fetch(FS_BASE()+encodeURIComponent(AUTH.uid),
+    {method:'PATCH',headers:{'Content-Type':'application/json',Authorization:'Bearer '+AUTH.idToken},body:JSON.stringify(body)});
+  if(!r.ok){ const j=await r.json().catch(()=>({})); throw new Error((j&&j.error&&j.error.message)||('HTTP '+r.status)); }
+}
+function stateOf(m){
+  if(!m) return 'wait';
+  const st=String(m.status||'pending');
+  if(st==='suspended') return 'stop';
+  if(st!=='active') return 'wait';
+  const sys=(m.systems||{})[SYSTEM_KEY]||{};
+  return sys.access===true?'ok':'nosys';
+}
+/* ตรวจสิทธิ์จริง 1 รอบ — ใช้ทั้งตอนล็อกอินเสร็จ ตอนเปิดหน้าใหม่ และตอนกด "ตรวจสอบอีกครั้ง" */
+async function authCheck(){
+  let m=await memberRead();
+  if(!m){ await memberCreatePending(); m=null; }
+  AUTH.state=stateOf(m); AUTH.stale=false; authSave(); authPaint();
+  return AUTH.state;
+}
+
+/* ---- ต่ออายุ ---- */
 async function authRenew(){
   if(!AUTH.refresh) return false;
   try{
     const j=await authPost('https://securetoken.googleapis.com/v1/token?key='+encodeURIComponent(FIREBASE.apiKey),
       {grant_type:'refresh_token',refresh_token:AUTH.refresh});
     AUTH.idToken=j.id_token||j.access_token; AUTH.refresh=j.refresh_token||AUTH.refresh;
-    AUTH.exp=Date.now()+(+j.expires_in||3600)*1000; authSave(); return true;
+    AUTH.uid=j.user_id||AUTH.uid; AUTH.exp=Date.now()+(+j.expires_in||3600)*1000; authSave(); return true;
   }catch(e){
     /* รหัสถูกเพิกถอน/หมดอายุจริงเท่านั้นจึงตัดออกจากระบบ — เน็ตล่มต้องไม่เตะผู้ใช้ออก (กฎ 6) */
-    if(/TOKEN_EXPIRED|USER_DISABLED|USER_NOT_FOUND|INVALID_REFRESH_TOKEN/.test(String(e.message))){ authSignOut(true); }
+    if(/TOKEN_EXPIRED|USER_DISABLED|USER_NOT_FOUND|INVALID_REFRESH_TOKEN|INVALID_GRANT/.test(String(e.message))) authSignOut(true);
+    else { AUTH.stale=true; authPaint(); }
     return false;
   }
 }
+async function authSignInGoogle(){
+  const auth=await authSdk();
+  const prov=new firebase.auth.GoogleAuthProvider();
+  prov.setCustomParameters({prompt:'select_account'});
+  let cred;
+  try{ cred=await auth.signInWithPopup(prov); }
+  catch(e){ if(String(e&&e.code)==='auth/popup-blocked'){ try{ sessionStorage.setItem('drr_auth_go','1'); }catch(_){}
+              await auth.signInWithRedirect(prov); return null; } throw e; }
+  return authAdopt(cred&&cred.user);
+}
+async function authAdopt(u){
+  if(!u) return null;
+  AUTH.uid=u.uid; AUTH.user=u.email||''; AUTH.name=u.displayName||u.email||'';
+  AUTH.refresh=u.refreshToken||null; AUTH.idToken=await u.getIdToken();
+  AUTH.exp=Date.now()+3300000; authSave();
+  return authCheck();
+}
 function authSignOut(quiet){
-  AUTH.user=null; AUTH.idToken=null; AUTH.refresh=null; AUTH.exp=0; authSave(); authPaint();
+  const was=AUTH.state;
+  AUTH.state='out'; AUTH.user=null; AUTH.name=null; AUTH.uid=null; AUTH.idToken=null; AUTH.refresh=null; AUTH.exp=0; AUTH.stale=false;
+  authSave(); authPaint();
+  try{ if(_sdk) _sdk.then(a=>a.signOut()).catch(()=>{}); }catch(e){}
   if(!quiet && typeof banner==='function') banner('info','ออกจากระบบแล้ว — ยังดูภาพรวมและแผนที่ได้ตามปกติ');
-  if(!pageAllowed((activePage()||{}).id)) document.querySelector('.nav button[data-page="overview"]').click();
+  if(was!=='out'&&!pageAllowed((activePage()||{}).id)){ const b=document.querySelector('.nav button[data-page="overview"]'); if(b) b.click(); }
 }
-async function authSendReset(email){
-  await authPost('https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key='+encodeURIComponent(FIREBASE.apiKey),
-    {requestType:'PASSWORD_RESET',email});
-}
+
+/* ---- ข้อความประจำสถานะ (ที่เดียว — กล่องล็อกอิน หน้าที่ถูกล็อก และเมนูจอแคบใช้ชุดเดียวกัน) ---- */
+const STATE_TXT={
+  out:{ ico:'🔒', head:'ส่วนนี้ต้องเข้าสู่ระบบก่อน',
+        sub:'ภาพรวมและแผนที่เปิดดูได้ทุกคน · ส่วนที่เหลือเปิดให้เฉพาะเจ้าหน้าที่ที่ผู้ดูแลอนุมัติแล้ว', act:'เข้าสู่ระบบ' },
+  wait:{ ico:'⏳', head:'บัญชีของคุณรอผู้ดูแลอนุมัติ',
+        sub:'ยืนยันบัญชีเรียบร้อยแล้ว ผู้ดูแลจะเป็นผู้เปิดสิทธิ์ให้ · เมื่อได้รับแจ้งว่าอนุมัติแล้ว กดตรวจสอบอีกครั้งได้เลย', act:'ตรวจสอบอีกครั้ง' },
+  stop:{ ico:'⛔', head:'บัญชีนี้ถูกระงับการใช้งาน',
+        sub:'ติดต่อผู้ดูแลระบบของแขวงฯ เพื่อขอเปิดใช้งานอีกครั้ง', act:'ตรวจสอบอีกครั้ง' },
+  nosys:{ ico:'🚧', head:'บัญชีนี้ยังไม่ได้รับสิทธิ์ในระบบข้อมูลสายทาง',
+        sub:'บัญชีได้รับอนุมัติแล้ว แต่ผู้ดูแลยังไม่ได้เปิดสิทธิ์ของระบบนี้ให้ · แจ้งผู้ดูแลแล้วกดตรวจสอบอีกครั้ง', act:'ตรวจสอบอีกครั้ง' }
+};
 
 /* ---- หน้าจอ ---- */
 function authOpen(msg){
   if(!authOn()) return;
   const box=document.getElementById('authBox'); if(!box) return;
-  document.getElementById('authMsg').textContent=''; document.getElementById('authMsg').className='authmsg';
-  document.getElementById('authSub').textContent=msg||'เข้าสู่ระบบเพื่อดูข้อมูลส่วนที่เหลือ · ภาพรวมและแผนที่เปิดดูได้โดยไม่ต้องเข้าสู่ระบบ';
-  box.hidden=false; setTimeout(()=>document.getElementById('authEmail').focus(),40);
+  box.hidden=false; authPaintBox(msg||'');
+  setTimeout(()=>{ const b=document.getElementById('authGo'); if(b) b.focus(); },40);
+  /* เตรียมสคริปต์ของ Google ไว้ล่วงหน้าตั้งแต่เปิดกล่อง เพื่อให้ตอนกดปุ่มเปิดหน้าต่างได้ทันที
+     (ถ้าไปโหลดตอนกด เบราว์เซอร์จะถือว่าไม่ได้เกิดจากการกด แล้วบล็อกหน้าต่างทิ้ง) */
+  if(AUTH.state==='out') authSdk().catch(()=>{});
 }
 function authClose(){ const box=document.getElementById('authBox'); if(box) box.hidden=true; }
+function authMsg(cls,txt){ const m=document.getElementById('authMsg'); if(!m) return;
+  m.className='authmsg'+(cls?' '+cls:''); m.textContent=txt||''; }
+function authPaintBox(msg){
+  const t=STATE_TXT[AUTH.state]||STATE_TXT.out, box=document.getElementById('authBox'); if(!box) return;
+  const h=document.getElementById('authHead'), s=document.getElementById('authSub'),
+        g=document.getElementById('authGo'), w=document.getElementById('authWho');
+  if(h) h.textContent=AUTH.state==='out'?'เข้าสู่ระบบ':t.head;
+  if(s) s.textContent=t.sub;
+  if(g){ g.innerHTML=AUTH.state==='out'
+      ?'<span class="gmark" aria-hidden="true">G</span>ดำเนินการต่อด้วยบัญชี Google'
+      :esc(t.act); }
+  if(w){ w.hidden=AUTH.state==='out'; w.textContent=AUTH.user?('บัญชีที่ใช้อยู่ · '+AUTH.user):''; }
+  const out=document.getElementById('authOut'); if(out) out.hidden=AUTH.state==='out';
+  authMsg('',msg||'');
+}
 function authPaint(){
   const pick=document.getElementById('authPick'), btn=document.getElementById('authBtn');
   if(pick) pick.hidden=!authOn();
-  if(btn){ btn.querySelector('.ap-txt').textContent=AUTH.user?String(AUTH.user).split('@')[0]:'เข้าสู่ระบบ';
-           btn.querySelector('.ap-ico').textContent=AUTH.user?'👤':'🔑';
-           btn.title=AUTH.user?(AUTH.user+' — กดเพื่อออกจากระบบ'):'เข้าสู่ระบบเพื่อดูข้อมูลส่วนที่เหลือ'; }
+  if(btn){ const on=AUTH.state!=='out';
+    btn.querySelector('.ap-txt').textContent=on?firstName(AUTH.user):'เข้าสู่ระบบ';
+    btn.querySelector('.ap-ico').textContent=AUTH.state==='ok'?'👤':(on?'⏳':'🔑');
+    btn.title=AUTH.state==='ok'?(AUTH.user+' — กดเพื่อออกจากระบบ')
+             :on?((STATE_TXT[AUTH.state]||{}).head||''):'เข้าสู่ระบบเพื่อดูข้อมูลส่วนที่เหลือ'; }
   document.querySelectorAll('.nav button[data-page]').forEach(b=>{
     const need=authOn()&&!pageAllowed(b.dataset.page);
     b.classList.toggle('locked',need);
@@ -2002,59 +2181,78 @@ function authPaint(){
   });
   const rowM=document.getElementById('authRowM');
   if(rowM){
-    rowM.innerHTML=!authOn()?'':(AUTH.user
-      ?`<span class="who">👤 ${esc(String(AUTH.user))}</span><button class="btn ghost" type="button" onclick="authSignOut()">ออกจากระบบ</button>`
-      :`<span class="who">🔑 ยังไม่ได้เข้าสู่ระบบ</span><button class="btn" type="button" onclick="document.body.classList.remove('moreopen');authOpen()">เข้าสู่ระบบ</button>`);
+    rowM.innerHTML=!authOn()?'':(AUTH.state==='ok'
+      ?`<span class="who">👤 ${esc(String(AUTH.user||''))}</span><button class="btn ghost" type="button" onclick="authSignOut()">ออกจากระบบ</button>`
+      :AUTH.state==='out'
+      ?`<span class="who">🔑 ยังไม่ได้เข้าสู่ระบบ</span><button class="btn" type="button" onclick="document.body.classList.remove('moreopen');authOpen()">เข้าสู่ระบบ</button>`
+      :`<span class="who">${(STATE_TXT[AUTH.state]||{}).ico||'⏳'} ${esc((STATE_TXT[AUTH.state]||{}).head||'')}</span><button class="btn" type="button" onclick="document.body.classList.remove('moreopen');authOpen()">ดูรายละเอียด</button>`);
   }
   const cur=(activePage()||{}).id;
   if(cur&&!pageAllowed(cur)) authLockPage(cur); else authUnlockPage();
 }
-/* หน้าเนื้อหาที่ยังไม่มีสิทธิ์: ซ่อนของจริงไว้ แล้ววางกล่องเชิญล็อกอินแทน */
+/* หน้าเนื้อหาที่ยังไม่มีสิทธิ์: ซ่อนของจริงไว้ แล้ววางกล่องอธิบายสถานะแทน */
 function authLockPage(id){
   const sec=document.getElementById('pg-'+id); if(!sec) return;
-  if(sec.querySelector('.lockpage')) return;
-  [...sec.children].forEach(el=>{ if(!el.classList.contains('lockpage')){ el.dataset.authHidden='1'; el.style.display='none'; } });
-  const d=document.createElement('div'); d.className='lockpage';
-  d.innerHTML='<div class="lp-ico" aria-hidden="true">🔒</div><b>ส่วนนี้ต้องเข้าสู่ระบบก่อน</b>'+
-    '<div class="lp-sub">ภาพรวมและแผนที่เปิดดูได้ทุกคน · ส่วนที่เหลือเปิดให้เฉพาะเจ้าหน้าที่ที่มีบัญชี</div>'+
-    '<button class="btn" type="button" onclick="authOpen()">เข้าสู่ระบบ</button>';
-  sec.appendChild(d);
+  const t=STATE_TXT[AUTH.state]||STATE_TXT.out;
+  let d=sec.querySelector('.lockpage');
+  if(!d){
+    [...sec.children].forEach(el=>{ if(!el.classList.contains('lockpage')){ el.dataset.authHidden='1'; el.style.display='none'; } });
+    d=document.createElement('div'); d.className='lockpage'; sec.appendChild(d);
+  }
+  d.innerHTML='<div class="lp-ico" aria-hidden="true">'+t.ico+'</div><b>'+esc(t.head)+'</b>'+
+    '<div class="lp-sub">'+esc(t.sub)+'</div>'+
+    '<button class="btn" type="button" onclick="authOpen()">'+esc(t.act)+'</button>';
 }
 function authUnlockPage(){
   document.querySelectorAll('.page .lockpage').forEach(d=>d.remove());
   document.querySelectorAll('[data-auth-hidden]').forEach(el=>{ el.style.display=''; delete el.dataset.authHidden; });
 }
+/* ปุ่มเดียวในกล่อง: ยังไม่เข้าระบบ = เข้าสู่ระบบ · เข้าแล้วแต่ยังไม่ผ่าน = ตรวจสอบอีกครั้ง */
+async function authAction(){
+  const g=document.getElementById('authGo'); if(g) g.disabled=true;
+  try{
+    if(AUTH.state==='out'){
+      authMsg('busy','กำลังเปิดหน้าต่างของ Google…');
+      const st=await authSignInGoogle();
+      if(st===null){ authMsg('busy','กำลังพาไปหน้าเข้าสู่ระบบ…'); return; }
+      if(st==='ok'){ authMsg('ok','เข้าสู่ระบบแล้ว');
+        setTimeout(()=>{ authClose(); if(typeof banner==='function') banner('info','เข้าสู่ระบบแล้ว — เปิดดูได้ทุกหน้า'); },300); }
+      else authPaintBox('');
+    }else{
+      authMsg('busy','กำลังตรวจสอบสิทธิ์…');
+      if(Date.now()>AUTH.exp-60000) await authRenew();
+      const st=await authCheck();
+      if(st==='ok'){ authMsg('ok','ได้รับสิทธิ์แล้ว');
+        setTimeout(()=>{ authClose(); if(typeof banner==='function') banner('info','ได้รับสิทธิ์แล้ว — เปิดดูได้ทุกหน้า'); },300); }
+      else authPaintBox('ยังไม่มีการเปลี่ยนแปลง — ' + ((STATE_TXT[st]||{}).head||''));
+    }
+  }catch(e){ const m=authMsgOf(e); if(m) authMsg('bad',m); else authMsg('',''); }
+  finally{ if(g) g.disabled=false; }
+}
 function authInit(){
-  /* v31.30 ปิดด่านอยู่ = หลับสนิทจริง ๆ ไม่อ่านที่เก็บข้อมูลในเครื่อง ไม่ผูกปุ่ม ไม่ยิงเน็ต
-     (เรียก authPaint รอบเดียวเพื่อลบร่องรอยแม่กุญแจ/ปุ่มออกให้หมด แล้วจบ) */
+  /* ยังไม่ตั้งค่า (หรือเปิดไฟล์จากเครื่องตรง ๆ) = หลับสนิท ไม่อ่านที่เก็บข้อมูล ไม่ผูกปุ่ม ไม่ยิงเน็ต */
   if(!authOn()){ authPaint(); return; }
   authLoad(); authPaint();
-  const f=document.getElementById('authForm'), btn=document.getElementById('authBtn');
-  if(btn) btn.addEventListener('click',()=>{ AUTH.user?authSignOut():authOpen(); });
+  const btn=document.getElementById('authBtn');
+  if(btn) btn.addEventListener('click',()=>{ AUTH.state==='ok'?authSignOut():authOpen(); });
+  document.getElementById('authGo')?.addEventListener('click',authAction);
+  document.getElementById('authOut')?.addEventListener('click',()=>{ authSignOut(); authClose(); });
   document.getElementById('authCancel')?.addEventListener('click',authClose);
   document.getElementById('authBox')?.addEventListener('click',e=>{ if(e.target.id==='authBox') authClose(); });
   document.addEventListener('keydown',e=>{ if(e.key==='Escape') authClose(); });
-  document.getElementById('authReset')?.addEventListener('click',async()=>{
-    const m=document.getElementById('authMsg'), email=document.getElementById('authEmail').value.trim();
-    if(!email){ m.className='authmsg bad'; m.textContent='กรอกอีเมลก่อน แล้วกดส่งลิงก์อีกครั้ง'; return; }
-    m.className='authmsg busy'; m.textContent='กำลังส่งลิงก์…';
-    try{ await authSendReset(email); m.className='authmsg ok'; m.textContent='ส่งลิงก์ตั้งรหัสใหม่ไปที่อีเมลแล้ว'; }
-    catch(e){ m.className='authmsg bad'; m.textContent=authMsgOf(e); }
-  });
-  if(f) f.addEventListener('submit',async e=>{
-    e.preventDefault();
-    const m=document.getElementById('authMsg'), go=document.getElementById('authGo');
-    const email=document.getElementById('authEmail').value.trim(), pw=document.getElementById('authPass').value;
-    go.disabled=true; m.className='authmsg busy'; m.textContent='กำลังตรวจสอบ…';
-    try{
-      await authSignIn(email,pw);
-      document.getElementById('authPass').value='';
-      m.className='authmsg ok'; m.textContent='เข้าสู่ระบบแล้ว';
-      setTimeout(()=>{ authClose(); if(typeof banner==='function') banner('info','เข้าสู่ระบบแล้ว — เปิดดูได้ทุกหน้า'); },260);
-    }catch(err){ m.className='authmsg bad'; m.textContent=authMsgOf(err); }
-    finally{ go.disabled=false; }
-  });
-  if(authOn()&&AUTH.refresh){ authRenew().then(()=>authPaint()); setInterval(()=>{ if(AUTH.refresh&&Date.now()>AUTH.exp-300000) authRenew(); },240000); }
+
+  /* กลับมาจากหน้าเข้าสู่ระบบของ Google (กรณีเบราว์เซอร์บล็อกหน้าต่างเล็ก) */
+  let back=false; try{ back=sessionStorage.getItem('drr_auth_go')==='1'; sessionStorage.removeItem('drr_auth_go'); }catch(e){}
+  if(back) authSdk().then(a=>a.getRedirectResult()).then(c=>{ if(c&&c.user) return authAdopt(c.user); })
+                    .catch(e=>{ const m=authMsgOf(e); if(m){ authOpen(); authMsg('bad',m); } });
+
+  if(AUTH.refresh){
+    /* เปิดหน้าใหม่ = ต่ออายุแล้วตรวจสิทธิ์จริงอีกรอบเสมอ (ผู้ดูแลอาจเพิ่งเปลี่ยนสถานะ)
+       ถ้าเน็ตล่ม ให้ถือสิทธิ์เดิมไว้ก่อน ไม่เตะออก แต่ทำเครื่องหมายว่ายังตรวจไม่ได้ (กฎ 6) */
+    authRenew().then(okv=>okv?authCheck():null)
+               .catch(()=>{ AUTH.stale=true; authPaint(); });
+    setInterval(()=>{ if(AUTH.refresh&&Date.now()>AUTH.exp-300000) authRenew().then(okv=>{ if(okv) authCheck().catch(()=>{}); }); },240000);
+  }
 }
 function buildThemeSwitch(){
   /* v31.26 ผู้ใช้: "แถบชุดสีให้เลือกชักเยอะและดูเด่นไป เอามาไว้ตรงบนขวาแล้วทำเป็น dropdown สวยๆ"
@@ -2062,12 +2260,17 @@ function buildThemeSwitch(){
   const host=document.getElementById('themeSwM');
   if(host){
     host.innerHTML='<span class="tl">ชุดสี</span>'+THEMES.map(t=>`<button type="button" data-theme="${t.id}" title="${t.name}" aria-label="ชุดสี ${t.name}" style="--sw:${t.sw}"></button>`).join('');
-    host.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>applyTheme(b.dataset.theme)));
+    host.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+      /* v31.31 จอแคบก็ต้องบอกเหตุผลเหมือนกัน ไม่ใช่กดแล้วเงียบ (กฎ 8) */
+      if(!themeSelectable(b.dataset.theme)){ if(typeof banner==='function')
+        banner('info',(THEMES.find(t=>t.id===b.dataset.theme)||{}).dark?'ชุดกลางคืนเลือกได้ตั้งแต่หกโมงเย็นถึงหกโมงเช้า'
+                                                                      :'ชุดกลางวันเลือกได้ตั้งแต่หกโมงเช้าถึงหกโมงเย็น'); return; }
+      applyTheme(b.dataset.theme); }));
   }
   const menu=document.getElementById('themeMenu'), btn=document.getElementById('themePickBtn');
   if(menu&&btn&&!menu.dataset.built){
     menu.dataset.built='1';
-    const groups=[['กลางวัน',THEMES.filter(t=>!t.dark)],['กลางคืน (หลังหกโมงเย็น)',THEMES.filter(t=>t.dark)]];
+    const groups=[['กลางวัน (หกโมงเช้า–หกโมงเย็น)',THEMES.filter(t=>!t.dark)],['กลางคืน (หกโมงเย็น–หกโมงเช้า)',THEMES.filter(t=>t.dark)]];
     menu.innerHTML=groups.filter(g=>g[1].length).map(([label,list])=>
       `<div class="tp-group">${label}</div>`+list.map(t=>
         `<button type="button" class="tp-item" role="menuitem" data-theme="${t.id}" data-dark="${t.dark?1:0}" style="--tp-strip:${themeStrip(t.id)}">
@@ -2081,7 +2284,9 @@ function buildThemeSwitch(){
       const usable=()=>themeSelectable(it.dataset.theme);
       it.addEventListener('mouseenter',()=>{ if(usable()) preview(it.dataset.theme); });
       it.addEventListener('focus',()=>{ if(usable()) preview(it.dataset.theme); });
-      it.addEventListener('click',()=>{ if(!usable()){ if(typeof banner==='function') banner('info','ชุดกลางคืนเลือกได้ตั้งแต่หกโมงเย็นถึงหกโมงเช้า'); return; }
+      it.addEventListener('click',()=>{ if(!usable()){ if(typeof banner==='function')
+          banner('info',it.dataset.dark==='1'?'ชุดกลางคืนเลือกได้ตั้งแต่หกโมงเย็นถึงหกโมงเช้า'
+                                            :'ชุดกลางวันเลือกได้ตั้งแต่หกโมงเช้าถึงหกโมงเย็น'); return; }
         saved=null; applyTheme(it.dataset.theme); closeThemeMenu(); });
     });
     menu.addEventListener('mouseleave',restore);
@@ -2122,8 +2327,8 @@ function paintThemePick(id){
     it.setAttribute('aria-disabled',off?'true':'false');
     it.querySelector('.tp-tick').hidden=!on; });
   const hint=document.getElementById('tpHint');
-  if(hint) hint.textContent=isNight()?'เลื่อนทับเพื่อลองดูทั้งหน้า · กดเพื่อใช้จริง'
-                                     :'ชุดกลางคืนจะเลือกได้ตั้งแต่หกโมงเย็น · เปิดตอนค่ำระบบเปลี่ยนให้เอง';
+  if(hint) hint.textContent=isNight()?'ตอนนี้ช่วงกลางคืน · ชุดกลางวันจะกลับมาเลือกได้ตอนหกโมงเช้า'
+                                     :'ตอนนี้ช่วงกลางวัน · ชุดกลางคืนจะเลือกได้ตอนหกโมงเย็น ระบบเปลี่ยนให้เอง';
 }
 const YEAR_PALETTE=['#0d9488','#2a78d6','#d9a441','#4a3aa7','#008300','#0891b2','#a16207','#7c3aed','#c2410c','#0e7490','#6b7280'];
 const yearColorMap=years=>{const s=[...new Set(years.map(String))].sort(); const o={}; s.forEach((y,i)=>o[y]=YEAR_PALETTE[i%YEAR_PALETTE.length]); return o;};
@@ -2245,7 +2450,7 @@ function lolli(container, items, {unit='', color=C.teal, labelW=86, onClick=null
   box.__fit=h=>lolli(container, items, {unit,color,labelW,onClick,valW,height:h});   // กฎ 16
   if(!items.length){ box.innerHTML='<div class="note" style="padding:18px 4px;text-align:center">ไม่มีข้อมูล</div>'; return; }
   const W=box.clientWidth||560, padT=8, padB=22, padR=valW||58;
-  const rowH=height?Math.max(20,(height-padT-padB)/items.length):24;
+  const rowH=height?Math.max(22,(height-padT-padB)/items.length):27;   /* v31.36 เว้นบรรทัดขึ้นนิด แท่งหนาขึ้นแล้วไม่ชนกัน */
   const H=height||items.length*rowH+padT+padB;
   const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:'100%',height:H},box);
   const max=Math.max(...items.map(i=>i.v),0.0001);
@@ -2258,12 +2463,14 @@ function lolli(container, items, {unit='', color=C.teal, labelW=86, onClick=null
     const hit=el('rect',{x:labelW,y:y-rowH/2,width:Math.max(1,W-padR-labelW),height:rowH,fill:'transparent'},svg);
     el('line',{class:'lolli-track',x1:labelW,y1:y,x2:W-padR,y2:y},svg);
     el('line',{class:'lolli-stem bar','data-i':i,x1:labelW,y1:y,x2:x,y2:y,stroke:col},svg);
-    const d=el('circle',{class:'lolli-dot bar','data-i':i,cx:x,cy:y,r:5.5,fill:col},svg);
+    const d=el('circle',{class:'lolli-dot bar','data-i':i,cx:x,cy:y,r:6.5,fill:col},svg);
     const lt=el('text',{class:'cattext',x:labelW-7,y:y+4,'text-anchor':'end'},svg);
     lt.textContent=clipTh(it.label,maxCh);
     const vtxt=it.valText??fmt(it.v), vest=String(vtxt).length*6.2;
     const vflip=x+11+vest>W-2;
-    el('text',{class:'vallabel',x:vflip?x-11:x+11,y:y+4,'text-anchor':vflip?'end':'start'},svg).textContent=vtxt;
+    /* v31.36 ตัวเลขท้ายแท่งใช้สีเดียวกับแท่ง + หนาขึ้น — อ่านค่าได้โดยไม่ต้องไล่แกน */
+    el('text',{class:'vallabel',x:vflip?x-12:x+12,y:y+4.5,'text-anchor':vflip?'end':'start',
+               fill:col,'font-weight':'700','font-size':'12'},svg).textContent=vtxt;
     const tipf=e=>showTip(`<b>${esc(it.label)}</b><br>${it.tip??(fmt(it.v)+' '+unit)}`,e.clientX,e.clientY);
     [d,hit].forEach(n=>{ hitOn(n); n.addEventListener('mousemove',tipf); n.addEventListener('mouseleave',hideTip);
       if(onClick){ hitOn(n,'pointer'); n.addEventListener('click',()=>onClick(it)); } });
@@ -2370,7 +2577,7 @@ function bullet(container, rows, {height=null, tgtText='เป้า', total=nul
     const y=8+off+i*rowH, mx=r.max||100, ok=r.v>=r.target;
     const col=ok?'#0ca30c':(r.v>=r.target*0.75?C.gold:C.crit);
     el('text',{class:'cattext',x:0,y:y+9},svg).textContent=r.label;
-    el('rect',{x:lw,y:y+2,width:pw,height:16,rx:8,fill:'#eeede7'},svg);
+    el('rect',{x:lw,y:y+2,width:pw,height:16,rx:8,fill:C.track},svg);
     el('rect',{x:lw,y:y+2,width:Math.max(2,pw*Math.min(r.v,mx)/mx),height:16,rx:8,fill:col},svg);
     const tx=lw+pw*Math.min(r.target,mx)/mx;
     el('line',{x1:tx,y1:y-2,x2:tx,y2:y+22,stroke:C.navy,'stroke-width':2.5},svg);
@@ -2402,8 +2609,8 @@ function dumbbell(container, rows, {unit='', c1=C.gold, c2=C.blue, l1='ค่า
     el('text',{class:'cattext',x:lw-8,y:y+4,'text-anchor':'end'},svg)
       .textContent=r.label.length>mc?r.label.slice(0,mc-1)+'…':r.label;
     el('line',{x1:Math.min(xa,xb),y1:y,x2:Math.max(xa,xb),y2:y,stroke:C.crit,'stroke-width':3,opacity:.3,'stroke-linecap':'round'},svg);
-    el('circle',{cx:xb,cy:y,r:6,fill:c2,stroke:'#fcfcfb','stroke-width':2},svg);
-    el('circle',{cx:xa,cy:y,r:6,fill:c1,stroke:'#fcfcfb','stroke-width':2},svg);
+    el('circle',{cx:xb,cy:y,r:6,fill:c2,stroke:C.halo,'stroke-width':2},svg);
+    el('circle',{cx:xa,cy:y,r:6,fill:c1,stroke:C.halo,'stroke-width':2},svg);
     const gap=r.a-r.b;
     el('text',{x:W-padR+8,y:y+4,'font-size':11,'font-weight':700,fill:gap>0?C.crit:'#0ca30c'},svg)
       .textContent=(gap>0?'−':'+')+fmt(Math.abs(+gap.toFixed(1)));
@@ -2485,7 +2692,7 @@ function scatter(container, pts, {xLab='', yLab='', height=290, refY=null, refLa
     const px=X(p.x), est=String(p.label||'').length*6.4, flip=px+13+est>W-padR;
     [true,false].forEach(halo=>el('text',{x:flip?px-13:px+13,y:Y(p.y)+4,'text-anchor':flip?'end':'start',
       'font-size':10,'font-weight':700,'pointer-events':'none',
-      ...(halo?{fill:'none',stroke:'#fcfcfb','stroke-width':3,'stroke-linejoin':'round'}:{fill:'#0b0b0b'})},svg)
+      ...(halo?{fill:'none',stroke:C.halo,'stroke-width':3,'stroke-linejoin':'round'}:{fill:'#0b0b0b'})},svg)
       .textContent=p.label||'');});
   el('text',{class:'ticktext',x:padL+pw/2,y:H-4,'text-anchor':'middle'},svg).textContent=xLab;
   if(yLab) el('text',{class:'ticktext',x:14,y:padT+ph/2,'text-anchor':'middle',
@@ -2742,7 +2949,7 @@ function lineChart(container, labels, series, {unit='', height=240, fmtVal=fmt, 
         fill:col,opacity:.12},svg);
     el('polyline',{points:pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' '),fill:'none',stroke:col,
       'stroke-width':2.5,'stroke-linejoin':'round','stroke-linecap':'round'},svg);
-    pts.forEach((p,i)=>{ const c=el('circle',{cx:p[0],cy:p[1],r:4.5,fill:col,stroke:'#fcfcfb','stroke-width':2},svg);
+    pts.forEach((p,i)=>{ const c=el('circle',{cx:p[0],cy:p[1],r:4.5,fill:col,stroke:C.halo,'stroke-width':2},svg);
       hitOn(c);   // กฎ 8
       c.addEventListener('mousemove',e=>showTip(`<b>${esc(labels[i])}</b><br>${esc(s.name||'')} ${fmtVal(s.vals[i])} ${unit}`,e.clientX,e.clientY));
       c.addEventListener('mouseleave',hideTip); });
@@ -2754,12 +2961,17 @@ function lineChart(container, labels, series, {unit='', height=240, fmtVal=fmt, 
 }
 
 /* v31.20 ผู้ใช้: "แก้อันนี้ให้ที ดูยาก" — label every share directly, including the smallest groups. */
-function shareBars(container,items,{unit='',height=null}={}){
+function shareBars(container,items,opt){
+  const {unit='',height=null,cols=1}=opt||{};   /* v31.37 cols:2 = แถวเยอะให้จัดสองคอลัมน์ในกล่องเดียว */
   const box=document.getElementById(container);if(!box)return;
-  box.__rows=items.length;box.__fit=h=>shareBars(container,items,{unit,height:h});
+  box.__rows=items.length;box.__fit=h=>shareBars(container,items,{...(opt||{}),height:h});
   const total=items.reduce((s,x)=>s+x.v,0),pct=v=>total>0?100*v/total:0;
   const percent=v=>v>0&&v<.1?'&lt;0.1%':v.toFixed(1)+'%';
-  box.innerHTML='<div class="share-bars" style="min-height:'+Math.max(80,items.length*32+38,height||0)+'px"><div class="share-total"><span>รวม</span><b>'+fmt(+total.toFixed(1))+' <small>'+esc(unit)+'</small></b></div><div class="share-list">'+items.map(it=>'<div class="share-row"><div class="share-caption"><span><i style="background:'+esc(it.color||C.teal)+'"></i>'+esc(it.label)+'</span><strong>'+fmt(+it.v.toFixed(2))+' <small>'+esc(unit)+'</small><em>'+percent(pct(it.v))+'</em></strong></div><div class="share-track"><span style="width:'+pct(it.v)+'%;background:'+esc(it.color||C.teal)+'"></span></div></div>').join('')+'</div></div>';
+  /* v31.36 ผู้ใช้ 12 ก.ย. 69: "เอารูปแบบของกล่องวงเงินตามชนิดงบมาประยุกต์ใช้หลายๆ กล่องดีกว่า
+     … เช่นไปปรับใช้กับ งบประมาณตามเขตสส ที่จะต้องโชว์ทั้งเขต ชื่อ สส งบประมาณ และ %"
+     จึงรับได้อีกสองช่อง: sub = บรรทัดรองใต้ชื่อ (เช่น ชื่อ สส. · พรรค) · foot = บรรทัดท้ายใต้แถบ */
+  const rowH=items.some(x=>x.sub||x.foot)?62:32;   /* มีบรรทัดรอง/บรรทัดท้าย = แถวสูงขึ้น */
+  box.innerHTML='<div class="share-bars" style="min-height:'+Math.max(80,Math.ceil(items.length/cols)*rowH+38,height||0)+'px"><div class="share-total"><span>รวม</span><b>'+fmt(+total.toFixed(1))+' <small>'+esc(unit)+'</small></b></div><div class="share-list'+(cols>1?' share-2col':'')+'">'+items.map(it=>'<div class="share-row"><div class="share-caption"><span><i style="background:'+esc(it.color||C.teal)+'"></i>'+esc(it.label)+'</span><strong>'+fmt(+it.v.toFixed(2))+' <small>'+esc(unit)+'</small><em>'+percent(pct(it.v))+'</em></strong></div>'+(it.sub?'<div class="share-sub">'+esc(it.sub)+'</div>':'')+'<div class="share-track"><span style="width:'+pct(it.v)+'%;background:'+esc(it.color||C.teal)+'"></span></div>'+(it.foot?'<div class="share-foot">'+esc(it.foot)+'</div>':'')+'</div>').join('')+'</div></div>';
   box.querySelectorAll('.share-row').forEach((r,i)=>{hitOn(r,'help');r.addEventListener('mousemove',e=>showTip('<b>'+esc(items[i].label)+'</b><br>'+(items[i].tip||fmt(items[i].v)+' '+esc(unit)),e.clientX,e.clientY));r.addEventListener('mouseleave',hideTip);});
 }
 
@@ -2860,7 +3072,7 @@ function donut(container, slices, {unit='กม.', height=280}={}){
     const x0=cx+R*Math.cos(a0),y0=cy+R*Math.sin(a0),x1=cx+R*Math.cos(a1),y1=cy+R*Math.sin(a1);
     const xi0=cx+r*Math.cos(a1),yi0=cy+r*Math.sin(a1),xi1=cx+r*Math.cos(a0),yi1=cy+r*Math.sin(a0);
     const p=el('path',{class:'bar',d:`M${x0},${y0} A${R},${R} 0 ${large} 1 ${x1},${y1} L${xi0},${yi0} A${r},${r} 0 ${large} 0 ${xi1},${yi1} z`,
-      fill:s.color,stroke:'#fcfcfb','stroke-width':2},svg);
+      fill:s.color,stroke:C.halo,'stroke-width':2},svg);
     hitOn(p);   // กฎ 8
     p.addEventListener('mousemove',e=>showTip(`<b>${esc(s.label)}</b><br>${fmt(s.v)} ${unit} (${(100*s.v/tot).toFixed(1)}%)`,e.clientX,e.clientY));
     p.addEventListener('mouseleave',hideTip);
@@ -2881,49 +3093,75 @@ function donut(container, slices, {unit='กม.', height=280}={}){
   lg.innerHTML=slices.map(s=>`<span class="lg"><span class="sw" style="background:${s.color}"></span>${esc(s.label.length>22?s.label.slice(0,22)+'…':s.label)}</span>`).join('');
   box.appendChild(lg);
 }
-/* stacked horizontal bars — มาตรฐาน: ไม่มีป้ายท้ายแถว ชี้แถว/ท่อนแล้วรายละเอียด+% ค่อยขึ้น · legend ชื่อล้วนไม่มีเลขนำหน้า */
-function hstack(container, rows, segsOrder, {unit='คำขอ', labelW=112, onClick=null, rightW=14, showRight=false, height=null}={}){
-  const box=document.getElementById(container); box.innerHTML=''; box.__rows=rows;
-  box.__fit=h=>hstack(container, rows, segsOrder, {unit,labelW,onClick,rightW,showRight,height:h});   // กฎ 16
-  const W=box.clientWidth||560, legH=30;
-  const rowH=height?Math.max(28,Math.min(52,(height-6-6-legH)/Math.max(1,rows.length))):34;
-  /* v31.4 กฎ 16: แถวน้อย (เช่น 2 กิจกรรม) ยืดแถวได้ไม่เกิน 52px — ที่เหลือจัดกึ่งกลางแนวตั้งแทนที่จะทิ้งไว้ท้ายการ์ด */
-  const natural=rows.length*rowH+12, padT=6+(height&&height-legH>natural?Math.floor((height-legH-natural)/2):0);
-  const H=(height&&height-legH>natural)?height-legH:rows.length*rowH+padT+6;
-  const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:'100%',height:H},box);
-  const max=Math.max(...rows.map(r=>segsOrder.reduce((a,s)=>a+(r.segs[s.k]||0),0)),0.0001);
-  const plotW=W-labelW-rightW;
-  rows.forEach((row,i)=>{
-    const y=padT+i*rowH, bh=16, by=y+(rowH-bh)/2;
-    const totRow=segsOrder.reduce((a,s)=>a+(row.segs[s.k]||0),0);
-    // ชี้ตรงไหนของแถวก็ได้ -> สรุปของแถว
-    const hit=el('rect',{class:onClick?'hitrow':'', 'data-i':i, x:0,y:y,width:W,height:rowH,fill:'transparent'},svg);
-    hitOn(hit);   // กฎ 8
-    hit.addEventListener('mousemove',e=>showTip(`<b>${esc(catName(row.label))}</b><br>${row.right?esc(row.right):fmt(totRow)+' '+unit}`,e.clientX,e.clientY));
-    hit.addEventListener('mouseleave',hideTip);
-    if(onClick){ hitOn(hit,'pointer'); hit.addEventListener('click',()=>onClick(row,i)); }
-    const t=el('text',{class:'cattext bar','data-i':i,x:labelW-8,y:by+bh/2+4,'text-anchor':'end','pointer-events':'none'},svg);
-    t.textContent=clipTh(row.label, Math.max(8,Math.floor((labelW-8)/7.2)));
-    /* v30.4 — รางพื้นหลังทุกแถว: แถวที่ค่าเป็นศูนย์จะได้ยังมีตัวตนบนจอ ไม่ใช่หายไปเฉยๆ
-       (ผู้ใช้: "บางอันไม่โชว์ก็เหมือนได้รับ 100% ทั้งที่จริงไม่ได้ขอ") */
-    el('rect',{x:labelW,y:by,width:Math.max(2,plotW),height:bh,rx:3,fill:'#eff1f0'},svg);
-    if(showRight&&row.right) el('text',{class:'ticktext',x:W-6,y:by+bh/2+4,'text-anchor':'end'},svg).textContent=row.right;
-    let x=labelW;
-    segsOrder.forEach(s=>{
-      const v=row.segs[s.k]||0; if(v<=0) return;
-      const w=plotW*v/max;
-      // v29.5 — ท่อนที่มีค่าจริงต้องมองเห็นเสมอ แม้สัดส่วนจะน้อย (ลูกรัง 3% เคยบางจนหายบนมือถือ)
-      //         ขยายเฉพาะความกว้างที่วาด ไม่ขยับจุดเริ่มของท่อนถัดไป สัดส่วนจึงยังตรง
-      const rect=el('rect',{class:'bar','data-i':i,x:x,y:by,width:Math.max(2.6,w-2),height:bh,rx:3,fill:s.color},svg);
-      hitOn(rect);   // กฎ 8
-      rect.addEventListener('mousemove',e=>showTip(`<b>${esc(catName(row.label))} · ${esc(catName(s.label))}</b><br>${fmt(v)} ${unit} (${(100*v/totRow).toFixed(0)}%)${row.right?`<br><span style="color:#c8d2e4;font-size:11px">${esc(row.right)}</span>`:''}`,e.clientX,e.clientY));
-      rect.addEventListener('mouseleave',hideTip);
-      x+=w;
-    });
-  });
-  const lg=document.createElement('div'); lg.className='legendrow';
-  lg.innerHTML=segsOrder.map(s=>`<span class="lg"><span class="sw" style="background:${s.color}"></span>${esc(catName(s.label))}</span>`).join('');
-  box.appendChild(lg);
+/* ══ v31.36 ผู้ใช้ 12 ก.ย. 69: "เพิ่มกล่องแบ่งตามเรทงบ โดยแบ่งจากชนิดงบ และในแต่ละชนิดงบให้แบ่งตามเรทงบประมาณ"
+   ช่วงตามที่เจ้าของกำหนดเป๊ะ 7 ช่วง · สีไล่จากอ่อนไปเข้ม = เงินน้อยไปมาก (อ่านได้โดยไม่ต้องดู legend)
+   ช่วง "ยังไม่ระบุวงเงิน" เพิ่มมาเองเป็นสีเทา — คำขอที่ยังไม่ประเมินราคามีเยอะ ห้ามหายเงียบ (กฎ 6) ══ */
+const AMT_BANDS=[
+  {k:'b1',lbl:'ไม่เกิน 5 แสน',   hi:500000,    color:'#d5ebe7'},
+  {k:'b2',lbl:'5 แสน – 5 ล้าน',  hi:5000000,   color:'#a5d9d1'},
+  {k:'b3',lbl:'5 – 10 ล้าน',     hi:10000000,  color:'#6fc4b9'},
+  {k:'b4',lbl:'10 – 15 ล้าน',    hi:15000000,  color:'#3aa99d'},
+  {k:'b5',lbl:'15 – 20 ล้าน',    hi:20000000,  color:'#1d8c80'},
+  {k:'b6',lbl:'20 – 50 ล้าน',    hi:50000000,  color:'#146a61'},
+  {k:'b7',lbl:'มากกว่า 50 ล้าน', hi:Infinity,  color:'#0a4842'}];
+const AMT_NA={k:'na',lbl:'ยังไม่ระบุวงเงิน',color:'#9aa5a3'};
+const amtBandOf=v=>(v==null||!isFinite(+v)||+v<=0)?AMT_NA.k:(AMT_BANDS.find(b=>+v<=b.hi)||AMT_BANDS[AMT_BANDS.length-1]).k;
+const AMT_SEGS=[...AMT_BANDS,AMT_NA].map(b=>({k:b.k,label:b.lbl,color:b.color}));
+/* items = [{cat:'บำรุง', amt:1234}]
+   v31.37 ผู้ใช้ 12 ก.ย. 69: "เรทงบไม่ใช่แบบนี้ คือจัดมาว่า 1 งบยกระดับ มี เรทอะไรกี่โครง
+   แต่ละเรทคิดเป็นกี่ % งบบำรุงแต่ละเรทมีกี่โครง มีกี่ % แล้วโดยรวมทุกงบ กี่โครงในแต่ละเรท คิดเป็นกี่ %"
+   → เลิกใช้แท่งซ้อน (อ่านสัดส่วนยาก) เปลี่ยนเป็นตาราง: แถวละชนิดงบ ช่องละช่วงวงเงิน
+   ในช่องบอก "จำนวนโครง" กับ "% ของชนิดงบนั้น" · แถวท้ายคือรวมทุกงบ (% ของทั้งหมด)
+   ความเข้มของช่องไล่ตาม % เพื่อให้กวาดตาเห็นก้อนใหญ่ได้ทันทีโดยไม่ต้องอ่านเลขทุกช่อง */
+function amtBandTable(container, items, {unit='รายการ'}={}){
+  const G={};
+  (items||[]).forEach(x=>{ const c=x.cat||'— ไม่ระบุ';
+    const g=G[c]||(G[c]={segs:{},n:0,amt:0}), k=amtBandOf(x.amt);
+    g.segs[k]=(g.segs[k]||0)+1; g.n++; g.amt+=(+x.amt||0); });
+  matrixTable(container, Object.entries(G).map(([c,g])=>({label:c, segs:g.segs, right:fmtM(g.amt)})),
+    AMT_SEGS, {unit, sumLabel:'รวมทุกชนิดงบ'});
+}
+
+/* ══ v31.37 ผู้ใช้ 12 ก.ย. 69 เลือกเอง (จาก 3 แบบที่ส่งไปให้ดู):
+   "แบบ ก แต่จัดคอลั่มให้เท่ากันนะ แล้วเรียงจากมากไปน้อยเสมอ ให้ดูแว่บเดียวแล้วรู้ว่าหมวดไหนเยอะสุด
+   แล้วค่อยดูรายละเอียด" + "เปลี่ยนทุกที่"
+   → เลิกใช้แท่งซ้อน (อ่านสัดส่วนข้ามแถวยาก) เปลี่ยนเป็นตารางไขว้: แถวละกลุ่มหลัก ช่องละกลุ่มย่อย
+   ในช่องบอกจำนวน + % ของแถวนั้น · ความเข้มไล่ตาม % ให้กวาดตาเห็นก้อนใหญ่ได้ทันที
+   คอลัมน์กว้างเท่ากันทุกช่อง (table-layout:fixed) · แถวเรียงจากมากไปน้อย
+   ยกเว้นแถวที่เป็นปี — ปีคือเส้นเวลา ถ้าเรียงตามขนาดจะอ่านแนวโน้มไม่ได้ จึงคงลำดับที่ผู้เรียกส่งมา
+   ตัวนี้เป็น "เครื่องมือวาด" (กฎ 7) ห้ามรู้จักศัพท์งานทาง — ป้ายทุกอย่างมาจากผู้เรียกเท่านั้น ══ */
+const hexA=(h,a)=>{ const m=/^#?([0-9a-fA-F]{6})$/.exec(String(h||'')); if(!m) return h;
+  const v=parseInt(m[1],16); return `rgba(${(v>>16)&255},${(v>>8)&255},${v&255},${a.toFixed(3)})`; };
+function matrixTable(container, rows, colsIn, {unit='รายการ', onClick=null, sumLabel='รวมทุกแถว', sumRow=true}={}){
+  const box=document.getElementById(container); if(!box) return;
+  const RS=(rows||[]).map(r=>({...r, _n:Object.values(r.segs||{}).reduce((a,b)=>a+(+b||0),0)}));
+  if(!RS.length){ box.innerHTML='<div class="note" style="padding:16px 4px;text-align:center">ไม่มีข้อมูล</div>'; return; }
+  const isTime=RS.every(r=>/^\s*[^\d]*\d{4}\s*$/.test(String(r.label||'')));
+  if(!isTime) RS.sort((a,b)=>b._n-a._n);
+  const SUM={label:sumLabel, segs:{}, _n:0};
+  RS.forEach(r=>{ SUM._n+=r._n; Object.entries(r.segs||{}).forEach(([k,v])=>SUM.segs[k]=(SUM.segs[k]||0)+(+v||0)); });
+  const cols=(colsIn||[]).filter(c=>SUM.segs[c.k]);
+  const use=cols.length?cols:(colsIn||[]);
+  box.__rows=RS; box.__fit=()=>{};
+  const w=(70/Math.max(1,use.length)).toFixed(3);
+  const cell=(r,c)=>{ const n=r.segs&&r.segs[c.k]||0, p=r._n?100*n/r._n:0;
+    if(!n) return '<td class="bc"><span class="bz">–</span></td>';
+    return `<td class="bc" style="background:${hexA(c.color,0.10+0.30*Math.min(1,p/60))}" title="${esc(r.label)} · ${esc(c.label)} · ${fmt(n)} ${esc(unit)} · ${p.toFixed(1)}%"><b>${fmt(n)}</b><i>${p.toFixed(0)}%</i></td>`; };
+  const line=(r,cls)=>`<tr${cls?' class="'+cls+'"':''}${onClick&&!cls?' data-k="'+esc(r.label)+'" style="cursor:pointer"':''}>`+
+      `<td class="bname" title="${esc(r.label)}">${esc(r.label)}</td>`+use.map(c=>cell(r,c)).join('')+
+      `<td class="btot"><b>${fmt(r._n)}</b><i>${esc(r.right||unit)}</i></td></tr>`;
+  box.innerHTML='<div class="tblwrap"><table class="bandtbl"><colgroup><col style="width:15%">'+
+    use.map(()=>`<col style="width:${w}%">`).join('')+
+    '<col style="width:15%"></colgroup><thead><tr><th></th>'+
+    use.map(c=>`<th><span class="bdot" style="background:${c.color}"></span>${esc(c.label)}</th>`).join('')+
+    '<th class="btot">รวม</th></tr></thead><tbody>'+
+    RS.map(r=>line(r,'')).join('')+(sumRow&&RS.length>1?line(SUM,'bsum'):'')+'</tbody></table></div>';
+  if(onClick) box.querySelectorAll('tr[data-k]').forEach(tr=>{ hitOn(tr,'pointer');
+    tr.addEventListener('click',()=>{ const r=RS.find(x=>String(x.label)===tr.dataset.k); if(r) onClick(r); }); });
+}
+/* เครื่องมือเดิมชื่อ hstack — ตอนนี้เป็นทางผ่านไปตารางไขว้ ที่เรียกใช้อยู่เดิมจึงไม่ต้องแก้ (กฎ 1) */
+function hstack(container, rows, segsOrder, {unit='รายการ', onClick=null, sumLabel}={}){
+  return matrixTable(container, rows, segsOrder, sumLabel?{unit, onClick, sumLabel}:{unit, onClick});
 }
 /* ---- วันที่ไทย: normalize ปีให้เป็น ค.ศ. ไม่ว่าจะกรอก/ถูก Google ตีความมาแบบไหน ----
    65 -> พ.ศ.2565 -> ค.ศ.2022 | 2565 -> ค.ศ.2022 | 1965 (Google เดา 2 หลักเป็น 19xx) -> ค.ศ.2022 | 2022 -> คงเดิม */
@@ -3223,7 +3461,10 @@ const cellWidget=c=>{
 const cellLen=c=>c.textContent.replace(/\s+/g,' ').trim().length;
 function alignTables(root){
   const put=(el,cls,on)=>{ if(el.classList.contains(cls)!==on) el.classList.toggle(cls,on); };
-  (root||document).querySelectorAll('table').forEach(t=>{
+  /* v31.37 ตารางไขว้ (matrixTable) เป็น "กราฟที่วาดด้วยตาราง" ไม่ใช่ตารางข้อมูล
+     แนวคอลัมน์ของมันกำหนดมาในตัวเครื่องมือแล้ว (ชื่อชิดซ้าย ช่องตัวเลขกึ่งกลาง)
+     ถ้าปล่อยให้ตัวจัดแนวตารางมาแตะ จะตีกับกฎเฉพาะของมันเอง (กฎ 9) */
+  (root||document).querySelectorAll('table:not(.bandtbl)').forEach(t=>{
     const ths=[...t.querySelectorAll('thead th')];
     if(!ths.length) return;
     const rows=[...t.querySelectorAll('tbody tr')].filter(tr=>tr.children.length===ths.length);
@@ -3394,7 +3635,9 @@ function makeSortable(table){
   });
 }
 function enhanceTables(root){
-  (root||document).querySelectorAll('table').forEach(makeSortable);
+  /* v31.37 ตารางไขว้เป็นกราฟ ไม่ใช่ตารางข้อมูล — เรียงลำดับมาจากตัวเครื่องมือแล้ว (มากไปน้อยเสมอ)
+     ถ้าติดปุ่มเรียงให้ ผู้ใช้จะกดแล้วเสียลำดับที่เจ้าของสั่งไว้ */
+  (root||document).querySelectorAll('table:not(.bandtbl)').forEach(makeSortable);
   alignTables(root);   // v29.1 — ประตูเดียว ตารางใหม่จึงจัดแนวเองอัตโนมัติ ไม่ต้องไปจำ
 }
 
@@ -3524,7 +3767,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.30', APP_DATE='10 ก.ย. 2569';
+const APP_VER='v31.37', APP_DATE='12 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -3561,15 +3804,22 @@ const PAGES=[
                                              reload:()=>{ histData=null; reqData=null; loadHistory(true); loadRequests(true); },
                                              msg:'กำลังดึงประวัติสายทางและคำของบใหม่…',
                                              csv:['yrTable','โครงการประจำปี']},
+  /* v31.36 ผู้ใช้ 12 ก.ย. 69: "ธีมกลางคืน สีพวกแถบเละไปหมดเลย"
+     กราฟ SVG ฝังสีลงไปในรูปตอนวาด เปลี่ยนชุดสีแล้วต้องวาดใหม่ถึงจะได้สีใหม่
+     4 หน้านี้ไม่มี redraw มาตั้งแต่ต้น กราฟจึงค้างสีของชุดเดิมจนกว่าจะกดเข้าหน้าใหม่ */
   {id:'requests', enter:()=>loadRequests(),  body:'reqBody',                                       retry:()=>loadRequests(true),
-   needs:{ requests:()=>renderRequests() },  csv:['reqSrcTable','สรุปคำของบตามแหล่งงบ']},
+   needs:{ requests:()=>renderRequests() },  redraw:()=>{ if(reqData) renderRequests(); },
+                                             csv:['reqSrcTable','สรุปคำของบตามแหล่งงบ']},
   {id:'zerobase', enter:()=>loadZerobase(),  body:'zbBody',                                        retry:()=>loadZerobase(true),
-   needs:{ zerobase:()=>renderZerobase() },  csv:['zbRoadTable','Zerobase รายสาย']},
+   needs:{ zerobase:()=>renderZerobase() },  redraw:()=>{ if(zbData) renderZerobase(); },
+                                             csv:['zbRoadTable','Zerobase รายสาย']},
   {id:'risk',     enter:()=>loadRisk(),      body:'riskBody',                                      retry:()=>loadRisk(true),
    needs:{ risk:()=>renderRisk() },          reload:()=>{ document.getElementById('photoBox')?._close?.(); loadRisk(true); },
+                                             redraw:()=>{ if(riskData) renderRisk(); },
                                              csv:['riskRoadTable','จุดเสี่ยงรายสาย']},
   {id:'equip',    enter:()=>loadEquip(),     body:'eqBody',                                        retry:()=>loadEquip(true),
-   needs:{ equip:()=>renderEquip() },        csv:['eqTable','Equipment']},
+   needs:{ equip:()=>renderEquip() },        redraw:()=>{ if(eqData) renderEquip(); },
+                                             csv:['eqTable','Equipment']},
   {id:'routine',  enter:()=>loadRoutine(),   body:'routineBody',                                   retry:()=>loadRoutine(),
    static:'ยังไม่ผูกชีทคำตอบฟอร์ม — หน้านี้วาดจากข้อมูลฝังในไฟล์อย่างเดียว',
    nocsv:'ยังไม่มีตารางข้อมูลจริงให้ส่งออก',
@@ -3728,9 +3978,11 @@ const INVARIANTS=[
    check:()=>{
      const s=window.__strip;
      if(!s || !s.n) return [];
-     return s.outside>0
-       ? [`แถบ "${s.container}" มี ${s.outside} ค่าตกนอกแกน ${kmLbl(s.lo)}–${kmLbl(s.hi)}`]
-       : [];
+     const bad=[];
+     if(s.outside>0) bad.push(`แถบ "${s.container}" มี ${s.outside} ค่าตกนอกแกน ${kmLbl(s.lo)}–${kmLbl(s.hi)}`);
+     /* v31.33 ช่วงที่กรอกเกินบัญชีไม่ต้องวาด แต่ต้องมีหมายเหตุบอกทุกครั้ง ห้ามหายเงียบ (กฎ 6) */
+     if(s.hidden>0 && !s.hiddenNote) bad.push(`แถบ "${s.container}" ซ่อน ${s.hidden} ช่วงที่เกินช่วงสายทาง โดยไม่บอกผู้ใช้`);
+     return bad;
    }}
 ];
 
@@ -4160,14 +4412,27 @@ const _enhObs=[];
    ชุดกลางคืนตัวหนังสือเป็นสีสว่าง → ไอคอนสว่างบนกล่องสว่าง = หายไปเลย
    แก้ที่เดียว: หลังวาดทุกครั้ง วัดความสว่างของพื้นกล่องไอคอนจริง แล้วเลือกสีไอคอนเข้ม/สว่างให้เอง
    (สีกล่องยังเป็นสีข้อมูลเหมือนเดิมตามกฎ 18 — เปลี่ยนเฉพาะสีไอคอนที่วางทับ) ══ */
+/* ══ v31.35 ผู้ใช้ 12 ก.ย. 69: "อันนี้แก้ยังโหมดกลางคืนไอคอนหาย"
+   v31.29 แก้เรื่องนี้ไปรอบหนึ่งแล้ว แต่เขียน "รายชื่อกล่องไอคอน" ไว้สองที่ —
+   ในตัวระบบ (fixIconInk) และในชุดตรวจ (darkink ⑤) — พอมีกล่องชนิดที่ไม่ได้อยู่ในรายชื่อ
+   (.sico ของกล่องชนิดผิวทางหน้าภาพรวม พื้นอ่อนตายตัว #ececee) ก็หลุดทั้งสองที่พร้อมกัน
+   ไอคอนจึงขาวบนพื้นขาวจนหายไปทั้งดวงในชุดกลางคืน และชุดตรวจก็มองไม่เห็นด้วย
+   ตอนนี้รายชื่ออยู่ที่เดียวตรงนี้ (กฎ 1) ชุดตรวจอ่านค่าจากตัวระบบไปใช้ ไม่เขียนรายชื่อเอง
+   และชุดตรวจยังกวาดหากล่องที่ "ยังไม่ได้ขึ้นทะเบียน" ให้อีกชั้น เผื่อมีของใหม่แล้วลืมมาเติม ══ */
+const ICON_CHIPS='.kico,.kpill .kic,.worktile .wico,.exit .ei,.aitem .aico,'+
+                 '.surfbox .sico,.catbox .cico,.cmdit .cico,.kb .ic,.tico,.mico,.eico,.lockico';
 function fixIconInk(root){
   const px=v=>{const n=(String(v).match(/[\d.]+/g)||[]).map(Number); return n.length>=3?{r:n[0],g:n[1],b:n[2],a:n.length>3?n[3]:1}:null;};
   const lin=c=>{c/=255;return c<=.03928?c/12.92:Math.pow((c+.055)/1.055,2.4);};
   const lum=c=>.2126*lin(c.r)+.7152*lin(c.g)+.0722*lin(c.b);
   const mix=(f,b)=>({r:f.r*f.a+b.r*(1-f.a),g:f.g*f.a+b.g*(1-f.a),b:f.b*f.a+b.b*(1-f.a),a:1});
   const pageBg=px(getComputedStyle(document.body).backgroundColor)||{r:255,g:255,b:255,a:1};
-  (root||document).querySelectorAll('.kico,.kpill .kic,.worktile .wico,.exit .ei,.aitem .aico').forEach(el=>{
-    let c=px(getComputedStyle(el).backgroundColor); if(!c||c.a===0) return;
+  (root||document).querySelectorAll(ICON_CHIPS).forEach(el=>{
+    let c=px(getComputedStyle(el).backgroundColor); if(!c||c.a===0) return;   // ไม่มีพื้นของตัวเอง = ใช้สีตัวหนังสือของกล่องแม่ ถูกต้องอยู่แล้ว
+    /* กันเผลอไปทาสีของที่ไม่ใช่ "กล่องไอคอน" (ปุ่ม/หัวข้อ) — ต้องเล็กและมีสัญลักษณ์เท่านั้น */
+    const r=el.getBoundingClientRect(); if(r.width>56||r.height>56) return;
+    const t=(el.textContent||'').trim();
+    if(!(t.length>0&&t.length<=3)&&!el.querySelector('.ico,svg')) return;
     if(c.a<1) c=mix(c,pageBg);
     el.style.color=lum(c)>0.42?'#1f2733':'#f7fafc';      // พื้นสว่าง = ไอคอนเข้ม · พื้นเข้ม = ไอคอนสว่าง
   });
@@ -5170,7 +5435,9 @@ function groupBoxes(hostId, groups, colorOf, opt){
   const o=opt||{}, unit=o.unit||'รายการ', tot=groups.reduce((a,[,g])=>a+g.n,0)||1;
   box.innerHTML=
     `<div class="onebar catbar">${groups.map(([k,g])=>{ const p=100*g.n/tot;
-      return `<span style="width:${p.toFixed(3)}%;background:${colorOf(k)}" title="${esc(g.label||k)} ${g.n} ${unit} (${p.toFixed(0)}%)">${p>=18?esc(g.label||k)+' '+p.toFixed(0)+'%':(p>=7?p.toFixed(0)+'%':'')}</span>`; }).join('')}</div>`+
+      /* v31.36 ผู้ใช้ 12 ก.ย. 69: "ตัวแถบบนโชว์เฉพาะ % ก็พอ ตัวการ์ดบอกรายละเอียดอยู่แล้ว"
+         เดิมยัดชื่อกลุ่มลงในท่อนด้วย ท่อนแคบ ๆ เลยมีแต่ตัวหนังสือเบียดกันจนอ่านไม่ออก */
+      return `<span style="width:${p.toFixed(3)}%;background:${colorOf(k)}" title="${esc(g.label||k)} ${g.n} ${unit} (${p.toFixed(0)}%)">${p>=6?p.toFixed(0)+'%':''}</span>`; }).join('')}</div>`+
     `<div class="surfgrid catgrid${o.small?' catgrid-s':''}">${groups.map(([k,g])=>{ const p=100*g.n/tot;
       return `<div class="surfbox catbox" style="border-left-color:${colorOf(k)}" title="${esc(g.label||k)} · ${g.tip||''}">`+
         `<div class="shead"><span class="cdot" style="background:${colorOf(k)}"></span><span class="sname">${esc(g.label||k)}</span></div>`+
@@ -5202,6 +5469,16 @@ const SUF3=c=>{ const d=(String(c).split('.')[1]||''); return parseInt(d.slice(-
 const BT_COLOR=[['ยกระดับ','#eb6834'],['บำรุง','#2a78d6'],['ปลอดภัย','#008300'],['กลุ่มจังหวัด','#8d5a2b'],['จังหวัด','#e34948'],['วิจัย','#d9a441'],['สะพาน','#8a8f98'],['อาคาร','#4a3aa7'],['พระราชดำริ','#0d9488'],['ซ่อม','#e87ba4']];
 const btColor=t=>{ const hit=BT_COLOR.find(([k])=>String(t).includes(k)); return hit?hit[1]:null; };
 const btColorMap=names=>{ const o={}; let fb=0; names.forEach(n=>{ o[n]=btColor(n)||CAT8[(fb++)%8]; }); return o; };
+/* ══ v31.34 ผู้ใช้ 11 ก.ย. 69: "ลืมไปจะมีเหลือจ่ายด้วย" + "แยกให้เห็น เป็นชนิดงบของตัวเอง"
+   normCat() ตัดคำว่า "เหลือจ่าย" ทิ้ง เพื่อให้ "บำรุงเหลือจ่าย" จับคู่กับสัญญา "บำรุง" ได้ — ห้ามแก้
+   (หน้าเช็คคำขอพึ่งพฤติกรรมนี้อยู่) · ส่วนบนหน้าจอต้องเห็นว่าเป็นเงินคนละก้อน จึงมีชื่อสำหรับแสดงอีกตัว
+   สีใช้สีของชนิดงบต้นทางแต่จางลง — บอกว่าเป็นงบตระกูลเดียวกัน แต่แยกก้อนออกจากกัน ══ */
+const isLeftover=s=>/เหลือจ่าย/.test(String(s||''));
+const catShow=s=>isLeftover(s)?normCat(s)+' (เหลือจ่าย)':normCat(s);
+const catBase=k=>String(k).replace(/\s*\(เหลือจ่าย\)\s*$/,'');
+const fadeHex=(h,f)=>{ const m=/^#([0-9a-fA-F]{6})$/.exec(String(h||'')); if(!m) return h;
+  const v=parseInt(m[1],16), mix=c=>Math.round(c+(255-c)*(f==null?0.42:f));
+  return '#'+[mix((v>>16)&255),mix((v>>8)&255),mix(v&255)].map(x=>x.toString(16).padStart(2,'0')).join(''); };
 const catName=t=>String(t).replace(/^\s*\d+[\.\)]\s*/,''); // "6.ปลอดภัย" -> "ปลอดภัย"
 /* หมวดของเรคคอร์ดประวัติ: 1) รหัสสาย/สะพาน -> บัญชี Master/สะพาน 2) งานอาคาร/ไม่ผูกสาย -> อ่านหน่วยจากช่องรหัสสายทาง (ขทช.=แขวงฯ · บทช.=หมวด) */
 let _MBC=null;
@@ -5214,6 +5491,32 @@ const TRANSFER=Object.fromEntries((EMB.transfers||[]).map(t=>[t.code,t]));
 /* กฎ 21 (v31.9) — งานไม่ผูกสายทาง (อาคาร ฯลฯ): ช่องรหัสสายทางเป็นชื่อหน่วย → "หน่วย" อ่านจากข้อความ ที่เดียวใช้ทุกหน้า
    ขทช./แขวง = แขวงฯ · บทช.X = หมวดX · บทช.ขอนแก่น = หมวดเมือง · บทช. ไม่มีชื่อ = หมวด (บทช.) · อ่านไม่ออก = ไม่ระบุหน่วย */
 const isRoadCode=c=>!!extractRoadCode(c);
+/* ══ v31.33 ผู้ใช้ 11 ก.ย. 69: "ตัวจำนวนสายทางนายน่าจะลืมสะพานแน่เลย
+   อย่าลืมว่านอกจากทางแล้วยังมี สะพาน อาคาร ด้วย"
+   เดิมนับ "รหัสที่หน้าตาเหมือนรหัสสาย" ทั้งหมดเป็นสายทาง แล้วหารด้วยจำนวนสายในบัญชี (98)
+   สะพานชุมชน 21 แห่งกับรหัสนอกบัญชีจึงถูกนับรวมเข้าไปด้วย → เลยได้ 103% ของโครงข่าย
+   ตอนนี้แยกเป็น 4 กองที่เดียว แล้วทุกหน้าต้องใช้ตัวนี้ (กฎ 1)
+     road   สายทางในบัญชี (เทียบกับ ALL_CODES)
+     bridge สะพานชุมชน (เทียบกับทะเบียนสะพาน)
+     out    รหัสที่ไม่มีในบัญชีทั้งสองเล่ม
+     unit   งานไม่ผูกสายทาง — อาคาร/หน่วย (กฎ 21) ══ */
+function splitCodes(codes){
+  const road=[],bridge=[],out=[],unit=[];
+  [...new Set((codes||[]).filter(Boolean))].forEach(c=>{
+    if(!isRoadCode(c)) return unit.push(c);
+    const g=roadOptGroup(c);
+    (g===2?bridge:g===1?road:out).push(c);
+  });
+  return {road,bridge,out,unit,
+          nRoadAll:ALL_CODES.length, nBridgeAll:Object.keys(EMB.bridges||{}).length};
+}
+/* ข้อความท้ายการ์ด "X / 98 สาย" — ต่อท้ายด้วยสะพาน/อาคาร/นอกบัญชีเฉพาะที่มีจริง */
+function splitFoot(sp,unitTxt){
+  return `คิดเป็น ${(100*sp.road.length/Math.max(1,sp.nRoadAll)).toFixed(0)}% ของโครงข่าย`
+    +(sp.bridge.length?` · สะพานชุมชน ${sp.bridge.length}/${sp.nBridgeAll} แห่ง`:'')
+    +(unitTxt||'')
+    +(sp.out.length?` · นอกบัญชี ${sp.out.length} รหัส`:'');
+}
 const unitKeyOf=t=>{ t=String(t||'');
   if(/บทช/.test(t)){ const m=MUAD_ORDER.find(mm=>t.includes(mm)); if(m) return 'หมวด'+m; if(/ขอนแก่น|ขก/.test(t)) return 'หมวดเมือง'; return 'หมวด (บทช.)'; }
   if(/ขทช|แขวง/.test(t)) return 'แขวงฯ';
@@ -5352,7 +5655,7 @@ function renderOverview(){
       {go:'roadTable', title:'ไปที่ทะเบียนสายทาง'})+
     kico('📏','var(--tile-blue)','ระยะทางรวม', `${fmt(totKm)} <small>กม.</small>`, `ตามบัญชี (รวมสะพาน ${fmt(+bridgeLen.toFixed(2))} กม.)`+share(totKm,totKmAll),
       {go:'muadTable', title:'ดูระยะทางแยกรายหมวดในตาราง'})+
-    kico('🚧','#f0f0f2','ผิวลาดยาง', `${fmt(lat)} <small>กม.</small>`, `${(100*lat/Math.max(surfKm,1)).toFixed(1)}% ของผิวทาง`,
+    kico('🚧','var(--tile-slate)','ผิวลาดยาง', `${fmt(lat)} <small>กม.</small>`, `${(100*lat/Math.max(surfKm,1)).toFixed(1)}% ของผิวทาง`,
       {go:'chSurface', title:'ดูสัดส่วนผิวจราจร'})+
     kico('🌉','var(--tile-sky)','สะพาน', `${fmt(bridges)} <small>แห่ง</small>`, 'ตามบัญชีโครงข่าย'+share(bridges,brAll),
       {go:'page:map', title:'เปิดหน้าแผนที่เพื่อดูตำแหน่งสะพาน'})+
@@ -5384,6 +5687,21 @@ function renderOverview(){
   /* v31.26 สีชนิดผิวต้องเป็นค่าคงที่ชุดเดียว (SURF_COLOR) — เดิมผูกกับ C.gold ซึ่งเปลี่ยนตามชุดสี ผิดกฎ 18 */
   const surfKeys=[['ลาดยาง','lat',SURF_COLOR['ลาดยาง']],['คอนกรีต','con',SURF_COLOR['คอนกรีต']],['ลูกรัง','luk',SURF_COLOR['ลูกรัง']]]; /* ลาดยาง = เทาเข้ม (สียางมะตอย) แยกจากคอนกรีตฟ้าชัดเจน */
   const surfRows=[...muads].sort((a,b)=>byM[b].km-byM[a].km);
+  /* v31.37 สายทางแบ่งตามเขตเลือกตั้ง — ใช้รูปแบบเดียวกับกล่องงบ (ผู้ใช้: "อาจจะใช้รูปแบบเดียวกันกับงบก็ได้")
+     เขตของสาย = เขตที่มีระยะทางบนเส้น GIS มากที่สุด (ตัวคิดเดียวกับหน้าอื่น — zoneOfKm) */
+  safeRun('สายทางตามเขตเลือกตั้ง', ()=>{
+    const Zn={};
+    R.forEach(r=>{ let z=null; try{ z=zoneOfKm(r.code,null,null); }catch(e){}
+      const k=z==null?'':String(z);
+      const o=Zn[k]||(Zn[k]={n:0,km:0}); o.n++; o.km+=(+r.len_acct||0); });
+    const ks=Object.keys(Zn).sort((a,b)=>(a===''?99:+a)-(b===''?99:+b));
+    shareBars('chOvZone', ks.map(k=>{ const o=Zn[k], zi=KK_ZONES[k];
+      return { label:k?('เขต '+k):'ไม่ระบุเขต', v:o.n, color:k?zoneColor(+k):'#9aa5a3',
+        sub:zi?('สส. '+zi.mp+' · '+zi.party):'ระบุตำแหน่งไม่ได้',
+        foot:'ระยะทางรวม '+fmt(+o.km.toFixed(1))+' กม.',
+        tip:(zi?'สส. '+esc(zi.mp)+' · '+esc(zi.party)+'<br>':'')+o.n+' สาย · '+fmt(+o.km.toFixed(2))+' กม.' }; }),
+      {unit:'สาย', cols:2});
+  });
   (()=>{ const box=document.getElementById('chSurfaceMuad'); if(!box) return;
     const ico={'ลาดยาง':'🛣️','คอนกรีต':'🧱','ลูกรัง':'🪨'};
     box.innerHTML=`<div class="surfrows">`+surfRows.map(m=>{ const d=byM[m], tt=d.lat+d.con+d.luk||1;
@@ -5992,10 +6310,14 @@ const normCat=s=>{
 /* v20.5: ขอบเขตจังหวัดขอนแก่น — รวมขอบนอกของเขตเลือกตั้งทั้ง 11 เขต (เส้นขอบอย่างเดียว ไม่ลงสีพื้น) */
 const PROV_KK=[[[101.74991,16.67414],[101.75286,16.67798],[101.76638,16.68049],[101.77159,16.68682],[101.77401,16.69732],[101.77196,16.70269],[101.77521,16.70487],[101.77644,16.71264],[101.77956,16.71438],[101.78161,16.72028],[101.78673,16.72237],[101.79009,16.72881],[101.78873,16.73947],[101.78588,16.7428],[101.7881,16.74791],[101.78293,16.75407],[101.7889,16.76528],[101.81007,16.77185],[101.81952,16.77832],[101.82883,16.77913],[101.83421,16.78363],[101.86217,16.79085],[101.86749,16.79456],[101.87102,16.80352],[101.87944,16.81068],[101.90496,16.81468],[101.92827,16.83254],[101.94492,16.84026],[101.94414,16.85306],[101.94842,16.84968],[101.95688,16.84911],[101.96225,16.85249],[101.96357,16.84865],[101.97,16.847],[101.97285,16.842],[101.97906,16.84518],[101.99294,16.84159],[101.99653,16.84649],[101.99592,16.85017],[102.00228,16.85352],[101.99908,16.8599],[102.01027,16.87006],[102.01504,16.86727],[102.01871,16.86849],[102.0266,16.86221],[102.03116,16.86324],[102.04097,16.85906],[102.04435,16.86754],[102.05475,16.87039],[102.0548,16.87534],[102.06201,16.88081],[102.0626,16.88683],[102.06942,16.88908],[102.07506,16.88596],[102.08124,16.88938],[102.0872,16.88492],[102.09464,16.8836],[102.10038,16.89607],[102.10438,16.89733],[102.12409,16.88239],[102.13147,16.88269],[102.13645,16.87892],[102.15576,16.88125],[102.15964,16.87249],[102.16755,16.87042],[102.17065,16.8655],[102.17476,16.86607],[102.18032,16.87178],[102.18556,16.86601],[102.18632,16.8602],[102.18952,16.85838],[102.20362,16.86245],[102.21227,16.86114],[102.21941,16.86481],[102.23419,16.88016],[102.24187,16.87943],[102.24713,16.88234],[102.24973,16.8913],[102.25428,16.89471],[102.26377,16.89193],[102.2771,16.89393],[102.28943,16.89075],[102.29529,16.89178],[102.29761,16.88608],[102.30718,16.88417],[102.30458,16.87771],[102.31181,16.86983],[102.32459,16.86743],[102.32073,16.86201],[102.3204,16.8567],[102.32333,16.85434],[102.33029,16.85521],[102.33169,16.84857],[102.32967,16.84345],[102.33938,16.8374],[102.33917,16.82554],[102.34397,16.81993],[102.34887,16.82152],[102.35029,16.83034],[102.36064,16.81788],[102.37069,16.81332],[102.37809,16.81735],[102.3904,16.81228],[102.39904,16.81489],[102.40566,16.81379],[102.42105,16.79559],[102.44459,16.79216],[102.44894,16.7953],[102.44775,16.80285],[102.45204,16.80531],[102.45488,16.81156],[102.45832,16.8113],[102.47022,16.80331],[102.47897,16.80733],[102.49653,16.80359],[102.53798,16.78466],[102.6104,16.7718],[102.61455,16.77699],[102.61217,16.78877],[102.61676,16.8199],[102.62437,16.8435],[102.64281,16.88809],[102.66792,16.93119],[102.67813,16.95756],[102.68071,16.97249],[102.66943,16.99367],[102.67946,17.01522],[102.67769,17.02355],[102.6796,17.02913],[102.67702,17.03287],[102.67964,17.05054],[102.68876,17.06387],[102.69829,17.06946],[102.69959,17.08701],[102.70367,17.08838],[102.70815,17.08666],[102.70912,17.08064],[102.71415,17.07495],[102.71713,17.06479],[102.71609,17.05764],[102.72194,17.05026],[102.73887,17.04693],[102.74456,17.04165],[102.75021,17.04161],[102.75966,17.03396],[102.76292,17.02744],[102.77613,17.02304],[102.78721,17.01557],[102.79169,17.00935],[102.79549,17.00813],[102.80151,16.98885],[102.82548,16.973],[102.82312,16.96908],[102.80997,16.96303],[102.80436,16.9554],[102.8057,16.95074],[102.82072,16.93903],[102.81676,16.92638],[102.8102,16.91645],[102.81005,16.91036],[102.81242,16.90673],[102.81133,16.89253],[102.81472,16.88417],[102.82016,16.88015],[102.82264,16.874],[102.82066,16.86854],[102.82358,16.8647],[102.84664,16.87337],[102.85495,16.88279],[102.8596,16.88345],[102.86538,16.8794],[102.87262,16.88112],[102.87643,16.87403],[102.88333,16.87541],[102.88953,16.86459],[102.89792,16.85826],[102.9022,16.84946],[102.91147,16.84279],[102.91405,16.83659],[102.92203,16.83519],[102.92972,16.83953],[102.93782,16.8377],[102.95147,16.83992],[102.96659,16.84789],[102.97496,16.84832],[102.98004,16.85404],[102.99134,16.85864],[102.99597,16.86388],[102.99817,16.87195],[103.00268,16.86713],[103.00617,16.86681],[103.00975,16.87206],[103.02434,16.8744],[103.03644,16.88576],[103.04673,16.88877],[103.05236,16.88776],[103.06123,16.89173],[103.0687,16.8998],[103.08281,16.90011],[103.0926,16.91045],[103.10008,16.91331],[103.10916,16.90707],[103.11456,16.90701],[103.12175,16.9014],[103.12364,16.89646],[103.12407,16.89223],[103.11994,16.88778],[103.12229,16.88313],[103.11953,16.87904],[103.11964,16.87083],[103.11265,16.86364],[103.1145,16.85546],[103.11319,16.85199],[103.10715,16.84981],[103.1072,16.84361],[103.10291,16.84031],[103.10648,16.83305],[103.10574,16.82735],[103.11298,16.81916],[103.12435,16.81891],[103.13816,16.83189],[103.14031,16.83975],[103.13585,16.87017],[103.14792,16.8659],[103.17446,16.86304],[103.1706,16.84899],[103.17817,16.84276],[103.17759,16.83153],[103.18357,16.82341],[103.1843,16.81847],[103.18075,16.80225],[103.18118,16.78771],[103.17495,16.78201],[103.1709,16.76973],[103.15216,16.76038],[103.14747,16.75314],[103.14843,16.74406],[103.15875,16.73279],[103.15707,16.72178],[103.14958,16.71574],[103.14619,16.70135],[103.14913,16.68756],[103.15363,16.68406],[103.15896,16.67343],[103.15136,16.65957],[103.15303,16.64626],[103.15016,16.64087],[103.15065,16.62739],[103.15446,16.61582],[103.15146,16.60819],[103.14061,16.59966],[103.12553,16.59604],[103.12094,16.59234],[103.11883,16.56677],[103.11517,16.56096],[103.1054,16.554],[103.09991,16.53642],[103.08772,16.52588],[103.08687,16.51647],[103.07984,16.50992],[103.03978,16.4907],[103.03566,16.49593],[103.03161,16.4964],[103.02634,16.49204],[103.02097,16.4826],[103.02079,16.47581],[103.01638,16.47186],[102.9993,16.46483],[102.98418,16.46442],[102.97468,16.45833],[102.95374,16.45129],[102.95311,16.44724],[102.96118,16.43692],[102.96269,16.43095],[102.97548,16.42554],[102.97242,16.41978],[102.96225,16.42392],[102.95857,16.42274],[102.95653,16.41301],[102.95031,16.40677],[102.95162,16.40325],[102.95563,16.40179],[102.95559,16.39765],[102.95106,16.39621],[102.94919,16.3887],[102.94555,16.39007],[102.9408,16.38814],[102.93651,16.38303],[102.9364,16.37648],[102.92562,16.37939],[102.92106,16.37701],[102.92061,16.37257],[102.92671,16.36609],[102.91712,16.36527],[102.91389,16.36126],[102.90734,16.36043],[102.9057,16.35659],[102.90862,16.34841],[102.89736,16.34621],[102.89359,16.31554],[102.87103,16.30084],[102.86495,16.29061],[102.85518,16.2849],[102.84599,16.2719],[102.84444,16.26347],[102.84825,16.25085],[102.84455,16.24155],[102.85025,16.22216],[102.84371,16.21179],[102.84851,16.20083],[102.846,16.19181],[102.84682,16.18337],[102.85088,16.17372],[102.85788,16.16673],[102.85689,16.15679],[102.84693,16.14829],[102.8462,16.1437],[102.85521,16.128],[102.8642,16.12407],[102.86846,16.12699],[102.8605,16.10139],[102.86106,16.09401],[102.85671,16.09043],[102.85594,16.08074],[102.84955,16.07565],[102.84857,16.07151],[102.86203,16.05698],[102.85651,16.04719],[102.85999,16.04036],[102.86984,16.04453],[102.87479,16.04365],[102.88933,16.05509],[102.89535,16.05326],[102.88378,16.01481],[102.89211,16.00144],[102.89441,15.99278],[102.90508,15.98343],[102.90552,15.97354],[102.90476,15.96664],[102.89936,15.95967],[102.89115,15.93672],[102.91012,15.92386],[102.90213,15.91017],[102.90455,15.90145],[102.90801,15.89732],[102.91464,15.89668],[102.93047,15.8855],[102.9231,15.87022],[102.92543,15.85998],[102.91988,15.84314],[102.92302,15.83646],[102.92095,15.82442],[102.93187,15.81476],[102.93253,15.80099],[102.93046,15.79619],[102.91341,15.78842],[102.89589,15.78408],[102.89014,15.7768],[102.88194,15.77407],[102.88004,15.75362],[102.875,15.73933],[102.87644,15.70779],[102.87052,15.69636],[102.87038,15.6861],[102.87953,15.67516],[102.88545,15.6734],[102.88518,15.66867],[102.86452,15.65579],[102.86025,15.64093],[102.85418,15.63607],[102.83624,15.63621],[102.80705,15.63202],[102.79227,15.63845],[102.78606,15.63297],[102.77714,15.63398],[102.77893,15.63968],[102.77753,15.6489],[102.76166,15.65281],[102.75418,15.6609],[102.74873,15.66189],[102.74565,15.66911],[102.71673,15.66606],[102.71376,15.67531],[102.70833,15.67894],[102.70846,15.68482],[102.69571,15.6908],[102.6947,15.69691],[102.68876,15.70581],[102.69277,15.71628],[102.6912,15.72249],[102.6813,15.72762],[102.67764,15.72694],[102.67197,15.71865],[102.66675,15.71579],[102.6567,15.71762],[102.65081,15.71479],[102.63876,15.71531],[102.60941,15.72777],[102.60237,15.72295],[102.59782,15.7124],[102.58237,15.70687],[102.57044,15.70868],[102.55583,15.70406],[102.53663,15.70863],[102.52962,15.71593],[102.51129,15.72763],[102.49643,15.72505],[102.48275,15.71774],[102.45243,15.71644],[102.43963,15.70641],[102.42888,15.7033],[102.41953,15.6954],[102.4039,15.70058],[102.40034,15.70982],[102.37864,15.73123],[102.36819,15.73239],[102.36288,15.72971],[102.35825,15.73432],[102.35693,15.73943],[102.36245,15.7657],[102.34524,15.7785],[102.33342,15.79422],[102.32599,15.80774],[102.32552,15.8226],[102.31971,15.82588],[102.32401,15.82977],[102.3241,15.8343],[102.31606,15.84755],[102.32041,15.86514],[102.32592,15.87046],[102.33596,15.87272],[102.33773,15.87957],[102.3415,15.88257],[102.34059,15.8871],[102.34586,15.88966],[102.35317,15.90845],[102.35841,15.91457],[102.35891,15.9253],[102.35496,15.93086],[102.36563,15.93887],[102.36991,15.95053],[102.36555,15.96571],[102.37135,15.96733],[102.37171,15.97536],[102.38014,15.97853],[102.38391,15.98839],[102.38096,15.99434],[102.35525,16.00516],[102.35146,16.01129],[102.34967,16.02635],[102.3423,16.03599],[102.33668,16.03725],[102.32653,16.0305],[102.31192,16.0419],[102.3023,16.03912],[102.29546,16.05221],[102.28715,16.06083],[102.2859,16.06875],[102.28155,16.07134],[102.28044,16.07671],[102.2884,16.09124],[102.31041,16.11063],[102.33767,16.14441],[102.34538,16.1602],[102.39362,16.22522],[102.40323,16.24285],[102.41354,16.25112],[102.41149,16.27042],[102.41994,16.30115],[102.42924,16.32126],[102.43683,16.32866],[102.43658,16.33687],[102.44433,16.34566],[102.44829,16.3664],[102.44735,16.37848],[102.45679,16.39207],[102.45495,16.39532],[102.4491,16.39716],[102.44227,16.40817],[102.42658,16.41458],[102.4129,16.4285],[102.40558,16.44118],[102.4081,16.44721],[102.40702,16.45926],[102.40183,16.46112],[102.39817,16.45887],[102.39678,16.45495],[102.39907,16.44691],[102.38076,16.44216],[102.37302,16.43643],[102.3653,16.43843],[102.36407,16.44966],[102.35748,16.44841],[102.35114,16.45182],[102.33512,16.44475],[102.31883,16.44587],[102.31432,16.45137],[102.30702,16.45082],[102.30067,16.44549],[102.29292,16.44636],[102.28954,16.4524],[102.28092,16.45694],[102.26873,16.45587],[102.26332,16.46125],[102.25509,16.46122],[102.25376,16.4662],[102.24366,16.46985],[102.23693,16.48434],[102.22784,16.48432],[102.21688,16.49337],[102.21528,16.49773],[102.20621,16.49796],[102.20107,16.50263],[102.19378,16.49841],[102.1841,16.50309],[102.17275,16.49111],[102.16962,16.49578],[102.15315,16.50041],[102.14635,16.49845],[102.14198,16.50023],[102.13423,16.4954],[102.12216,16.49394],[102.10583,16.49695],[102.09951,16.4941],[102.09435,16.49612],[102.08496,16.49197],[102.07916,16.49432],[102.06848,16.49352],[102.06941,16.50017],[102.06681,16.5046],[102.05546,16.50474],[102.04255,16.50837],[102.03776,16.51266],[102.02995,16.52473],[102.03206,16.53617],[102.02427,16.54511],[102.02101,16.55624],[102.00652,16.55792],[101.98893,16.56644],[101.98736,16.58087],[101.97782,16.58776],[101.98128,16.5959],[101.97572,16.60437],[101.97735,16.61016],[101.97435,16.61307],[101.96975,16.61113],[101.96702,16.61476],[101.95661,16.61663],[101.95126,16.6231],[101.95468,16.62744],[101.95164,16.6321],[101.94226,16.63589],[101.93593,16.63207],[101.92307,16.63203],[101.92041,16.62743],[101.91468,16.63169],[101.90514,16.62848],[101.90373,16.63426],[101.8892,16.64464],[101.87932,16.64522],[101.87386,16.64269],[101.86846,16.64758],[101.85402,16.6505],[101.85081,16.65518],[101.84013,16.65462],[101.83047,16.65767],[101.82299,16.65075],[101.81422,16.65365],[101.80103,16.6488],[101.7746,16.62866],[101.77649,16.64643],[101.7657,16.65451],[101.75398,16.65229],[101.7503,16.65652],[101.74991,16.67414]]];
 const TILE=256;
-/* ชั้นแผนที่พื้นหลัง — ถนน (OSM) / ดาวเทียม (Esri World Imagery) ใช้ร่วมกันทั้งหน้าแผนที่และแผนที่รายสาย A3 */
+/* ชั้นแผนที่พื้นหลัง — ถนน / ดาวเทียม ใช้ร่วมกันทั้งหน้าแผนที่และแผนที่รายสาย A3 */
 let MAP_BASE='osm';
 const BASEMAPS={
-  osm:{url:(z,x,y)=>`https://tile.openstreetmap.org/${z}/${x}/${y}.png`, attrib:'© OpenStreetMap'},
+  /* v31.36 ผู้ใช้ 12 ก.ย. 69: "แผนที่เป็นอะไรไปแล้ว" — กระเบื้องขึ้น 403 "Access blocked"
+     เซิร์ฟเวอร์ของ OpenStreetMap เป็นของอาสาสมัคร และเขาบล็อกเว็บที่ดึงกระเบื้องเยอะ ๆ ตามนโยบายของเขา
+     (osm.wiki/Blocked) — ไม่ใช่ความผิดของไฟล์เรา แต่เราต้องไม่ไปพึ่งเขาต่อ
+     ย้ายชั้น "ถนน" มาที่แหล่งเดียวกับชั้นดาวเทียมที่ใช้ได้ปกติอยู่แล้ว */
+  osm:{url:(z,x,y)=>`https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}`, attrib:'© Esri · HERE · Garmin · OpenStreetMap contributors'},
   sat:{url:(z,x,y)=>`https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`, attrib:'© Esri · Maxar · Earthstar Geographics'}
 };
 function lon2x(lon,z){ return (lon+180)/360*Math.pow(2,z)*TILE; }
@@ -7354,13 +7676,10 @@ function renderHistory(){
       <div class="card"><h3>ผู้รับจ้าง — วงเงินสะสมสูงสุด 10 อันดับ</h3><div class="note">ล้านบาท</div><div id="chContractor"></div></div>
     </div>
     <!-- v29.8 — เขตเลือกตั้ง "ราย กม." : สัญญาแต่ละรายการถูกวางลงเขตตามช่วง กม. บนเส้น GIS ไม่ใช่ตามอำเภอหลักของสาย -->
-    <div class="grid two" style="margin-top:14px">
-      <div class="card"><h3>จำแนกตามเขตเลือกตั้ง</h3>
-        <div class="note">แต่ละเขตมีสัญญากี่ฉบับ วงเงินเท่าไหร่ · "ไม่ระบุ" = ระบุตำแหน่งไม่ได้</div>
-        <div class="tblwrap" style="max-height:420px"><table id="histZoneTable"><thead><tr><th class="c">เขต</th><th>สส. · พรรค</th><th class="num">สัญญา</th><th class="num">วงเงิน (ลบ.)</th><th class="num">% วงเงิน</th><th class="num">สาย/สะพาน</th><th class="c">ปีล่าสุด</th></tr></thead><tbody></tbody></table></div>
-      </div>
-      <div class="card"><h3>วงเงินสะสมตามเขตเลือกตั้ง</h3><div class="note">ล้านบาท — สีตามพรรคของ สส. เขตนั้น · ชี้เพื่อดูจำนวนสัญญา</div><div id="chHistZone"></div></div>
-    </div>
+    <!-- v31.37 ผู้ใช้: "ให้ซ้ายกับขวาบาลานซ์กันหน่อย … ซ้ายไม่จำเป็นต้องมีก็ได้มั้ง
+         วงเงินสะสมบอกแค่เขต งบ สัดส่วน ก็ได้ พวกชื่อ จำนวนสาย เดี๋ยวไปโชว์หน้าภาพรวม"
+         → เหลือกล่องเดียวเต็มบรรทัด แบ่งเป็น 2 คอลัมน์ในกล่อง (กฎ 16: ข้อมูลเยอะ อย่าดันเป็นสองการ์ดที่สูงไม่เท่ากัน) -->
+    <div class="card" style="margin-top:14px"><h3>วงเงินสะสมตามเขตเลือกตั้ง</h3><div class="note">ล้านบาท · สีตามพรรคของ สส. เขตนั้น — ชี้เพื่อดูชื่อ สส. จำนวนสัญญา และปีล่าสุด</div><div id="chHistZone"></div></div>
     <div class="card" style="margin-top:14px">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
         <div><h3 style="margin:0">รายชื่อสายทางที่มีประวัติโครงการ</h3><div class="note" style="margin:0">คลิกแถวเพื่อเปิดหน้าสรุปรายสาย (แท็บ ②)</div></div>
@@ -7406,7 +7725,7 @@ function renderHistory(){
         hstack('chAgency', years.map(y=>({label:'ปี '+y,
             segs:Object.fromEntries(units.map(u=>[u, +((byA[u].y[y]||0)/1e6).toFixed(1)])),
             right:`รวม ${fmt(+(H.filter(x=>x.year===y).reduce((a,x)=>a+(x.amount||0),0)/1e6).toFixed(1))} ลบ. · ${H.filter(x=>x.year===y).length} โครงการ`})),
-          units.map(u=>({k:u, label:u, color:uc[u]})), {unit:'ลบ.', labelW:66});
+          units.map(u=>({k:u, label:u, color:uc[u]})), {unit:'ลบ.', labelW:66, sumLabel:'รวมทุกปี'});
       })();
    },
    'งานอาคาร': ()=>{
@@ -7423,7 +7742,7 @@ function renderHistory(){
         hstack('chBuilding', bYears.map(y=>({label:'ปี '+y,
             segs:Object.fromEntries(bUnits.map(u=>[u, +((byU[u].y[y]||0)/1e6).toFixed(2)])),
             right:`รวม ${fmt(+(hBld.filter(x=>x.year===y).reduce((a,x)=>a+(x.amount||0),0)/1e6).toFixed(2))} ลบ. · ${hBld.filter(x=>x.year===y).length} งาน`})),
-          bUnits.map(u=>({k:u, label:u, color:u==='แขวงฯ'?C.navy:(u.startsWith('หมวด')?muadColor(u.replace('หมวด','')):'#9aa5a3')})), {unit:'ลบ.', labelW:66});
+          bUnits.map(u=>({k:u, label:u, color:u==='แขวงฯ'?C.navy:(u.startsWith('หมวด')?muadColor(u.replace('หมวด','')):'#9aa5a3')})), {unit:'ลบ.', labelW:66, sumLabel:'รวมทุกปี'});
       })();
    },
    'ป้ายปริมาณงานสะสม': ()=>{
@@ -7459,14 +7778,12 @@ function renderHistory(){
         o.n++; o.amt+=(x.amount||0); if(x.code) o.codes.add(x.code); if(x.year>o.last) o.last=x.year;
       });
       const keys=Object.keys(Z).sort((a,b)=>(a===''?99:+a)-(b===''?99:+b));
-      const tb=document.querySelector('#histZoneTable tbody'); if(!tb) return;
-      tb.innerHTML=keys.map(k=>{ const o=Z[k], zi=KK_ZONES[k];
-        return `<tr data-z="${k}"><td class="c"><b>${k||'—'}</b></td><td>${zi?esc(zi.mp)+' <span style="color:var(--muted)">· '+esc(zi.party)+'</span>':'<span style="color:var(--muted)">ไม่ระบุเขต / นอกรูปเขต</span>'}</td>`+
-          `<td class="num">${fmt(o.n)}</td><td class="num">${(o.amt/1e6).toLocaleString('th-TH',{maximumFractionDigits:1})}</td>`+
-          `<td class="num">${tot?(100*o.amt/tot).toFixed(0)+'%':'-'}</td><td class="num">${fmt(o.codes.size)}</td><td class="c">${o.last||'-'}</td></tr>`; }).join('');
-      hbar('chHistZone', keys.filter(k=>k!=='').map(k=>({label:'เขต '+k, v:+(Z[k].amt/1e6).toFixed(1), color:zoneColor(+k),
-        tip:`<b>เขต ${k}</b> ${esc(KK_ZONES[k].mp)} · ${esc(KK_ZONES[k].party)}<br>${Z[k].n} สัญญา · ${fmtM(Z[k].amt)} · ${Z[k].codes.size} สาย/สะพาน`})),
-        {unit:'ลบ.', labelW:64});
+      /* v31.37 เหลือ เขต · วงเงิน · % ตามที่เจ้าของสั่ง — ชื่อ สส./จำนวนสัญญา อยู่ในคำบรรยายตอนชี้
+         แถว "ไม่ระบุเขต" ยังต้องอยู่ (กฎเดิม v29.8 ห้ามให้สัญญาหายเงียบ) */
+      shareBars('chHistZone', keys.map(k=>{ const zi=KK_ZONES[k];
+        return { label:k?('เขต '+k):'ไม่ระบุเขต', v:+(Z[k].amt/1e6).toFixed(1), color:k?zoneColor(+k):'#9aa5a3',
+          tip:(zi?`สส. ${esc(zi.mp)} · ${esc(zi.party)}<br>`:'ระบุตำแหน่งไม่ได้<br>')+`${Z[k].n} สัญญา · ${fmtM(Z[k].amt)} · ${Z[k].codes.size} สาย/สะพาน · ปีล่าสุด ${Z[k].last||'-'}` }; }),
+        {unit:'ลบ.', cols:2});
    },
    'วงเงินรายปี': ()=>{
       /* v24.0 — เวลาคือความต่อเนื่อง ใช้เส้นแทนแท่ง · แกนเริ่ม 0 · ป้ายที่ปลายเส้น */
@@ -7496,7 +7813,7 @@ function renderHistory(){
             return {label:'ปี '+y,
               segs:Object.fromEntries(muadsUsed.map(m=>[m, +(inY.filter(x=>recMuad(x)===m).reduce((a,x)=>a+(x.amount||0),0)/1e6).toFixed(1)])),
               right:`รวม ${fmt(+(inY.reduce((a,x)=>a+(x.amount||0),0)/1e6).toFixed(1))} ลบ. · ${inY.length} โครงการ`};}),
-          muadsUsed.map(m=>({k:m, label:recMuadLabel(m), color:recMuadColor(m)})), {unit:'ลบ.', labelW:66});
+          muadsUsed.map(m=>({k:m, label:recMuadLabel(m), color:recMuadColor(m)})), {unit:'ลบ.', labelW:66, sumLabel:'รวมทุกปี'});
       })();
    },
    'กิจกรรมใช้งบสูงสุด': ()=>{
@@ -7877,7 +8194,17 @@ const histIsBuilding=x=>/อาคาร/.test((x.budgetType||'')+' '+(x.activit
 const segKmType=(x,t)=>x.segs.filter(s=>(s.t||'r')===t).reduce((a,s)=>a+(s.b-s.a),0);
 /* ลักษณะงานถนน: ก่อสร้างใหม่ / ขยายผิว / บำรุง — วงเล็บกำกับช่วง กม. ชนะชื่อกิจกรรม */
 const roadClsTxt=t=>/ขยาย/.test(t)?'ขยาย':(/ก่อสร้าง/.test(t)?'ก่อสร้าง':(/บำรุง|ซ่อม|เสริมผิว|ปรับปรุง|ฟื้นฟู|ยกระดับ/.test(t)?'บำรุง':null));
-const roadCls=x=>{ const t=(x.activity||'')+' '+(x.budgetType||'');
+/* v31.37 ผู้ใช้ 12 ก.ย. 69: "บางงบใส่เป็นกิจกรรมบำรุง แต่กราฟใหญ่เท่าก่อสร้าง โดยเฉพาะพวกงบจังหวัด ดูกิจกรรมหน่อย"
+   เดิมเอา "กิจกรรม + ชนิดงบ" มาต่อกันแล้วค่อยตัดสิน — ชนิดงบที่เขียนว่า "งบก่อสร้าง" จึงลากงานบำรุงไปเป็นก่อสร้าง
+   แถบใน Strip Map จึงหนาเท่างานก่อสร้างทั้งที่เป็นงานบำรุง
+   กติกาใหม่: ชนิดของงานอ่านจาก "กิจกรรม" เป็นหลัก · ชนิดงบใช้ได้เฉพาะตอนกิจกรรมไม่บอกอะไรเลย */
+const roadCls=x=>{
+  const act=String(x.activity||'');
+  const byAct=/ขยาย/.test(act) ? 'ขยาย'
+            : (/ก่อสร้าง/.test(act)&&!/ซ่อม|ปรับปรุง|บำรุง/.test(act)) ? 'ก่อสร้าง'
+            : roadClsTxt(act);
+  if(byAct) return byAct;
+  const t=act+' '+(x.budgetType||'');
   if(/ก่อสร้าง/.test(t)&&!/ซ่อม|ปรับปรุง/.test(t)) return 'ก่อสร้าง';
   return roadClsTxt(t)||'บำรุง'; };
 /* ค้ำประกันสัญญา: ส่งงานงวดสุดท้าย + 2 ปี */
@@ -7933,26 +8260,69 @@ const segMark=(x,sg)=>{
      ② ทุกช่วงงานที่จะวาด — ถ้ามีอันไหนอยู่นอกช่วงสายทาง ให้ขยายกรอบ "และบอกผู้ใช้"
         (เดิมของแบบนี้ถูกหนีบทิ้งเงียบๆ ข้อมูลผิดจึงไม่มีใครเห็น)
    ══════════════════════════════════════════════════════════════════════════ */
+/* v31.33 ผู้ใช้ 11 ก.ย. 69: "ตัวข้อมูลตำแหน่งกิจกรรมทุกชีท ถ้ากรอกเกินระยะทางตามบัญชี
+   ไม่ต้องโชว์แถบใน stripmap แต่ขึ้นหมายเหตุไว้"
+   เดิม: แกนถูก "ยืด" ออกไปหาค่าที่กรอกเกิน — พิมพ์ผิดจุดเดียว (เช่น 90+000 บนสายยาว 7 กม.)
+         ทำให้งานจริงทั้งสายถูกบีบไปกองอยู่ริมซ้ายจนดูไม่ออก
+   ตอนนี้: แกนยึดช่วงสายทางตามบัญชี/หมุด GIS เสมอ · ช่วงที่หลุดออกไปทั้งช่วง = ไม่วาด
+           แต่ต้องไปโผล่ในหมายเหตุใต้แผนภาพทุกครั้ง ห้ามหายเงียบ (กฎ 6 · ข้อรับประกัน "แถบ กม.") */
+const KM_TOL=0.05;                       // เผื่อปัดเศษ 50 เมตร ไม่ถือว่าเกิน
 function stripDomain(roadLen, marks, ext){
-  const L = roadLen>0 ? roadLen : 1;
-  const E = (ext && isFinite(ext[0]) && isFinite(ext[1]) && ext[1]>ext[0]) ? ext : [0, L];
+  const hasExt = !!(ext && isFinite(ext[0]) && isFinite(ext[1]) && ext[1]>ext[0]);
+  const L = roadLen>0 ? roadLen : 0;
+  const E = hasExt ? ext : [0, L>0?L:1];
+  const bounded = hasExt || L>0;         // ไม่รู้ความยาวสายจริง = ห้ามตัดอะไรทิ้ง
   const v=[];
   (marks||[]).forEach(m=>{ if(m==null) return;
     if(isFinite(m.a)) v.push(+m.a);
     if(isFinite(m.b)) v.push(+m.b);
     if(isFinite(m.km)) v.push(+m.km); });
+  // "นอกช่วงสายทาง" = ค่าที่หลุดออกจากทะเบียน — เป็นสัญญาณคุณภาพข้อมูล ไม่ใช่เรื่องการวาด
+  const outExt=v.filter(x=>x<E[0]-KM_TOL||x>E[1]+KM_TOL).length;
+  if(bounded) return {lo:E[0], hi:E[1], ext:E, shifted:E[0]>0.0005, outExt, outside:0, bounded:true};
   const dMin=v.length?Math.min(...v):E[0], dMax=v.length?Math.max(...v):E[1];
-  const lo=Math.min(E[0], dMin), hi=Math.max(E[1], dMax);
-  // "นอกช่วงสายทาง" = ค่าที่หลุดออกจากทะเบียน GIS — เป็นสัญญาณคุณภาพข้อมูล ไม่ใช่เรื่องการวาด
-  const outExt=v.filter(x=>x<E[0]-1e-6||x>E[1]+1e-6).length;
-  return {lo, hi, ext:E, shifted:E[0]>0.0005, outExt, outside:0};
+  return {lo:Math.min(E[0],dMin), hi:Math.max(E[1],dMax), ext:E, shifted:E[0]>0.0005, outExt, outside:0, bounded:false};
+}
+/* '' = อยู่ในช่วงสายทาง · 'over' = เลยปลายสาย · 'before' = ก่อนต้นสาย */
+function kmOutside(sg,dom){
+  if(!sg||!dom||!dom.bounded) return '';
+  const a=isFinite(sg.a)?+sg.a:(isFinite(sg.km)?+sg.km:null);
+  if(a==null) return '';
+  const b=isFinite(sg.b)?+sg.b:a;
+  if(a>dom.ext[1]+KM_TOL) return 'over';
+  if(Math.max(a,b)<dom.ext[0]-KM_TOL) return 'before';
+  return '';
+}
+/* ตัวกรองร่วมของทุกแผนภาพ: คืนเฉพาะช่วงที่วาดได้ แล้วเก็บช่วงที่เกินบัญชีไว้ใน bag */
+function stripKeep(segs,dom,bag,lbl){
+  return (segs||[]).filter(sg=>{ const o=kmOutside(sg,dom); if(!o) return true;
+    bag.push({lbl:lbl||'', o, a:isFinite(sg.a)?+sg.a:(isFinite(sg.km)?+sg.km:null), b:isFinite(sg.b)?+sg.b:null});
+    return false; });
+}
+/* ช่วงเดียวกันโผล่ได้หลายเลน (ภาพรวม + ปีของมันเอง) — นับเป็นช่วงเดียว และเลือกป้ายที่บอกอะไรมากกว่า */
+function stripHiddenList(bag){
+  const m=new Map();
+  (bag||[]).forEach(h=>{ const k=h.a+'|'+h.b, cur=m.get(k);
+    if(!cur) m.set(k,{...h});
+    else if((cur.lbl==='ภาพรวม'||!cur.lbl)&&h.lbl&&h.lbl!=='ภาพรวม') cur.lbl=h.lbl; });
+  return [...m.values()];
+}
+/* ข้อความหมายเหตุใต้แผนภาพ — ที่เดียวใช้ทั้ง Strip Map และเลนจุดเสี่ยง (กฎ 1) */
+function stripHiddenNote(bag,dom){
+  const L=stripHiddenList(bag);
+  if(!L.length) return '';
+  const one=h=>(h.lbl?esc(h.lbl)+' ':'')+(h.a!=null?kmLbl(h.a):'—')+(h.b!=null&&h.b>h.a?' – '+kmLbl(h.b):'');
+  const show=L.slice(0,6).map(one).join(' · ');
+  return `<span style="color:var(--bad)">⚠ ไม่ได้แสดง ${L.length} ช่วงที่กรอก กม. เกินช่วงของสายทาง `+
+         `(${kmLbl(dom.ext[0])} – ${kmLbl(dom.ext[1])})</span> — ${show}${L.length>6?` · และอีก ${L.length-6} ช่วง`:''} · แก้ที่ต้นทางแล้วกดโหลดข้อมูลใหม่`;
 }
 /* ให้ด่านตรวจ (กฎ 11) อ่านได้ว่าแถบล่าสุดวาดหน้าต่างไหน และมีอะไรตกขอบไหม */
 function stripLog(container, dom, marks){
   const out=(marks||[]).filter(m=>m&&((isFinite(m.a)&&(m.a<dom.lo-1e-6||m.a>dom.hi+1e-6))||
                                       (isFinite(m.b)&&(m.b<dom.lo-1e-6||m.b>dom.hi+1e-6)))).length;
   window.__strip={container, lo:dom.lo, hi:dom.hi, ext:dom.ext, shifted:dom.shifted,
-                 outExt:dom.outExt, n:(marks||[]).length, outside:out};
+                 outExt:dom.outExt, n:(marks||[]).length, outside:out,
+                 bounded:!!dom.bounded, hidden:0, hiddenNote:false};   // v31.33 ซ่อนกี่ช่วง · บอกผู้ใช้แล้วหรือยัง
   return window.__strip;
 }
 function histSegCaption(sg){
@@ -8115,20 +8485,29 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
   const svg=el('svg',{class:'viz',viewBox:`0 0 ${W} ${H}`,width:cw<640?W:'100%',height:H},box);
   const plotW=W-labelW-padR, x0=labelW;
   // v29.4 — แกนยึดช่วงสถานีจริงจากหมุด GIS (KM_EXT) ไม่ใช่การเดาจากช่วงงาน
-  const MARKS=lanes.flatMap(l=>l.segs||[]);
   const DOM=stripDomain(roadLen, domainMarks, kmExt(stripCode));
+  /* v31.33 ผู้ใช้: "ถ้ากรอกเกินระยะทางตามบัญชี ไม่ต้องโชว์แถบใน stripmap แต่ขึ้นหมายเหตุไว้"
+     กรองที่เดียวตรงนี้ = ครอบทุกชีทที่ส่งช่วงมาวาด (สัญญา · คำขอ/Zerobase · Equipment · สะพาน · สภาพผิว) */
+  const HIDDEN=[];
+  lanes.forEach(l=>{ l.segs=stripKeep(l.segs,DOM,HIDDEN,l.label); });
+  eqOnRoad={marks:stripKeep(eqOnRoad.marks,DOM,HIDDEN,'อุปกรณ์'),
+            trans:stripKeep((eqOnRoad.trans||[]).map(t=>({...t,a:t.km})),DOM,HIDDEN,'หม้อแปลง')};
+  bridgesOnRoad=stripKeep((bridgesOnRoad||[]).map(b=>({...b,a:kmVal(b.km)})),DOM,HIDDEN,'สะพาน');
+  const MARKS=lanes.flatMap(l=>l.segs||[]);
   const SPAN=Math.max(0.001, DOM.hi-DOM.lo);
   const X=km=>x0+plotW*Math.max(0,Math.min(1,(km-DOM.lo)/SPAN));
   stripLog(container, DOM, MARKS);
-  if(DOM.shifted || DOM.outExt){
+  window.__strip.hidden=stripHiddenList(HIDDEN).length;
+  if(DOM.shifted || HIDDEN.length){
     const n=document.createElement('div');
     n.className='note stripnote';
     n.innerHTML=(DOM.shifted
         ? `📍 สายนี้ไม่ได้เริ่มนับที่ 0+000 — ช่วงสถานีตามหมุด GIS คือ <b>${kmLbl(DOM.ext[0])} – ${kmLbl(DOM.ext[1])}</b> (ยาว ${fmt(+(DOM.ext[1]-DOM.ext[0]).toFixed(3))} กม. ตรงกับบัญชี)`
         : `📍 ช่วงสถานีตามหมุด GIS คือ ${kmLbl(DOM.ext[0])} – ${kmLbl(DOM.ext[1])}`)+
-      (DOM.outExt?` · <span style="color:var(--bad)">⚠ มี ${DOM.outExt} ค่าอยู่นอกช่วงสายทาง — แกนขยายให้เห็นแล้ว แต่ควรตรวจข้อมูลต้นทาง</span>`:'');
+      (HIDDEN.length?'<br>'+stripHiddenNote(HIDDEN,DOM):'');
     n.style.cssText='margin:0 0 7px;padding:5px 9px;background:var(--tile-blue2);border-left:3px solid var(--navy);border-radius:0 6px 6px 0';
     box.insertBefore(n,svg);
+    if(HIDDEN.length) window.__strip.hiddenNote=true;
   }
   // แกน กม. — ถ้า tick สุดท้ายชิดป้ายปลายสาย ให้ข้าม tick นั้น กันตัวหนังสือซ้อน
   const endX=X(DOM.hi);
@@ -8138,17 +8517,17 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
     if(endX-tx>=84) el('text',{class:'kmtick',x:tx,y:H-axisH+16,'text-anchor':'middle'},svg).textContent=kmLbl(DOM.lo+t); });
   el('text',{class:'kmtick',x:endX,y:H-axisH+16,'text-anchor':'end','font-weight':'700'},svg).textContent=kmLbl(DOM.hi);
   // ---- ตัววาดไอคอน (ใช้ซ้ำทั้งชิ้นงานและสะพานในสายทาง) ----
-  const brIcon=(bx,cy,colr,g)=>{ el('rect',{x:bx-7,y:cy-9,width:14,height:18,rx:4,fill:'#fcfcfb',opacity:.92,'pointer-events':'none'},g); [-3.2,3.2].forEach(o=>{
+  const brIcon=(bx,cy,colr,g)=>{ el('rect',{x:bx-7,y:cy-9,width:14,height:18,rx:4,fill:C.halo,opacity:.92,'pointer-events':'none'},g); [-3.2,3.2].forEach(o=>{
       el('line',{x1:bx+o,y1:cy-5.2,x2:bx+o,y2:cy+5.2,stroke:colr,'stroke-width':2.1,'stroke-linecap':'round','pointer-events':'none'},g);
       el('line',{x1:bx+o,y1:cy-5.2,x2:bx+o+(o<0?-3.4:3.4),y2:cy-8.4,stroke:colr,'stroke-width':2.1,'stroke-linecap':'round','pointer-events':'none'},g);
       el('line',{x1:bx+o,y1:cy+5.2,x2:bx+o+(o<0?-3.4:3.4),y2:cy+8.4,stroke:colr,'stroke-width':2.1,'stroke-linecap':'round','pointer-events':'none'},g); }); };
   /* v31.13 ผู้ใช้ (8 ก.ย. 69): "ป้ายพอมันเยอะแล้วมันรก … เป็นสามเหลี่ยมเล็กๆ ด้านบนเลน ส่วน CCTV เอากล้องย่อๆ อยู่ด้านบนเลน"
      → สัญลักษณ์จุดงาน (ป้าย/อุปกรณ์ · กล้อง) ย้ายไป "เหนือแถบ" ตัวเล็ก ไม่ทับตัวแถบ · topY = ขอบบนของแถบ */
   const camIcon=(mx,topY,colr,g)=>{ // กล้อง CCTV ย่อ เหนือแถบ (กล่อง 8×5 + เลนส์ + ขา)
-    el('rect',{x:mx-6,y:topY-14,width:12,height:8,rx:1.8,fill:colr,stroke:'#fcfcfb','stroke-width':0.8,'pointer-events':'none'},g);
-    el('circle',{cx:mx+3,cy:topY-10,r:1.7,fill:'#fcfcfb','pointer-events':'none'},g);
+    el('rect',{x:mx-6,y:topY-14,width:12,height:8,rx:1.8,fill:colr,stroke:C.halo,'stroke-width':0.8,'pointer-events':'none'},g);
+    el('circle',{cx:mx+3,cy:topY-10,r:1.7,fill:C.halo,'pointer-events':'none'},g);
     el('line',{x1:mx,y1:topY-6,x2:mx,y2:topY-2,stroke:colr,'stroke-width':1.4,'pointer-events':'none'},g); };
-  const triIcon=(x,topY,colr,g)=>el('path',{d:`M${x},${topY-10} l5,8 h-10 z`,fill:colr,stroke:'#fcfcfb','stroke-width':0.8,'pointer-events':'none'},g);   // ▲ ป้าย/อุปกรณ์ เหนือแถบ
+  const triIcon=(x,topY,colr,g)=>el('path',{d:`M${x},${topY-10} l5,8 h-10 z`,fill:colr,stroke:C.halo,'stroke-width':0.8,'pointer-events':'none'},g);   // ▲ ป้าย/อุปกรณ์ เหนือแถบ
   const treeIcon=(dx,base,g)=>{ // ต้นไม้เล็ก (ฐานอยู่ที่ base)
     el('path',{d:`M${dx},${base-8} l3.4,5.2 h-6.8 z`,fill:'#2f9e57','pointer-events':'none'},g);
     el('rect',{x:dx-0.9,y:base-2.9,width:1.8,height:2.9,fill:'#8a6d4b','pointer-events':'none'},g); };
@@ -8168,10 +8547,11 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
 
   lanes.forEach((ln,i)=>{
     const {y,by,bh,height:laneH,upper,lower}=frames[i];
-    el('rect',{class:'strip-year-frame','data-lane':ln.label,x:2,y,width:W-4,height:laneH-3,rx:5,fill:i%2?'#f0f3f5':'#f8f9fa',opacity:.72,'pointer-events':'none'},svg);
-    if(upper)el('rect',{class:'strip-upper-band',x:x0,y:by-12,width:plotW,height:9,rx:3,fill:'#dae4ec',opacity:.4,'pointer-events':'none'},svg);
-    if(lower)el('rect',{class:'strip-lower-band',x:x0,y:by+bh+2,width:plotW,height:9,rx:3,fill:'#dae4ec',opacity:.4,'pointer-events':'none'},svg);
-    el('line',{x1:x0,y1:y+laneH-2,x2:x0+plotW,y2:y+laneH-2,stroke:'#dce2e7','stroke-width':.7,'pointer-events':'none'},svg);
+    /* v31.37 กรอบแถว/แถบบน-ล่าง ดึงสีจากชุดสี — ชุดกลางคืนจะได้เป็นเงาจาง ๆ ไม่ใช่กล่องขาวเด่นกว่าข้อมูล */
+    el('rect',{class:'strip-year-frame','data-lane':ln.label,x:2,y,width:W-4,height:laneH-3,rx:5,fill:i%2?C.stripF1:C.stripF2,opacity:.72,'pointer-events':'none'},svg);
+    if(upper)el('rect',{class:'strip-upper-band',x:x0,y:by-12,width:plotW,height:9,rx:3,fill:C.stripBand,opacity:.4,'pointer-events':'none'},svg);
+    if(lower)el('rect',{class:'strip-lower-band',x:x0,y:by+bh+2,width:plotW,height:9,rx:3,fill:C.stripBand,opacity:.4,'pointer-events':'none'},svg);
+    el('line',{x1:x0,y1:y+laneH-2,x2:x0+plotW,y2:y+laneH-2,stroke:C.grid,'stroke-width':.7,'pointer-events':'none'},svg);
     const HIT=laneHit();
     // ป้ายชื่อแถว: เส้นสีข้างหน้า + ชื่อ (legend อยู่ที่แถวเลย ไม่ต้องอ่านด้านล่าง)
     el('rect',{x:6,y:by+bh/2-2,width:12,height:4,rx:2,fill:ln.color||'#9aa5a3'},svg);
@@ -8204,7 +8584,7 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
         const n=Math.max(2, Math.min(24, Math.floor((xb-xa)/18)+2));
         [by-7].forEach(cy=>{ for(let k=0;k<n;k++){
           const dx=xa+(n===1?0:(xb-xa)*k/(n-1));
-          el('circle',{cx:dx,cy,r:2.7,fill:col,stroke:'#fcfcfb','stroke-width':0.9,'pointer-events':'none'},g); }});
+          el('circle',{cx:dx,cy,r:2.7,fill:col,stroke:C.halo,'stroke-width':0.9,'pointer-events':'none'},g); }});
       }else if(mk==='drain'){
         // รางระบายน้ำ -> เส้นประชิดขอบบน-ล่างของแถบ (v27.2 รับเมาส์เฉพาะแนวเส้น)
         hit(xa-2,by-6,Math.max(9,xb-xa+4),6);
@@ -8247,10 +8627,10 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
         // ถนน: ก่อสร้าง/ขยาย = แถบเต็ม · บำรุง (Hot In-Plant/Recycling ฯลฯ) = แถบเล็กกลาง
         const thin=mk==='thin';
         if(sg.pt){ hit(xa-4,by,8,bh);
-          el('rect',{x:xa-2,y:by,width:4,height:bh,rx:2,fill:col,stroke:'#fcfcfb','stroke-width':1},g); }
+          el('rect',{x:xa-2,y:by,width:4,height:bh,rx:2,fill:col,stroke:C.halo,'stroke-width':1},g); }
         else{ const h=thin?8:bh, yy=thin?by+(bh-8)/2:by;
           hit(xa,yy,W2,h);
-          el('rect',{x:xa,y:yy,width:W2,height:h,rx:3,fill:col,stroke:'#fcfcfb','stroke-width':1},g); }
+          el('rect',{x:xa,y:yy,width:W2,height:h,rx:3,fill:col,stroke:C.halo,'stroke-width':1},g); }
       }
     });
     // 🌉 ไอคอนสะพานในสายทาง — วางบนแถว "ภาพรวม"
@@ -8278,7 +8658,7 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
           const n=hasB?Math.max(2,Math.min(24,Math.floor((xb-xa)/18)+2)):1;
           [by-7].forEach(cy=>{ for(let k=0;k<n;k++){
             const dx=xa+(n===1?0:(xb-xa)*k/(n-1));
-            el('circle',{cx:dx,cy,r:2.7,fill:col,stroke:'#fcfcfb','stroke-width':0.9,'pointer-events':'none'},g); }});
+            el('circle',{cx:dx,cy,r:2.7,fill:col,stroke:C.halo,'stroke-width':0.9,'pointer-events':'none'},g); }});
         }else if(mq.kind==='drain'){
           // เส้นประแนวเดียวกับงานรางระบายน้ำโครงการ (ชิดขอบแถบ) · hover เฉพาะแนวเส้น
           [[by-3,by-6]].forEach(([yy,hy])=>{
@@ -8292,7 +8672,7 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
       (eqOnRoad.trans||[]).forEach(t=>{
         const bx=X(Math.min(t.km,DOM.hi)), cy=by-7, g=el('g',{class:'seg'},svg); g.style.pointerEvents='none';
         HIT.add(bx-8,cy-8,16,16,t.tip);
-        el('circle',{cx:bx,cy,r:7,fill:t.color||'#d97706',stroke:'#fcfcfb','stroke-width':1.2,'pointer-events':'none'},g);
+        el('circle',{cx:bx,cy,r:7,fill:t.color||'#d97706',stroke:C.halo,'stroke-width':1.2,'pointer-events':'none'},g);
         el('path',{d:`M${bx+1.7},${cy-4.1} l-3.6,4.6 h2.5 l-1.5,3.7 l4,-5 h-2.5 z`,fill:'#fff','pointer-events':'none'},g);
       });
     }
@@ -8324,13 +8704,14 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
   // legend ล่าง: ตาราง grid คอลัมน์ตรงกันทุกบรรทัด (ไอคอนกว้างคงที่ 20px)
   const lg=document.createElement('div'); lg.className='legendrow';
   lg.style.cssText='display:block;margin-top:9px;padding-top:7px;border-top:1px dashed var(--line);font-size:11px;color:var(--muted)';
-  const GC='#94a3b8';
+  /* v31.36 ตัวอย่างสัญลักษณ์ในคำอธิบายใต้แผนภาพ เคยฝังสีอ่อนไว้ ชุดกลางคืนจึงเป็นกล่องขาวเรียงกันทั้งแถว */
+  const GC=C.muted||'#94a3b8', GBAR=C.track||'#dcdfe4', GW=C.halo||'#fff';
   /* v30.6 — ข้อความยาวที่สุดในคำอธิบายสัญลักษณ์เคยตั้ง nowrap ไว้ จึงดันหน้าล้นออกไปทางขวา 12px
      ปล่อยให้ขึ้นบรรทัดใหม่ได้ + min-width:0 เพื่อให้ช่องกริดหดตามที่มีจริง */
   const li=(ic,txt)=>`<span style="display:flex;align-items:flex-start;gap:6px;min-width:0"><span style="min-width:20px;flex:none;display:inline-flex;justify-content:center;align-items:center;gap:2px">${ic}</span><span style="min-width:0">${txt}</span></span>`;
   const brSvg=c=>`<svg width="14" height="14" viewBox="0 0 16 16"><g stroke="${c}" stroke-width="1.9" stroke-linecap="round"><line x1="5" y1="4" x2="5" y2="12"/><line x1="5" y1="4" x2="2" y2="1.5"/><line x1="5" y1="12" x2="2" y2="14.5"/><line x1="11" y1="4" x2="11" y2="12"/><line x1="11" y1="4" x2="14" y2="1.5"/><line x1="11" y1="12" x2="14" y2="14.5"/></g></svg>`;
   // v30.7 ผู้ใช้: "จัดเรียงคำอธิบายให้มีระเบียบ ไม่ต้องเขียนรายละเอียดเยอะ" — 3 กลุ่มตามตำแหน่งบนแถบ · แถวละ 4 · ข้อความสั้น
-  const zig=`<svg width="18" height="14" viewBox="0 0 18 14"><g stroke="${GC}" stroke-width="1.2" stroke-dasharray="7 3"><line x1="1" y1="12" x2="17" y2="12"/></g><rect x="0" y="5.5" width="18" height="3" rx="1" fill="#dcdfe4"/></svg>`;
+  const zig=`<svg width="18" height="14" viewBox="0 0 18 14"><g stroke="${GC}" stroke-width="1.2" stroke-dasharray="7 3"><line x1="1" y1="12" x2="17" y2="12"/></g><rect x="0" y="5.5" width="18" height="3" rx="1" fill="${GBAR}"/></svg>`;
   const grp=(name,items)=>`<div style="display:grid;grid-template-columns:64px repeat(4,minmax(150px,1fr));gap:4px 14px;align-items:center;margin-top:4px">`+
       `<span class="lgh" style="font-weight:700;color:var(--ink2)">${name}</span>`+items.join('')+`</div>`;
   lg.innerHTML=
@@ -8340,14 +8721,14 @@ function drawStrip(container, roadLen, covered, list, YCOLOR, bridgesOnRoad, ext
       li(`<span style="display:inline-block;width:16px;height:8px;border-radius:2px;background:linear-gradient(90deg,#2a9d8f,#e9c46a,#e76f51)"></span>`,'สีปี = ยังติดค้ำประกัน'),
       li('<span style="display:inline-block;width:16px;height:8px;border-radius:2px;background:#a9b0ba"></span>','เทา = หมดค้ำ/นอกค้ำ')])+
     grp('ขอบแถบ',[
-      li(`<svg width="18" height="14" viewBox="0 0 18 14"><g fill="${GC}"><circle cx="3" cy="2.5" r="2"/><circle cx="9" cy="2.5" r="2"/><circle cx="15" cy="2.5" r="2"/></g><rect x="0" y="6" width="18" height="2" rx="1" fill="#dcdfe4"/></svg>`,'จุดบน = ไฟฟ้าแสงสว่าง'),
+      li(`<svg width="18" height="14" viewBox="0 0 18 14"><g fill="${GC}"><circle cx="3" cy="2.5" r="2"/><circle cx="9" cy="2.5" r="2"/><circle cx="15" cy="2.5" r="2"/></g><rect x="0" y="6" width="18" height="2" rx="1" fill="${GBAR}"/></svg>`,'จุดบน = ไฟฟ้าแสงสว่าง'),
       li(`<svg width="18" height="14" viewBox="0 0 18 14"><g stroke="${GC}" stroke-width="2" stroke-dasharray="3 2.4" stroke-linecap="round"><line x1="1" y1="3" x2="17" y2="3"/></g></svg>`,'ประขอบบน = ระบายน้ำ'),
       li(zig,'ขีดยาวล่าง = การ์ดเรล'),
       li(`<svg width="12" height="14" viewBox="0 0 12 14"><path d="M6,0.5 L10,7 H2 z" fill="#2f9e57"/><rect x="5" y="7.5" width="2" height="3.6" fill="#8a6d4b"/></svg>`,'ต้นไม้ = ภูมิทัศน์')])+
     grp('จุดงาน',[
       li(`<svg width="14" height="14" viewBox="0 0 14 14"><path d="M7,2.5 l4.2,7.5 h-8.4 z" fill="${GC}"/></svg>`,'▲ ใต้แถบ = ป้าย/อุปกรณ์'),
-      li(`<svg width="16" height="15" viewBox="0 0 16 15"><rect x="1" y="1" width="13" height="7" rx="2" fill="${GC}"/><circle cx="11" cy="4.5" r="1.6" fill="#fff"/><line x1="7.5" y1="8.5" x2="7.5" y2="13" stroke="${GC}" stroke-width="1.8"/><line x1="4" y1="13.6" x2="11" y2="13.6" stroke="${GC}" stroke-width="1.8" stroke-linecap="round"/></svg>`,'กล้องเหนือแถบ = ITS/CCTV'),
-      li(`<svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#d97706"/><path d="M9.7,3.9 L6.1,8.5 h2.5 L7.1,12.2 l4,-5 h-2.5 z" fill="#fff"/></svg>`,'⚡ เหนือแถบ = หม้อแปลง'),
+      li(`<svg width="16" height="15" viewBox="0 0 16 15"><rect x="1" y="1" width="13" height="7" rx="2" fill="${GC}"/><circle cx="11" cy="4.5" r="1.6" fill="${GW}"/><line x1="7.5" y1="8.5" x2="7.5" y2="13" stroke="${GC}" stroke-width="1.8"/><line x1="4" y1="13.6" x2="11" y2="13.6" stroke="${GC}" stroke-width="1.8" stroke-linecap="round"/></svg>`,'กล้องเหนือแถบ = ITS/CCTV'),
+      li(`<svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#d97706"/><path d="M9.7,3.9 L6.1,8.5 h2.5 L7.1,12.2 l4,-5 h-2.5 z" fill="${GW}"/></svg>`,'⚡ เหนือแถบ = หม้อแปลง'),
       li(brSvg(GC)+brSvg('#7f93b8'),')( = สะพาน (ฟ้า = สะพานเดิม)')]);
   box.appendChild(lg);
 }
@@ -8589,16 +8970,38 @@ defineSource({
     if(!all.length) throw noData('ยังไม่พบแถวข้อมูลในชีท — ต้องมี tab ปี (Q_71, Q_72, …) หรือข้อมูลใน tab แรก และแชร์ "ทุกคนที่มีลิงก์"');
     yearsFound.sort((a,b)=>a-b);
     reqData=all; reqYears=yearsFound;
+    /* v31.34 ผู้ใช้: "เอาใหม่โชว์เท่าที่มีในชีทรวมแผน แต่ไม่เอารวมกันนะ แยกปีกัน"
+       (v31.18 เคยล็อกไว้ที่ปีล่าสุดปีเดียว — พอมีคำขอเงินเหลือจ่ายของปีก่อนเข้ามา ปีเก่าจึงหายไปจากหน้าจอ)
+       มีทุกปีที่เจอในชีทให้เลือก ตั้งต้นที่ปีล่าสุด · ไม่มีตัวเลือก "ทุกปี" เพราะเจ้าของสั่งว่าห้ามเอามารวมกัน */
     reqYearPick=String(latestRequestYear());
-    const ys=document.getElementById('reqYearSel');ys.innerHTML=`<option value="${reqYearPick}">ปีล่าสุด ${reqYearPick}</option>`;ys.disabled=true;
+    const ys=document.getElementById('reqYearSel');
+    const yrList=[...new Set(reqYears)].sort((a,b)=>b-a);
+    ys.innerHTML=yrList.map((y,i)=>`<option value="${y}"${String(y)===reqYearPick?' selected':''}>${i===0?'ปีล่าสุด ':'ปีงบ '}${y}</option>`).join('');
+    ys.disabled=yrList.length<2;
     return `<span class="hpill"><span class="dot live"></span> ข้อมูลสดจาก Google Sheets</span>`+
-      `<span class="hpill">▥ ${latestRequests().length} คำขอ · ${new Set(latestRequests().map(r=>r.code)).size} สาย</span>`+
-      `<span class="hpill">📅 ปีล่าสุด ${latestRequestYear()}</span>`+
+      `<span class="hpill">▥ ${reqFiltered().length} คำขอ · ${new Set(reqFiltered().map(r=>r.code)).size} สาย</span>`+
+      `<span class="hpill">📅 ${String(reqYearPick)===String(latestRequestYear())?'ปีล่าสุด ':'ปีงบ '}${reqYearPick}${reqYears.length>1?` · มีให้เลือก ${reqYears.length} ปี`:''}</span>`+
       `<span class="hpill">🕐 ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})} น.</span>`;
   }
 });
-const reqFiltered=()=>{reqYearPick=String(latestRequestYear());return latestRequests();};
-document.getElementById('reqYearSel').addEventListener('change',e=>{ reqYearPick=e.target.value; renderRequests(); });
+/* แสดงทีละปีเสมอ — ปีที่เลือกหายไปจากชีทเมื่อไหร่ ให้ถอยกลับไปปีล่าสุดเอง ไม่ค้างหน้าว่าง */
+const reqFiltered=()=>{
+  const ys=(reqYears||[]).map(String);
+  if(!ys.length) return [];
+  if(!ys.includes(String(reqYearPick))) reqYearPick=String(latestRequestYear());
+  return (reqData||[]).filter(r=>String(r.year)===String(reqYearPick));
+};
+document.getElementById('reqYearSel').addEventListener('change',e=>{ reqYearPick=e.target.value;
+  renderRequests(); try{ paintReqPills(); }catch(_){} });
+/* แถบบนหัวหน้าต้องเปลี่ยนตามปีที่เลือกด้วย ไม่ใช่ค้างที่ปีล่าสุด (กฎ 8) */
+function paintReqPills(){
+  const host=document.getElementById('reqPills'); if(!host||!reqData) return;
+  const Q=reqFiltered();
+  host.innerHTML=`<span class="hpill"><span class="dot live"></span> ข้อมูลสดจาก Google Sheets</span>`+
+    `<span class="hpill">▥ ${Q.length} คำขอ · ${new Set(Q.map(r=>r.code)).size} สาย</span>`+
+    `<span class="hpill">📅 ${String(reqYearPick)===String(latestRequestYear())?'ปีล่าสุด ':'ปีงบ '}${reqYearPick}${reqYears.length>1?` · มีให้เลือก ${reqYears.length} ปี`:''}</span>`+
+    `<span class="hpill">🕐 ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})} น.</span>`;
+}
 /* ══════════════════════════════════════════════════════════════════════════
    สรุปคำของบตามแหล่งงบ — v28.0
    ─────────────────────────────────────────────────────────────────────────
@@ -8767,11 +9170,12 @@ function renderRequests(){
   Q.forEach(r=>{ r.km=r.segs.reduce((a,s)=>a+segKm(s.a,s.b),0); });
   const totReqKm=Q.reduce((a,r)=>a+r.km,0);
   const roadCounts=counts.filter(e=>isRoadCode(e[0]));
+  const reqSplit=splitCodes(Object.keys(byRoad));   // v31.33 แยกสาย/สะพาน/อาคาร ก่อนคิดเปอร์เซ็นต์
   const muadWithReq=[...new Set(Object.keys(byRoad).map(c=>roadInfo[c]?.muad).filter(m=>m&&MUAD_ORDER.includes(m)))];
   document.getElementById('reqBody').innerHTML=`
     <div class="grid kpis">
       <div class="card kpi"><div class="lbl">คำขอทั้งหมด</div><div class="val">${Q.length} <small>คำขอ</small></div><div class="foot">${esc(yearLbl)} — คำขอเดียวมีได้หลายช่วง กม.</div></div>
-      <div class="card kpi"><div class="lbl">สายทางที่มีคำขอ</div><div class="val">${roadCounts.length} <small>/ ${ALL_CODES.length} สาย</small></div><div class="foot">คิดเป็น ${(100*roadCounts.length/ALL_CODES.length).toFixed(0)}% ของโครงข่าย${nonRoadQ.length?` · งานไม่ผูกสาย ${nonRoadQ.length} คำขอ`:''}</div></div>
+      <div class="card kpi"><div class="lbl">สายทางที่มีคำขอ</div><div class="val">${reqSplit.road.length} <small>/ ${reqSplit.nRoadAll} สาย</small></div><div class="foot">${splitFoot(reqSplit,nonRoadQ.length?` · อาคาร/หน่วย ${nonRoadQ.length} คำขอ`:'')}</div></div>
       <div class="card kpi"><div class="lbl">ระยะทางที่ขอรวม</div><div class="val">${fmt(+totReqKm.toFixed(1))} <small>กม.</small></div><div class="foot">รวมทุกช่วงที่ระบุ กม.</div></div>
       <div class="card kpi"><div class="lbl">งบที่ระบุแล้วรวม</div><div class="val">${fmtM(totAmt)}</div><div class="foot">${specified.length} คำขอ</div></div>
       <div class="card kpi"><div class="lbl">รอประเมินราคา</div><div class="val" style="color:var(--crit)">${waiting} <small>คำขอ</small></div><div class="foot">ยังไม่ระบุวงเงิน</div></div>
@@ -8779,6 +9183,8 @@ function renderRequests(){
     </div>
     <!-- v31.2 ผู้ใช้สั่ง (7 ก.ย. 69): สัดส่วนชนิดงบเป็นกล่องแยกชนิด (จำนวน · % · วงเงิน) มาก่อน → มุมมองรายสาย → Top 10 -->
     <div class="card" style="margin-top:14px"><h3>สัดส่วนคำขอแยกตามชนิดงบ/แผนงาน</h3><div class="note">แต่ละชนิดงบ ขอกี่รายการ · กี่ % ของคำขอทั้งหมด · วงเงินที่ระบุแล้ว — แถบสีด้านบน = สัดส่วนจำนวนคำขอ</div><div id="chReqCat"></div></div>
+    <!-- v31.36 ผู้ใช้: "เพิ่มกล่องแบ่งตามเรทงบ โดยแบ่งจากชนิดงบ และในแต่ละชนิดงบให้แบ่งตามเรทงบประมาณ" -->
+    <div class="card" style="margin-top:14px"><h3>คำขอแยกตามช่วงวงเงิน (เรทงบ)</h3><div class="note">แถวละชนิดงบ · ช่องละช่วงวงเงิน — ตัวเลขบนคือจำนวนคำขอ ตัวเลขล่างคือ % ของชนิดงบนั้น · แถวท้ายคือรวมทุกชนิดงบ</div><div id="chReqBand"></div></div>
     <!-- v31.4 ผู้ใช้: "เพิ่มกล่องคำขอแบ่ง ตามเขต ตามกิจกรรม ด้วย" — กล่องชุดเดียวกับชนิดงบ -->
     <div class="grid two" style="margin-top:14px">
       <div class="card"><h3>คำขอแยกตามเขตเลือกตั้ง</h3><div class="note">สีตามพรรคของ สส. เขตนั้น · "ไม่ระบุ" = ระบุตำแหน่งไม่ได้</div><div id="chReqZone"></div></div>
@@ -8824,10 +9230,12 @@ function renderRequests(){
     {unit:'คำขอ', onClick:it=>{ document.getElementById('reqRoadSel').value=it.label; renderReqDetail(it.label); }});
   // โดนัทชนิดงบ — ครบทุกชนิด
   /* v31.2 รวมชื่อชนิดงบที่สะกดต่างกัน ("1.ยกระดับ" = "ยกระดับ" = "งบยกระดับ") ด้วย normCat เหมือนหน้าเช็คคำขอ — ไม่ให้ชนิดเดียวกันแตกเป็น 2 กล่อง */
-  const rc=r=>r.cat==='— ไม่ระบุ'?r.cat:normCat(r.cat);
+  const rc=r=>r.cat==='— ไม่ระบุ'?r.cat:catShow(r.cat);   // v31.34 เหลือจ่ายเป็นกล่องของตัวเอง
   const byCat={}; Q.forEach(r=>{ const k=rc(r); byCat[k]=byCat[k]||{n:0,amt:0}; byCat[k].n++; byCat[k].amt+=(r.amt||0); });
   const cats=Object.entries(byCat).sort((a,b)=>b[1].n-a[1].n);
-  const CATCOLOR=btColorMap(cats.map(c=>c[0]).filter(c=>c!=='— ไม่ระบุ'));
+  const CATCOLOR=btColorMap(cats.map(c=>catBase(c[0])).filter(c=>c!=='— ไม่ระบุ'));
+  cats.forEach(([k])=>{ if(k==='— ไม่ระบุ') return;
+    CATCOLOR[k]=isLeftover(k)?fadeHex(CATCOLOR[catBase(k)]):CATCOLOR[catBase(k)]; });   // v31.34 เหลือจ่าย = สีเดิมแต่จางลง
   CATCOLOR['— ไม่ระบุ']='#9aa5a3';
   /* v31.2 กล่องรายชนิดงบแทนโดนัท — ผู้ใช้: "น่าจะแยกออกเป็นกล่อง kpi ให้เห็นชัด … มีแต่จำนวนกับ % ไม่มีจำนวนเงิน"
      v31.4 ทำเป็นตัวสร้างกลาง reqBoxes() ใช้ 3 ที่: ชนิดงบ · เขตเลือกตั้ง · กิจกรรม — และแถบสัดส่วนอ่านง่ายขึ้น (ผู้ใช้: "แถบพวกนี้มองยากไปหน่อย") */
@@ -8840,10 +9248,17 @@ function renderRequests(){
   const catG=groupQ(rc); Object.keys(catG).forEach(k=>catG[k].label=catName(k));
   reqBoxes('chReqCat', Object.entries(catG).sort((a,b)=>b[1].n-a[1].n), k=>CATCOLOR[k]);
   // เขตเลือกตั้ง (ตามช่วง กม. บนเส้น GIS — ตัวเดียวกับหน้าเช็คคำขอ) เรียงเลขเขต · ไม่ระบุท้ายสุด
+  /* v31.36 ผู้ใช้: "งบประมาณตามเขตสส ที่จะต้องโชว์ทั้งเขต ชื่อ สส งบประมาณ และ %"
+     กล่องแบบการ์ดใส่ได้ไม่ครบ — ย้ายมาใช้แถวสัดส่วนแบบเดียวกับ "วงเงินแยกตามชนิดงบ" ที่เจ้าของบอกว่าอ่านง่าย */
+  safeRun('คำขอตามช่วงวงเงิน', ()=>amtBandTable('chReqBand', Q.map(r=>({cat:rc(r), amt:r.amt})), {unit:'คำขอ'}));
   safeRun('กล่องคำขอตามเขต', ()=>{
     const zG=groupQ(r=>{ const z=gapZoneOf(r.code, r.segs); return z==null?'ไม่ระบุ':String(z); }, k=>isNaN(k)?'ไม่ระบุเขต':('เขต '+k));
     const keys=Object.keys(zG).sort((a,b)=>(isNaN(a)?99:+a)-(isNaN(b)?99:+b));
-    reqBoxes('chReqZone', keys.map(k=>[k,zG[k]]), k=>isNaN(k)?'#9aa5a3':zoneColor(+k), {small:true});
+    /* v31.37 ผู้ใช้: "ไม่ต้องใส่ละเอียดขนาดนั้น แค่มีหมายเลขเขต วงเงิน %" */
+    shareBars('chReqZone', keys.map(k=>{ const g=zG[k], zi=KK_ZONES[k];
+      return { label:isNaN(k)?'ไม่ระบุเขต':('เขต '+k), v:g.n, color:isNaN(k)?'#9aa5a3':zoneColor(+k),
+        tip:(zi?'สส. '+esc(zi.mp)+' · '+esc(zi.party)+'<br>':'')+g.n+' คำขอ · วงเงินระบุแล้ว '+fmt(g.amt)+' บาท'+(g.wait?' · รอประเมิน '+g.wait:'') }; }),
+      {unit:'คำขอ', cols:2});
   });
   // กิจกรรม — 8 อันดับแรก + อื่นๆ
   safeRun('กล่องคำขอตามกิจกรรม', ()=>{
@@ -8866,14 +9281,14 @@ function renderRequests(){
   const mRows=[...MUAD_ORDER,'แขวงฯ','ถ่ายโอน','ไม่ระบุ'].filter(m=>muadRows[m])
     .sort((a,b)=>muadRows[b].n-muadRows[a].n)
     .map(m=>({label:recMuadLabel(m), segs:muadRows[m].segs, right:`${muadRows[m].n} คำขอ · ${[...muadRows[m].roads].filter(isRoadCode).length} สาย`}));
-  hstack('chReqMuad', mRows, segsOrder, {unit:'คำขอ'});
+  hstack('chReqMuad', mRows, segsOrder, {unit:'คำขอ', sumLabel:'รวมทุกหมวด'});
   // ตารางสรุปรายสาย
   document.querySelector('#reqRoadTable tbody').innerHTML = [...counts].sort((a,b)=>SUF3(a[0])-SUF3(b[0])||a[0].localeCompare(b[0],'th')).map(([code,n])=>{
     const list=byRoad[code], r=roadInfo[code];
     const km=list.reduce((a,x)=>a+x.km,0);
     const amt=list.reduce((a,x)=>a+(x.amt||0),0);
     const pct=(r?.len_acct&&km>0)?Math.min(100,100*km/r.len_acct):null;
-    const catsIn=[...new Set(list.map(x=>x.cat))];
+    const catsIn=[...new Set(list.map(x=>catShow(x.cat)))];   // v31.34 ตารางรายสายก็บอกว่าก้อนไหนเป็นเงินเหลือจ่าย
     const yrsIn=[...new Set(list.map(x=>x.year))].sort();
     return `<tr data-code="${code}" style="cursor:pointer">
       <td><b>${code}</b></td><td style="white-space:nowrap">${esc(r?.name||'—')}</td><td style="white-space:nowrap">${muadCell(r?.muad)}</td>
@@ -9421,7 +9836,9 @@ function renderYearly(){
     ${noHist?`<div class="card" style="margin-bottom:14px"><div class="note" style="margin:0;padding:8px 2px">ปีงบ ${y} ยังไม่มีโครงการในประวัติ — ดูส่วนเช็คคำขอด้านล่างว่าปีนี้ยื่นขออะไรไปบ้าง</div></div>`:''}
     <div class="grid kpis kpi3">
       ${kico('📋','var(--tile-blue)','โครงการปีนี้', `${H.length} <small>โครงการ</small>`, `ปีงบ ${y}${agLbl} · จาก ${histData.length} โครงการทุกปี`)}
-      ${kico('🛣️','var(--tile-teal)','สาย/สะพานที่มีงาน', `${codes.size} <small>รหัส</small>`, `${(100*codes.size/Math.max(1,ALL_CODES.length)).toFixed(0)}% ของบัญชี${hBld.length?` · งานอาคาร ${hBld.length}`:''}`)}
+      ${(()=>{const sp=splitCodes([...codes]);   /* v31.33 สะพานมีทะเบียนของตัวเอง ห้ามเอาไปหารกับจำนวนสายทาง */
+        return kico('🛣️','var(--tile-teal)','สาย/สะพานที่มีงาน', `${sp.road.length+sp.bridge.length} <small>รหัส</small>`,
+          splitFoot(sp,hBld.length?` · งานอาคาร ${hBld.length}`:''));})()}
       ${kico('💰','var(--tile-green)','วงเงินตามสัญญารวม', fmtM(tot), `${withAmt} รายการที่ระบุวงเงิน · เฉลี่ย ${fmtM(tot/Math.max(1,withAmt))}`)}
       ${kico('🛤️','var(--tile-violet)','ระยะทางถนนที่ทำ', `${fmt(+roadKm.toFixed(1))} <small>กม.</small>`, `ก่อสร้าง ${fmt(+cls['ก่อสร้าง'].km.toFixed(1))} · ขยาย ${fmt(+cls['ขยาย'].km.toFixed(1))} · บำรุง ${fmt(+cls['บำรุง'].km.toFixed(1))} กม.`)}
       ${kico('💡','var(--tile-amber)','ไฟฟ้า · ITS / กล้อง', [poles?fmt(poles)+' <small>ต้น</small>':'', cameraPoints?fmt(cameraPoints)+' <small>จุด ITS</small>':''].filter(Boolean).join(' · ')||'—', `ไฟฟ้า ${hE.length} โครงการ · ITS ${hC.length} โครงการ`)}
@@ -9444,6 +9861,7 @@ function renderYearly(){
       <div class="card"><h3>หน่วยดำเนินการ</h3><div class="note">ล้านบาท — คลิกแท่งเพื่อกรองเฉพาะหน่วยนั้น คลิกซ้ำเพื่อดูทุกหน่วย</div><div id="yrAgency"></div></div>
       <div class="card"><h3>วงเงินแยกตามชนิดงบ</h3><div class="note">ล้านบาท — ชี้ที่แท่งเพื่อดูจำนวนโครงการและ % ของปี</div><div id="yrType"></div></div>
     </div>
+    <div class="card" style="margin-top:14px"><h3>โครงการแยกตามช่วงวงเงิน (เรทงบ)</h3><div class="note">แถวละชนิดงบ · ช่องละช่วงวงเงิน — ตัวเลขบนคือจำนวนโครงการ ตัวเลขล่างคือ % ของชนิดงบนั้น · แถวท้ายคือรวมทุกชนิดงบ</div><div id="yrBand"></div></div>
     <div class="grid two" style="margin-top:14px">
       <div class="card"><h3>วงเงินแยกตามหมวดบำรุงทาง</h3><div class="note">ล้านบาท — หมวดของสายที่ทำ · แขวงฯ = งานที่ไม่ผูกสาย</div><div id="yrMuad"></div></div>
       <div class="card"><h3>กิจกรรมที่ทำปีนี้</h3><div class="note">ล้านบาท — ชี้เพื่อดูจำนวนโครงการ</div><div id="yrAct"></div></div>
@@ -9477,6 +9895,11 @@ function renderYearly(){
   asel.addEventListener('change',()=>{ yrAgency=asel.value; renderYearly(); });
 
   const CARDS={
+   'ช่วงวงเงิน': ()=>{
+      if(!H.length) return;
+      /* v31.36 แถวละชนิดงบ ท่อนละช่วงวงเงิน (เรทงบ) — ตัวเดียวกับหน้าคำของบ */
+      amtBandTable('yrBand', H.map(x=>({cat:normCat(x.budgetType), amt:x.amount})), {unit:'โครงการ'});
+   },
    'ชนิดงบ': ()=>{
       if(!H.length) return;
       const byT={}; H.forEach(x=>{ const k=normCat(x.budgetType); byT[k]=byT[k]||{amt:0,n:0}; byT[k].amt+=(x.amount||0); byT[k].n++; });
@@ -9641,7 +10064,7 @@ function renderZbOverview(){
   });
   hstack('chZbMuad', [...MUAD_ORDER,'ไม่ระบุ'].filter(m=>muadRows[m]).sort((a,b)=>muadRows[b].n-muadRows[a].n)
     .map(m=>({label:'หมวด'+m, segs:muadRows[m].segs, right:`${muadRows[m].n} คำขอ · ${muadRows[m].roads.size} สาย`})),
-    segsOrder, {unit:'คำขอ'});
+    segsOrder, {unit:'คำขอ', sumLabel:'รวมทุกหมวด'});
   // การ์ดที่ 4: ทุกปี -> vbar ต่อปี | ปีเดียว -> โดนัท
   if(all){
     vbar('chZbSecond', zbYears.map(String),
@@ -10079,9 +10502,20 @@ function drawLanes(container, roadLen, laneDefs, stripCode){
   const plotW=W-labelW-padR, x0=labelW;
   // v29.4 — ใช้ตัวคิดหน้าต่างตัวเดียวกับ Strip Map (ห้ามมีที่ที่สองที่สมมติว่าเริ่ม 0+000)
   const DOM=stripDomain(roadLen, laneDefs.flatMap(l=>l.segs||[]), kmExt(stripCode));
+  /* v31.33 จุดเสี่ยงที่กรอก กม. เกินช่วงสายทาง ก็ไม่วาดเหมือนกัน แต่ต้องขึ้นหมายเหตุ */
+  const HIDDEN=[];
+  laneDefs=laneDefs.map(l=>({...l,segs:stripKeep(l.segs,DOM,HIDDEN,l.label)}));
   const SPAN=Math.max(0.001, DOM.hi-DOM.lo);
   const X=km=>x0+plotW*Math.max(0,Math.min(1,(km-DOM.lo)/SPAN));
   stripLog(container, DOM, laneDefs.flatMap(l=>l.segs||[]));
+  window.__strip.hidden=stripHiddenList(HIDDEN).length;
+  if(HIDDEN.length){
+    const n=document.createElement('div'); n.className='note stripnote';
+    n.innerHTML=stripHiddenNote(HIDDEN,DOM);
+    n.style.cssText='margin:0 0 7px;padding:5px 9px;background:var(--tile-blue2);border-left:3px solid var(--navy);border-radius:0 6px 6px 0';
+    box.insertBefore(n,svg);
+    window.__strip.hiddenNote=true;
+  }
   const endX=X(DOM.hi);
   niceTicks(SPAN,6).forEach(t=>{ if(t>SPAN) return;
     const tx=X(DOM.lo+t);
@@ -10094,7 +10528,7 @@ function drawLanes(container, roadLen, laneDefs, stripCode){
     el('rect',{class:'lanebg',x:x0,y:by,width:plotW,height:bh,rx:4},svg);
     ln.segs.forEach(sg=>{
       const xa=X(sg.a), xb=X(Math.min(sg.b,DOM.hi));
-      const rect=el('rect',{class:'seg',x:xa,y:by,width:Math.max(4,xb-xa),height:bh,rx:3,fill:sg.color||ln.color,stroke:'#fcfcfb','stroke-width':1},svg);
+      const rect=el('rect',{class:'seg',x:xa,y:by,width:Math.max(4,xb-xa),height:bh,rx:3,fill:sg.color||ln.color,stroke:C.halo,'stroke-width':1},svg);
       hitOn(rect);   // กฎ 8
       rect.addEventListener('mousemove',e=>showTip(sg.tip,e.clientX,e.clientY));
       rect.addEventListener('mouseleave',hideTip);
@@ -10191,7 +10625,7 @@ function renderEquip(){
   E.forEach(x=>{ const m=muadByCode()[x.code]||x.sourceTab||'ไม่ระบุ'; const t=x.etype||x.dtype||'ไม่ระบุ';
     byMd[m]=byMd[m]||{segs:{},n:0}; byMd[m].segs[t]=(byMd[m].segs[t]||0)+1; byMd[m].n++; });
   hstack('chEqMuad', Object.entries(byMd).sort((a,b)=>b[1].n-a[1].n).map(([m,d])=>({label:recMuadLabel(m), segs:d.segs, right:`${d.n} รายการ`})),
-    types.map(t=>({k:t,label:t,color:TC[t]})), {unit:'รายการ'});
+    types.map(t=>({k:t,label:t,color:TC[t]})), {unit:'รายการ', sumLabel:'รวมทุกหมวด'});
   renderEquipmentTable(E,body);
 }
 /* v31.18 ผู้ใช้: "โชว์เป็นตามสายทาง ... เจาะลึกก็กดเข้าไปดู". Only replace the table presentation. */
@@ -10575,7 +11009,7 @@ function renderRiskSum(){
   R.forEach(x=>{ const m=riskMuad(x); const t=x.rtype||'ไม่ระบุ';
     byMd[m]=byMd[m]||{segs:{},n:0,f:0}; byMd[m].segs[t]=(byMd[m].segs[t]||0)+1; byMd[m].n++; if(riskFixed(x)) byMd[m].f++; });
   hstack('chRiskMuad', Object.entries(byMd).sort((a,b)=>b[1].n-a[1].n).map(([m,d])=>({label:recMuadLabel(m), segs:d.segs, right:`${d.n} จุด · แก้แล้ว ${d.f}`})),
-    types.map(t=>({k:t,label:t,color:TC[t]})), {unit:'จุด'});
+    types.map(t=>({k:t,label:t,color:TC[t]})), {unit:'จุด', sumLabel:'รวมทุกหมวด'});
   // Top 10 สาย (สีตามหมวด · คลิกไปรายสาย)
   lolli('chRiskRoad', Object.entries(byR0).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([c,n])=>({
       label:c, v:n, color:recMuadColor(muadByCode()[c]||R.find(x=>x.code===c)?._m||'ไม่ระบุ'),
