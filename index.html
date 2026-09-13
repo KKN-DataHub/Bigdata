@@ -690,6 +690,31 @@ select.search{width:auto}
 .bandtbl .bsum td{border-top:2px solid var(--grid);border-bottom:0;background:var(--tint-soft)}
 .bandtbl .bsum .bname{color:var(--strong)}
 @media(max-width:700px){ .bandtbl th,.bandtbl td{padding:4px 2px} .bandtbl .bc b,.bandtbl .btot b{font-size:12px} .bandtbl .bname{font-size:11px;max-width:96px} }
+/* v31.39 ผู้ใช้: "ดูแว่บเดียวดูไม่ออกว่าอันไหนเยอะสุด เพราะไม่เห็นกราฟเปรียบเทียบ"
+   แถบเทียบอยู่บน (ยาวตามค่าจริง) · ตารางละเอียดพับเก็บไว้ล่าง กดค่อยกาง — หน้าไม่รก แต่ข้อมูลไม่หาย */
+.mtx-lg{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;font-size:11.5px;color:var(--ink2);margin-bottom:8px}
+.mtx-lg .bdot{display:inline-block;width:7px;height:7px;border-radius:2px;margin-right:4px;vertical-align:middle}
+.mtx-all{margin-left:auto;color:var(--strong);font-size:12px;white-space:nowrap}
+.mtx-bars{display:flex;flex-direction:column;justify-content:space-between}
+.mtx-row{display:grid;grid-template-columns:auto 1fr 150px;gap:10px;align-items:center;padding:5px 0}
+.mtx-row+.mtx-row{border-top:1px solid var(--grid)}
+.mtx-l{display:flex;align-items:center;gap:6px;min-width:96px;max-width:190px;font-size:12.5px;font-weight:600;color:var(--ink)}
+.mtx-nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mtx-t{height:18px;border-radius:5px;background:var(--tint-track);overflow:hidden}
+.mtx-fill{height:100%;display:flex;border-radius:5px;overflow:hidden;min-width:2px}
+.mtx-fill i{display:block;height:100%}
+.mtx-v{text-align:right;font-variant-numeric:tabular-nums}
+.mtx-v b{font-size:14px;color:var(--strong)}
+.mtx-v small{display:block;font-size:10.5px;color:var(--muted);line-height:1.25}
+.mtx-row.top .mtx-l,.mtx-row.top .mtx-v b{color:var(--warn-ink)}
+.mtx-crown{font-size:9.5px;font-weight:700;background:var(--tint-cat);color:var(--warn-ink);border-radius:4px;padding:1px 6px;margin-left:6px}
+.mtx-more{margin:10px 0 0;background:none;border:1px solid var(--grid);border-radius:99px;color:var(--teal-ink);
+  font-family:inherit;font-size:11.5px;padding:3px 12px}
+.mtx-more:hover{background:var(--teal-soft)}
+.mtx-tbl{margin-top:8px}
+.mtx-tbl[hidden]{display:none}
+@media(max-width:700px){ .mtx-row{grid-template-columns:auto 1fr 104px;gap:7px} .mtx-v b{font-size:12.5px} .mtx-l{font-size:11.5px;min-width:62px;max-width:118px} .mtx-crown{display:none} }
+@media print{ .mtx-tbl[hidden]{display:block!important} .mtx-more{display:none} }
 .catgrid-s .catbox .sval{font-size:18px} .catgrid-s .catbox .camt{font-size:13px} .catgrid-s .catbox .sname{font-size:11px}
 .onelg i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
 .chip-none{color:var(--muted);border-style:dashed;background:transparent}
@@ -1980,7 +2005,12 @@ const AUTH={ state:'out', user:null, name:null, uid:null, idToken:null, exp:0, r
 
 /* ด่านทำงานเฉพาะตอนเปิดผ่านเว็บ (http/https) — เปิดไฟล์จากเครื่องตรง ๆ = ไม่มีด่าน
    (ไฟล์อยู่ในมือเจ้าของอยู่แล้ว และปลายทางของ Google ไม่รับคำขอจากหน้าที่เปิดแบบไฟล์อยู่ดี) */
-const authOn=()=>!!(FIREBASE.apiKey||'').trim()&&!!(FIREBASE.projectId||'').trim()&&/^https?:$/.test(location.protocol);
+/* v31.38 ผู้ใช้ (12 ก.ย. 69): "เดี๋ยวทำไมกลับมาล็อคอีกแล้วล่ะ" → ปิดด่านไว้ก่อน
+   สวิตช์เดียวที่นี่: false = ไม่มีด่านเลย ทุกหน้าเปิดได้เหมือนไม่มีระบบล็อกอิน (โค้ดยังอยู่ครบ ไม่ถูกถอด)
+   จะเปิดใช้เมื่อไหร่ แก้เป็น true ที่บรรทัดนี้บรรทัดเดียว — แต่ต้องตั้งค่าใน Firebase Console ให้ครบก่อน
+   (เปิด Google sign-in · ใส่ชื่อโดเมนใน Authorized domains · ตั้งบัญชีตัวเองเป็นผู้ดูแล) ไม่งั้นจะเข้าไม่ได้แม้แต่เจ้าของ */
+let AUTH_ENABLED=false;
+const authOn=()=>AUTH_ENABLED&&!!(FIREBASE.apiKey||'').trim()&&!!(FIREBASE.projectId||'').trim()&&/^https?:$/.test(location.protocol);
 const authed=()=>!authOn()||AUTH.state==='ok';
 const pageAllowed=id=>authed()||PUBLIC_PAGES.includes(id);
 const firstName=e=>String(AUTH.name||e||'').split('@')[0].split(' ')[0];
@@ -3142,7 +3172,7 @@ function matrixTable(container, rows, colsIn, {unit='รายการ', onClic
   RS.forEach(r=>{ SUM._n+=r._n; Object.entries(r.segs||{}).forEach(([k,v])=>SUM.segs[k]=(SUM.segs[k]||0)+(+v||0)); });
   const cols=(colsIn||[]).filter(c=>SUM.segs[c.k]);
   const use=cols.length?cols:(colsIn||[]);
-  box.__rows=RS; box.__fit=()=>{};
+  box.__rows=RS;
   const w=(70/Math.max(1,use.length)).toFixed(3);
   const cell=(r,c)=>{ const n=r.segs&&r.segs[c.k]||0, p=r._n?100*n/r._n:0;
     if(!n) return '<td class="bc"><span class="bz">–</span></td>';
@@ -3150,14 +3180,42 @@ function matrixTable(container, rows, colsIn, {unit='รายการ', onClic
   const line=(r,cls)=>`<tr${cls?' class="'+cls+'"':''}${onClick&&!cls?' data-k="'+esc(r.label)+'" style="cursor:pointer"':''}>`+
       `<td class="bname" title="${esc(r.label)}">${esc(r.label)}</td>`+use.map(c=>cell(r,c)).join('')+
       `<td class="btot"><b>${fmt(r._n)}</b><i>${esc(r.right||unit)}</i></td></tr>`;
-  box.innerHTML='<div class="tblwrap"><table class="bandtbl"><colgroup><col style="width:15%">'+
+  /* ── แถบเทียบด้านบน (v31.39) ───────────────────────────────────────────────
+     ผู้ใช้: "ดูแว่บเดียวดูไม่ออกว่าอันไหนเยอะสุด เพราะไม่เห็นกราฟเปรียบเทียบ"
+     ความยาวแถบ = ค่าจริงเทียบกับแถวที่มากที่สุด → ตาเห็นอันดับทันทีโดยไม่ต้องอ่านตัวเลข
+     ท่อนสีในแถบ = สัดส่วนของแต่ละคอลัมน์ในแถวนั้น · แถวที่มากที่สุดเน้นไว้พร้อมป้ายกำกับ */
+  const mx=Math.max(...RS.map(r=>r._n),0)||1, grand=SUM._n||1;
+  const topRow=RS.reduce((a,r)=>r._n>a._n?r:a,RS[0]);
+  const seg=(r,c)=>{ const n=r.segs&&r.segs[c.k]||0; if(!n) return '';
+    return `<i style="width:${(100*n/(r._n||1)).toFixed(3)}%;background:${c.color}" title="${esc(r.label)} · ${esc(c.label)} · ${fmt(n)} ${esc(unit)} · ${(100*n/(r._n||1)).toFixed(0)}%"></i>`; };
+  const bar=r=>`<div class="mtx-row${r===topRow?' top':''}"${onClick?' data-k="'+esc(r.label)+'" style="cursor:pointer"':''}>`+
+      `<div class="mtx-l" title="${esc(r.label)}"><span class="mtx-nm">${esc(r.label)}</span>${r===topRow&&RS.length>1?'<span class="mtx-crown">สูงสุด</span>':''}</div>`+
+      `<div class="mtx-t"><div class="mtx-fill" style="width:${(100*r._n/mx).toFixed(2)}%">${use.map(c=>seg(r,c)).join('')}</div></div>`+
+      `<div class="mtx-v"><b>${fmt(r._n)}</b><small>${(100*r._n/grand).toFixed(0)}%${r.right?' · '+esc(r.right):' '+esc(unit)}</small></div></div>`;
+  box.innerHTML='<div class="mtx">'+
+    '<div class="mtx-lg">'+use.map(c=>`<span><i class="bdot" style="background:${c.color}"></i>${esc(c.label)}</span>`).join('')+
+      `<b class="mtx-all">${esc(sumLabel)} ${fmt(SUM._n)} ${esc(unit)}</b></div>`+
+    '<div class="mtx-bars">'+RS.map(bar).join('')+'</div>'+
+    `<button type="button" class="mtx-more" aria-expanded="false">▾ ดูรายละเอียดทุกช่อง</button>`+
+    '<div class="tblwrap mtx-tbl" hidden><table class="bandtbl"><colgroup><col style="width:15%">'+
     use.map(()=>`<col style="width:${w}%">`).join('')+
     '<col style="width:15%"></colgroup><thead><tr><th></th>'+
     use.map(c=>`<th><span class="bdot" style="background:${c.color}"></span>${esc(c.label)}</th>`).join('')+
     '<th class="btot">รวม</th></tr></thead><tbody>'+
-    RS.map(r=>line(r,'')).join('')+(sumRow&&RS.length>1?line(SUM,'bsum'):'')+'</tbody></table></div>';
-  if(onClick) box.querySelectorAll('tr[data-k]').forEach(tr=>{ hitOn(tr,'pointer');
-    tr.addEventListener('click',()=>{ const r=RS.find(x=>String(x.label)===tr.dataset.k); if(r) onClick(r); }); });
+    RS.map(r=>line(r,'')).join('')+(sumRow&&RS.length>1?line(SUM,'bsum'):'')+'</tbody></table></div></div>';
+  const more=box.querySelector('.mtx-more'), tbl=box.querySelector('.mtx-tbl');
+  hitOn(more,'pointer');
+  more.addEventListener('click',()=>{ const open=tbl.hidden;
+    tbl.hidden=!open; more.setAttribute('aria-expanded',open?'true':'false');
+    more.textContent=(open?'▴ ซ่อนรายละเอียด':'▾ ดูรายละเอียดทุกช่อง'); });
+  if(onClick){ box.querySelectorAll('tr[data-k], .mtx-row[data-k]').forEach(el=>{ hitOn(el,'pointer');
+    el.addEventListener('click',()=>{ const r=RS.find(x=>String(x.label)===el.dataset.k); if(r) onClick(r); }); }); }
+  /* กฎ 16 — การ์ดคู่กันต้องเต็มเท่ากัน: เติมที่ว่างให้แถบกระจายเต็มความสูง ไม่ใช่กองอยู่ข้างบน */
+  box.__fitAny=true;
+  box.__fit=h=>{ const bars=box.querySelector('.mtx-bars'); if(!bars) return;
+    bars.style.minHeight='';
+    const other=box.getBoundingClientRect().height-bars.getBoundingClientRect().height;
+    bars.style.minHeight=Math.max(0,Math.round(h-other))+'px'; };
 }
 /* เครื่องมือเดิมชื่อ hstack — ตอนนี้เป็นทางผ่านไปตารางไขว้ ที่เรียกใช้อยู่เดิมจึงไม่ต้องแก้ (กฎ 1) */
 function hstack(container, rows, segsOrder, {unit='รายการ', onClick=null, sumLabel}={}){
@@ -3767,7 +3825,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.37', APP_DATE='12 ก.ย. 2569';
+const APP_VER='v31.39', APP_DATE='13 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -4354,10 +4412,12 @@ function fillCards(pg){
     const kids=[...card.children].filter(k=>k.getBoundingClientRect().height>0);
     const last=kids[kids.length-1]; if(!last) return;
     const gap=(cr.bottom-padB)-last.getBoundingClientRect().bottom;
-    const boxes=[...card.querySelectorAll('[id]')].filter(b=>b.__fit && b.querySelector('svg.viz'));
+    /* v31.39 ผู้ใช้: "ถ้าจัดแบบ 2 คอลั่ม ต้องจัดให้เสมอกันสิ" — ของที่ไม่ใช่กราฟ SVG (แถบเทียบ · กล่องกลุ่ม)
+       ก็ต้องยืดเต็มการ์ดเหมือนกัน ไม่ใช่กองอยู่ข้างบนแล้วเหลือที่ว่างข้างล่าง (กฎ 22) */
+    const boxes=[...card.querySelectorAll('[id]')].filter(b=>b.__fit && (b.querySelector('svg.viz')||b.__fitAny));
     if(boxes.length===1){                                      // (ก) การ์ดกราฟใบเดียว → สั่งกราฟวาดใหม่ให้สูงพอดี
       const box=boxes[0], svg=box.querySelector('svg.viz');
-      const h=svg.getBoundingClientRect().height;
+      const h=(svg||box).getBoundingClientRect().height;
       const key=Math.round(cr.height)+':'+Math.round(h);
       if(box.dataset.fitKey===key) return;
       box.dataset.fitKey=key;
@@ -5401,6 +5461,9 @@ function exportCSV(){
 const MUAD_ORDER=['เมือง','น้ำพอง','หนองเรือ','มัญจาคีรี','พล'];
 const MUAD_COLOR={'เมือง':'#d9a441','น้ำพอง':'#2a78d6','หนองเรือ':'#008300','มัญจาคีรี':'#4a3aa7','พล':'#e87ba4'};
 const muadColor = m => MUAD_COLOR[m]||'#9aa5a3';
+/* v31.39 สีของ "แขวงฯ" (งานที่ไม่ได้อยู่ในหมวดใด) เคยใช้ C.navy ซึ่งเป็นสีโครงที่เปลี่ยนตามชุดสี
+   ชุดกลางคืนจึงกลายเป็นท่อนสีเดียวกับพื้นจนมองไม่เห็น — กฎ 18: สีข้อมูลต้องคงที่ทุกชุดสี */
+const UNIT_COLOR='#4a6fa5';
 /* KPI การ์ดแบบมีไอคอน (ใช้ร่วมทุกหน้า) */
 const kpill=(ico,grad,col,lbl,val,foot)=>`<div class="kpill"><div class="kic" style="background:${grad}">${ico}</div><div style="min-width:0"><div class="lbl">${lbl}</div><div class="val" style="color:${inkColor(col)}">${val}</div><div class="foot">${foot}</div></div></div>`;
 /* ================= v23.3 — PCU (ปริมาณจราจร) =================
@@ -5445,6 +5508,12 @@ function groupBoxes(hostId, groups, colorOf, opt){
         (g.amt?`<div class="camt">${g.amt}</div>`:'')+
         (g.foot?`<div class="sfoot">${g.foot}</div>`:'')+`</div>`;
     }).join('')}</div>`;
+  /* กฎ 22 (v31.39) — การ์ดคู่กันต้องเต็มเท่ากัน: ยืดตารางกล่องให้เต็มที่ว่างที่เหลือ */
+  box.__fitAny=true;
+  box.__fit=h=>{ const g=box.querySelector('.catgrid'); if(!g) return;
+    g.style.minHeight=''; g.style.alignContent='stretch';
+    const other=box.getBoundingClientRect().height-g.getBoundingClientRect().height;
+    g.style.minHeight=Math.max(0,Math.round(h-other))+'px'; };
 }
 /* สปาร์กไลน์เล็กๆ ในการ์ด KPI — เส้นเดียว ไม่มีแกน ให้เห็นแนวโน้มพอ */
 function sparkSVG(vals,color,w,h){
@@ -7647,7 +7716,7 @@ function renderHistory(){
           <div class="kico" style="background:var(--tile-teal);width:44px;height:44px;border-radius:12px;font-size:22px">🏛️</div>
           <div style="flex:1;min-width:0">
             <h3 style="margin-bottom:2px">หน่วยดำเนินการ</h3>
-            <div class="note">แถวละปี แท่งซ้อนแบ่งตามหน่วย (ลบ.) — ชี้ท่อนเพื่อดูรายละเอียดและ %</div>
+            <div class="note">แถวละปี แถบยาวเทียบกันได้ แบ่งสีตามหน่วย (ลบ.) — กดปุ่มใต้แถบเพื่อดูตัวเลขทุกช่อง</div>
             <div id="chAgency"></div>
           </div>
         </div>
@@ -7665,7 +7734,7 @@ function renderHistory(){
       return `<div class="grid ${bldCard?'two':''}" style="margin-bottom:14px">${agencyCard}${bldCard}</div>`; })()}
     <div class="grid two">
       <div class="card"><h3>วงเงินตามสัญญาต่อปีงบประมาณ</h3><div class="note">ล้านบาท</div><div id="chHistYear"></div></div>
-      <div class="card"><h3>วงเงินต่อปี แยกตามชนิดงบ (ครบทุกชนิด)</h3><div class="note">ล้านบาท — ชี้ที่แท่งเพื่อดูจำนวนโครงการและ % ของปีนั้น</div><div id="chHistType"></div></div>
+      <div class="card"><h3>วงเงินต่อปี แยกตามชนิดงบ (ครบทุกชนิด)</h3><div class="note">ล้านบาท — แถบยาวเทียบกันได้ทุกปี กดปุ่มใต้แถบเพื่อดูตัวเลขทุกช่อง</div><div id="chHistType"></div></div>
     </div>
     <div class="grid two" style="margin-top:14px">
       <div class="card"><h3>วงเงินต่อปี แยกตามหมวดบำรุงทาง</h3><div class="note">แถวละปี แท่งซ้อนแบ่งตามหมวด (ลบ.) — ชี้ท่อนเพื่อดูรายละเอียดและ %</div><div id="chHistMuad"></div></div>
@@ -7720,11 +7789,11 @@ function renderHistory(){
           byA[u].y[x.year]=(byA[u].y[x.year]||0)+(x.amount||0); byA[u].c[x.year]=(byA[u].c[x.year]||0)+1; });
         const units=Object.entries(byA).sort((a,b)=>b[1].amt-a[1].amt).map(e=>e[0]);
         let fb=0;
-        const uColor=u=>u==='แขวงฯ'?C.navy:(u.startsWith('หมวด')?muadColor(u.replace('หมวด','')):(u==='ไม่ระบุ'?'#9aa5a3':CAT8[(fb++)%8]));
+        const uColor=u=>u==='แขวงฯ'?UNIT_COLOR:(u.startsWith('หมวด')?muadColor(u.replace('หมวด','')):(u==='ไม่ระบุ'?'#9aa5a3':CAT8[(fb++)%8]));
         const uc=Object.fromEntries(units.map(u=>[u,uColor(u)]));
         hstack('chAgency', years.map(y=>({label:'ปี '+y,
             segs:Object.fromEntries(units.map(u=>[u, +((byA[u].y[y]||0)/1e6).toFixed(1)])),
-            right:`รวม ${fmt(+(H.filter(x=>x.year===y).reduce((a,x)=>a+(x.amount||0),0)/1e6).toFixed(1))} ลบ. · ${H.filter(x=>x.year===y).length} โครงการ`})),
+            right:`${H.filter(x=>x.year===y).length} โครงการ`})),
           units.map(u=>({k:u, label:u, color:uc[u]})), {unit:'ลบ.', labelW:66, sumLabel:'รวมทุกปี'});
       })();
    },
@@ -7741,8 +7810,8 @@ function renderHistory(){
         const bYears=years.filter(y=>hBld.some(x=>x.year===y));
         hstack('chBuilding', bYears.map(y=>({label:'ปี '+y,
             segs:Object.fromEntries(bUnits.map(u=>[u, +((byU[u].y[y]||0)/1e6).toFixed(2)])),
-            right:`รวม ${fmt(+(hBld.filter(x=>x.year===y).reduce((a,x)=>a+(x.amount||0),0)/1e6).toFixed(2))} ลบ. · ${hBld.filter(x=>x.year===y).length} งาน`})),
-          bUnits.map(u=>({k:u, label:u, color:u==='แขวงฯ'?C.navy:(u.startsWith('หมวด')?muadColor(u.replace('หมวด','')):'#9aa5a3')})), {unit:'ลบ.', labelW:66, sumLabel:'รวมทุกปี'});
+            right:`${hBld.filter(x=>x.year===y).length} งาน`})),
+          bUnits.map(u=>({k:u, label:u, color:u==='แขวงฯ'?UNIT_COLOR:(u.startsWith('หมวด')?muadColor(u.replace('หมวด','')):'#9aa5a3')})), {unit:'ลบ.', labelW:66, sumLabel:'รวมทุกปี'});
       })();
    },
    'ป้ายปริมาณงานสะสม': ()=>{
@@ -7792,18 +7861,12 @@ function renderHistory(){
         {unit:'ลบ.', height:300, area:true});
    },
    'วงเงินรายปีแยกชนิดงบ': ()=>{
-      vbar('chHistType', years.map(String),
-        allTypes.map(g=>{
-          const amts=years.map(y=>H.filter(x=>x.year===y&&x.budgetType===g).reduce((a,x)=>a+(x.amount||0),0));
-          return {label:g, color:TCOLOR[g],
-            data:amts.map(a=>+(a/1e6).toFixed(1)),
-            tips:years.map((y,yi)=>{
-              const n=H.filter(x=>x.year===y&&x.budgetType===g).length;
-              const pct=yearTot[yi]?(100*amts[yi]/yearTot[yi]).toFixed(1):'0';
-              return `<b>ปี ${y} · ${esc(g)}</b><br>วงเงิน ${fmt(amts[yi])} บาท<br>${n} โครงการ · ${pct}% ของวงเงินปีนี้`;
-            })};
-        }),
-        {unit:'ลบ.', stacked:true, height:330});
+      /* v31.39 ผู้ใช้: "กราฟแบบรูป 2 ก็ดูยาก เปลี่ยนดีกว่า" — แท่งซ้อนเทียบกันไม่ได้เพราะท่อนกลางไม่ได้เริ่มที่ศูนย์
+         เปลี่ยนเป็นแถบเทียบรายปี (ยาวตามเงินจริง) + ตารางละเอียดพับไว้ ใช้เครื่องมือเดียวกับกล่องอื่น */
+      hstack('chHistType', years.map(y=>({label:'ปี '+y,
+          segs:Object.fromEntries(allTypes.map(g=>[g, +(H.filter(x=>x.year===y&&x.budgetType===g).reduce((a,x)=>a+(x.amount||0),0)/1e6).toFixed(1)])),
+          right:`${H.filter(x=>x.year===y).length} โครงการ`})),
+        allTypes.map(g=>({k:g, label:g, color:TCOLOR[g]})), {unit:'ลบ.', sumLabel:'รวมทุกปี'});
    },
    'วงเงินแยกหมวด': ()=>{
       (()=>{
@@ -7812,7 +7875,7 @@ function renderHistory(){
             const inY=H.filter(x=>x.year===y);
             return {label:'ปี '+y,
               segs:Object.fromEntries(muadsUsed.map(m=>[m, +(inY.filter(x=>recMuad(x)===m).reduce((a,x)=>a+(x.amount||0),0)/1e6).toFixed(1)])),
-              right:`รวม ${fmt(+(inY.reduce((a,x)=>a+(x.amount||0),0)/1e6).toFixed(1))} ลบ. · ${inY.length} โครงการ`};}),
+              right:`${inY.length} โครงการ`};}),
           muadsUsed.map(m=>({k:m, label:recMuadLabel(m), color:recMuadColor(m)})), {unit:'ลบ.', labelW:66, sumLabel:'รวมทุกปี'});
       })();
    },
@@ -9200,7 +9263,7 @@ function renderRequests(){
       </div>
       <div class="card"><h3>สายทางที่มีคำขอซ้ำมากที่สุด (Top 10)</h3><div class="note">จำนวนคำขอ — คลิกแท่งเพื่อดูรายละเอียดในมุมมองรายสาย</div><div id="chTopReq"></div></div>
     </div>
-    <div class="card" style="margin-top:14px"><h3>คำขอแยกตามหมวดบำรุงทาง</h3><div class="note">แท่งซ้อนแบ่งตามชนิดงบ — ชี้ที่ท่อนเพื่อดูรายละเอียด</div><div id="chReqMuad"></div></div>
+    <div class="card" style="margin-top:14px"><h3>คำขอแยกตามหมวดบำรุงทาง</h3><div class="note">แถบยาวเทียบกันได้ แบ่งสีตามชนิดงบ — กดปุ่มใต้แถบเพื่อดูตัวเลขทุกช่อง</div><div id="chReqMuad"></div></div>
     <!-- v30.6 ผู้ใช้สั่ง: ตารางรายงานทางการ (สรุปคำขอตามแหล่งงบ) มาก่อนสรุปรายสายทาง -->
     <div class="card" style="margin-top:14px">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:8px">
@@ -9943,7 +10006,7 @@ function renderYearly(){
       if(!HY.length) return;
       const byU={}; HY.forEach(x=>{ const u=histAgency(x); byU[u]=byU[u]||{amt:0,n:0}; byU[u].amt+=(x.amount||0); byU[u].n++; });
       const us=Object.keys(byU).sort((a,b)=>byU[b].amt-byU[a].amt);
-      const uColor=u=>u==='แขวงฯ'?C.navy:(u.startsWith('หมวด')?muadColor(u.replace('หมวด','')):'#9aa5a3');
+      const uColor=u=>u==='แขวงฯ'?UNIT_COLOR:(u.startsWith('หมวด')?muadColor(u.replace('หมวด','')):'#9aa5a3');
       hbar('yrAgency', us.map(u=>({label:u, v:+(byU[u].amt/1e6).toFixed(1), color:uColor(u), k:u,
         tip:`<b>${esc(u)}</b><br>${byU[u].n} โครงการ · ${fmt(byU[u].amt)} บาท${u===yrAgency?'<br><i>กำลังกรองหน่วยนี้อยู่ — คลิกอีกครั้งเพื่อดูทุกหน่วย</i>':'<br>คลิกเพื่อกรองเฉพาะหน่วยนี้'}`})),
         {unit:'ลบ.', labelW:110, onClick:it=>{ yrAgency=(yrAgency===it.label)?'all':it.label; renderYearly(); }});
@@ -10003,7 +10066,7 @@ function renderZbOverview(){
   document.getElementById('zbBody').innerHTML=`
     <div class="card"><h3>ความต้องการแยกตามหมวดบำรุงทาง</h3><div class="note">ทั้งหมด ${R.length} ช่วง กม. · ${roads.length} สาย · ถนน ${fmt(+rdKm.toFixed(1))} กม. · ไฟฟ้า ${fmt(pl)} ต้น · สะพาน ${fmt(Math.round(brM))} ม. — กล่องละหมวด</div><div id="chZbMuadBox"></div></div>
     <div class="grid two" style="margin-top:14px">
-      <div class="card"><h3>กิจกรรมที่ต้องการ แยกตามหมวด</h3><div class="note">แท่งซ้อนแบ่งตามกลุ่มกิจกรรม — ชี้ที่ท่อนเพื่อดูรายละเอียด</div><div id="chZbMuad"></div></div>
+      <div class="card"><h3>กิจกรรมที่ต้องการ แยกตามหมวด</h3><div class="note">แถบยาวเทียบกันได้ แบ่งสีตามกลุ่มกิจกรรม — กดปุ่มใต้แถบเพื่อดูตัวเลขทุกช่อง</div><div id="chZbMuad"></div></div>
       <div class="card"><h3>กลุ่มกิจกรรม</h3><div class="note">แต่ละกลุ่ม ขอกี่รายการ · กี่ % · ปริมาณรวม — แถบสีด้านบน = สัดส่วนจำนวนคำขอ</div><div id="chZbSecond"></div></div>
     </div>
     <div class="grid two" style="margin-top:14px">
@@ -10067,14 +10130,11 @@ function renderZbOverview(){
     segsOrder, {unit:'คำขอ', sumLabel:'รวมทุกหมวด'});
   // การ์ดที่ 4: ทุกปี -> vbar ต่อปี | ปีเดียว -> โดนัท
   if(all){
-    vbar('chZbSecond', zbYears.map(String),
-      ZB_GROUPS.map(g=>{
-        const data=zbYears.map(y=>zbData.filter(r=>r.year===y&&r.g===g).length);
-        if(data.every(v=>!v)) return null;
-        return {label:g.k, color:g.c, data,
-          tips:zbYears.map((y,yi)=>`<b>ปี ${y} · ${g.k}</b><br>${data[yi]} คำขอ`)};
-      }).filter(Boolean),
-      {unit:'คำขอ', stacked:true, height:300, fmtVal:v=>fmt(Math.round(v),0)});
+    /* v31.39 เปลี่ยนจากแท่งซ้อนเป็นแถบเทียบรายปี แบบเดียวกับกล่องอื่นทั้งระบบ */
+    hstack('chZbSecond', zbYears.map(y=>({label:'ปี '+y,
+        segs:Object.fromEntries(ZB_GROUPS.map(g=>[g.k, zbData.filter(r=>r.year===y&&r.g===g).length])),
+        right:`${zbData.filter(r=>r.year===y).length} คำขอ`})),
+      ZB_GROUPS.map(g=>({k:g.k, label:g.k, color:g.c})), {unit:'คำขอ', sumLabel:'รวมทุกปี'});
   }else{
     /* v31.6 ผู้ใช้: "กราฟโดนัทแบบนี้เริ่มดูรายละเอียดยาก" → กล่องละกลุ่ม (จำนวน · % · ปริมาณ) แบบเดียวกับหน้าคำของบ */
     groupBoxes('chZbSecond', byG.map(x=>[x.g.k,{label:x.g.k, n:x.n, amt:qty(x), tip:`${x.n} คำขอ · ${qty(x)}`}]), k=>ZB_GROUPS.find(g=>g.k===k).c, {unit:'คำขอ', small:true});
@@ -10605,7 +10665,7 @@ function renderEquip(){
     </div>
     <div class="grid two">
       <div class="card"><h3>แยกตามประเภทอุปกรณ์</h3><div class="note">จำนวนรายการ — ชี้เพื่อดูจำนวนหน่วยรวม</div><div id="chEqType"></div></div>
-      <div class="card"><h3>แยกตามหมวดบำรุงทาง</h3><div class="note">แท่งซ้อนแบ่งตามประเภท — ชี้ท่อนเพื่อดูรายละเอียด</div><div id="chEqMuad"></div></div>
+      <div class="card"><h3>แยกตามหมวดบำรุงทาง</h3><div class="note">แถบยาวเทียบกันได้ แบ่งสีตามประเภท — กดปุ่มใต้แถบเพื่อดูตัวเลขทุกช่อง</div><div id="chEqMuad"></div></div>
     </div>
     <div class="card" style="margin-top:14px">
       <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
@@ -10987,7 +11047,7 @@ function renderRiskSum(){
     </div>
     <div class="grid two">
       <div class="card"><h3>แบ่งตามประเภทจุดเสี่ยง</h3><div class="note">ชี้เพื่อดูจำนวนและสถานะ</div><div id="chRiskType"></div></div>
-      <div class="card"><h3>แบ่งตามหมวดบำรุงทาง</h3><div class="note">แท่งซ้อนแบ่งตามประเภท — ชี้ท่อนเพื่อดูรายละเอียด</div><div id="chRiskMuad"></div></div>
+      <div class="card"><h3>แบ่งตามหมวดบำรุงทาง</h3><div class="note">แถบยาวเทียบกันได้ แบ่งสีตามประเภท — กดปุ่มใต้แถบเพื่อดูตัวเลขทุกช่อง</div><div id="chRiskMuad"></div></div>
     </div>
     <div class="grid two" style="margin-top:14px">
       <div class="card"><h3>สายทางที่มีจุดเสี่ยงมากที่สุด (Top 10)</h3><div class="note">สีตามหมวด — คลิกแท่งเพื่อเปิดรายสาย</div><div id="chRiskRoad"></div></div>
