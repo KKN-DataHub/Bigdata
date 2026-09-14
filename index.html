@@ -537,7 +537,7 @@ select.search{width:auto}
 .reqrow .cat{font-weight:700}
 .reqrow .rng{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
 .reqrow .amt{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
-.amt.ok{color:#1a7a34}.amt.wait{color:var(--crit-ink)}
+.amt.ok{color:var(--pos-ink)}.amt.wait{color:var(--crit-ink)}   /* v31.41 darkink จับได้: เขียวเข้มตายตัวจมในชุดรุ่งเช้า (2.8:1) — สีสถานะต้องมาจากชุดสี (กฎ 18) */
 .loading{color:var(--muted);font-size:13px;padding:30px;text-align:center}
 .spin{display:inline-block;width:14px;height:14px;border:2px solid var(--grid);border-top-color:var(--teal);border-radius:50%;animation:sp 1s linear infinite;vertical-align:-2px;margin-right:7px}
 @keyframes sp{to{transform:rotate(360deg)}}
@@ -3536,7 +3536,10 @@ function alignTables(root){
           ![...c.childNodes].some(n=>n.nodeType===3 && n.data.trim()) &&
           [...c.children].every(k=>/^inline/.test(getComputedStyle(k).display)));
         const max=cells.reduce((m,c)=>Math.max(m,cellLen(c)),0);
-        center = max<=(token?20:ALIGN_MAX);
+        /* v31.41 ผู้ใช้: "ทำไมหัวข้อคอลัมน์มันไม่กลาง" — ช่วง กม. อย่าง "0+000 – 2+000" ยาวเกิน 9 ตัว
+           แต่เป็น "ค่า" ไม่ใช่ข้อความ (มีแต่ตัวเลขกับเครื่องหมาย) จึงต้องกึ่งกลางแบบเดียวกับตัวเลข */
+        const numish=cells.every(c=>{ const t=c.textContent.replace(/\s+/g,' ').trim(); return /^[\d+.,\s–\-—]+$/.test(t)||t.length<=ALIGN_MAX; });
+        center = numish || max<=(token?20:ALIGN_MAX);
       }
       if(num) put(th,'num',true);          // ข้อมูลเป็นตัวเลขล้วน หัวก็ต้องชิดขวาตาม
       put(th,'c',center);
@@ -3825,7 +3828,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.39', APP_DATE='13 ก.ย. 2569';
+const APP_VER='v31.41', APP_DATE='14 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -5594,17 +5597,16 @@ function recMuad(x){
   if(x.code&&muadByCode()[x.code]) return muadByCode()[x.code];
   if(x.code&&REROUTE[x.code]) return muadByCode()[REROUTE[x.code].to]||'ไม่ระบุ'; // สะพานรีรูท -> หมวดของสายใหม่
   if(x.code&&TRANSFER[x.code]) return 'ถ่ายโอน';
-  const t=(x.roadFull||'')+' '+(x.agency||'')+' '+(x.activity||'');
-  if(/บทช/.test(t)){
-    const m=MUAD_ORDER.find(mm=>t.includes(mm));
-    if(m) return m;
-    if(/ขอนแก่น|ขก/.test(t)) return 'เมือง'; // บทช.ขอนแก่น = หมวดเมือง
-  }
-  if(/ขทช|แขวง/.test(t)) return 'แขวงฯ';
-  const m=MUAD_ORDER.find(mm=>t.includes(mm));
-  return m||'ไม่ระบุ';
+  /* v31.41 กฎ 21 — เดิมที่นี่ก๊อป regex อ่านชื่อหน่วยมาไว้อีกชุดหนึ่ง (ตัวจริงอยู่ที่ unitKeyOf)
+     สองชุดนี้ต้องตอบเหมือนกันตลอดไป ซึ่งไม่มีอะไรบังคับเลย — วันหนึ่งจะเพี้ยนกันเงียบ ๆ
+     ตอนนี้เรียกตัวอ่านตัวเดียวกัน แล้วแค่แปลงรูปป้ายให้เข้ากับตารางหมวด (ตัดคำว่า "หมวด" ออก) */
+  const u=unitKeyOf((x.roadFull||'')+' '+(x.agency||'')+' '+(x.activity||''));
+  if(u==='แขวงฯ') return 'แขวงฯ';
+  if(u==='ไม่ระบุหน่วย'||u==='หมวด (บทช.)') return 'ไม่ระบุ';
+  return u.replace(/^หมวด/,'')||'ไม่ระบุ';
 }
-const recMuadColor=m=>m==='แขวงฯ'?'#1B2A4A':(m==='ถ่ายโอน'?'#8a6d4b':(m==='ไม่ระบุ'?'#9aa5a3':muadColor(m)));
+/* v31.41 สี "แขวงฯ" ต้องเป็นค่าเดียวกับกราฟทุกที่ (UNIT_COLOR) — เดิมใช้น้ำเงินเข้มที่จมหายในชุดกลางคืน */
+const recMuadColor=m=>m==='แขวงฯ'?UNIT_COLOR:(m==='ถ่ายโอน'?'#8a6d4b':(m==='ไม่ระบุ'?'#9aa5a3':muadColor(m)));
 /* v31.6 กฎ 20 — ช่องหมวดในทุกตารางหน้าตาเดียวกับทะเบียนสายทาง: สี่เหลี่ยมสี + ชื่อหมวด (ไม่มีคำว่า "หมวด") · ว่าง = "—" */
 const muadCell=m=>{ const k=String(m||'').replace(/^หมวด/,'').trim(); if(!k) return '—';
   return `<span class="msw" style="background:${recMuadColor(k)}"></span>${esc(k)}`; };
@@ -6219,7 +6221,7 @@ function renderRoadTable(){
     const bs=Object.values(EMB.bridges||{}).sort((a,b)=>SUF3(a.code)-SUF3(b.code)||a.code.localeCompare(b.code,'th'));
     btb.innerHTML=bs.map(b=>`<tr data-code-br="${b.code}" data-s="${esc(b.code+' '+(b.name||'')+' '+(b.amphoe||'')+' '+(b.tambon||'')+' '+(b.muad||'')+' '+(b.river||''))}" style="cursor:pointer">
       <td><b>${b.code}</b></td><td>${esc(b.name||'—')}</td><td>${esc(b.river||'—')}</td>
-      <td><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${muadColor(b.muad)};margin-right:6px"></span>${b.muad?esc(b.muad):'—'}</td>
+      <td style="white-space:nowrap">${muadCell(b.muad)}</td>   <!-- v31.41 กฎ 20: ช่องหมวดใช้ตัวช่วยกลางตัวเดียวกับทะเบียนสายทาง (tables.js จับได้ว่าเคยวาดเองต่างหาก) -->
       <td>${esc(b.tambon||'-')} / ${esc(b.amphoe||'-')}</td>
       <td class="num">${fmt(b.len)}</td><td class="num">${fmt(b.width)}</td><td>${esc(b.year)||'—'}</td>
       <td><a href="javascript:void(0)" style="color:var(--teal);font-weight:700;white-space:nowrap">📄 เปิด</a></td></tr>`).join('');
@@ -8012,7 +8014,10 @@ function renderHistRoad(code){
   const wTot=wl.reduce((a,o)=>a+(o.x.amount||0),0);
   const thD=d=>d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});
   const rk=(riskData||[]).filter(x=>x.code===code);
-  const rq=latestRequests().filter(q=>q.code===code);
+  /* v31.40 ผู้ใช้: "ไว้ที่ one page ด้วย ตรงคอลั่ม # พอดีเลย"
+     เรียงตามชนิดงบก่อน แล้วค่อยตามลำดับความสำคัญที่กรอกในชีท — ลำดับของแต่ละชนิดงบไม่ปนกัน */
+  const rq=latestRequests().filter(q=>q.code===code)
+    .sort((x,y)=>String(catName(x.cat||'')).localeCompare(String(catName(y.cat||'')),'th')||RANK_OF(x)-RANK_OF(y)||(x.year||0)-(y.year||0));
   const eqR=(eqData||[]).filter(x=>x.etype||x.dtype).filter(x=>x.code===code);
   const assets=roadAssets(code,list,eqR);
   const cdR=(typeof condData!=='undefined'&&condData)?condData.filter(x=>x.code===code):[];
@@ -8101,8 +8106,8 @@ function renderHistRoad(code){
     </div>
     ${rq.length?`<div class="card" style="margin-top:14px">
       <h3><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#e87ba4;margin-right:7px"></span>คำของบประมาณปีล่าสุด ${latestRequestYear()} (${rq.length})</h3>
-      <div class="tblwrap" style="max-height:320px"><table><thead><tr><th>#</th><th>ปีที่ขอ</th><th>ชนิดงบ</th><th>กิจกรรม/โครงการ</th><th>ช่วง กม.</th><th class="num">งบประมาณ (บาท)</th></tr></thead><tbody>
-        ${rq.map((q,i)=>`<tr><td style="color:var(--muted)">${i+1}</td><td>${q.year||'–'}</td>
+      <div class="tblwrap" style="max-height:320px"><table><thead><tr><th>${hasRank(rq)?'ลำดับ':'#'}</th><th>ปีที่ขอ</th><th>ชนิดงบ</th><th>กิจกรรม/โครงการ</th><th>ช่วง กม.</th><th class="num">งบประมาณ (บาท)</th></tr></thead><tbody>
+        ${rq.map((q,i)=>`<tr><td style="color:var(--muted)">${hasRank(rq)?rankTxt(q,i):(i+1)}</td><td>${q.year||'–'}</td>
           <td><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${btColor(catName(q.cat||''))||'#e87ba4'};margin-right:6px"></span>${esc(catName(q.cat||'–'))}</td>
           <td>${esc((q.act||q.proj)||'–')}</td>
           <td style="font-variant-numeric:tabular-nums;font-size:11.5px">${q.segs&&q.segs.length?q.segs.map(sg=>`${esc(String(sg.a||''))} – ${esc(String(sg.b||''))}`).join('<br>'):'— ไม่ระบุ —'}</td>
@@ -8914,7 +8919,7 @@ function renderContractTracker(container,rows,year){
       tip:'<b>'+esc(x.code||histAgency(x))+' · '+esc(x.contract||'ไม่ระบุเลข')+'</b><br>'+esc(x.activity||'')+'<br>เริ่ม '+(valid?esc(x.start):'ไม่ระบุ / ตรวจวันที่')+' · หมดสัญญา '+esc(x.end)+(timing?'<br>ระยะเวลาสัญญา '+fmt(timing.duration)+' วัน · ใช้เวลา '+fmt(timing.elapsed)+' วัน ('+timing.pct.toFixed(1)+'%)':'<br>ระยะเวลาสัญญา: ตรวจวันที่')+'<br>แผน '+contractProgressText(x,'plan')+' · ผล '+contractProgressText(x,'result')+(contractProgress(x).gap!=null?'<br>ต่ำกว่าแผน '+fmt(contractProgress(x).gap)+' จุดเปอร์เซ็นต์':'')+'<br>ผู้ควบคุมงาน '+esc(x.supervisor||'ไม่ระบุ')+'<br>'+CONTRACT_STATES[contractState(x)]+(x.delivered?' '+esc(x.delivered):'')};}),{onClick:r=>{if(isRoadCode(r.code))gotoOnePage(r.code);}});
     const nav=box.querySelector('.ct-pages');nav.innerHTML=`<button class="btn ghost ct-prev" ${st.page===0?'disabled':''}>◀ ก่อนหน้า</button><span>หน้า ${st.page+1} / ${max} · แถบ ${dated.length?st.page*count+1:0}–${Math.min((st.page+1)*count,dated.length)} จาก ${dated.length}</span><button class="btn ghost ct-next" ${st.page>=max-1?'disabled':''}>ถัดไป ▶</button>`;
     nav.querySelector('.ct-prev').onclick=()=>{st.page--;render();};nav.querySelector('.ct-next').onclick=()=>{st.page++;render();};
-    box.querySelector('tbody').innerHTML=L.map(x=>{const end=parseThaiDate(x.end),left=end?Math.ceil((end.getTime()-now)/864e5):null;return `<tr><td>${esc(x.code||histAgency(x))}</td><td>${muadCell(recMuad(x))}</td><td>${esc(x.contract||'—')}</td><td>${esc(histAgency(x))}</td><td>${esc(x.supervisor||'—')}</td><td>${esc(x.activity||'—')}</td><td>${esc(x.start||'ไม่ระบุ')}</td><td><b>${esc(x.end||'ไม่ระบุ')}</b></td><td class="num">${left??'—'}</td><td>${CONTRACT_STATES[contractState(x)]}</td><td class="num">${contractProgressText(x,'plan')}</td><td class="num">${contractProgressText(x,'result')}</td><td class="num">${contractProgress(x).gap==null?'—':fmt(contractProgress(x).gap)}</td><td class="num">${x.amount?fmt(x.amount):'—'}</td></tr>`;}).join('')||'<tr><td colspan="14">ไม่พบสัญญาที่ตรงกับตัวกรอง</td></tr>';
+    box.querySelector('tbody').innerHTML=L.map(x=>{const end=parseThaiDate(x.end),left=end?Math.ceil((end.getTime()-now)/864e5):null;return `<tr><td><b>${esc(x.code||histAgency(x))}</b></td><td>${muadCell(recMuad(x))}</td><td>${esc(x.contract||'—')}</td><td>${esc(histAgency(x))}</td><td>${esc(x.supervisor||'—')}</td><td>${esc(x.activity||'—')}</td><td>${esc(x.start||'ไม่ระบุ')}</td><td><b>${esc(x.end||'ไม่ระบุ')}</b></td><td class="num">${left??'—'}</td><td>${CONTRACT_STATES[contractState(x)]}</td><td class="num">${contractProgressText(x,'plan')}</td><td class="num">${contractProgressText(x,'result')}</td><td class="num">${contractProgress(x).gap==null?'—':fmt(contractProgress(x).gap)}</td><td class="num">${x.amount?fmt(x.amount):'—'}</td></tr>`;}).join('')||'<tr><td colspan="14">ไม่พบสัญญาที่ตรงกับตัวกรอง</td></tr>';
     box.querySelector('.ct-details > summary').textContent='รายละเอียดสัญญาที่กรอง ('+L.length+' รายการ)';
   };
   ['act','status','muad','agency','sort'].forEach(k=>box.querySelector('.ct-'+k).onchange=e=>{st[k]=e.target.value;st.page=0;render();});
@@ -8993,6 +8998,10 @@ defineSource({
           actv:G(o,'กิจกรรม','ประเภทงาน'),
           rname:G(o,'ชื่อสายทาง'),
           qty:G(o,'ปริมาณงาน'), unit:G(o,'หน่วยนับ'),
+          /* v31.40 ผู้ใช้ (14 ก.ย. 69): "เดี๋ยวชั้นจะไปใส่ลำดับในชีทนะ แล้วให้นายโชว์ลำดับความสำคัญของแต่ละงบตามชีทที่ชั้นกรอก
+             โดยสามารถเรียงแต่ละลำดับของแต่ละชนิดงบได้ ไม่ใช่เรียงลำดับของทุกชนิดงบคละกัน"
+             หัวคอลัมน์รับได้หลายแบบ · แถวที่ยังไม่กรอก = null แล้วไปต่อท้ายกลุ่ม ไม่หายไปไหน (กฎ 6) */
+          rank:num(G(o,'ลำดับความสำคัญ','ลำดับที่','ลำดับ','ความสำคัญ','priority')),
           segs,
           amt:typeof o['งบประมาณ']==='number'?o['งบประมาณ']:num(o['งบประมาณ'])});
       });
@@ -9076,6 +9085,11 @@ function paintReqPills(){
    ถ้าแยกกันสร้าง 3 ที่ วันหนึ่งตัวเลขสามทางจะไม่ตรงกันโดยไม่มีใครรู้
    ══════════════════════════════════════════════════════════════════════════ */
 const SRC_NO=s=>{ const m=String(s||'').match(/^\s*(\d+)/); return m?+m[1]:999; };
+/* v31.40 ลำดับความสำคัญที่เจ้าของกรอกในชีท — ยังไม่กรอก = ไปท้ายกลุ่ม (ไม่ใช่ถูกตัดทิ้ง)
+   ตัวช่วยสามตัวนี้ใช้ร่วมกันทุกปลายทาง (บนจอ · Excel · พิมพ์ A3 · One-Page) ตามกฎ 1 */
+const RANK_OF=r=>(r&&r.rank!=null&&!isNaN(r.rank))?+r.rank:Number.MAX_SAFE_INTEGER;
+const hasRank=list=>(list||[]).some(x=>x&&x.rank!=null);
+const rankTxt=(it,i)=>it&&it.rank!=null?String(it.rank):'–';
 function reqSrcModel(){
   const Q=(typeof reqFiltered==='function'?reqFiltered():reqData)||[];
   const info=codeInfo();
@@ -9098,11 +9112,15 @@ function reqSrcModel(){
         cats:Object.keys(byCat).sort((a,b)=>a.localeCompare(b,'th')).map(c=>({
           cat:c, n:byCat[c].length,
           amt:byCat[c].reduce((a,r)=>a+(r.amt||0),0),
+          /* v31.40 ลำดับความสำคัญจากชีทมาก่อนเสมอ — เรียงแยกในแต่ละชนิดงบ ไม่ใช่คละทุกชนิดงบ
+             แถวที่ยังไม่กรอกลำดับ เรียงต่อท้ายด้วยรหัสสายเหมือนเดิม (ไม่หายไปไหน) */
           items:byCat[c]
-            .slice().sort((x,y)=>SUF3(x.code)-SUF3(y.code)||String(x.code).localeCompare(String(y.code),'th'))
+            .slice().sort((x,y)=>RANK_OF(x)-RANK_OF(y)||SUF3(x.code)-SUF3(y.code)||String(x.code).localeCompare(String(y.code),'th'))
             .map(r=>({ actv:r.actv||r.act||r.proj||'—', code:r.code,
               rname:r.rname||(info[r.code]&&info[r.code].name)||'—',
-              km:kmTxt(r), qty:r.qty, unit:r.unit, amt:r.amt }))
+              /* v31.41 ผู้ใช้: "เพิ่มช่องหมวด ถัดจากชื่อสายทาง" — สาย = หมวดจากบัญชี · งานไม่ผูกสาย = หน่วยนั้น (กฎ 21) */
+              muad:(info[r.code]&&info[r.code].muad)||(isRoadCode(r.code)?'ไม่ระบุ':recMuad({roadFull:r.code})),
+              km:kmTxt(r), qty:r.qty, unit:r.unit, amt:r.amt, rank:(r.rank==null||isNaN(r.rank))?null:+r.rank }))
         }))
       };
     });
@@ -9115,7 +9133,10 @@ function renderReqSrc(){
   const M=reqSrcModel();
   if(!M.length){ box.innerHTML='<div class="note" style="padding:18px 4px">ยังไม่มีคำขอในปีที่เลือก</div>'; return; }
   const grand=M.reduce((a,g)=>a+g.amt,0), grandN=M.reduce((a,g)=>a+g.n,0);
-  const NC=6;
+  const NC=7;   // v31.41 เพิ่มคอลัมน์หมวด
+  /* v31.40 ถ้ายังไม่มีใครกรอกลำดับในชีทเลย คอลัมน์แรกทำตัวเหมือนเดิม (นับ 1,2,3 ในกลุ่ม)
+     พอกรอกมาแล้ว คอลัมน์นี้กลายเป็น "ลำดับ" ที่เจ้าของกำหนด และแถวเรียงตามนั้นในแต่ละชนิดงบ */
+  const RK=M.some(g=>g.cats.some(c=>hasRank(c.items)));
   let rows='';
   M.forEach(g=>{
     rows+=`<tr class="srcgrp"><td colspan="${NC-1}"><b>${esc(g.src)}</b>`+
@@ -9128,10 +9149,11 @@ function renderReqSrc(){
         `<td class="num">${fmt(c.amt)}</td></tr>`;
       c.items.forEach((it,i)=>{
         rows+=`<tr data-code="${esc(it.code)}" style="cursor:pointer">`+
-          `<td style="color:var(--muted);font-variant-numeric:tabular-nums">${i+1}</td>`+
+          `<td style="color:var(--muted);font-variant-numeric:tabular-nums">${RK?rankTxt(it,i):(i+1)}</td>`+
           `<td>${esc(it.actv)}</td>`+
           `<td><b>${esc(it.code)}</b></td>`+
           `<td>${esc(it.rname)}</td>`+
+          `<td style="white-space:nowrap">${muadCell(it.muad)}</td>`+
           `<td style="font-variant-numeric:tabular-nums;font-size:11.5px">${esc(it.km)}</td>`+
           `<td class="num">${it.amt==null?'<span style="color:var(--muted)">รอประเมิน</span>':fmt(it.amt)}</td></tr>`;
       });
@@ -9139,8 +9161,8 @@ function renderReqSrc(){
   });
   /* ปิดการเรียงคอลัมน์: ตารางนี้เป็นรายงานแบ่งกลุ่ม 2 ชั้น ถ้าเรียงใหม่ แถวหัวกลุ่มกับยอดรวมจะหลุดจากพวก */
   box.innerHTML=`<div class="tblwrap" style="max-height:560px"><table id="reqSrcTable" data-sortable="1"><thead><tr>
-      <th data-nosort style="width:42px">ที่</th><th data-nosort style="width:20%">กิจกรรม</th><th data-nosort style="width:88px">รหัสสายทาง</th>
-      <th data-nosort>ชื่อสายทาง</th><th data-nosort style="width:16%">ช่วงดำเนินการ (กม.)</th><th data-nosort class="num" style="width:120px">งบประมาณ (บาท)</th>
+      <th data-nosort style="width:42px">${RK?'ลำดับ':'ที่'}</th><th data-nosort style="width:20%">กิจกรรม</th><th data-nosort style="width:88px">รหัสสายทาง</th>
+      <th data-nosort>ชื่อสายทาง</th><th data-nosort style="width:96px">หมวด</th><th data-nosort style="width:15%">ช่วงดำเนินการ (กม.)</th><th data-nosort class="num" style="width:120px">งบประมาณ (บาท)</th>
     </tr></thead><tbody>${rows}
       <tr class="srctot"><td colspan="${NC-1}"><b>รวมทั้งสิ้น ${grandN} รายการ · ${M.length} แหล่งงบ</b></td>
         <td class="num"><b>${fmt(grand)}</b></td></tr>
@@ -9155,18 +9177,19 @@ function renderReqSrc(){
 function exportReqSrcXlsx(){
   const M=reqSrcModel();
   if(!M.length){ banner('info','ยังไม่มีข้อมูลให้ส่งออก'); return; }
-  const rows=[[{v:reqSrcTitle(),s:2},'','','','',''],
-    [{v:'ที่',s:1},{v:'กิจกรรม',s:1},{v:'รหัสสายทาง',s:1},{v:'ชื่อสายทาง',s:1},{v:'ช่วงดำเนินการ (กม.)',s:1},{v:'งบประมาณ (บาท)',s:1}]];
+  const RK=M.some(g=>g.cats.some(c=>hasRank(c.items)));   // v31.40 หัวคอลัมน์เปลี่ยนตามว่ามีลำดับในชีทไหม
+  const rows=[[{v:reqSrcTitle(),s:2},'','','','','',''],
+    [{v:RK?'ลำดับ':'ที่',s:1},{v:'กิจกรรม',s:1},{v:'รหัสสายทาง',s:1},{v:'ชื่อสายทาง',s:1},{v:'หมวด',s:1},{v:'ช่วงดำเนินการ (กม.)',s:1},{v:'งบประมาณ (บาท)',s:1}]];
   let grand=0, grandN=0;
   M.forEach(g=>{
     grand+=g.amt; grandN+=g.n;
-    rows.push([{v:g.src,s:2},{v:'',s:2},{v:'',s:2},{v:'',s:2},{v:g.n+' รายการ',s:2},{v:g.amt,s:2}]);
+    rows.push([{v:g.src,s:2},{v:'',s:2},{v:'',s:2},{v:'',s:2},{v:'',s:2},{v:g.n+' รายการ',s:2},{v:g.amt,s:2}]);
     g.cats.forEach(c=>{
-      rows.push(['', catName(c.cat), '', '', c.n+' รายการ', c.amt]);
-      c.items.forEach((it,i)=>rows.push([i+1, it.actv, it.code, it.rname, it.km, it.amt==null?'รอประเมิน':it.amt]));
+      rows.push(['', catName(c.cat), '', '', '', c.n+' รายการ', c.amt]);
+      c.items.forEach((it,i)=>rows.push([RK?(it.rank==null?'–':it.rank):(i+1), it.actv, it.code, it.rname, it.muad, it.km, it.amt==null?'รอประเมิน':it.amt]));
     });
   });
-  rows.push([{v:'รวมทั้งสิ้น',s:3},{v:'',s:3},{v:'',s:3},{v:'',s:3},{v:grandN+' รายการ',s:3},{v:grand,s:3}]);
+  rows.push([{v:'รวมทั้งสิ้น',s:3},{v:'',s:3},{v:'',s:3},{v:'',s:3},{v:'',s:3},{v:grandN+' รายการ',s:3},{v:grand,s:3}]);
   const fn='สรุปคำของบตามแหล่งงบ_'+(reqYearPick==='all'?'ทุกปี':reqYearPick)+'.xlsx';
   saveBlob(xlsxBlob(rows,{name:'สรุปตามแหล่งงบ',widths:[6,34,13,40,22,16],freeze:2}), fn);
   banner('info','ดาวน์โหลด '+fn+' แล้ว — เปิดด้วย Excel ได้ทันที (ตัวเลขเป็นตัวเลขจริง คำนวณต่อได้)');
@@ -9177,15 +9200,16 @@ function printReqSrc(){
   const M=reqSrcModel();
   if(!M.length){ banner('info','ยังไม่มีข้อมูลให้พิมพ์'); return; }
   const grand=M.reduce((a,g)=>a+g.amt,0), grandN=M.reduce((a,g)=>a+g.n,0);
+  const RK=M.some(g=>g.cats.some(c=>hasRank(c.items)));   // v31.40 ลำดับจากชีท (ถ้ามี) แทนเลขนับ
   let body='';
   M.forEach(g=>{
-    body+=`<tr class="g"><td colspan="5"><b>${esc(g.src)}</b> · ${g.n} รายการ`+
+    body+=`<tr class="g"><td colspan="6"><b>${esc(g.src)}</b> · ${g.n} รายการ`+
       (g.wait?` · รอประเมินราคา ${g.wait}`:'')+`</td><td class="n"><b>${fmt(g.amt)}</b></td></tr>`;
     g.cats.forEach(c=>{
-      body+=`<tr class="c"><td colspan="5">${esc(catName(c.cat))} · ${c.n} รายการ</td><td class="n">${fmt(c.amt)}</td></tr>`;
+      body+=`<tr class="c"><td colspan="6">${esc(catName(c.cat))} · ${c.n} รายการ</td><td class="n">${fmt(c.amt)}</td></tr>`;
       c.items.forEach((it,i)=>{
-        body+=`<tr><td class="n">${i+1}</td><td>${esc(it.actv)}</td><td><b>${esc(it.code)}</b></td>`+
-          `<td>${esc(it.rname)}</td><td>${esc(it.km)}</td>`+
+        body+=`<tr><td class="n">${RK?rankTxt(it,i):(i+1)}</td><td>${esc(it.actv)}</td><td><b>${esc(it.code)}</b></td>`+
+          `<td>${esc(it.rname)}</td><td>${esc(it.muad)}</td><td>${esc(it.km)}</td>`+
           `<td class="n">${it.amt==null?'รอประเมิน':fmt(it.amt)}</td></tr>`;
       });
     });
@@ -9207,10 +9231,10 @@ function printReqSrc(){
       <div class="sub">แขวงทางหลวงชนบทขอนแก่น · กรมทางหลวงชนบท</div></div>
       <div style="text-align:right;font-size:11.5px">พิมพ์ ${new Date().toLocaleDateString('th-TH',{dateStyle:'long'})}<br>${esc(APP_VER_TXT)}</div></div>
     <table><thead><tr>
-      <th style="width:34px">ที่</th><th style="width:19%">กิจกรรม</th><th style="width:80px">รหัสสายทาง</th>
-      <th>ชื่อสายทาง</th><th style="width:16%">ช่วงดำเนินการ (กม.)</th><th style="width:110px;text-align:right">งบประมาณ (บาท)</th>
+      <th style="width:34px">${RK?'ลำดับ':'ที่'}</th><th style="width:19%">กิจกรรม</th><th style="width:80px">รหัสสายทาง</th>
+      <th>ชื่อสายทาง</th><th style="width:78px">หมวด</th><th style="width:15%">ช่วงดำเนินการ (กม.)</th><th style="width:110px;text-align:right">งบประมาณ (บาท)</th>
     </tr></thead><tbody>${body}
-      <tr class="t"><td colspan="5"><b>รวมทั้งสิ้น ${grandN} รายการ · ${M.length} แหล่งงบ</b></td><td class="n"><b>${fmt(grand)}</b></td></tr>
+      <tr class="t"><td colspan="6"><b>รวมทั้งสิ้น ${grandN} รายการ · ${M.length} แหล่งงบ</b></td><td class="n"><b>${fmt(grand)}</b></td></tr>
     </tbody></table>
   </div></body></html>`);
   w.document.close();
@@ -10315,7 +10339,10 @@ async function printOnePage(code){
   const eqR=(eqData||[]).filter(x=>x.code===code);
   const cdR=(condData||[]).filter(x=>x.code===code);
   const rb=brC?[{km:kmLbl(roadLen/2), name:brC.name, river:brC.river, len:brC.len, width:brC.width, year:brC.year}]:(EMB.roadBridges?.[code]||[]);
-  const rq=latestRequests().filter(q=>q.code===code);
+  /* v31.40 ผู้ใช้: "ไว้ที่ one page ด้วย ตรงคอลั่ม # พอดีเลย"
+     เรียงตามชนิดงบก่อน แล้วค่อยตามลำดับความสำคัญที่กรอกในชีท — ลำดับของแต่ละชนิดงบไม่ปนกัน */
+  const rq=latestRequests().filter(q=>q.code===code)
+    .sort((x,y)=>String(catName(x.cat||'')).localeCompare(String(catName(y.cat||'')),'th')||RANK_OF(x)-RANK_OF(y)||(x.year||0)-(y.year||0));
   const hp=list.reduce((a,x)=>a+(poleCount(x)||0),0);
   // Equipment: จำนวนจริง + ตำแหน่งลง Strip Map (เหมือนหน้าสรุปรายสาย)
   const assets=roadAssets(code,list,eqR);
@@ -10382,9 +10409,9 @@ async function printOnePage(code){
       </div>
       <div>
         ${rq.length?`<h2>คำของบประมาณปีล่าสุด ${latestRequestYear()} (${rq.length})</h2>
-        <table><thead><tr><th>ปีที่ขอ</th><th>ชนิดงบ</th><th>กิจกรรม/โครงการ</th><th>ช่วง กม.</th><th class="r">งบประมาณ (บาท)</th></tr></thead><tbody>
-          ${rq.slice(0,7).map(q=>`<tr><td>${q.year||'–'}</td><td>${esc(catName(q.cat||'–'))}</td><td style="font-size:10.5px">${esc(((q.act||q.proj)||'–').slice(0,30))}</td><td style="font-size:10px">${q.segs&&q.segs.length?q.segs.map(sg=>esc(String(sg.a||''))+'–'+esc(String(sg.b||''))).join(', ').slice(0,24):'—'}</td><td class="r">${q.amt!=null?fmt(q.amt):'<span class="pill p-warn">รอประเมิน</span>'}</td></tr>`).join('')}
-          ${rq.length>7?`<tr><td colspan="5" style="color:#8794a5;font-style:italic">…อีก ${rq.length-7} คำขอ</td></tr>`:''}
+        <table><thead><tr>${hasRank(rq)?'<th style="width:34px">ลำดับ</th>':''}<th>ปีที่ขอ</th><th>ชนิดงบ</th><th>กิจกรรม/โครงการ</th><th>ช่วง กม.</th><th class="r">งบประมาณ (บาท)</th></tr></thead><tbody>
+          ${rq.slice(0,7).map((q,i)=>`<tr>${hasRank(rq)?`<td>${rankTxt(q,i)}</td>`:''}<td>${q.year||'–'}</td><td>${esc(catName(q.cat||'–'))}</td><td style="font-size:10.5px">${esc(((q.act||q.proj)||'–').slice(0,30))}</td><td style="font-size:10px">${q.segs&&q.segs.length?q.segs.map(sg=>esc(String(sg.a||''))+'–'+esc(String(sg.b||''))).join(', ').slice(0,24):'—'}</td><td class="r">${q.amt!=null?fmt(q.amt):'<span class="pill p-warn">รอประเมิน</span>'}</td></tr>`).join('')}
+          ${rq.length>7?`<tr><td colspan="${hasRank(rq)?6:5}" style="color:#8794a5;font-style:italic">…อีก ${rq.length-7} คำขอ</td></tr>`:''}
         </tbody></table>`:''}
         ${zl.length?`<h2>ความต้องการ (Zerobase — เหมารวม)</h2>
         <table><thead><tr><th>กลุ่ม</th><th>กิจกรรม</th><th>ช่วง กม.</th><th class="r">ปริมาณ</th></tr></thead><tbody>
