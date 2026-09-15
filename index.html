@@ -3029,10 +3029,11 @@ function shareBars(container,items,opt){
   const box=document.getElementById(container);if(!box)return;
   /* v31.42 ผู้ใช้ (14 ก.ย. 69): "กราฟแบบรูป 2 เรียงจากมากไปน้อยหน่อย" → เรียงแถวตามค่ามาก→น้อยเสมอ
      แถวที่ติดธง last (เช่น "ไม่ระบุเขต") ไปอยู่ท้ายสุดไม่ว่าค่าเท่าไร · ชุดทดสอบ bands ⑦ */
-  items=items.slice().sort((a,b)=>((a.last?1:0)-(b.last?1:0))||((+b.v||0)-(+a.v||0)));
+  const wOf=x=>x.w!=null?(+x.w||0):(+x.v||0);   /* v31.53 w = ตัวตั้งของ % และความยาวแถบ (เช่น วงเงิน) เมื่อค่าที่โชว์ (v) เป็นจำนวน */
+  items=items.slice().sort((a,b)=>((a.last?1:0)-(b.last?1:0))||(wOf(b)-wOf(a))||((+b.v||0)-(+a.v||0)));
   box.__rows=items.length;box.__fit=h=>shareBars(container,items,{...(opt||{}),height:h});
   box.__fitAny=true;   /* v31.45 ผู้ใช้: "เจอ 2 กล่องไม่เท่ากัน ชั้นเคยบอกไปแล้วนะ" — แถบสัดส่วนต้องยืดเต็มการ์ดเหมือนกราฟอื่น (กฎ 22 ⑤) · เดิมลืมติดธงนี้ ตัวจัดการ์ดจึงข้ามไป */
-  const total=items.reduce((s,x)=>s+x.v,0),pct=v=>total>0?100*v/total:0;
+  const total=items.reduce((s,x)=>s+x.v,0), wTot=items.reduce((s,x)=>s+wOf(x),0), pct=v=>total>0?100*v/total:0, pw=it=>wTot>0?100*wOf(it)/wTot:0;
   const percent=v=>v>0&&v<.1?'&lt;0.1%':v.toFixed(1)+'%';
   /* v31.36 ผู้ใช้ 12 ก.ย. 69: "เอารูปแบบของกล่องวงเงินตามชนิดงบมาประยุกต์ใช้หลายๆ กล่องดีกว่า
      … เช่นไปปรับใช้กับ งบประมาณตามเขตสส ที่จะต้องโชว์ทั้งเขต ชื่อ สส งบประมาณ และ %"
@@ -3042,7 +3043,7 @@ function shareBars(container,items,opt){
   const perRow=height?(height-38)/Math.max(1,Math.ceil(items.length/cols)):0;
   const roomy=perRow>=50, roomy2=perRow>=70;
   items=items.map(it=>(roomy&&it.more&&!it.sub)?{...it,sub:it.more}:it);
-  box.innerHTML='<div class="share-bars'+(roomy2?' roomy roomy2':roomy?' roomy':'')+'" style="min-height:'+Math.max(80,Math.ceil(items.length/cols)*rowH+38,height||0)+'px"><div class="share-total"><span>รวม</span><b>'+fmt(+total.toFixed(1))+' <small>'+esc(unit)+'</small></b></div><div class="share-list'+(cols>1?' share-2col':'')+'">'+items.map(it=>'<div class="share-row"><div class="share-caption"><span><i style="background:'+esc(it.color||C.teal)+'"></i>'+esc(it.label)+'</span><strong>'+fmt(+it.v.toFixed(2))+' <small>'+esc(unit)+'</small><em>'+percent(pct(it.v))+'</em></strong></div>'+(it.sub?'<div class="share-sub">'+esc(it.sub)+'</div>':'')+'<div class="share-track"><span style="width:'+pct(it.v)+'%;background:'+esc(it.color||C.teal)+'"></span></div>'+(it.foot?'<div class="share-foot">'+esc(it.foot)+'</div>':'')+'</div>').join('')+'</div></div>';
+  box.innerHTML='<div class="share-bars'+(roomy2?' roomy roomy2':roomy?' roomy':'')+'" style="min-height:'+Math.max(80,Math.ceil(items.length/cols)*rowH+38,height||0)+'px"><div class="share-total"><span>รวม</span><b>'+fmt(+total.toFixed(1))+' <small>'+esc(unit)+'</small></b></div><div class="share-list'+(cols>1?' share-2col':'')+'">'+items.map(it=>'<div class="share-row"><div class="share-caption"><span><i style="background:'+esc(it.color||C.teal)+'"></i>'+esc(it.label)+'</span><strong>'+fmt(+it.v.toFixed(2))+' <small>'+esc(unit)+'</small><em>'+percent(pw(it))+'</em></strong></div>'+(it.sub?'<div class="share-sub">'+esc(it.sub)+'</div>':'')+'<div class="share-track"><span style="width:'+pw(it)+'%;background:'+esc(it.color||C.teal)+'"></span></div>'+(it.foot?'<div class="share-foot">'+esc(it.foot)+'</div>':'')+'</div>').join('')+'</div></div>';
   box.querySelectorAll('.share-row').forEach((r,i)=>{hitOn(r,'help');r.addEventListener('mousemove',e=>showTip('<b>'+esc(items[i].label)+'</b><br>'+(items[i].tip||fmt(items[i].v)+' '+esc(unit)),e.clientX,e.clientY));r.addEventListener('mouseleave',hideTip);});
 }
 
@@ -3187,9 +3188,10 @@ const AMT_SEGS=[...AMT_BANDS,AMT_NA].map(b=>({k:b.k,label:b.lbl,color:b.color}))
 function amtBandTable(container, items, {unit='รายการ'}={}){
   const G={};
   (items||[]).forEach(x=>{ const c=x.cat||'— ไม่ระบุ';
-    const g=G[c]||(G[c]={segs:{},n:0,amt:0}), k=amtBandOf(x.amt);
-    g.segs[k]=(g.segs[k]||0)+1; g.n++; g.amt+=(+x.amt||0); });
-  matrixTable(container, Object.entries(G).map(([c,g])=>({label:c, segs:g.segs, right:fmtM(g.amt)})),
+    const g=G[c]||(G[c]={segs:{},amts:{},n:0,amt:0}), k=amtBandOf(x.amt);
+    g.segs[k]=(g.segs[k]||0)+1; g.amts[k]=(g.amts[k]||0)+(+x.amt||0); g.n++; g.amt+=(+x.amt||0); });
+  /* v31.53 % ในช่อง = ส่วนแบ่ง "เงิน" ของช่วงนั้นในชนิดงบ (จำนวนโครงยังโชว์เป็นตัวเลขประกอบ) */
+  matrixTable(container, Object.entries(G).map(([c,g])=>({label:c, segs:g.segs, amts:g.amts, right:fmtM(g.amt)})),
     AMT_SEGS, {unit, sumLabel:'รวมทุกชนิดงบ'});
 }
 
@@ -3203,37 +3205,47 @@ function amtBandTable(container, items, {unit='รายการ'}={}){
    ตัวนี้เป็น "เครื่องมือวาด" (กฎ 7) ห้ามรู้จักศัพท์งานทาง — ป้ายทุกอย่างมาจากผู้เรียกเท่านั้น ══ */
 const hexA=(h,a)=>{ const m=/^#?([0-9a-fA-F]{6})$/.exec(String(h||'')); if(!m) return h;
   const v=parseInt(m[1],16); return `rgba(${(v>>16)&255},${(v>>8)&255},${v&255},${a.toFixed(3)})`; };
+/* v31.53 ผู้ใช้ 15 ก.ย. 69: "พวกสัดส่วนทั้งหมด ทุกหัวข้อที่แบ่งสัดส่วนเป็น % นะ ใช้จำนวนเงินเป็นตัวตั้งไม่ใช่จำนวน"
+   แถวส่ง amts = {คอลัมน์: บาท} มาด้วยเมื่อไร → ความยาวแถบ ท่อนสี % และการเรียง ใช้ "เงิน" เป็นตัวตั้งทั้งหมด
+   จำนวน (segs) ยังโชว์เป็นตัวเลขประกอบในช่อง แต่ไม่ใช่ตัวคิด % อีก · ช่องที่มีรายการแต่เงินยังเป็น 0 = "รอประเมิน" */
 function matrixTable(container, rows, colsIn, {unit='รายการ', onClick=null, sumLabel='รวมทุกแถว', sumRow=true}={}){
   const box=document.getElementById(container); if(!box) return;
-  const RS=(rows||[]).map(r=>({...r, _n:Object.values(r.segs||{}).reduce((a,b)=>a+(+b||0),0)}));
+  const money=(rows||[]).some(r=>r.amts);
+  const RS=(rows||[]).map(r=>({...r, _n:Object.values(r.segs||{}).reduce((a,b)=>a+(+b||0),0),
+    _a:money?Object.values(r.amts||{}).reduce((a,b)=>a+(+b||0),0):0}));
   if(!RS.length){ box.innerHTML='<div class="note" style="padding:16px 4px;text-align:center">ไม่มีข้อมูล</div>'; return; }
+  const V=r=>money?r._a:r._n;                                   // ค่าที่ใช้คิด % / ความยาวแถบ
+  const vOf=(r,k)=>money?((r.amts&&r.amts[k])||0):((r.segs&&r.segs[k])||0);
   const isTime=RS.every(r=>/^\s*[^\d]*\d{4}\s*$/.test(String(r.label||'')));
-  if(!isTime) RS.sort((a,b)=>b._n-a._n);
-  const SUM={label:sumLabel, segs:{}, _n:0};
-  RS.forEach(r=>{ SUM._n+=r._n; Object.entries(r.segs||{}).forEach(([k,v])=>SUM.segs[k]=(SUM.segs[k]||0)+(+v||0)); });
+  if(!isTime) RS.sort((a,b)=>(V(b)-V(a))||(b._n-a._n));
+  const SUM={label:sumLabel, segs:{}, amts:{}, _n:0, _a:0};
+  RS.forEach(r=>{ SUM._n+=r._n; SUM._a+=r._a; Object.entries(r.segs||{}).forEach(([k,v])=>SUM.segs[k]=(SUM.segs[k]||0)+(+v||0));
+    Object.entries(r.amts||{}).forEach(([k,v])=>SUM.amts[k]=(SUM.amts[k]||0)+(+v||0)); });
   const cols=(colsIn||[]).filter(c=>SUM.segs[c.k]);
   const use=cols.length?cols:(colsIn||[]);
-  box.__rows=RS;
+  box.__rows=RS; box.__money=money;
   const w=(70/Math.max(1,use.length)).toFixed(3);
-  const cell=(r,c)=>{ const n=r.segs&&r.segs[c.k]||0, p=r._n?100*n/r._n:0;
+  const big=r=>fmt(r._n);   // ตัวเลขหลักของแถวยังเป็นจำนวน (ผู้ใช้: "ไม่ได้เปลี่ยนรูปแบบนะ รูปแบบเดิม แค่การคิด % เอาเงินงบประมาณมาคิด")
+  const cell=(r,c)=>{ const n=r.segs&&r.segs[c.k]||0, v=vOf(r,c.k), p=V(r)?100*v/V(r):0;
     if(!n) return '<td class="bc"><span class="bz">–</span></td>';
-    return `<td class="bc" style="background:${hexA(c.color,0.10+0.30*Math.min(1,p/60))}" title="${esc(r.label)} · ${esc(c.label)} · ${fmt(n)} ${esc(unit)} · ${p.toFixed(1)}%"><b>${fmt(n)}</b><i>${p.toFixed(0)}%</i></td>`; };
+    const pend=money&&!v;                                        // มีรายการแต่ยังไม่มีวงเงิน
+    return `<td class="bc" style="background:${hexA(c.color,0.10+0.30*Math.min(1,p/60))}" title="${esc(r.label)} · ${esc(c.label)} · ${fmt(n)} ${esc(unit)}${money?' · '+fmtM(v):''} · ${p.toFixed(1)}%"><b>${fmt(n)}</b><i>${pend?'รอประเมิน':p.toFixed(0)+'%'}</i></td>`; };
   const line=(r,cls)=>`<tr${cls?' class="'+cls+'"':''}${onClick&&!cls?' data-k="'+esc(r.label)+'" style="cursor:pointer"':''}>`+
       `<td class="bname" title="${esc(r.label)}">${esc(r.label)}</td>`+use.map(c=>cell(r,c)).join('')+
-      `<td class="btot"><b>${fmt(r._n)}</b><i>${esc(r.right||unit)}</i></td></tr>`;
+      `<td class="btot"><b>${big(r)}</b><i>${esc(r.right||unit)}</i></td></tr>`;
   /* ── แถบเทียบด้านบน (v31.39) ───────────────────────────────────────────────
      ผู้ใช้: "ดูแว่บเดียวดูไม่ออกว่าอันไหนเยอะสุด เพราะไม่เห็นกราฟเปรียบเทียบ"
      ความยาวแถบ = ค่าจริงเทียบกับแถวที่มากที่สุด → ตาเห็นอันดับทันทีโดยไม่ต้องอ่านตัวเลข
      ท่อนสีในแถบ = สัดส่วนของแต่ละคอลัมน์ในแถวนั้น
      v31.42 ผู้ใช้ (14 ก.ย. 69): "แท็คสูงสุดไม่ต้องมีหรอก มันก็เห็นตรงกราฟอยู่แล้ว" → ถอดป้าย "สูงสุด" และการเน้นสีแถวสูงสุดออก
      (ความยาวแถบบอกอันดับอยู่แล้ว · ชุดทดสอบ bands ③) */
-  const mx=Math.max(...RS.map(r=>r._n),0)||1, grand=SUM._n||1;
-  const seg=(r,c)=>{ const n=r.segs&&r.segs[c.k]||0; if(!n) return '';
-    return `<i style="width:${(100*n/(r._n||1)).toFixed(3)}%;background:${c.color}" title="${esc(r.label)} · ${esc(c.label)} · ${fmt(n)} ${esc(unit)} · ${(100*n/(r._n||1)).toFixed(0)}%"></i>`; };
+  const mx=Math.max(...RS.map(V),0)||1, grand=V(SUM)||1;
+  const seg=(r,c)=>{ const v=vOf(r,c.k); if(!v) return '';
+    return `<i style="width:${(100*v/(V(r)||1)).toFixed(3)}%;background:${c.color}" title="${esc(r.label)} · ${esc(c.label)} · ${money?fmtM(v):fmt(v)+' '+esc(unit)} · ${(100*v/(V(r)||1)).toFixed(0)}%"></i>`; };
   const bar=r=>`<div class="mtx-row"${onClick?' data-k="'+esc(r.label)+'" style="cursor:pointer"':''}>`+
       `<div class="mtx-l" title="${esc(r.label)}"><span class="mtx-nm">${esc(r.label)}</span></div>`+
-      `<div class="mtx-t"><div class="mtx-fill" style="width:${(100*r._n/mx).toFixed(2)}%">${use.map(c=>seg(r,c)).join('')}</div></div>`+
-      `<div class="mtx-v"><b>${fmt(r._n)}</b><small>${(100*r._n/grand).toFixed(0)}%${r.right?' · '+esc(r.right):' '+esc(unit)}</small></div></div>`;
+      `<div class="mtx-t"><div class="mtx-fill" style="width:${(100*V(r)/mx).toFixed(2)}%">${use.map(c=>seg(r,c)).join('')}</div></div>`+
+      `<div class="mtx-v"><b>${big(r)}</b><small>${(money&&!(r._a>0))?'รอประเมิน':(100*V(r)/grand).toFixed(0)+'%'}${r.right?' · '+esc(r.right):' '+esc(unit)}</small></div></div>`;
   /* v31.46 ช่องชื่อกว้างตามชื่อที่ยาวที่สุด (วัดจริง) แต่ไม่เกิน 190px — ทุกแถวเท่ากัน แถบจึงเริ่มแนวเดียวกัน */
   (()=>{ const cv=matrixTable._cv||(matrixTable._cv=document.createElement('canvas')), cx=cv.getContext('2d');
     cx.font='600 12.5px '+(getComputedStyle(document.body).fontFamily||'sans-serif');
@@ -3869,7 +3881,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.52', APP_DATE='15 ก.ย. 2569';
+const APP_VER='v31.53', APP_DATE='15 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -5557,16 +5569,22 @@ const kico=(ico,bg,lbl,val,foot,opt)=>{ const o=opt||{};
    groups = [[key,{label,n,amt(html/ข้อความ),foot,tip}]] · colorOf(key) · opt.unit (หน่วยของ n) · opt.small (กล่องเล็ก) */
 function groupBoxes(hostId, groups, colorOf, opt){
   const box=document.getElementById(hostId); if(!box) return;
-  const o=opt||{}, unit=o.unit||'รายการ', tot=groups.reduce((a,[,g])=>a+g.n,0)||1;
+  const o=opt||{}, unit=o.unit||'รายการ';
+  /* v31.53 ผู้ใช้: "ทุกหัวข้อที่แบ่งสัดส่วนเป็น % ใช้จำนวนเงินเป็นตัวตั้งไม่ใช่จำนวน"
+     กลุ่มที่ส่ง amtV (บาท) มาด้วย → แถบและ % คิดจากเงิน · หน้าตากล่องคงเดิม (จำนวน · % · วงเงิน) — ผู้ใช้: "ไม่ได้เปลี่ยนรูปแบบนะ รูปแบบเดิม" */
+  const money=groups.some(([,g])=>g.amtV!=null);
+  const val=g=>money?(+g.amtV||0):g.n;
+  const tot=groups.reduce((a,[,g])=>a+val(g),0)||1;
+  if(money) groups=groups.slice().sort((a,b)=>val(b[1])-val(a[1])||b[1].n-a[1].n);
   box.innerHTML=
-    `<div class="onebar catbar">${groups.map(([k,g])=>{ const p=100*g.n/tot;
+    `<div class="onebar catbar">${groups.map(([k,g])=>{ const p=100*val(g)/tot;
       /* v31.36 ผู้ใช้ 12 ก.ย. 69: "ตัวแถบบนโชว์เฉพาะ % ก็พอ ตัวการ์ดบอกรายละเอียดอยู่แล้ว"
          เดิมยัดชื่อกลุ่มลงในท่อนด้วย ท่อนแคบ ๆ เลยมีแต่ตัวหนังสือเบียดกันจนอ่านไม่ออก */
-      return `<span style="width:${p.toFixed(3)}%;background:${colorOf(k)}" title="${esc(g.label||k)} ${g.n} ${unit} (${p.toFixed(0)}%)">${p>=6?p.toFixed(0)+'%':''}</span>`; }).join('')}</div>`+
-    `<div class="surfgrid catgrid${o.small?' catgrid-s':''}">${groups.map(([k,g])=>{ const p=100*g.n/tot;
+      return `<span style="width:${p.toFixed(3)}%;background:${colorOf(k)}" title="${esc(g.label||k)} ${money?fmtM(g.amtV):g.n+' '+unit} (${p.toFixed(0)}%)">${p>=6?p.toFixed(0)+'%':''}</span>`; }).join('')}</div>`+
+    `<div class="surfgrid catgrid${o.small?' catgrid-s':''}">${groups.map(([k,g])=>{ const p=100*val(g)/tot;
       return `<div class="surfbox catbox" style="border-left-color:${colorOf(k)}" title="${esc(g.label||k)} · ${g.tip||''}">`+
         `<div class="shead"><span class="cdot" style="background:${colorOf(k)}"></span><span class="sname">${esc(g.label||k)}</span></div>`+
-        `<div class="sval">${g.n}<small>${unit} · ${p.toFixed(0)}%</small></div>`+
+        `<div class="sval">${g.n}<small>${unit} · ${p.toFixed(0)}%</small></div>`+   /* รูปแบบเดิม — แต่ % คิดจากเงินเมื่อมี amtV */
         (g.amt?`<div class="camt">${g.amt}</div>`:'')+
         (g.foot?`<div class="sfoot">${g.foot}</div>`:'')+`</div>`;
     }).join('')}</div>`;
@@ -9564,7 +9582,7 @@ function renderRequests(){
   /* v31.2 กล่องรายชนิดงบแทนโดนัท — ผู้ใช้: "น่าจะแยกออกเป็นกล่อง kpi ให้เห็นชัด … มีแต่จำนวนกับ % ไม่มีจำนวนเงิน"
      v31.4 ทำเป็นตัวสร้างกลาง reqBoxes() ใช้ 3 ที่: ชนิดงบ · เขตเลือกตั้ง · กิจกรรม — และแถบสัดส่วนอ่านง่ายขึ้น (ผู้ใช้: "แถบพวกนี้มองยากไปหน่อย") */
   /* v31.6 ผู้ใช้: "เขตย่อเหลือแค่เขต ไม่ต้องใส่ชื่อ · 'วงเงินระบุแล้ว' ขึ้นทุกกล่อง งง" → บรรทัดท้ายมีเฉพาะเมื่อมีรอประเมิน */
-  const reqBoxes=(hostId, groups, colorOf, opt)=>groupBoxes(hostId, groups.map(([k,g])=>[k,{label:g.label||k, n:g.n,
+  const reqBoxes=(hostId, groups, colorOf, opt)=>groupBoxes(hostId, groups.map(([k,g])=>[k,{label:g.label||k, n:g.n, amtV:g.amt||0,   // v31.53 % คิดจากเงิน
       amt:g.amt?fmtM(g.amt):'<span style="color:var(--crit);font-size:12px">รอประเมินทั้งหมด</span>',
       foot:g.wait?`รอประเมิน ${g.wait} คำขอ`:'', tip:`${g.n} คำขอ · วงเงินระบุแล้ว ${fmt(g.amt)} บาท${g.wait?` · รอประเมิน ${g.wait}`:''}`}]), colorOf, {unit:'คำขอ', ...(opt||{})});
   const groupQ=(keyOf, labelOf)=>{ const G={}; Q.forEach(r=>{ const k=keyOf(r); const g=G[k]||(G[k]={n:0,amt:0,wait:0,label:labelOf?labelOf(k):k}); g.n++; g.amt+=(r.amt||0); if(r.amt==null) g.wait++; }); return G; };
@@ -9579,8 +9597,9 @@ function renderRequests(){
     const zG=groupQ(r=>{ const z=gapZoneOf(r.code, r.segs); return z==null?'ไม่ระบุ':String(z); }, k=>isNaN(k)?'ไม่ระบุเขต':('เขต '+k));
     const keys=Object.keys(zG).sort((a,b)=>(isNaN(a)?99:+a)-(isNaN(b)?99:+b));
     /* v31.37 ผู้ใช้: "ไม่ต้องใส่ละเอียดขนาดนั้น แค่มีหมายเลขเขต วงเงิน %" */
+    /* v31.53 ผู้ใช้: "ใช้จำนวนเงินเป็นตัวตั้งไม่ใช่จำนวน" + "ไม่ได้เปลี่ยนรูปแบบนะ" → โชว์จำนวนคำขอเหมือนเดิม แต่ % และแถบคิดจากวงเงิน (w) */
     shareBars('chReqZone', keys.map(k=>{ const g=zG[k], zi=KK_ZONES[k];
-      return { label:isNaN(k)?'ไม่ระบุเขต':('เขต '+k), v:g.n, color:isNaN(k)?'#9aa5a3':zoneColor(+k), last:isNaN(k),
+      return { label:isNaN(k)?'ไม่ระบุเขต':('เขต '+k), v:g.n, w:g.amt||0, color:isNaN(k)?'#9aa5a3':zoneColor(+k), last:isNaN(k),
         more:(zi?'สส. '+zi.mp+' · '+zi.party:'ระบุตำแหน่งไม่ได้')+(g.amt?' · '+fmtM(g.amt):'')+(g.wait?' · รอประเมิน '+g.wait:''),
         tip:(zi?'สส. '+esc(zi.mp)+' · '+esc(zi.party)+'<br>':'')+g.n+' คำขอ · วงเงินระบุแล้ว '+fmt(g.amt)+' บาท'+(g.wait?' · รอประเมิน '+g.wait:'') }; }),
       {unit:'คำขอ', cols:2});
@@ -9593,24 +9612,25 @@ function renderRequests(){
      (ไฟฟ้าของงบปกติ กับไฟฟ้าของเหลือจ่าย จึงอยู่คนละช่อง นับแยกกัน) · ชุดทดสอบ reqfilter ③ */
   safeRun('กล่องคำขอตามกิจกรรม', ()=>{
     const actOf=reqActOf;
-    const A={}; Q.forEach(r=>{ const k=actOf(r), g=A[k]||(A[k]={segs:{},n:0,amt:0}); const c=rc(r); g.segs[c]=(g.segs[c]||0)+1; g.n++; g.amt+=(r.amt||0); });
-    const ks=Object.keys(A).sort((a,b)=>A[b].n-A[a].n);
+    /* v31.53 % และความยาวแถบคิดจากเงิน (amts) · 8 อันดับแรกเรียงตามเงิน */
+    const A={}; Q.forEach(r=>{ const k=actOf(r), g=A[k]||(A[k]={segs:{},amts:{},n:0,amt:0}); const c=rc(r); g.segs[c]=(g.segs[c]||0)+1; g.amts[c]=(g.amts[c]||0)+(r.amt||0); g.n++; g.amt+=(r.amt||0); });
+    const ks=Object.keys(A).sort((a,b)=>(A[b].amt-A[a].amt)||(A[b].n-A[a].n));
     const top=ks.slice(0,8), rest=ks.slice(8);
-    if(rest.length){ const o={segs:{},n:0,amt:0}; rest.forEach(k=>{ o.n+=A[k].n; o.amt+=A[k].amt; Object.entries(A[k].segs).forEach(([c,n])=>o.segs[c]=(o.segs[c]||0)+n); });
+    if(rest.length){ const o={segs:{},amts:{},n:0,amt:0}; rest.forEach(k=>{ o.n+=A[k].n; o.amt+=A[k].amt; Object.entries(A[k].segs).forEach(([c,n])=>o.segs[c]=(o.segs[c]||0)+n); Object.entries(A[k].amts).forEach(([c,v])=>o.amts[c]=(o.amts[c]||0)+v); });
       A[`อื่นๆ (${rest.length} กิจกรรม)`]=o; top.push(`อื่นๆ (${rest.length} กิจกรรม)`); }
-    hstack('chReqAct', top.map(k=>({label:k, segs:A[k].segs, right:`${A[k].n} คำขอ · ${A[k].amt?fmtM(A[k].amt):'รอประเมิน'}`})), segsOrder,
+    hstack('chReqAct', top.map(k=>({label:k, segs:A[k].segs, amts:A[k].amts, right:`${A[k].n} คำขอ · ${A[k].amt?fmtM(A[k].amt):'รอประเมิน'}`})), segsOrder,
       {unit:'คำขอ', sumLabel:'รวมทุกกิจกรรม'});
   });
   const muadRows={};
   Object.entries(byRoad).forEach(([code,list])=>{
     const m=roadInfo[code]?.muad||'ไม่ระบุ';
-    muadRows[m]=muadRows[m]||{segs:{}, roads:new Set(), n:0};
-    list.forEach(r=>{ const k=rc(r); muadRows[m].segs[k]=(muadRows[m].segs[k]||0)+1; muadRows[m].n++; });
+    muadRows[m]=muadRows[m]||{segs:{}, amts:{}, roads:new Set(), n:0};
+    list.forEach(r=>{ const k=rc(r); muadRows[m].segs[k]=(muadRows[m].segs[k]||0)+1; muadRows[m].amts[k]=(muadRows[m].amts[k]||0)+(r.amt||0); muadRows[m].n++; });   // v31.53 amts = ตัวตั้ง %
     muadRows[m].roads.add(code);
   });
   const mRows=[...MUAD_ORDER,'แขวงฯ','ถ่ายโอน','ไม่ระบุ'].filter(m=>muadRows[m])
     .sort((a,b)=>muadRows[b].n-muadRows[a].n)
-    .map(m=>({label:recMuadLabel(m), segs:muadRows[m].segs, right:`${muadRows[m].n} คำขอ · ${[...muadRows[m].roads].filter(isRoadCode).length} สาย`}));
+    .map(m=>({label:recMuadLabel(m), segs:muadRows[m].segs, amts:muadRows[m].amts, right:`${muadRows[m].n} คำขอ · ${[...muadRows[m].roads].filter(isRoadCode).length} สาย`}));
   hstack('chReqMuad', mRows, segsOrder, {unit:'คำขอ', sumLabel:'รวมทุกหมวด'});
   // ตารางสรุปรายสาย
   document.querySelector('#reqRoadTable tbody').innerHTML = [...counts].sort((a,b)=>SUF3(a[0])-SUF3(b[0])||a[0].localeCompare(b[0],'th')).map(([code,n])=>{
