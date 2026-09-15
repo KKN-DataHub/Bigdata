@@ -1385,6 +1385,7 @@ body.cmdopen .cmdbd{display:flex}
 .share-total{display:flex;justify-content:space-between;align-items:baseline;color:var(--muted);padding-bottom:6px;border-bottom:1px solid var(--grid)}
 .share-total b{font-size:20px;color:var(--strong)}.share-total small{font-size:11px;font-weight:400}
 .share-list{display:grid;grid-auto-rows:minmax(28px,1fr);gap:5px;flex:1}
+.share-row{display:flex;flex-direction:column;justify-content:center}   /* v31.45 ยืดแล้วให้แถวอยู่กลางช่อง ไม่กองบน */
 .share-2col{grid-template-columns:1fr 1fr;column-gap:22px}
 @media(max-width:760px){ .share-2col{grid-template-columns:1fr} }
 .share-caption{display:flex;justify-content:space-between;gap:8px;align-items:baseline;font-size:12px;white-space:nowrap}
@@ -1522,17 +1523,17 @@ try{ const DARK=['sundown','dusk','midnight','moonset','dawn'], DAYS=['sunset','
       <!-- v23.2 — จอกว้างจัดเป็นตาราง 12 คอลัมน์ เห็นหลายมิติในหน้าเดียวไม่ต้องเลื่อนยาว
                     จอแคบ/มือถือยังเป็น 2 คอลัมน์ / 1 คอลัมน์ เหมือนเดิมทุกอย่าง -->
       <div class="grid ovgrid">
-        <div class="card ovg-c"><h3>สัดส่วนผิวจราจร — รวมทั้งโครงข่าย</h3><div class="note" id="surfNote">กม. และ % ของระยะทางผิวทาง</div><div id="chSurface"></div></div>
-        <div class="card ovg-a"><h3>สรุปรายหมวดบำรุงทาง</h3><div class="note">จำนวนสาย · ระยะทาง · สะพาน</div><div class="tblwrap" style="max-height:none;border:none"><table id="muadTable"><thead><tr>
+        <div class="card ovg-c"><h3>สัดส่วนผิวจราจร — รวมทั้งโครงข่าย</h3><div class="note" id="surfNote"></div><div id="chSurface"></div></div>
+        <div class="card ovg-a"><h3>สรุปรายหมวดบำรุงทาง</h3><div class="tblwrap" style="max-height:none;border:none"><table id="muadTable"><thead><tr>
           <th>หมวด</th><th class="num">จำนวนสาย</th><th style="min-width:100px">ระยะทาง (กม.)</th><th class="num">สะพาน (แห่ง)</th><th class="num">สะพานยาว (กม.)</th>
         </tr></thead><tbody></tbody></table></div></div>
-        <div class="card ovg-b"><h3>สัดส่วนผิวจราจร — รายหมวด</h3><div class="note">แต่ละหมวดมีผิวลาดยางกี่ % · แถบเต็ม = ระยะทางทั้งหมดของหมวด (ไม่รวมช่วงสะพาน) · คลิกเพื่อกรองหมวด</div><div id="chSurfaceMuad"></div></div>
+        <div class="card ovg-b"><h3>สัดส่วนผิวจราจร — รายหมวด</h3><div id="chSurfaceMuad"></div></div>
         <!-- v24.0 — กราฟ "ระยะทางรายหมวด" ถูกยุบเข้าไปเป็นแท่งในช่องตารางสรุปรายหมวดแล้ว (ข้อมูลซ้ำกัน)
                       แถวนี้จึงเป็น: Top10 ยาวที่สุด | Top10 PCU | Heatmap งบหมวด×ปี — คนละรูปทรงทั้งสามใบ -->
-        <div class="card ovg-d"><h3>Top 10 สายทางที่ยาวที่สุด</h3><div class="note">หน่วย กม. · สีตามหมวดบำรุงทาง — คลิกเพื่อเปิดในแผนที่</div><div id="chTopLen"></div></div>
-        <div class="card ovg-f"><h3>Top 10 PCU สูงสุด</h3><div class="note" id="pcuNote">ปริมาณจราจร คัน/วัน · คลิกเพื่อเปิดในแผนที่</div><div id="chTopPcu"></div></div>
-        <div class="card ovg-g"><h3>งบรายปี × หมวด</h3><div class="note">แถว = ปีงบ · คอลัมน์ = หมวด · ช่องเข้ม = ได้งบมาก · คอลัมน์จางยาวๆ คือหมวดที่ถูกข้ามหลายปี</div><div id="chBudHeat"></div></div>
-        <div class="card ovg-e"><h3>งบประมาณสะสมจากประวัติโครงการ</h3><div class="note">วงเงินตามสัญญาทุกปีรวมกัน</div>
+        <div class="card ovg-d"><h3>Top 10 สายทางที่ยาวที่สุด</h3><div id="chTopLen"></div></div>
+        <div class="card ovg-f"><h3>Top 10 PCU สูงสุด (คัน/วัน)</h3><div id="chTopPcu"></div></div>
+        <div class="card ovg-g"><h3>งบรายปี × หมวด</h3><div id="chBudHeat"></div></div>
+        <div class="card ovg-e"><h3>งบประมาณสะสมจากประวัติโครงการ</h3>
           <div id="ovBudget"><div class="loading"><span class="spin"></span>กำลังดึงข้อมูลงบประมาณ…</div></div>
         </div>
       </div>
@@ -1541,14 +1542,14 @@ try{ const DARK=['sundown','dusk','midnight','moonset','dawn'], DAYS=['sunset','
       <!-- v31.37 ผู้ใช้ 12 ก.ย. 69: "หน้าภาพรวมยังไม่มีกล่องสายทางแบ่งตามเขตเลือกตั้งเลย
            อาจจะใช้รูปแบบเดียวกันกับงบก็ได้" — ชื่อ สส. กับจำนวนสาย ที่ถอดออกจากหน้าประวัติมาอยู่ที่นี่
            การ์ดเต็มบรรทัด แบ่งสองคอลัมน์ในกล่อง (ถ้าไปอยู่ในกริด 12 คอลัมน์จะแคบจนชื่อ สส. ตกบรรทัด) -->
-      <div class="card" style="margin-top:14px"><h3>สายทางแบ่งตามเขตเลือกตั้ง</h3><div class="note">จำนวนสายทางในเขตนั้น · สีตามพรรคของ สส. · สายที่คร่อมหลายเขตนับที่เขตที่มีระยะทางมากที่สุด</div><div id="chOvZone"></div></div>
+      <div class="card" style="margin-top:14px"><h3>สายทางแบ่งตามเขตเลือกตั้ง</h3><div id="chOvZone"></div></div>
       <div class="card execbar" id="ovExec" style="display:none;margin-top:14px"></div>
       <!-- v24.4 — สรุปการตัดสินใจแบบย่อ วางก่อนทะเบียนสายทาง · รายละเอียดเต็ม (สไลเดอร์ถ่วงน้ำหนัก, 20 อันดับ,
                     quadrant, alerts ครบ) ยังอยู่หน้า "วิเคราะห์ตัดสินใจ" เพราะเป็นพื้นที่ทำงาน ไม่ใช่พื้นที่กวาดตา -->
       <div class="card decsum" id="ovDecide" style="margin-top:14px"></div>
       <div class="card" style="margin-top:14px">
         <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
-          <div><h3>ทะเบียนสายทาง</h3><div class="note" style="margin:0">คลิกแถวเพื่อเปิดในแผนที่ · ระยะทาง = ลาดยาง + คอนกรีต + ลูกรัง + ยาวสะพาน</div></div>
+          <div><h3>ทะเบียนสายทาง</h3></div>
           <input class="search" id="roadSearch" placeholder="ค้นหา รหัส/ชื่อสาย/อำเภอ...">
         </div>
         <div class="tblwrap"><table id="roadTable"><thead><tr>
@@ -1557,14 +1558,14 @@ try{ const DARK=['sundown','dusk','midnight','moonset','dawn'], DAYS=['sunset','
       </div>
       <div class="card" style="margin-top:14px">
         <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
-          <div><h3>🌉 ทะเบียนสะพานชุมชน</h3><div class="note" style="margin:0">คลิกแถวเพื่อดูประวัติโครงการของสะพาน</div></div>
+          <div><h3>🌉 ทะเบียนสะพานชุมชน</h3></div>
           <input class="search" id="bridgeSearch" placeholder="ค้นหา รหัส/ชื่อสะพาน/อำเภอ...">
         </div>
         <div class="tblwrap" style="max-height:380px"><table id="bridgeTable"><thead><tr>
           <th>รหัส</th><th>ชื่อสะพาน</th><th>ข้ามลำน้ำ</th><th>หมวด</th><th>ตำบล / อำเภอ</th><th class="num">ยาว (ม.)</th><th class="num">กว้าง (ม.)</th><th>ปีที่สร้าง</th><th>One-Page</th>
         </tr></thead><tbody></tbody></table></div>
       </div>
-      <div class="footnote">สายที่ยังไม่มีเส้น GPS จริง และรายละเอียดแหล่งข้อมูล/วิธีอัปเดต — ดูหน้า "ข้อมูลระบบ"</div>
+      
     </section>
 
     <!-- ============ PAGE: MAP ============ -->
@@ -1646,7 +1647,9 @@ try{ const DARK=['sundown','dusk','midnight','moonset','dawn'], DAYS=['sunset','
         <button class="btn ghost" type="button" id="reqNext" title="ปีถัดไป" disabled>›</button>
         <b style="margin-left:8px">ชนิดงบ</b>
 <select class="search" id="reqCatSel" style="max-width:260px" multiple data-ph="ทุกชนิดงบ"></select>
-        <span class="note" style="margin:0" id="reqBarNote">ทั้งหน้าแสดงเฉพาะปีและชนิดงบที่เลือก</span>
+        <b style="margin-left:8px">กิจกรรม</b>
+        <select class="search" id="reqActSel" style="max-width:260px" multiple data-ph="ทุกกิจกรรม"></select>
+        <span class="note" style="margin:0" id="reqBarNote"></span>
       </div>
       <div id="reqBody"><div class="loading"><span class="spin"></span>กำลังดึงข้อมูลจาก Google Sheets…</div></div>
     </section>
@@ -1707,17 +1710,17 @@ try{ const DARK=['sundown','dusk','midnight','moonset','dawn'], DAYS=['sunset','
       </div>
 
       <div class="card"><h3>① เป้าหมายโครงข่าย</h3>
-        <div class="note">ตัวเลขจริงเทียบเป้า — ขีดสีเข้มบนแถบคือเส้นเป้า</div>
+        
         <div id="ovTargets"><div class="loading"><span class="spin"></span>กำลังดึงข้อมูลสภาพสายทาง / จุดเสี่ยง / Equipment…</div></div>
       </div>
 
       <div class="card" style="margin-top:14px"><h3>② ช่องว่าง: ความต้องการคงเหลือ เทียบ คำขอที่ยื่นไป</h3>
-        <div class="note">ส่วนต่างคือความต้องการที่สำรวจไว้แล้วแต่ยังไม่ได้ยื่นขอ — พร้อมผลงานสะสมย้อนหลังเป็นบริบท</div>
+        
         <div id="dcFunnel"><div class="loading"><span class="spin"></span>กำลังรวมข้อมูล 3 แหล่ง…</div></div>
         <!-- v24.0 — Dumbbell: ช่องว่างกลายเป็นความยาวเส้น เห็นทันทีว่าหมวดไหนห่างสุด -->
         <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid)">
           <h3 style="font-size:13px;margin:0 0 2px">ช่องว่างรายหมวด — ความต้องการ vs ที่ยื่นขอ</h3>
-          <div class="note">จุดทอง = ความต้องการคงเหลือ · จุดน้ำเงิน = ยื่นขอแล้ว · เส้นแดงยาว = ช่องว่างมาก</div>
+          
           <div id="dcGap"></div>
         </div>
       </div>
@@ -1725,7 +1728,7 @@ try{ const DARK=['sundown','dusk','midnight','moonset','dawn'], DAYS=['sunset','
       <div class="card" style="margin-top:14px">
         <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start">
           <div><h3>③ สายทางที่ควรได้งบก่อน</h3>
-            <div class="note" style="margin:0">น้ำหนักคงที่: ลูกรัง 70% · ปัจจัยอื่นรวม 30%</div></div>
+            </div>
           
         </div>
         <div id="dcWeights" class="wgrid"></div>
@@ -1735,23 +1738,23 @@ try{ const DARK=['sundown','dusk','midnight','moonset','dawn'], DAYS=['sunset','
       <!-- v24.0 — Scatter/Bubble: 3 มิติในภาพเดียว หา "สายที่รถเยอะแต่งบน้อย" ซึ่งกราฟแท่งบอกไม่ได้ -->
       <div class="card" style="margin-top:14px">
         <h3>③½ ความสำคัญ เทียบกับ เงินที่ลงไป</h3>
-        <div class="note">แกนตั้ง = PCU · แกนนอน = งบที่เคยได้ต่อ กม. · ขนาดฟอง = ระยะทาง — <b>ช่องแรเงา = ควรได้งบก่อน</b> · คลิกเพื่อเปิดแผนที่</div>
+        
         <div id="dcScatter"></div>
       </div>
       <!-- v29.8 — ต่อยอดจากหน้าเช็คคำขอ: สายที่ยื่นขอซ้ำหลายปีแต่ไม่เคยมีสัญญารองรับ (โมเดลเดียวกับหน้าเช็คคำขอ ไม่คำนวณซ้ำ) -->
       <div class="card" style="margin-top:14px">
         <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start">
           <div><h3>③¾ สายที่ขอบ่อยแต่ยังไม่ได้</h3>
-            <div class="note" style="margin:0">แท่ง = วงเงินที่ขอแล้วไม่ได้ (ลบ.) · แดง = พลาดมากกว่า 1 ปี · คลิกเพื่อเปิดในแผนที่</div></div>
+            </div>
           <button class="btn ghost" onclick="document.querySelector('.nav button[data-page=yearly]').click();setTimeout(()=>document.getElementById('gapBody')?.scrollIntoView({behavior:'smooth'}),400)">⇄ ดูทั้งหมดในหน้าโครงการประจำปี</button>
         </div>
         <div id="dcStuck"></div>
       </div>
       <div class="grid two" style="margin-top:14px">
-        <div class="card fillcol"><h3>④ เรื่องที่ต้องจับตา</h3><div class="note">สร้างจากข้อมูลจริง ไม่ใช่ข้อความตายตัว</div><div id="dcAlerts"></div></div>
-        <div class="card fillcol"><h3>⑤ ข้อเสนอแนะ</h3><div class="note">แปลตัวเลขเป็นสิ่งที่ทำได้จริง</div><div id="dcRecs"></div></div>
+        <div class="card fillcol"><h3>④ เรื่องที่ต้องจับตา</h3><div id="dcAlerts"></div></div>
+        <div class="card fillcol"><h3>⑤ ข้อเสนอแนะ</h3><div id="dcRecs"></div></div>
       </div>
-      <div class="footnote">หน้านี้สรุปจากบัญชีสายทาง · ประวัติโครงการ · คำของบ · Zerobase · จุดเสี่ยง ที่มีอยู่แล้ว — ไม่มีข้อมูลชุดใหม่</div>
+      
     </section>
 <!-- ============ PAGE: YEARLY (v31.2) — โครงการประจำปี: ประวัติสัญญาแยกรายปี "ปีนี้มีสายไหน ทำอะไรบ้าง" ============ -->
     <section class="page" id="pg-yearly">
@@ -1791,7 +1794,7 @@ try{ const DARK=['sundown','dusk','midnight','moonset','dawn'], DAYS=['sunset','
       </div>
       <div class="grid kpis" id="sysKpis"></div>
       <div class="grid two">
-        <div class="card"><h3>ความครบถ้วนของข้อมูล</h3><div class="note">เทียบบัญชีสายทางทั้งหมด</div><div id="ovComplete"></div></div>
+        <div class="card"><h3>ความครบถ้วนของข้อมูล</h3><div id="ovComplete"></div></div>
         <div class="card lockcard" id="sysLockA">
           <div class="lockico">🔒</div>
           <h3 style="margin:0 0 4px">โครงสร้างและแหล่งข้อมูล — ล็อกไว้</h3>
@@ -1807,7 +1810,7 @@ try{ const DARK=['sundown','dusk','midnight','moonset','dawn'], DAYS=['sunset','
         <div class="note">รายการจาก Google Sheets ที่จับคู่บัญชีไม่ได้ = ขึ้นเป็น "หมวดไม่ระบุ" ในกราฟ — แก้โดยพิมพ์รหัสในชีทให้ตรง หรือเพิ่มสายในชีท "สายทาง" ของ Master แล้วแจ้ง rebuild</div>
         <div id="sysCodeCheck"></div>
       </div>
-      <div class="card" style="margin-top:14px"><h3>สายทางที่ยังไม่มีเส้น GPS จริง (แนวประมาณ — รอสำรวจ)</h3><div class="note">แสดงบนแผนที่เป็น "เส้นประ" ชั่วคราว (ลากตรงจุดเริ่ม-จุดจบ) จนกว่าจะเก็บ GPS จริง</div><div id="sysStubs"></div></div>
+      <div class="card" style="margin-top:14px"><h3>สายทางที่ยังไม่มีเส้น GPS จริง (แนวประมาณ — รอสำรวจ)</h3><div id="sysStubs"></div></div>
 
       <div class="card" style="margin-top:14px"><h3>👀 สถิติผู้เข้าชม Dashboard</h3>
         <div class="note">นับทุกครั้งที่มีคนเปิด dashboard (ทั้งเปิดจากไฟล์ในเครื่องและจากลิงก์เว็บ) — บันทึกลง Google Sheet ของเราเอง</div>
@@ -2543,11 +2546,15 @@ function heat(container, rowLabels, colLabels, matrix, {unit='', fmtV=fmt, onCli
       .textContent=r.length>mc?r.slice(0,mc-1)+'…':r;
     (matrix[i]||[]).forEach((v,j)=>{
       const t=Math.max(0,Math.min(1,v/mx));
-      const col=`rgb(${Math.round(252-(252-ramp[0])*t)},${Math.round(252-(252-ramp[1])*t)},${Math.round(251-(251-ramp[2])*t)})`;
+      const RGB=[Math.round(252-(252-ramp[0])*t),Math.round(252-(252-ramp[1])*t),Math.round(251-(251-ramp[2])*t)];
+      const col=`rgb(${RGB.join(',')})`;
+      /* v31.45 darkink จับได้: ช่องความเข้มกลาง ๆ (t≈0.56) ตัวเลขขาวจมพื้น 2.5:1 — เลือกสีตัวเลขจากค่าความสว่างจริงของช่อง ไม่ใช่เดาจาก t */
+      const lum=(()=>{ const f=c=>{ c/=255; return c<=.03928?c/12.92:Math.pow((c+.055)/1.055,2.4); }; return .2126*f(RGB[0])+.7152*f(RGB[1])+.0722*f(RGB[2]); })();
+      const inkWhite=(1.05)/(lum+.05) > (lum+.05)/(0.0184+.05);   /* เทียบ contrast ขาว vs #1f2733 (lum≈0.0184) */
       const rc=el('rect',{class:'heatcell',x:lw+cw*j+1.5,y:y+1.5,width:Math.max(1,cw-3),height:ch-3,rx:5,fill:col},svg);
       rc.style.cursor='help';   // v27.1 — บอกให้รู้ว่าช่องนี้ชี้ดูรายละเอียดได้
       if(cw>34) el('text',{x:lw+cw*(j+0.5),y:y+ch/2+4,'text-anchor':'middle','font-size':10.5,'font-weight':700,
-        fill:t>0.55?'#fff':'#1f2733'},svg).textContent=v?fmtV(v):'';   /* v31.26 สีตัวเลขตามความเข้มของช่อง (ช่องเป็นสีข้อมูล ไม่ขึ้นกับชุดสี) */
+        fill:inkWhite?'#fff':'#1f2733'},svg).textContent=v?fmtV(v):'';   /* v31.26 สีตัวเลขตามความเข้มของช่อง (ช่องเป็นสีข้อมูล ไม่ขึ้นกับชุดสี) */
       const rTip=(rowFull&&rowFull[i])||r;
       hitOn(rc);   // กฎ 8
       const cTip=(colFull&&colFull[j])||colLabels[j];
@@ -3010,6 +3017,7 @@ function shareBars(container,items,opt){
      แถวที่ติดธง last (เช่น "ไม่ระบุเขต") ไปอยู่ท้ายสุดไม่ว่าค่าเท่าไร · ชุดทดสอบ bands ⑦ */
   items=items.slice().sort((a,b)=>((a.last?1:0)-(b.last?1:0))||((+b.v||0)-(+a.v||0)));
   box.__rows=items.length;box.__fit=h=>shareBars(container,items,{...(opt||{}),height:h});
+  box.__fitAny=true;   /* v31.45 ผู้ใช้: "เจอ 2 กล่องไม่เท่ากัน ชั้นเคยบอกไปแล้วนะ" — แถบสัดส่วนต้องยืดเต็มการ์ดเหมือนกราฟอื่น (กฎ 22 ⑤) · เดิมลืมติดธงนี้ ตัวจัดการ์ดจึงข้ามไป */
   const total=items.reduce((s,x)=>s+x.v,0),pct=v=>total>0?100*v/total:0;
   const percent=v=>v>0&&v<.1?'&lt;0.1%':v.toFixed(1)+'%';
   /* v31.36 ผู้ใช้ 12 ก.ย. 69: "เอารูปแบบของกล่องวงเงินตามชนิดงบมาประยุกต์ใช้หลายๆ กล่องดีกว่า
@@ -3844,7 +3852,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.44', APP_DATE='14 ก.ย. 2569';
+const APP_VER='v31.45', APP_DATE='14 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -5220,7 +5228,7 @@ function renderDcFunnel(rows){
     <div class="fnl">${row('◷ ทำไปแล้วสะสม','ประวัติโครงการทุกปีรวมกัน',gotKm,gotB,'#0d9488',haveHist,Math.max(gotKm,0.001))}</div>
   </div>
   <!-- v31.7 กฎ 15: เหตุผลที่ไม่นำ "ทำไปแล้วสะสม" มาลบกับสองแถบบน (คนละฐานเวลา) และรายการไม่ระบุ กม. ไม่นับในแถบ — อยู่ในธรรมนูญหมวด 8½ ไม่ใช่บนจอ -->
-  <div class="footnote" style="margin-top:10px">สองแถบบนเทียบกันได้ตรงๆ · "ทำไปแล้วสะสม" เป็นบริบทย้อนหลัง ไม่นำมาลบกัน</div>`;
+  `;
 }
 /* ③ สไลเดอร์น้ำหนัก */
 function renderDcWeights(){
@@ -5231,7 +5239,7 @@ function renderDcWeights(){
 function renderDcRank(rows,act){
   const box=document.getElementById('dcRank'); if(!box) return;
   const top=rows.slice(0,20);
-  box.innerHTML=`<div class="note" style="margin-bottom:12px">ลูกรัง ≥70% อยู่กลุ่มแรกเสมอ · คะแนนใช้จัดลำดับภายในแต่ละกลุ่ม</div><div class="tblwrap"><table id="dcRankTable"><thead><tr>
+  box.innerHTML=`<div class="tblwrap"><table id="dcRankTable"><thead><tr>
       <th style="width:44px">อันดับ</th><th>สายทาง</th><th>หมวด</th>
       <th class="num">ระยะ (กม.)</th><th class="num">ลูกรัง %</th><th class="num">ปีล่าสุดที่ได้งบ</th>
       <th class="num">จุดเสี่ยงค้าง</th><th class="num">Zerobase (กม.)</th><th style="width:120px">คะแนน</th>
@@ -5523,7 +5531,7 @@ const kico=(ico,bg,lbl,val,foot,opt)=>{ const o=opt||{};
     `<div class="kico" style="background:${bg}">${ico}</div><div style="min-width:0">`+
     `<div class="lbl">${lbl}</div><div class="val">${val}</div>`+
     (o.delta||'')+(o.spark||'')+
-    `<div class="foot">${foot}</div></div></div>`; };
+    (foot?`<div class="foot">${foot}</div>`:'')+`</div></div>`; };   /* v31.45 ไม่มีบรรทัดท้าย = ไม่ต้องมีกล่องว่าง (กฎ 23) */
 /* v31.6 กล่องสัดส่วนตามกลุ่ม (ตัวเดียวใช้ทุกหน้า): แถบสัดส่วน + กล่องละกลุ่ม (จำนวน · % · ค่าที่สอง · บรรทัดท้ายเมื่อจำเป็น)
    groups = [[key,{label,n,amt(html/ข้อความ),foot,tip}]] · colorOf(key) · opt.unit (หน่วยของ n) · opt.small (กล่องเล็ก) */
 function groupBoxes(hostId, groups, colorOf, opt){
@@ -5752,18 +5760,18 @@ function renderOverview(){
   const topPcu = pcuRows[0]||null;
   const ovk=document.getElementById('ovKpis'); ovk.className='grid kpis kpi3';
   ovk.innerHTML =
-    kico('🛣️','var(--tile-teal)','สายทางในบัญชี', `${nRoad} <small>สาย</small>`, (OVF.muad?'หมวด'+esc(OVF.muad):'บัญชีหลักของแขวงฯ')+share(nRoad,RALL.length),
+    kico('🛣️','var(--tile-teal)','สายทางในบัญชี', `${nRoad} <small>สาย</small>`, (OVF.muad?'หมวด'+esc(OVF.muad):'')+share(nRoad,RALL.length),
       {go:'roadTable', title:'ไปที่ทะเบียนสายทาง'})+
-    kico('📏','var(--tile-blue)','ระยะทางรวม', `${fmt(totKm)} <small>กม.</small>`, `ตามบัญชี (รวมสะพาน ${fmt(+bridgeLen.toFixed(2))} กม.)`+share(totKm,totKmAll),
+    kico('📏','var(--tile-blue)','ระยะทางรวม', `${fmt(totKm)} <small>กม.</small>`, `รวมสะพาน ${fmt(+bridgeLen.toFixed(2))} กม.`+share(totKm,totKmAll),
       {go:'muadTable', title:'ดูระยะทางแยกรายหมวดในตาราง'})+
     kico('🚧','var(--tile-slate)','ผิวลาดยาง', `${fmt(lat)} <small>กม.</small>`, `${(100*lat/Math.max(surfKm,1)).toFixed(1)}% ของผิวทาง`,
       {go:'chSurface', title:'ดูสัดส่วนผิวจราจร'})+
-    kico('🌉','var(--tile-sky)','สะพาน', `${fmt(bridges)} <small>แห่ง</small>`, 'ตามบัญชีโครงข่าย'+share(bridges,brAll),
+    kico('🌉','var(--tile-sky)','สะพาน', `${fmt(bridges)} <small>แห่ง</small>`, share(bridges,brAll).replace(/^ · /,''),
       {go:'page:map', title:'เปิดหน้าแผนที่เพื่อดูตำแหน่งสะพาน'})+
-    kico('📐','var(--tile-violet)','ความยาวสะพานรวม', `${fmt(bridgeLen)} <small>กม.</small>`, 'รวมทุกหมวด'+share(bridgeLen,brKmAll),
+    kico('📐','var(--tile-violet)','ความยาวสะพานรวม', `${fmt(bridgeLen)} <small>กม.</small>`, share(bridgeLen,brKmAll).replace(/^ · /,''),
       {go:'muadTable', title:'ดูความยาวสะพานแยกรายหมวด'})+
     // v23.5 — KPI งบสะสมกลับมาอยู่แถวบนตามเดิม · ส่วน "ยาวที่สุด/PCU สูงสุด" ไปเป็นกราฟ Top 10 ด้านล่างแทน
-    `<div class="card kpi iko"><div class="kico" style="background:var(--tile-green)">💰</div><div style="min-width:0" id="kpiBudget"><div class="lbl">งบสะสม (ตามสัญญา)</div><div class="val">…</div><div class="foot">ทุกปีรวมกัน</div></div></div>`;
+    `<div class="card kpi iko"><div class="kico" style="background:var(--tile-green)">💰</div><div style="min-width:0" id="kpiBudget"><div class="lbl">งบสะสม (ตามสัญญา)</div><div class="val">…</div></div></div>`;
 
   // ---- สรุปรายหมวด (ตาราง) ----
   const byM={};
@@ -6066,9 +6074,9 @@ function renderOverviewBudget(){
   document.getElementById('ovBudget').innerHTML=`
     <div class="grid" style="grid-template-columns:1fr 1fr;gap:14px">
       <div class="gcell"><h3 style="font-size:13px">แนวโน้มงบรายปี (ลบ.)</h3>
-        <div class="note" style="margin-bottom:4px">แกนเริ่มที่ 0 · ป้ายที่ปลายเส้น</div><div id="chBudTrend"></div></div>
+        <div id="chBudTrend"></div></div>
       <div class="gcell"><h3 style="font-size:13px">งบรายปีแยกรายหมวด</h3>
-        <div class="note" style="margin-bottom:4px">กราฟจิ๋วแกนเดียวกัน เทียบรูปทรงได้ตรงๆ</div><div id="chBudSmall"></div></div>
+        <div id="chBudSmall"></div></div>
     </div>
     <div class="grid" style="grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:14px">
       <div class="gcell"><h3 style="font-size:13px">งบรวมต่อหมวด (ลบ.)</h3><div id="chBudMuad"></div></div>
@@ -6077,10 +6085,10 @@ function renderOverviewBudget(){
     </div>
     <div class="grid two" style="margin-top:14px">
       <div class="gcell"><h3 style="font-size:13px">เงินไหลจากชนิดงบ ไปลงหมวดไหน</h3>
-        <div class="note" style="margin-bottom:4px">ความหนาของสาย = วงเงิน · ชี้ที่สายเพื่อดูตัวเลขและ %</div>
+        
         <div id="chBudFlow"></div></div>
       <div class="gcell"><h3 style="font-size:13px">งบกระจุกอยู่ที่ไหน (Pareto)</h3>
-        <div class="note" style="margin-bottom:4px">เรียงสายทางจากงบมาก→น้อย · เส้นทองคือยอดสะสม</div>
+        
         <div id="chBudPareto"></div></div>
     </div>
 `;
@@ -7729,14 +7737,14 @@ function renderHistory(){
     ${historyIssueHtml(H)}
     <div class="grid kpis kpi3">
       ${kico('📋','var(--tile-blue)','โครงการ/สัญญา', `${H.length} <small>รายการ</small>`, `ปี ${years[0]}–${years[years.length-1]}`)}
-      ${kico('💰','var(--tile-green)','วงเงินตามสัญญารวม', fmtM(tot), 'เฉพาะรายการที่ระบุวงเงิน')}
-      ${kico('📈','var(--tile-violet)','วงเงินเฉลี่ยต่อโครงการ', fmtM(avgAmt), 'จากรายการที่ระบุวงเงิน')}
+      ${kico('💰','var(--tile-green)','วงเงินตามสัญญารวม', fmtM(tot), '')}
+      ${kico('📈','var(--tile-violet)','วงเงินเฉลี่ยต่อโครงการ', fmtM(avgAmt), '')}
       ${kico('✅','var(--tile-green)','ส่งงานงวดสุดท้ายแล้ว', `${delivered} <small>/ ${H.length}</small>`, `${(100*delivered/H.length).toFixed(0)}% ของรายการ`)}
       ${kico('🛡️','#fdeeee','ยังติดค้ำประกันสัญญา', `<span style="color:var(--crit)">${underWarranty}</span> <small>โครงการ</small>`, 'ส่งงานงวดสุดท้าย + 2 ปี ยังไม่ครบ')}
-      ${kico('👷','#fdf4e3','ผู้รับจ้าง', `${contractors.length} <small>ราย</small>`, 'ที่ระบุชื่อในสัญญา')}
+      ${kico('👷','#fdf4e3','ผู้รับจ้าง', `${contractors.length} <small>ราย</small>`, '')}
     </div>
     <div class="card" style="margin-bottom:14px">
-      <h3>ปริมาณงานสะสมที่ทำไปแล้ว</h3><div class="note">ปี ${years[0]}–${years[years.length-1]} — ชี้ที่ช่องเพื่อดูรายการโครงการ</div>
+      <h3>ปริมาณงานสะสมที่ทำไปแล้ว · ปี ${years[0]}–${years[years.length-1]}</h3>
       <div class="workgrid">
         <div class="worktile" style="background:var(--tile-green)"><div class="wico">🏗️</div><div style="min-width:0">
           <div class="wval">${fmt(+hRoadCls['ก่อสร้าง'].km.toFixed(1))} <small>กม.</small></div>
@@ -7770,7 +7778,7 @@ function renderHistory(){
           <div class="kico" style="background:var(--tile-teal);width:44px;height:44px;border-radius:12px;font-size:22px">🏛️</div>
           <div style="flex:1;min-width:0">
             <h3 style="margin-bottom:2px">หน่วยดำเนินการ</h3>
-            <div class="note">แถวละปี แถบยาวเทียบกันได้ แบ่งสีตามหน่วย (ลบ.) — กดปุ่มใต้แถบเพื่อดูตัวเลขทุกช่อง</div>
+            
             <div id="chAgency"></div>
           </div>
         </div>
@@ -7787,25 +7795,25 @@ function renderHistory(){
       </div>`:'';
       return `<div class="grid ${bldCard?'two':''}" style="margin-bottom:14px">${agencyCard}${bldCard}</div>`; })()}
     <div class="grid two">
-      <div class="card"><h3>วงเงินตามสัญญาต่อปีงบประมาณ</h3><div class="note">ล้านบาท</div><div id="chHistYear"></div></div>
-      <div class="card"><h3>วงเงินต่อปี แยกตามชนิดงบ (ครบทุกชนิด)</h3><div class="note">ล้านบาท — แถบยาวเทียบกันได้ทุกปี กดปุ่มใต้แถบเพื่อดูตัวเลขทุกช่อง</div><div id="chHistType"></div></div>
+      <div class="card"><h3>วงเงินตามสัญญาต่อปีงบประมาณ (ล้านบาท)</h3><div id="chHistYear"></div></div>
+      <div class="card"><h3>วงเงินต่อปี แยกตามชนิดงบ (ครบทุกชนิด) (ล้านบาท)</h3><div id="chHistType"></div></div>
     </div>
     <div class="grid two" style="margin-top:14px">
-      <div class="card"><h3>วงเงินต่อปี แยกตามหมวดบำรุงทาง</h3><div class="note">แถวละปี แท่งซ้อนแบ่งตามหมวด (ลบ.) — ชี้ท่อนเพื่อดูรายละเอียดและ %</div><div id="chHistMuad"></div></div>
-      <div class="card"><h3>กิจกรรมที่ใช้งบมากที่สุด</h3><div class="note">ล้านบาทสะสม — ชี้เพื่อดูจำนวนโครงการ</div><div id="chHistAct"></div></div>
+      <div class="card"><h3>วงเงินต่อปี แยกตามหมวดบำรุงทาง</h3><div id="chHistMuad"></div></div>
+      <div class="card"><h3>กิจกรรมที่ใช้งบมากที่สุด (ล้านบาท)</h3><div id="chHistAct"></div></div>
     </div>
     <div class="grid two" style="margin-top:14px">
-      <div class="card"><h3>สายทางที่ได้รับงบสะสมสูงสุด 10 อันดับ</h3><div class="note">ล้านบาท — ชี้เพื่อดูจำนวนโครงการ</div><div id="chHistRoad"></div></div>
-      <div class="card"><h3>ผู้รับจ้าง — วงเงินสะสมสูงสุด 10 อันดับ</h3><div class="note">ล้านบาท</div><div id="chContractor"></div></div>
+      <div class="card"><h3>สายทางที่ได้รับงบสะสมสูงสุด 10 อันดับ (ล้านบาท)</h3><div id="chHistRoad"></div></div>
+      <div class="card"><h3>ผู้รับจ้าง — วงเงินสะสมสูงสุด 10 อันดับ (ล้านบาท)</h3><div id="chContractor"></div></div>
     </div>
     <!-- v29.8 — เขตเลือกตั้ง "ราย กม." : สัญญาแต่ละรายการถูกวางลงเขตตามช่วง กม. บนเส้น GIS ไม่ใช่ตามอำเภอหลักของสาย -->
     <!-- v31.37 ผู้ใช้: "ให้ซ้ายกับขวาบาลานซ์กันหน่อย … ซ้ายไม่จำเป็นต้องมีก็ได้มั้ง
          วงเงินสะสมบอกแค่เขต งบ สัดส่วน ก็ได้ พวกชื่อ จำนวนสาย เดี๋ยวไปโชว์หน้าภาพรวม"
          → เหลือกล่องเดียวเต็มบรรทัด แบ่งเป็น 2 คอลัมน์ในกล่อง (กฎ 16: ข้อมูลเยอะ อย่าดันเป็นสองการ์ดที่สูงไม่เท่ากัน) -->
-    <div class="card" style="margin-top:14px"><h3>วงเงินสะสมตามเขตเลือกตั้ง</h3><div class="note">ล้านบาท · สีตามพรรคของ สส. เขตนั้น — ชี้เพื่อดูชื่อ สส. จำนวนสัญญา และปีล่าสุด</div><div id="chHistZone"></div></div>
+    <div class="card" style="margin-top:14px"><h3>วงเงินสะสมตามเขตเลือกตั้ง (ล้านบาท)</h3><div id="chHistZone"></div></div>
     <div class="card" style="margin-top:14px">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
-        <div><h3 style="margin:0">รายชื่อสายทางที่มีประวัติโครงการ</h3><div class="note" style="margin:0">คลิกแถวเพื่อเปิดหน้าสรุปรายสาย (แท็บ ②)</div></div>
+        <div><h3 style="margin:0">รายชื่อสายทางที่มีประวัติโครงการ</h3></div>
         <input class="search" id="histSearch" style="width:220px" placeholder="ค้นหาสาย/ชื่อสายทาง...">
       </div>
       <div class="tblwrap" style="max-height:480px"><table id="histTable"><thead><tr><th>รหัส</th><th>ชื่อสายทาง</th><th>หมวด</th><th class="num">จำนวนโครงการ</th><th class="num">วงเงินรวม (บาท)</th><th>ปีที่มีงาน</th><th>กิจกรรมที่เคยทำ</th></tr></thead><tbody></tbody></table></div>
@@ -8128,7 +8136,7 @@ function renderHistRoad(code){
       <div class="card kpi"><div class="lbl">วงเงินรวม</div><div class="val">${fmtM(tot)}</div><div class="foot">${list.length?`เฉลี่ยปีละ ${fmtM(tot/Math.max(1,new Set(list.map(x=>x.year)).size))}`:''}</div></div>
       ${(()=>{ const he=list.filter(x=>poleCount(x)>0||(isElectric(x)&&!x.segs.length)), hp=list.reduce((a,x)=>a+(poleCount(x)||0),0);
       return `
-      <div class="card kpi"><div class="lbl">ระยะดำเนินการรวม</div><div class="val">${fmt(+covKm.toFixed(2))} <small>กม.</small></div><div class="foot">รวมช่วงที่ซ้อนทับกันแล้ว</div></div>
+      <div class="card kpi"><div class="lbl">ระยะดำเนินการรวม</div><div class="val">${fmt(+covKm.toFixed(2))} <small>กม.</small></div></div>
       <div class="card kpi"><div class="lbl">ไฟฟ้าแสงสว่างที่ทำแล้ว</div><div class="val">${hp?fmt(hp):'—'}${hp?' <small>ต้น</small>':''}</div><div class="foot">${he.length?he.length+' โครงการ':'ยังไม่มีงานไฟฟ้า'}</div></div>
       <div class="card kpi"><div class="lbl">ครอบคลุมความยาวสาย</div><div class="val">${roadLen?Math.min(100,100*covKm/roadLen).toFixed(0):0}<small>%</small></div><div class="foot">ระยะครอบคลุมจริง ${fmt(+covKm.toFixed(2))} กม.</div></div>`;})()}
     </div>
@@ -8139,7 +8147,7 @@ function renderHistRoad(code){
       const zpl=zl.filter(zbIsE).reduce((s,x)=>s+(zbPoles(x)||0),0), ne=zl.filter(zbIsE).length;
       const zbr=zl.filter(zbIsB).reduce((s,x)=>s+((x.len||0)*1000),0), nb=zl.filter(zbIsB).length;
       return `<div class="grid kpis" style="margin-top:0">
-        <div class="card kpi" style="border-left:4px solid #e34948"><div class="lbl">Zerobase — คำขอของสายนี้</div><div class="val">${zl.length} <small>ช่วง</small></div><div class="foot">เหมารวมทุกรายการ</div></div>
+        <div class="card kpi" style="border-left:4px solid #e34948"><div class="lbl">Zerobase — คำขอของสายนี้</div><div class="val">${zl.length} <small>ช่วง</small></div></div>
         <div class="card kpi" style="border-left:4px solid #e34948"><div class="lbl">งานถนน</div><div class="val">${zrd?fmt(+zrd.toFixed(2)):'—'}${zrd?' <small>กม.</small>':''}</div><div class="foot">${nrd?nrd+' คำขอ':'ไม่มีคำขอ'}</div></div>
         <div class="card kpi" style="border-left:4px solid #e34948"><div class="lbl">ไฟฟ้าแสงสว่าง</div><div class="val">${zpl?fmt(zpl):'—'}${zpl?' <small>ต้น</small>':''}</div><div class="foot">${ne?ne+' คำขอ':'ไม่มีคำขอ'}</div></div>
         <div class="card kpi" style="border-left:4px solid #e34948"><div class="lbl">สะพาน</div><div class="val">${zbr?fmt(Math.round(zbr)):'—'}${zbr?' <small>ม.</small>':''}</div><div class="foot">${nb?nb+' คำขอ':'ไม่มีคำขอ'}</div></div>
@@ -8147,7 +8155,7 @@ function renderHistRoad(code){
       </div>`; })():''}
     <div class="card" style="margin-top:14px">
       <h3>แผนภาพบูรณาการ (Strip Map)${bridge?' — ถนนเชิงลาด + ตัวสะพาน':''}</h3>
-      <div class="note">ชี้ที่แถบเพื่อดูรายละเอียด${bridge?' · ตำแหน่งสะพานประมาณกึ่งกลางระยะเชิงลาด':''}${noSeg?` · ⚠ ${noSeg} โครงการไม่ได้ระบุช่วง กม. (ดูในตาราง)`:''}</div>
+      ${noSeg?`<div class="note">⚠ ${noSeg} โครงการไม่ได้ระบุช่วง กม.</div>`:''}
       <div class="stripwrap" id="hrStrip"></div>
     </div>
     <div class="card" style="margin-top:14px">
@@ -8946,7 +8954,7 @@ function renderContractTracker(container,rows,year){
   if(st.agency!=='all'&&!agencies.includes(st.agency))st.agency='all';
   if(st.act!=='all'&&!acts.includes(st.act))st.act='all';if(st.muad!=='all'&&!muads.includes(st.muad))st.muad='all';
   const opts=(items,all)=>'<option value="all">'+all+'</option>'+items.map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join('');
-  box.innerHTML=`<div class="contract-controls" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0"><label>กิจกรรม <select class="search ct-act" aria-label="กรองกิจกรรมสัญญา">${opts(acts,'ทุกกิจกรรม')}</select></label><label>สถานะ <select class="search ct-status" aria-label="กรองสถานะสัญญา">${Object.entries(CONTRACT_STATES).map(([k,v])=>'<option value="'+k+'">'+v+'</option>').join('')}</select></label><label>หน่วยดำเนินการ <select class="search ct-agency" aria-label="กรองหน่วยดำเนินการสัญญา">${opts(agencies,'ทุกหน่วย')}</select></label><label>หมวด <select class="search ct-muad" aria-label="กรองหมวดสัญญา">${opts(muads,'ทุกหมวด')}</select></label><label>เรียง <select class="search ct-sort"><option value="contract">เลขที่สัญญา</option><option value="end">วันหมดสัญญา</option><option value="start">วันเริ่ม</option><option value="code">รหัสสายทาง</option></select></label><input class="search ct-query" aria-label="ค้นหาสัญญา" placeholder="เลขสัญญา / สายทาง / ผู้รับจ้าง"><button class="btn ghost ct-reset">แสดงทั้งหมด</button></div><h4 class="ct-section-title">ภาพรวม</h4><div class="ct-kpis"></div><h4 class="ct-section-title">การเบิกจ่าย</h4><div class="ct-payment"></div><h4 class="ct-section-title">รายโครงการ</h4><div class="ct-time-help note">ส่วนต่างแผน–ผลตั้งแต่เกณฑ์ · เฉพาะงานยังไม่เสร็จ · นับสะสม · คลิกเพื่อกรอง</div><div class="ct-thresholds"></div><div class="ct-summary chips"></div><div class="ct-plot-wrap" style="overflow-x:auto"><div id="yrContractPlot"></div></div><div class="ct-pages" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0"></div><details class="ct-details"><summary style="cursor:pointer;padding:8px 0;font-weight:700">รายละเอียดสัญญาที่กรอง</summary><div class="tblwrap" style="max-height:420px"><table id="yrContractTable"><thead><tr><th>รหัสสายทาง / หน่วย</th><th>หมวด</th><th>เลขสัญญา</th><th>หน่วยดำเนินการ</th><th>ผู้ควบคุมงาน</th><th>กิจกรรม</th><th>เริ่ม</th><th>หมดสัญญา</th><th>เหลือ (วัน)</th><th>สถานะ</th><th>แผน (%)</th><th>ผล (%)</th><th>ต่ำกว่าแผน (จุดเปอร์เซ็นต์)</th><th>วงเงิน (บาท)</th></tr></thead><tbody></tbody></table></div></details>`;
+  box.innerHTML=`<div class="contract-controls" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0"><label>กิจกรรม <select class="search ct-act" aria-label="กรองกิจกรรมสัญญา">${opts(acts,'ทุกกิจกรรม')}</select></label><label>สถานะ <select class="search ct-status" aria-label="กรองสถานะสัญญา">${Object.entries(CONTRACT_STATES).map(([k,v])=>'<option value="'+k+'">'+v+'</option>').join('')}</select></label><label>หน่วยดำเนินการ <select class="search ct-agency" aria-label="กรองหน่วยดำเนินการสัญญา">${opts(agencies,'ทุกหน่วย')}</select></label><label>หมวด <select class="search ct-muad" aria-label="กรองหมวดสัญญา">${opts(muads,'ทุกหมวด')}</select></label><label>เรียง <select class="search ct-sort"><option value="contract">เลขที่สัญญา</option><option value="end">วันหมดสัญญา</option><option value="start">วันเริ่ม</option><option value="code">รหัสสายทาง</option></select></label><input class="search ct-query" aria-label="ค้นหาสัญญา" placeholder="เลขสัญญา / สายทาง / ผู้รับจ้าง"><button class="btn ghost ct-reset">แสดงทั้งหมด</button></div><h4 class="ct-section-title">ภาพรวม</h4><div class="ct-kpis"></div><h4 class="ct-section-title">การเบิกจ่าย</h4><div class="ct-payment"></div><h4 class="ct-section-title">รายโครงการ</h4><div class="ct-thresholds"></div><div class="ct-summary chips"></div><div class="ct-plot-wrap" style="overflow-x:auto"><div id="yrContractPlot"></div></div><div class="ct-pages" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0"></div><details class="ct-details"><summary style="cursor:pointer;padding:8px 0;font-weight:700">รายละเอียดสัญญาที่กรอง</summary><div class="tblwrap" style="max-height:420px"><table id="yrContractTable"><thead><tr><th>รหัสสายทาง / หน่วย</th><th>หมวด</th><th>เลขสัญญา</th><th>หน่วยดำเนินการ</th><th>ผู้ควบคุมงาน</th><th>กิจกรรม</th><th>เริ่ม</th><th>หมดสัญญา</th><th>เหลือ (วัน)</th><th>สถานะ</th><th>แผน (%)</th><th>ผล (%)</th><th>ต่ำกว่าแผน (จุดเปอร์เซ็นต์)</th><th>วงเงิน (บาท)</th></tr></thead><tbody></tbody></table></div></details>`;
   ['act','status','muad','agency','sort'].forEach(k=>box.querySelector('.ct-'+k).value=st[k]);box.querySelector('.ct-query').value=st.q;
   const filtered=()=>rows.filter(x=>(st.act==='all'||contractActivities(x).includes(st.act))&&(st.muad==='all'||recMuad(x)===st.muad)&&(st.agency==='all'||histAgency(x)===st.agency)&&(st.status==='all'||(st.status==='pending'?contractState(x)!=='delivered':contractState(x)===st.status))&&[x.contract,x.code,x.contractor,x.roadFull].join(' ').toLowerCase().includes(st.q.toLowerCase()));
   const render=()=>{
@@ -9012,6 +9020,9 @@ const REQ_PROBE_YEARS=Array.from({length:15},(_,i)=>68+i); // ไล่หา Q_
 let reqData=null, reqYears=[], reqYearPick=null, reqDroppedN=0;
 let reqCatPicks=[];   /* v31.42 ชนิดงบที่เลือกดูบนหน้าคำขอ · v31.44 เลือกได้หลายชนิด (ว่าง = ทุกชนิด) */
 const reqCatLbl=()=>reqCatPicks.join(' · ');
+let reqActPicks=[];   /* v31.45 ผู้ใช้: "หน้าคำขอเพิ่มดรอปดาวน์กิจกรรมเหมือนหน้าโครงการประจำปีด้วยสิ" (ว่าง = ทุกกิจกรรม) */
+const reqActOf=r=>(r.actv||r.act||r.proj||'ไม่ระบุ').trim()||'ไม่ระบุ';   /* ตัวอ่านกิจกรรมตัวเดียว ใช้ทั้งตัวกรองและกล่องกิจกรรม */
+const reqFilterLbl=()=>[reqCatPicks.length?reqCatLbl():'', reqActPicks.length?'กิจกรรม '+reqActPicks.join(' · '):''].filter(Boolean).join(' · ');
 const reqCatKey=r=>r.cat==='— ไม่ระบุ'?r.cat:catShow(r.cat);   /* ป้ายชนิดงบที่ใช้ทั้งกล่อง/ตัวกรอง — เหลือจ่ายแยกเป็นชนิดของตัวเอง */
 async function loadRequests(force){ return loadSource('requests', force); }
 defineSource({
@@ -9121,7 +9132,9 @@ const reqFiltered=()=>{
   /* v31.42 ผู้ใช้: "อยากคัดดูเฉพาะเหลือจ่าย แต่จะให้เหลือจ่ายไปโครงการประจำปีเลยก็ยังไม่ได้ เพราะยังไม่พิจารณา"
      → กรองชนิดงบทับอีกชั้น ทั้งหน้า (กล่อง ตาราง Excel พิมพ์) เห็นเฉพาะชนิดที่เลือก · ชนิดที่เลือกไม่มีในปีนี้ = ถอยเป็นทุกชนิด */
   reqCatPicks=reqCatPicks.filter(c=>Y.some(r=>reqCatKey(r)===c));   /* ชนิดที่ไม่มีในปีนี้หลุดออกเอง */
-  return reqCatPicks.length?Y.filter(r=>reqCatPicks.includes(reqCatKey(r))):Y;
+  const YC=reqCatPicks.length?Y.filter(r=>reqCatPicks.includes(reqCatKey(r))):Y;
+  reqActPicks=reqActPicks.filter(a=>YC.some(r=>reqActOf(r)===a));   /* v31.45 กิจกรรมกรองซ้อนจากชนิดงบ (ปี → ชนิดงบ → กิจกรรม) */
+  return reqActPicks.length?YC.filter(r=>reqActPicks.includes(reqActOf(r))):YC;
 };
 const reqYearOnly=()=>(reqData||[]).filter(r=>String(r.year)===String(reqYearPick));   /* ปีที่เลือก ยังไม่กรองชนิดงบ */
 /* v31.42 แถบบนหน้าคำขอ: ปุ่ม ‹ › เลื่อนปี · ช่องชนิดงบมีเฉพาะชนิดที่มีคำขอในปีนั้น (พร้อมจำนวน) · ชุดทดสอบ reqfilter */
@@ -9140,13 +9153,21 @@ function paintReqBar(){
   if(cs.innerHTML!==html) cs.innerHTML=html;   /* สร้างตัวเลือกใหม่เฉพาะเมื่อเปลี่ยนจริง — ไม่งั้นกล่องติ๊กจะปิดเองทุกครั้งที่ติ๊ก */
   [...cs.options].forEach(o=>o.selected=reqCatPicks.includes(o.value));
   cs.disabled=ks.length<2; cs.dispatchEvent(new Event('ddsync'));
+  /* v31.45 ช่องกิจกรรม: ตัวเลือกคิดจากชนิดงบที่ติ๊กไว้ */
+  const as=document.getElementById('reqActSel');
+  if(as){ const YC=reqCatPicks.length?Y.filter(r=>reqCatPicks.includes(reqCatKey(r))):Y, A={}; YC.forEach(r=>{ const k=reqActOf(r); A[k]=(A[k]||0)+1; });
+    const aks=Object.keys(A).sort((a,b)=>A[b]-A[a]); reqActPicks=reqActPicks.filter(k=>aks.includes(k));
+    const ahtml=aks.map(k=>`<option value="${esc(k)}">${esc(k)} (${A[k]})</option>`).join('');
+    if(as.innerHTML!==ahtml) as.innerHTML=ahtml;
+    [...as.options].forEach(o=>o.selected=reqActPicks.includes(o.value));
+    as.disabled=aks.length<2; as.dispatchEvent(new Event('ddsync')); }
   const note=document.getElementById('reqBarNote');
-  const nPick=reqCatPicks.reduce((a,k)=>a+(C[k]||0),0);
-  if(note) note.textContent=!reqCatPicks.length?'ทั้งหน้าแสดงเฉพาะปีที่เลือก · ติ๊กชนิดงบได้หลายชนิดเพื่อคัดดูเฉพาะที่เลือก':`กำลังดูเฉพาะ ${reqCatLbl()} รวม ${nPick} คำขอ · กด "ล้าง" ในช่องชนิดงบเพื่อดูทั้งปี`;
+  if(note) note.textContent=!(reqCatPicks.length||reqActPicks.length)?'':`กำลังดูเฉพาะ ${reqFilterLbl()} รวม ${reqFiltered().length} คำขอ`;   /* v31.45 ไม่มีคำอธิบายเมื่อไม่ได้กรอง (กฎ 23) */
 }
 const reqRepaint=()=>{ paintReqBar(); renderRequests(); try{ paintReqPills(); }catch(_){} };
 document.getElementById('reqYearSel').addEventListener('change',e=>{ reqYearPick=e.target.value; reqRepaint(); });
 document.getElementById('reqCatSel').addEventListener('change',e=>{ reqCatPicks=ddPicked(e.target); reqRepaint(); });
+document.getElementById('reqActSel').addEventListener('change',e=>{ reqActPicks=ddPicked(e.target); reqRepaint(); });
 document.getElementById('reqPrev').addEventListener('click',()=>{ const L=[...new Set((reqYears||[]).map(String))].sort((a,b)=>b-a), i=L.indexOf(String(reqYearPick)); if(i>=0&&i<L.length-1){ reqYearPick=L[i+1]; reqRepaint(); } });
 document.getElementById('reqNext').addEventListener('click',()=>{ const L=[...new Set((reqYears||[]).map(String))].sort((a,b)=>b-a), i=L.indexOf(String(reqYearPick)); if(i>0){ reqYearPick=L[i-1]; reqRepaint(); } });
 /* แถบบนหัวหน้าต้องเปลี่ยนตามปีที่เลือกด้วย ไม่ใช่ค้างที่ปีล่าสุด (กฎ 8) */
@@ -9156,7 +9177,7 @@ function paintReqPills(){
   host.innerHTML=`<span class="hpill"><span class="dot live"></span> ข้อมูลสดจาก Google Sheets</span>`+
     `<span class="hpill">▥ ${Q.length} คำขอ · ${new Set(Q.map(r=>r.code)).size} สาย</span>`+
     `<span class="hpill">📅 ${String(reqYearPick)===String(latestRequestYear())?'ปีล่าสุด ':'ปีงบ '}${reqYearPick}${reqYears.length>1?` · มีให้เลือก ${reqYears.length} ปี`:''}</span>`+
-    (reqCatPicks.length?`<span class="hpill">🗂 เฉพาะ ${esc(reqCatLbl())}</span>`:'')+
+    ((reqCatPicks.length||reqActPicks.length)?`<span class="hpill">🗂 เฉพาะ ${esc(reqFilterLbl())}</span>`:'')+
     `<span class="hpill">🕐 ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})} น.</span>`;
 }
 /* ══════════════════════════════════════════════════════════════════════════
@@ -9212,7 +9233,7 @@ function reqSrcModel(){
 }
 const reqSrcTitle=()=>'สรุปคำของบประมาณตามแหล่งงบ · '+
   (reqYearPick==='all'?('ทุกปี '+(reqYears||[]).join(' · ')):('ปีงบประมาณ '+reqYearPick))+
-  (reqCatPicks.length?' · เฉพาะ'+reqCatLbl():'');   /* v31.42 บอกด้วยว่ากรองชนิดงบอยู่ */
+  ((reqCatPicks.length||reqActPicks.length)?' · เฉพาะ'+reqFilterLbl():'');   /* v31.42 บอกด้วยว่ากรองชนิดงบอยู่ · v31.45 รวมกิจกรรม */
 
 function renderReqSrc(){
   const box=document.getElementById('reqSrcBody'); if(!box) return;
@@ -9276,7 +9297,7 @@ function exportReqSrcXlsx(){
     });
   });
   rows.push([{v:'รวมทั้งสิ้น',s:3},{v:'',s:3},{v:'',s:3},{v:'',s:3},{v:'',s:3},{v:grandN+' รายการ',s:3},{v:grand,s:3}]);
-  const fn='สรุปคำของบตามแหล่งงบ_'+(reqYearPick==='all'?'ทุกปี':reqYearPick)+(reqCatPicks.length?'_'+reqCatPicks.join('+').replace(/[\\/:*?"<>|]/g,''):'')+'.xlsx';
+  const fn='สรุปคำของบตามแหล่งงบ_'+(reqYearPick==='all'?'ทุกปี':reqYearPick)+((reqCatPicks.length||reqActPicks.length)?'_'+reqCatPicks.concat(reqActPicks).join('+').replace(/[\\/:*?"<>|]/g,''):'')+'.xlsx';
   saveBlob(xlsxBlob(rows,{name:'สรุปตามแหล่งงบ',widths:[6,34,13,40,22,16],freeze:2}), fn);
   banner('info','ดาวน์โหลด '+fn+' แล้ว — เปิดด้วย Excel ได้ทันที (ตัวเลขเป็นตัวเลขจริง คำนวณต่อได้)');
 }
@@ -9329,7 +9350,7 @@ function printReqSrc(){
 function renderRequests(){
   const Q=reqFiltered();
   const reqAll=reqYearPick==='all';
-  const yearLbl=(reqAll?`ทุกปี (${reqYears.join(' · ')})`:'ปี '+reqYearPick)+(reqCatPicks.length?' · เฉพาะ'+reqCatLbl():'');
+  const yearLbl=(reqAll?`ทุกปี (${reqYears.join(' · ')})`:'ปี '+reqYearPick)+((reqCatPicks.length||reqActPicks.length)?' · เฉพาะ'+reqFilterLbl():'');
   const byRoad={}; Q.forEach(r=>{ (byRoad[r.code]=byRoad[r.code]||[]).push(r); });
   const counts=Object.entries(byRoad).map(([c,l])=>[c,l.length]).sort((a,b)=>b[1]-a[1]);
   const specified=Q.filter(r=>r.amt!=null);
@@ -9347,21 +9368,21 @@ function renderRequests(){
   const muadWithReq=[...new Set(Object.keys(byRoad).map(c=>roadInfo[c]?.muad).filter(m=>m&&MUAD_ORDER.includes(m)))];
   document.getElementById('reqBody').innerHTML=`
     <div class="grid kpis">
-      <div class="card kpi"><div class="lbl">คำขอทั้งหมด</div><div class="val">${Q.length} <small>คำขอ</small></div><div class="foot">${esc(yearLbl)} — คำขอเดียวมีได้หลายช่วง กม.</div></div>
+      <div class="card kpi"><div class="lbl">คำขอทั้งหมด</div><div class="val">${Q.length} <small>คำขอ</small></div></div>
       <div class="card kpi"><div class="lbl">สายทางที่มีคำขอ</div><div class="val">${reqSplit.road.length} <small>/ ${reqSplit.nRoadAll} สาย</small></div><div class="foot">${splitFoot(reqSplit,nonRoadQ.length?` · อาคาร/หน่วย ${nonRoadQ.length} คำขอ`:'')}</div></div>
-      <div class="card kpi"><div class="lbl">ระยะทางที่ขอรวม</div><div class="val">${fmt(+totReqKm.toFixed(1))} <small>กม.</small></div><div class="foot">รวมทุกช่วงที่ระบุ กม.</div></div>
-      <div class="card kpi"><div class="lbl">งบที่ระบุแล้วรวม</div><div class="val">${fmtM(totAmt)}</div><div class="foot">${specified.length} คำขอ</div></div>
-      <div class="card kpi"><div class="lbl">รอประเมินราคา</div><div class="val" style="color:var(--crit)">${waiting} <small>คำขอ</small></div><div class="foot">ยังไม่ระบุวงเงิน</div></div>
-      <div class="card kpi"><div class="lbl">หมวดที่มีคำขอ</div><div class="val">${muadWithReq.length} <small>/ ${MUAD_ORDER.length} หมวด</small></div><div class="foot">${muadWithReq.join(' · ')||'—'}</div></div>
+      <div class="card kpi"><div class="lbl">ระยะทางที่ขอรวม</div><div class="val">${fmt(+totReqKm.toFixed(1))} <small>กม.</small></div></div>
+      <div class="card kpi"><div class="lbl">งบที่ระบุแล้วรวม</div><div class="val">${fmtM(totAmt)}</div></div>
+      <div class="card kpi"><div class="lbl">รอประเมินราคา</div><div class="val" style="color:var(--crit)">${waiting} <small>คำขอ</small></div></div>
+      <div class="card kpi"><div class="lbl">หมวดที่มีคำขอ</div><div class="val">${muadWithReq.length} <small>/ ${MUAD_ORDER.length} หมวด</small></div></div>
     </div>
     <!-- v31.2 ผู้ใช้สั่ง (7 ก.ย. 69): สัดส่วนชนิดงบเป็นกล่องแยกชนิด (จำนวน · % · วงเงิน) มาก่อน → มุมมองรายสาย → Top 10 -->
-    <div class="card" style="margin-top:14px"><h3>สัดส่วนคำขอแยกตามชนิดงบ/แผนงาน</h3><div class="note">แต่ละชนิดงบ ขอกี่รายการ · กี่ % ของคำขอทั้งหมด · วงเงินที่ระบุแล้ว — แถบสีด้านบน = สัดส่วนจำนวนคำขอ</div><div id="chReqCat"></div></div>
+    <div class="card" style="margin-top:14px"><h3>สัดส่วนคำขอแยกตามชนิดงบ/แผนงาน</h3><div id="chReqCat"></div></div>
     <!-- v31.36 ผู้ใช้: "เพิ่มกล่องแบ่งตามเรทงบ โดยแบ่งจากชนิดงบ และในแต่ละชนิดงบให้แบ่งตามเรทงบประมาณ" -->
-    <div class="card" style="margin-top:14px"><h3>คำขอแยกตามช่วงวงเงิน (เรทงบ)</h3><div class="note">แถวละชนิดงบ · ช่องละช่วงวงเงิน — ตัวเลขบนคือจำนวนคำขอ ตัวเลขล่างคือ % ของชนิดงบนั้น · แถวท้ายคือรวมทุกชนิดงบ</div><div id="chReqBand"></div></div>
+    <div class="card" style="margin-top:14px"><h3>คำขอแยกตามช่วงวงเงิน (เรทงบ)</h3><div id="chReqBand"></div></div>
     <!-- v31.4 ผู้ใช้: "เพิ่มกล่องคำขอแบ่ง ตามเขต ตามกิจกรรม ด้วย" — กล่องชุดเดียวกับชนิดงบ -->
     <div class="grid two" style="margin-top:14px">
-      <div class="card"><h3>คำขอแยกตามเขตเลือกตั้ง</h3><div class="note">สีตามพรรคของ สส. เขตนั้น · "ไม่ระบุ" = ระบุตำแหน่งไม่ได้</div><div id="chReqZone"></div></div>
-      <div class="card"><h3>คำขอแยกตามกิจกรรม × ชนิดงบ</h3><div class="note">แถวละกิจกรรม ช่องละชนิดงบ — กิจกรรมเดียวกันแต่คนละชนิดงบนับแยกช่อง · แสดง 8 กิจกรรมที่ขอมากสุด ที่เหลือรวมเป็น "อื่นๆ"</div><div id="chReqAct"></div></div>
+      <div class="card"><h3>คำขอแยกตามเขตเลือกตั้ง</h3><div id="chReqZone"></div></div>
+      <div class="card"><h3>คำขอแยกตามกิจกรรม × ชนิดงบ</h3><div id="chReqAct"></div></div>
     </div>
     <div class="grid two" style="margin-top:14px">
       <div class="card" style="display:flex;flex-direction:column">
@@ -9371,14 +9392,14 @@ function renderRequests(){
         </div>
         <div id="reqDetail" style="flex:1;display:flex;flex-direction:column"></div>
       </div>
-      <div class="card"><h3>สายทางที่มีคำขอซ้ำมากที่สุด (Top 10)</h3><div class="note">จำนวนคำขอ — คลิกแท่งเพื่อดูรายละเอียดในมุมมองรายสาย</div><div id="chTopReq"></div></div>
+      <div class="card"><h3>สายทางที่มีคำขอซ้ำมากที่สุด (Top 10)</h3><div id="chTopReq"></div></div>
     </div>
-    <div class="card" style="margin-top:14px"><h3>คำขอแยกตามหมวดบำรุงทาง</h3><div class="note">แถบยาวเทียบกันได้ แบ่งสีตามชนิดงบ — กดปุ่มใต้แถบเพื่อดูตัวเลขทุกช่อง</div><div id="chReqMuad"></div></div>
+    <div class="card" style="margin-top:14px"><h3>คำขอแยกตามหมวดบำรุงทาง</h3><div id="chReqMuad"></div></div>
     <!-- v30.6 ผู้ใช้สั่ง: ตารางรายงานทางการ (สรุปคำขอตามแหล่งงบ) มาก่อนสรุปรายสายทาง -->
     <div class="card" style="margin-top:14px">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:8px">
         <div><h3 style="margin:0">สรุปคำของบตามแหล่งงบ</h3>
-          <div class="note" style="margin:2px 0 0">เรียงตามลำดับแหล่งงบ (1.จังหวัด … 10.กลุ่มจังหวัด) · แบ่งย่อยตามชนิดงบ · คลิกแถวเพื่อดูรายละเอียดสายนั้น</div></div>
+          </div>
         <div style="display:flex;gap:7px;flex:none">
           <button class="btn ghost" type="button" onclick="printReqSrc()">🖨 พิมพ์ A3</button>
           <button class="btn ghost" type="button" onclick="exportReqSrcXlsx()">⬇ Excel</button>
@@ -9387,7 +9408,7 @@ function renderRequests(){
       <div id="reqSrcBody"></div>
     </div>
     <div class="card" style="margin-top:14px">
-      <h3>สรุปรายสายทาง (ทั้ง ${counts.length} สายที่มีคำขอ)</h3><div class="note">คลิกแถวเพื่อเปิดมุมมองรวมรายสายด้านบน — % ของสาย = ระยะที่ขอรวม ÷ ระยะทางสาย</div>
+      <h3>สรุปรายสายทาง (ทั้ง ${counts.length} สายที่มีคำขอ)</h3>
       <div class="tblwrap" style="max-height:520px"><table id="reqRoadTable"><thead><tr>
         <th>รหัส</th><th>ชื่อสายทาง</th><th>หมวด</th>${reqAll?'<th>ปีที่ขอ</th>':''}<th class="num">ระยะทางสาย (กม.)</th><th class="num">จำนวนคำขอ</th><th class="num">ระยะที่ขอรวม (กม.)</th><th class="num">% ของสาย</th><th class="num">งบระบุแล้ว (บาท)</th><th>ชนิดงบที่ขอ</th><th>One-Page</th>
       </tr></thead><tbody></tbody></table></div>
@@ -9440,7 +9461,7 @@ function renderRequests(){
      ให้กรองชนิดงบ แล้วค่อยกิจกรรม" → จากกล่องรวมทุกชนิด เปลี่ยนเป็นตารางไขว้ แถวละกิจกรรม ช่องละชนิดงบ
      (ไฟฟ้าของงบปกติ กับไฟฟ้าของเหลือจ่าย จึงอยู่คนละช่อง นับแยกกัน) · ชุดทดสอบ reqfilter ③ */
   safeRun('กล่องคำขอตามกิจกรรม', ()=>{
-    const actOf=r=>(r.actv||r.act||r.proj||'ไม่ระบุ').trim()||'ไม่ระบุ';
+    const actOf=reqActOf;
     const A={}; Q.forEach(r=>{ const k=actOf(r), g=A[k]||(A[k]={segs:{},n:0,amt:0}); const c=rc(r); g.segs[c]=(g.segs[c]||0)+1; g.n++; g.amt+=(r.amt||0); });
     const ks=Object.keys(A).sort((a,b)=>A[b].n-A[a].n);
     const top=ks.slice(0,8), rest=ks.slice(8);
@@ -9503,7 +9524,7 @@ function renderReqDetail(code){
         <div class="amt ${r.amt!=null?'ok':'wait'}">${r.amt!=null?(first?fmt(r.amt):''):'⏳ รอประเมิน'}</div>
       </div>`).join('')}
     </div>
-    <div class="footnote" style="margin-top:auto">ประโยชน์: เห็นคำขอทั้งหมดของสายนี้ในหน้าจอเดียว ก่อนตัดสินใจออกแบบแผนงบในขั้นตอนถัดไป</div>`;
+    `;
 }
 
 /* ================= ZEROBASE (live — tab ต่อปี Z_71, Z_72, … หาปีอัตโนมัติ) ================= */
@@ -9770,7 +9791,7 @@ function renderGap(){
 
   box.innerHTML=
   `<div class="secdiv" id="gapHead"><h2>② เช็คคำขอ — ${esc(yearLbl)} ขอไปเท่าไหร่ ได้จริงเท่าไหร่</h2>
-     <div class="note" style="margin:0">"ได้" = คำขอที่มีสัญญารองรับ · "โดนตัด" = คำขอที่ยังไม่มีสัญญารองรับ · ส่วนนี้แสดงทุกหน่วยดำเนินการ</div>
+     
    </div>`+
   (noReq?`<div class="card" style="margin-bottom:14px;border-left:4px solid var(--gold)"><div class="note" style="margin:0;padding:6px 2px">ปีงบ ${esc(gapYearPick)} ไม่มีคำของบ · ปีที่มีคำขอ: ${M.years.join(' · ')}</div></div>`:'')+
   /* v31.9 กันเงียบ: จับคู่ต้องชนิดงบตรงกัน — ถ้าชื่อชนิดงบของสองชีทไม่ตรงกันเลยสักชื่อ ทุกหลอดจะเป็น 0% เงียบๆ → ต้องบอกให้เห็น */
@@ -9781,40 +9802,40 @@ function renderGap(){
      <div class="card kpi" style="border-left:4px solid var(--teal)"><div class="lbl">ได้ตามคำขอ</div><div class="val">${T.ok}<small>/${T.n}</small></div><div class="foot">${pct(T.ok,T.n)}% · วงเงินสัญญาที่ตรงคำขอ ${lb(T.gotAmt)} ลบ.</div></div>
      <div class="card kpi" style="border-left:4px solid #e34948"><div class="lbl">โดนตัด / ยังไม่ได้</div><div class="val">${lb(T.askNo)}<small> ลบ.</small></div><div class="foot">${T.n-T.ok} รายการ ยังไม่มีสัญญารองรับ · ${pct(T.askNo,T.ask)}% ของที่ขอ</div></div>
      <div class="card kpi" style="border-left:4px solid var(--gold)"><div class="lbl">โครงการจริงในปีเดียวกัน (ทุกสาย)</div><div class="val">${T.histN}<small> โครงการ</small></div><div class="foot">${T.histN?`${lb(T.histAmt)} ลบ. — รวมงานที่ไม่ได้ผ่านคำขอด้วย`:`${esc(yearLbl)} ยังไม่มีโครงการในประวัติ`}</div></div>
-     <div class="card kpi"><div class="lbl">สายที่ขอแล้วยังไม่ได้</div><div class="val">${stuck.length}<small> สาย</small></div><div class="foot">${gapStuckAll?'ทุกปีรวมกัน':esc(yearLbl)} · ดูตารางล่างสุด</div></div>
+     <div class="card kpi"><div class="lbl">สายที่ขอแล้วยังไม่ได้</div><div class="val">${stuck.length}<small> สาย</small></div><div class="foot">${gapStuckAll?'ทุกปีรวมกัน':esc(yearLbl)}</div></div>
    </div>`+
 
   (noReq?'':`<div class="grid two" style="margin-top:14px">
      <div class="card"><h3>ผลคำของบ — แต่ละชนิดงบ · ${esc(yearLbl)}</h3>
-       <div class="note">หลอดเต็ม = ที่ขอ · สีเข้ม = ได้ · เส้นประ = ค่าเฉลี่ยทั้งปี</div>
+       
        <div id="gapChCat"></div></div>
      <div class="card"><h3>ผลคำของบ — แต่ละหมวด · ${esc(yearLbl)}</h3>
-       <div class="note">หลอดเต็ม = ที่ขอ · สีเข้ม = ได้ · เส้นประ = ค่าเฉลี่ยทั้งปี</div>
+       
        <div id="gapChMuad"></div></div>
    </div>
    <div class="grid two" style="margin-top:14px">
      <div class="card"><h3>ผลคำของบ — แต่ละกิจกรรม · ${esc(yearLbl)}</h3>
-       <div class="note">สีตามชนิดงบหลักของกิจกรรม · แสดง 12 กิจกรรมที่ขอมากสุด</div>
+       
        <div id="gapChAct"></div></div>
      <div class="card"><h3>ผลคำของบ — แต่ละเขตเลือกตั้ง · ${esc(yearLbl)}</h3>
-       <div class="note">หลอดประ = เขตที่ไม่ได้ยื่นขอ</div>
+       
        <div id="gapChZone"></div></div>
    </div>
    <div class="card" style="margin-top:14px">
      <h3>ผลคำของบ — รายละเอียด · ${esc(yearLbl)}</h3>
-     <div class="note">ตัวเลขเต็มของหลอดด้านบน · คลิกหัวคอลัมน์เพื่อเรียง</div>
+     
      <div class="subtabs" id="gapDetailTabs">${GAP_DETAIL_TABS.map(t=>`<button data-gd="${t}"${t===gapDetailTab?' class="active"':''}>${t}</button>`).join('')}</div>
      <div class="tblwrap" style="max-height:460px"><table id="gapDetailTable"><thead><tr>
        <th id="gapDetailHead">${esc(gapDetailTab)}</th><th class="num">คำขอ</th><th class="num">ได้ (รายการ)</th><th class="num">ขอ (ลบ.)</th><th class="num">ได้ (ลบ.)</th><th class="num">โดนตัด (ลบ.)</th><th class="num">% ได้</th>
      </tr></thead><tbody></tbody></table></div>
    </div>
-   <div class="card" style="margin-top:14px"><h3>ผลคำของบ — เทียบทุกปี</h3><div class="note">หลอดเต็ม = ที่ขอ · สีเข้ม = ได้</div><div id="gapChYear"></div></div>`)+
+   <div class="card" style="margin-top:14px"><h3>ผลคำของบ — เทียบทุกปี</h3><div id="gapChYear"></div></div>`)+
   /* ปีที่ไม่มีคำขอ: กราฟเทียบทุกปียังต้องมี (เป็นภาพรวมทุกปี ไม่ขึ้นกับปีที่เลือก) */
-  (noReq?`<div class="card" style="margin-top:14px"><h3>ผลคำของบ — เทียบทุกปี</h3><div class="note">หลอดเต็ม = ที่ขอ · สีเข้ม = ได้</div><div id="gapChYear"></div></div>`:'')+
+  (noReq?`<div class="card" style="margin-top:14px"><h3>ผลคำของบ — เทียบทุกปี</h3><div id="gapChYear"></div></div>`:'')+
 
   `<div class="card" style="margin-top:14px">
      <h3>ตารางรายปี — ขอเท่าไหร่ ได้เท่าไหร่ (ทุกปีที่มีคำขอ)</h3>
-     <div class="note">แต่ละปี ขอกี่รายการ ได้กี่รายการ${T.vague?` · <span style="color:var(--gold)">⚠ ${T.vague} รายการไม่ระบุ กม.</span>`:''}</div>
+     ${T.vague?`<div class="note"><span style="color:var(--gold)">⚠ ${T.vague} รายการไม่ระบุ กม.</span></div>`:''}
      <div class="tblwrap" style="max-height:380px"><table id="gapYearTable"><thead><tr>
        <th>ปีงบ</th><th class="num">คำขอ</th><th class="num">ได้</th><th class="num">ไม่ได้</th><th class="num">% ได้</th>
        <th class="num">ขอ (ลบ.)</th><th class="num">สัญญาที่ตรงคำขอ (ลบ.)</th><th class="num">คำขอที่ไม่ได้ (ลบ.)</th>
@@ -9834,7 +9855,7 @@ function renderGap(){
        <h3 style="margin:0">สายทางที่ขอแล้วยังไม่ได้ — ${gapStuckAll?'ทุกปี เรียงตามจำนวนปีที่พลาด':esc(yearLbl)}</h3>
        <select class="search" id="gapStuckSel" style="max-width:200px"><option value="pick"${gapStuckAll?'':' selected'}>เฉพาะ${esc(yearLbl)}</option><option value="all"${gapStuckAll?' selected':''}>ทุกปี (${M.years.join(' · ')})</option></select>
      </div>
-     <div class="note">"ปีที่พลาด" = ปีที่ยื่นขอแล้วไม่ได้ · คลิกแถวเพื่อเปิดสายบนแผนที่</div>
+     
      <div class="tblwrap" style="max-height:480px"><table id="gapTable" data-sortable="1"><thead><tr>
        <th>รหัสสายทาง</th><th>ชื่อสายทาง</th><th>หมวด</th><th>เขต</th><th class="num">ปีที่ขอ</th><th class="num">ปีที่ได้</th><th class="num">ปีที่พลาด</th>
        <th class="num">วงเงินที่ไม่ได้ (บาท)</th><th>ชนิดงบที่ค้าง</th><th>ปีที่เคยขอ</th></tr></thead><tbody>
@@ -10025,7 +10046,7 @@ function renderYearly(){
       <select class="search" id="yrCatSel" style="max-width:220px" multiple data-ph="ทุกชนิดงบ">${catOpt}</select>
       <b style="margin-left:8px">กิจกรรม</b>
       <select class="search" id="yrActSel" style="max-width:260px" multiple data-ph="ทุกกิจกรรม">${actOpt}</select>
-      <span class="note" style="margin:0">ติ๊กได้หลายหน่วย/ชนิดงบ/กิจกรรม · ส่วนสรุปแสดงเฉพาะที่เลือก · ยอดสะสมทุกปีดูที่หน้า "ประวัติสายทาง"</span>
+
     </div>
     <div class="secdiv"><h2>① สรุปปีงบ ${y}${agLbl} — งบเท่าไหร่ กี่โครงการ ทำอะไรบ้าง</h2></div>
     ${noHist?`<div class="card" style="margin-bottom:14px"><div class="note" style="margin:0;padding:8px 2px">ปีงบ ${y} ยังไม่มีโครงการในประวัติ — ดูส่วนเช็คคำขอด้านล่างว่าปีนี้ยื่นขออะไรไปบ้าง</div></div>`:''}
@@ -10041,7 +10062,7 @@ function renderYearly(){
     </div>
     ${H.length?`
     <div class="card" style="margin-bottom:14px">
-      <h3>แบ่งเป็นงานอะไรบ้าง</h3><div class="note">ปริมาณงานของปีนี้ แยกตามชนิดงาน — ชี้ดูรายการย่อ · คลิกดูทั้งหมด</div>
+      <h3>แบ่งเป็นงานอะไรบ้าง</h3>
       <div class="workgrid">
         <div class="worktile" style="background:var(--tile-green)"><div class="wico">🏗️</div><div style="min-width:0"><div class="wval">${fmt(+cls['ก่อสร้าง'].km.toFixed(1))} <small>กม.</small></div><div class="wlbl">ก่อสร้างใหม่</div><div class="wfoot">${cls['ก่อสร้าง'].n} โครงการ</div></div></div>
         <div class="worktile" style="background:var(--tile-teal)"><div class="wico">🛤️</div><div style="min-width:0"><div class="wval">${fmt(+cls['ขยาย'].km.toFixed(1))} <small>กม.</small></div><div class="wlbl">ขยายผิวจราจร</div><div class="wfoot">${cls['ขยาย'].n} โครงการ</div></div></div>
@@ -10053,27 +10074,27 @@ function renderYearly(){
     </div>
     <!-- v31.8 ผู้ใช้เรียงใหม่: หน่วยดำเนินการ · ชนิดงบ · หมวด · กิจกรรม · เขต · ลำดับสูงสุด -->
     <div class="grid two">
-      <div class="card"><h3>หน่วยดำเนินการ</h3><div class="note">ล้านบาท — คลิกแท่งเพื่อกรองเฉพาะหน่วยนั้น คลิกซ้ำเพื่อดูทุกหน่วย</div><div id="yrAgency"></div></div>
-      <div class="card"><h3>วงเงินแยกตามชนิดงบ</h3><div class="note">ล้านบาท — ชี้ที่แท่งเพื่อดูจำนวนโครงการและ % ของปี</div><div id="yrType"></div></div>
+      <div class="card"><h3>หน่วยดำเนินการ (ล้านบาท)</h3><div id="yrAgency"></div></div>
+      <div class="card"><h3>วงเงินแยกตามชนิดงบ (ล้านบาท)</h3><div id="yrType"></div></div>
     </div>
-    <div class="card" style="margin-top:14px"><h3>โครงการแยกตามช่วงวงเงิน (เรทงบ)</h3><div class="note">แถวละชนิดงบ · ช่องละช่วงวงเงิน — ตัวเลขบนคือจำนวนโครงการ ตัวเลขล่างคือ % ของชนิดงบนั้น · แถวท้ายคือรวมทุกชนิดงบ</div><div id="yrBand"></div></div>
+    <div class="card" style="margin-top:14px"><h3>โครงการแยกตามช่วงวงเงิน (เรทงบ)</h3><div id="yrBand"></div></div>
     <div class="grid two" style="margin-top:14px">
-      <div class="card"><h3>วงเงินแยกตามหมวดบำรุงทาง</h3><div class="note">ล้านบาท — หมวดของสายที่ทำ · แขวงฯ = งานที่ไม่ผูกสาย</div><div id="yrMuad"></div></div>
-      <div class="card"><h3>กิจกรรมที่ทำปีนี้</h3><div class="note">ล้านบาท — ชี้เพื่อดูจำนวนโครงการ</div><div id="yrAct"></div></div>
+      <div class="card"><h3>วงเงินแยกตามหมวดบำรุงทาง (ล้านบาท)</h3><div id="yrMuad"></div></div>
+      <div class="card"><h3>กิจกรรมที่ทำปีนี้ (ล้านบาท)</h3><div id="yrAct"></div></div>
     </div>
     <div class="grid two" style="margin-top:14px">
-      <div class="card"><h3>จำแนกตามเขตเลือกตั้ง</h3><div class="note">ล้านบาท — "ไม่ระบุ" = ระบุตำแหน่งไม่ได้</div><div id="yrZone"></div></div>
-      <div class="card"><h3>สายทางที่ได้งบสูงสุดปีนี้ (Top 10)</h3><div class="note">ล้านบาท — คลิกเพื่อเปิดสรุปรายสาย</div><div id="yrTopRoad"></div></div>
+      <div class="card"><h3>จำแนกตามเขตเลือกตั้ง (ล้านบาท)</h3><div id="yrZone"></div></div>
+      <div class="card"><h3>สายทางที่ได้งบสูงสุดปีนี้ (Top 10) (ล้านบาท)</h3><div id="yrTopRoad"></div></div>
     </div>
-    <div class="card" style="margin-top:14px"><h3>ผู้รับจ้างปีนี้ (Top 10)</h3><div class="note">ล้านบาท — ชี้เพื่อดูจำนวนสัญญา</div><div id="yrContractor"></div></div>
+    <div class="card" style="margin-top:14px"><h3>ผู้รับจ้างปีนี้ (Top 10) (ล้านบาท)</h3><div id="yrContractor"></div></div>
     <div class="card" style="margin-top:14px">
       <h3>ตรวจสอบสัญญา ปีงบ ${y}</h3>
-      <div class="note">แถบ = ช่วงสัญญา · ขีดท้าย = วันหมดสัญญา · เส้นแดง = วันนี้ · จุดแดง = ค้างส่งงาน</div>
+      
       <div id="yrGantt"></div>
     </div>`:''}
     <div class="card" style="margin-top:14px">
       <h3>รายการโครงการทั้งหมด ปีงบ ${y}${agLbl} (${H.length} โครงการ)</h3>
-      <div class="note">คลิกแถวเพื่อเปิดสรุปรายสาย (One-Page) · คลิกหัวคอลัมน์เพื่อเรียง · แถวรวมอยู่ท้ายตาราง</div>
+      
       <div class="tblwrap" style="max-height:560px"><table id="yrTable"><thead><tr>
         <th>รหัส</th><th>ชื่อสายทาง</th><th>หมวด</th><th>หน่วย</th><th>ชนิดงบ</th><th>กิจกรรม</th><th style="min-width:150px">ช่วง กม.</th><th>เลขที่สัญญา</th><th class="c">เริ่ม</th><th class="c">สิ้นสุด</th><th class="num">วงเงิน (บาท)</th><th class="c">ส่งงานงวดสุดท้าย</th>
       </tr></thead><tbody></tbody></table></div>
@@ -10200,18 +10221,18 @@ function renderZbOverview(){
      ลำดับ: ① กล่องแบ่งตามหมวด (ทำหน้าที่สรุปในตัว: คำขอ · % · สาย · กม.) ② กิจกรรมตามหมวด (แท่งซ้อน) ③ กลุ่มกิจกรรม (กล่องเดียว: จำนวน · % · ปริมาณ)
             ④ สายที่ต้องการมากสุด Top 10 ⑤ สายที่ยังไม่มีข้อมูล Zerobase ⑥ ตารางรายสาย */
   document.getElementById('zbBody').innerHTML=`
-    <div class="card"><h3>ความต้องการแยกตามหมวดบำรุงทาง</h3><div class="note">ทั้งหมด ${R.length} ช่วง กม. · ${roads.length} สาย · ถนน ${fmt(+rdKm.toFixed(1))} กม. · ไฟฟ้า ${fmt(pl)} ต้น · สะพาน ${fmt(Math.round(brM))} ม. — กล่องละหมวด</div><div id="chZbMuadBox"></div></div>
+    <div class="card"><h3>ความต้องการแยกตามหมวดบำรุงทาง</h3><div class="note">ทั้งหมด ${R.length} ช่วง กม. · ${roads.length} สาย · ถนน ${fmt(+rdKm.toFixed(1))} กม. · ไฟฟ้า ${fmt(pl)} ต้น · สะพาน ${fmt(Math.round(brM))} ม.</div><div id="chZbMuadBox"></div></div>
     <div class="grid two" style="margin-top:14px">
-      <div class="card"><h3>กิจกรรมที่ต้องการ แยกตามหมวด</h3><div class="note">แถบยาวเทียบกันได้ แบ่งสีตามกลุ่มกิจกรรม — กดปุ่มใต้แถบเพื่อดูตัวเลขทุกช่อง</div><div id="chZbMuad"></div></div>
-      <div class="card"><h3>กลุ่มกิจกรรม</h3><div class="note">แต่ละกลุ่ม ขอกี่รายการ · กี่ % · ปริมาณรวม — แถบสีด้านบน = สัดส่วนจำนวนคำขอ</div><div id="chZbSecond"></div></div>
+      <div class="card"><h3>กิจกรรมที่ต้องการ แยกตามหมวด</h3><div id="chZbMuad"></div></div>
+      <div class="card"><h3>กลุ่มกิจกรรม</h3><div id="chZbSecond"></div></div>
     </div>
     <div class="grid two" style="margin-top:14px">
-      <div class="card"><h3>สายทางที่มีความต้องการมากที่สุด (Top 10)</h3><div class="note">จำนวนคำขอ — สีตามหมวด · คลิกเพื่อเปิดสรุปรายสาย</div><div id="chZbTop"></div></div>
-      <div class="card"><h3>สายที่ยังไม่มีข้อมูล Zerobase</h3><div class="note" id="zbMissNote">สายในบัญชีที่ยังไม่มีคำขอ Zerobase เลย — เรียงตามหมวด</div><div id="zbMissing" style="max-height:300px;overflow:auto"></div></div>
+      <div class="card"><h3>สายทางที่มีความต้องการมากที่สุด (Top 10)</h3><div id="chZbTop"></div></div>
+      <div class="card"><h3>สายที่ยังไม่มีข้อมูล Zerobase</h3><div class="note" id="zbMissNote"></div><div id="zbMissing" style="max-height:300px;overflow:auto"></div></div>
     </div>
     <div class="card" style="margin-top:14px">
       <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
-        <div><h3 style="margin:0">สรุปรายสายทาง (${roads.length} สายที่มีความต้องการ)</h3><div class="note" style="margin:0">คลิกแถวเพื่อเปิดสรุปรายสาย</div></div>
+        <div><h3 style="margin:0">สรุปรายสายทาง (${roads.length} สายที่มีความต้องการ)</h3></div>
         <input class="search" id="zbSearch" placeholder="ค้นหา รหัส/ชื่อสาย/อำเภอ...">
       </div>
       <div class="tblwrap" style="max-height:520px"><table id="zbRoadTable"><thead><tr>
@@ -10241,7 +10262,7 @@ function renderZbOverview(){
     const miss=EMB.roads.filter(r=>!have.has(r.code)).sort((a,b)=>(MUAD_ORDER.indexOf(a.muad)-MUAD_ORDER.indexOf(b.muad))||SUF3(a.code)-SUF3(b.code)||a.code.localeCompare(b.code,'th'));
     const byMm={}; miss.forEach(r=>{ (byMm[r.muad||'ไม่ระบุ']=byMm[r.muad||'ไม่ระบุ']||[]).push(r); });
     const host=document.getElementById('zbMissing'), note=document.getElementById('zbMissNote');
-    if(note) note.textContent=miss.length?`${miss.length} จาก ${EMB.roads.length} สายในบัญชี ยังไม่มีคำขอ Zerobase — เรียงตามหมวด · คลิกรหัสเพื่อเปิดสรุปรายสาย`:'ทุกสายในบัญชีมีคำขอ Zerobase แล้ว';
+    if(note) note.textContent=miss.length?`${miss.length} จาก ${EMB.roads.length} สายในบัญชี`:'ทุกสายในบัญชีมีคำขอ Zerobase แล้ว';
     if(host) host.innerHTML=miss.length?Object.keys(byMm).map(m=>`<div class="listhead" style="margin:8px 2px 4px">${muadCell(m)} · ${byMm[m].length} สาย</div><div style="display:flex;flex-wrap:wrap;gap:5px">`+
         byMm[m].map(r=>`<span class="pill" data-code="${esc(r.code)}" title="${esc(r.name||'')}" style="background:var(--page);border:1px solid var(--grid);cursor:pointer">${esc(r.code)}<small style="color:var(--muted);font-weight:500"> · ${esc(String(r.name||'').slice(0,18))}</small></span>`).join('')+`</div>`).join('')
       :'<div class="note" style="padding:10px 0">ครบทุกสาย ✓</div>';
@@ -10788,7 +10809,7 @@ function renderEquip(){
   if(!E.length){
     body.innerHTML=`<div class="card"><h3>โครงหน้านี้พร้อมแล้ว — รอข้อมูลชีท Equipment</h3>
       <div class="note">กรอกข้อมูลในชีท Equipment (งานไฟฟ้า + ระบายน้ำ) แล้วกด "⟳ โหลดข้อมูลใหม่" — ทุกอย่างจะขึ้นอัตโนมัติ: KPI · กราฟประเภทอุปกรณ์ · สภาพ · ตารางรายสาย</div>
-      <div class="footnote">กติกาการกรอก ดูหน้า "ข้อมูลระบบ" → คู่มืออัปเดตข้อมูล → Equipment</div></div>`;
+      </div>`;
     return;
   }
   const missingQty=E.filter(x=>x.etype&&x.n==null).length;
@@ -10796,15 +10817,15 @@ function renderEquip(){
   const elec=E.filter(x=>x.etype), drain=E.filter(x=>x.dtype);
   const broken=E.filter(x=>/ชำรุด|เสีย|ไม่ใช้งาน|เสื่อม/.test(x.cond||''));
   body.innerHTML=`
-    <div class="card" style="margin-bottom:14px"><div class="note">กดสายทางเพื่อดูช่วง กม. จำนวนอุปกรณ์ และสภาพ · กดโหลดข้อมูลใหม่หลังเพิ่มรายการ</div></div>
+    <div class="card" style="margin-bottom:14px"></div>
     <div class="grid kpis kpi3">
       ${kico('🔌','var(--tile-amber)','อุปกรณ์ไฟฟ้า', `${fmt(elec.reduce((a,x)=>a+(x.n||0),0))} <small>หน่วย</small>`, `${elec.length} รายการ${missingQty?' · ยังไม่ระบุจำนวน '+missingQty+' แถว':''}`)}
-      ${kico('💧','var(--tile-sky)','ระบบระบายน้ำ', `${drain.length} <small>รายการ</small>`, [...new Set(drain.map(x=>x.dtype))].slice(0,3).join(' · ')||'—')}
-      ${kico('🛠️','#fdeeee','สภาพชำรุด/เสื่อม', `<span style="color:var(--crit)">${broken.length}</span> <small>รายการ</small>`, unknownCond?'ยังไม่ระบุสภาพ '+unknownCond+' แถว':(broken.length?'ควรวางแผนซ่อม':'ไม่พบรายการชำรุด'))}
+      ${kico('💧','var(--tile-sky)','ระบบระบายน้ำ', `${drain.length} <small>รายการ</small>`, `${new Set(drain.map(x=>x.dtype)).size} ประเภท`)}
+      ${kico('🛠️','#fdeeee','สภาพชำรุด/เสื่อม', `<span style="color:var(--crit)">${broken.length}</span> <small>รายการ</small>`, unknownCond?'ยังไม่ระบุสภาพ '+unknownCond+' แถว':'')}
     </div>
     <div class="grid two">
-      <div class="card"><h3>แยกตามประเภทอุปกรณ์</h3><div class="note">จำนวนรายการ — ชี้เพื่อดูจำนวนหน่วยรวม</div><div id="chEqType"></div></div>
-      <div class="card"><h3>แยกตามหมวดบำรุงทาง</h3><div class="note">แถบยาวเทียบกันได้ แบ่งสีตามประเภท — กดปุ่มใต้แถบเพื่อดูตัวเลขทุกช่อง</div><div id="chEqMuad"></div></div>
+      <div class="card"><h3>แยกตามประเภทอุปกรณ์</h3><div id="chEqType"></div></div>
+      <div class="card"><h3>แยกตามหมวดบำรุงทาง</h3><div id="chEqMuad"></div></div>
     </div>
     <div class="card" style="margin-top:14px">
       <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
@@ -11093,7 +11114,7 @@ async function loadRisk(force){
       </tr></thead><tbody><tr>
         <td>ขก.4008</td><td>12+400</td><td>13+100</td><td>โค้งอันตราย</td><td>สูง</td><td>โค้งหักศอก ทัศนวิสัยต่ำ</td><td>16.123,102.456</td><td>ยังไม่แก้ไข</td><td></td><td>วางลิงก์รูปจาก Google Drive</td><td></td><td>10/7/69</td><td></td><td>สมชาย</td>
       </tr></tbody></table></div>
-      <div class="footnote">ประเภทจุดเสี่ยง/สถานะ พิมพ์อะไรก็ได้ ระบบไล่อ่านจากชีทเองอัตโนมัติ (แนะนำทำ dropdown ในชีทกันสะกดเพี้ยน: สถานะ = ยังไม่แก้ไข / กำลังแก้ไข / แก้ไขแล้ว) · รูปให้อัปโหลดลง Google Drive แชร์ลิงก์ แล้ววางลิงก์ในช่อง</div></div>`;
+      </div>`;
     document.getElementById('riskRoadBody').innerHTML='';
     return;
   }
@@ -11185,16 +11206,16 @@ function renderRiskSum(){
       </div>
     </div>
     <div class="grid two">
-      <div class="card"><h3>แบ่งตามประเภทจุดเสี่ยง</h3><div class="note">ชี้เพื่อดูจำนวนและสถานะ</div><div id="chRiskType"></div></div>
-      <div class="card"><h3>แบ่งตามหมวดบำรุงทาง</h3><div class="note">แถบยาวเทียบกันได้ แบ่งสีตามประเภท — กดปุ่มใต้แถบเพื่อดูตัวเลขทุกช่อง</div><div id="chRiskMuad"></div></div>
+      <div class="card"><h3>แบ่งตามประเภทจุดเสี่ยง</h3><div id="chRiskType"></div></div>
+      <div class="card"><h3>แบ่งตามหมวดบำรุงทาง</h3><div id="chRiskMuad"></div></div>
     </div>
     <div class="grid two" style="margin-top:14px">
-      <div class="card"><h3>สายทางที่มีจุดเสี่ยงมากที่สุด (Top 10)</h3><div class="note">สีตามหมวด — คลิกแท่งเพื่อเปิดรายสาย</div><div id="chRiskRoad"></div></div>
-      <div class="card"><h3>สถานะการแก้ไข</h3><div class="note">ชี้เพื่อดูจำนวนและ %</div><div id="chRiskStatus"></div></div>
+      <div class="card"><h3>สายทางที่มีจุดเสี่ยงมากที่สุด (Top 10)</h3><div id="chRiskRoad"></div></div>
+      <div class="card"><h3>สถานะการแก้ไข</h3><div id="chRiskStatus"></div></div>
     </div>
     <div class="card" style="margin-top:14px">
       <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
-        <div><h3 style="margin:0">บัญชีรายสายทาง</h3><div class="note" style="margin:0">คลิกแถวเพื่อเปิดรายละเอียดรายสาย (แท็บ ②)</div></div>
+        <div><h3 style="margin:0">บัญชีรายสายทาง</h3></div>
         <input class="search" id="riskSearch" placeholder="ค้นหา สาย/ประเภท...">
       </div>
       <div class="tblwrap" style="max-height:520px"><table id="riskRoadTable"><thead><tr>
@@ -11280,7 +11301,7 @@ function renderRiskRoad(code){
     </div>
     <div class="card" style="margin-top:14px">
       <h3>ตำแหน่งจุดเสี่ยง (Strip Map)</h3>
-      <div class="note">ชี้ที่แถบเพื่อดูรายละเอียด${list.some(x=>x.ka==null)?` · ⚠ ${list.filter(x=>x.ka==null).length} จุดไม่ระบุ กม. (ดูในตาราง)`:''}</div>
+      ${list.some(x=>x.ka==null)?`<div class="note">⚠ ${list.filter(x=>x.ka==null).length} จุดไม่ระบุ กม.</div>`:''}
       <div class="stripwrap" id="rkStrip"></div>
     </div>
 
