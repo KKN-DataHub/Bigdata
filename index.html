@@ -475,11 +475,12 @@ svg.viz .hit, svg.viz .hit *{pointer-events:auto}
 table{width:100%;border-collapse:collapse;font-size:12.5px}
 /* กฎ 9 — หัวตารางต้องล็อกเสมอเมื่อเลื่อนในกล่อง
    ห้ามมีกฎอื่นตั้ง position ทับ th (เคยพังทั้งไฟล์มาแล้วเพราะ th.sortable{position:relative}) */
-th{position:sticky;top:0;background:var(--navy);color:#fff;font-weight:600;text-align:left;
+th{position:sticky;top:0;background:var(--navy);color:#fff;font-weight:600;text-align:center;   /* v31.46 กฎ 14 ใหม่: หัวคอลัมน์กึ่งกลางทุกช่อง */
    padding:8px 10px;white-space:nowrap;z-index:5;box-shadow:inset 0 -1px 0 rgba(255,255,255,.28)}
 td{padding:7px 10px;border-top:1px solid var(--grid);vertical-align:middle;line-height:1.45}
 tbody tr:hover{background:var(--teal-soft)}
-td.num,th.num{text-align:center;font-variant-numeric:tabular-nums}  /* กฎ 14 — ผู้ใช้กำหนด: คอลัมน์สั้น (รวมตัวเลข) กึ่งกลาง หัวตามข้อมูล */
+td.num{text-align:right;font-variant-numeric:tabular-nums}   /* v31.46 กฎ 14 (ผู้ใช้ 15 ก.ย. 69): "ถ้าเงินเอาริมขวาตามหลักบัญชี" — .num = ช่องเงิน */
+th.num{text-align:center;font-variant-numeric:tabular-nums}  /* หัวคอลัมน์กึ่งกลางเสมอ แม้เป็นคอลัมน์เงิน */
 /* คอลัมน์สั้น (รหัส · ปี · หมวด · สถานะ · ปุ่ม) จัดกึ่งกลาง — ใส่ให้อัตโนมัติโดย alignTables() */
 td.c,th.c{text-align:center}
 .pill{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;white-space:nowrap}
@@ -696,9 +697,9 @@ select.search{width:auto}
 .mtx-lg .bdot{display:inline-block;width:7px;height:7px;border-radius:2px;margin-right:4px;vertical-align:middle}
 .mtx-all{margin-left:auto;color:var(--strong);font-size:12px;white-space:nowrap}
 .mtx-bars{display:flex;flex-direction:column;justify-content:space-between}
-.mtx-row{display:grid;grid-template-columns:auto 1fr 150px;gap:10px;align-items:center;padding:5px 0}
+.mtx-row{display:grid;grid-template-columns:var(--mtx-lw,170px) 1fr 150px;gap:10px;align-items:center;padding:5px 0}   /* v31.46 ช่องชื่อกว้างเท่ากันทุกแถว แถบจึงเริ่มตรงกัน (ผู้ใช้: "รูป 1 ตลกอะ จัดให้มันตรงกันหน่อย") */
 .mtx-row+.mtx-row{border-top:1px solid var(--grid)}
-.mtx-l{display:flex;align-items:center;gap:6px;min-width:96px;max-width:190px;font-size:12.5px;font-weight:600;color:var(--ink)}
+.mtx-l{display:flex;align-items:center;gap:6px;min-width:0;font-size:12.5px;font-weight:600;color:var(--ink)}
 .mtx-nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mtx-t{height:18px;border-radius:5px;background:var(--tint-track);overflow:hidden}
 .mtx-fill{height:100%;display:flex;border-radius:5px;overflow:hidden;min-width:2px}
@@ -711,7 +712,7 @@ select.search{width:auto}
 .mtx-more:hover{background:var(--teal-soft)}
 .mtx-tbl{margin-top:8px}
 .mtx-tbl[hidden]{display:none}
-@media(max-width:700px){ .mtx-row{grid-template-columns:auto 1fr 104px;gap:7px} .mtx-v b{font-size:12.5px} .mtx-l{font-size:11.5px;min-width:62px;max-width:118px} }
+@media(max-width:700px){ .mtx-row{grid-template-columns:min(var(--mtx-lw,170px),118px) 1fr 104px;gap:7px} .mtx-v b{font-size:12.5px} .mtx-l{font-size:11.5px} }
 @media print{ .mtx-tbl[hidden]{display:block!important} .mtx-more{display:none} }
 .catgrid-s .catbox .sval{font-size:18px} .catgrid-s .catbox .camt{font-size:13px} .catgrid-s .catbox .sname{font-size:11px}
 .onelg i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
@@ -1394,6 +1395,11 @@ body.cmdopen .cmdbd{display:flex}
 .share-caption em{display:inline-block;font-style:normal;width:52px;text-align:right;color:var(--muted);font-weight:400}
 .share-track{height:5px;background:var(--grid);border-radius:4px;margin-top:4px;overflow:hidden}.share-track span{display:block;height:100%;border-radius:4px}
 .share-row:hover .share-track{filter:brightness(.94)}
+/* v31.46 ผู้ใช้: "ช่องว่างเหลือเยอะแบบนี้ ถ้าไม่ขยายให้พอดีก็ใส่รายละเอียดเพิ่ม" — เมื่อการ์ดสูงจนแถวละ ≥ 50px:
+   แถบหนาขึ้น ตัวใหญ่ขึ้น และบรรทัดรายละเอียด (more) โผล่ · แถวละ ≥ 70px ยิ่งหนา */
+.share-bars.roomy .share-track{height:9px;margin-top:6px}.share-bars.roomy .share-caption{font-size:13px}.share-bars.roomy .share-caption strong{font-size:13.5px}
+.share-bars.roomy .share-caption i{width:9px;height:9px}.share-bars.roomy .share-sub{font-size:11.5px;margin-top:3px}
+.share-bars.roomy2 .share-track{height:13px;margin-top:8px}.share-bars.roomy2 .share-caption{font-size:14px}.share-bars.roomy2 .share-caption strong{font-size:15px}
 /* v31.36 บรรทัดรอง (ชื่อ สส. · พรรค) และบรรทัดท้าย (ตัวเลขประกอบ) ของแถวสัดส่วน */
 .share-sub{font-size:11px;color:var(--ink2);margin:1px 0 0 13px;line-height:1.35;white-space:normal}
 .share-foot{font-size:10.5px;color:var(--muted);margin:3px 0 0 13px;line-height:1.3;white-space:normal}
@@ -3024,7 +3030,11 @@ function shareBars(container,items,opt){
      … เช่นไปปรับใช้กับ งบประมาณตามเขตสส ที่จะต้องโชว์ทั้งเขต ชื่อ สส งบประมาณ และ %"
      จึงรับได้อีกสองช่อง: sub = บรรทัดรองใต้ชื่อ (เช่น ชื่อ สส. · พรรค) · foot = บรรทัดท้ายใต้แถบ */
   const rowH=items.some(x=>x.sub||x.foot)?62:32;   /* มีบรรทัดรอง/บรรทัดท้าย = แถวสูงขึ้น */
-  box.innerHTML='<div class="share-bars" style="min-height:'+Math.max(80,Math.ceil(items.length/cols)*rowH+38,height||0)+'px"><div class="share-total"><span>รวม</span><b>'+fmt(+total.toFixed(1))+' <small>'+esc(unit)+'</small></b></div><div class="share-list'+(cols>1?' share-2col':'')+'">'+items.map(it=>'<div class="share-row"><div class="share-caption"><span><i style="background:'+esc(it.color||C.teal)+'"></i>'+esc(it.label)+'</span><strong>'+fmt(+it.v.toFixed(2))+' <small>'+esc(unit)+'</small><em>'+percent(pct(it.v))+'</em></strong></div>'+(it.sub?'<div class="share-sub">'+esc(it.sub)+'</div>':'')+'<div class="share-track"><span style="width:'+pct(it.v)+'%;background:'+esc(it.color||C.teal)+'"></span></div>'+(it.foot?'<div class="share-foot">'+esc(it.foot)+'</div>':'')+'</div>').join('')+'</div></div>';
+  /* v31.46 มีที่ว่างเท่าไรต่อแถว → เลือกความหนา/รายละเอียด (more = บรรทัดรองที่โผล่เฉพาะเมื่อมีที่) */
+  const perRow=height?(height-38)/Math.max(1,Math.ceil(items.length/cols)):0;
+  const roomy=perRow>=50, roomy2=perRow>=70;
+  items=items.map(it=>(roomy&&it.more&&!it.sub)?{...it,sub:it.more}:it);
+  box.innerHTML='<div class="share-bars'+(roomy2?' roomy roomy2':roomy?' roomy':'')+'" style="min-height:'+Math.max(80,Math.ceil(items.length/cols)*rowH+38,height||0)+'px"><div class="share-total"><span>รวม</span><b>'+fmt(+total.toFixed(1))+' <small>'+esc(unit)+'</small></b></div><div class="share-list'+(cols>1?' share-2col':'')+'">'+items.map(it=>'<div class="share-row"><div class="share-caption"><span><i style="background:'+esc(it.color||C.teal)+'"></i>'+esc(it.label)+'</span><strong>'+fmt(+it.v.toFixed(2))+' <small>'+esc(unit)+'</small><em>'+percent(pct(it.v))+'</em></strong></div>'+(it.sub?'<div class="share-sub">'+esc(it.sub)+'</div>':'')+'<div class="share-track"><span style="width:'+pct(it.v)+'%;background:'+esc(it.color||C.teal)+'"></span></div>'+(it.foot?'<div class="share-foot">'+esc(it.foot)+'</div>':'')+'</div>').join('')+'</div></div>';
   box.querySelectorAll('.share-row').forEach((r,i)=>{hitOn(r,'help');r.addEventListener('mousemove',e=>showTip('<b>'+esc(items[i].label)+'</b><br>'+(items[i].tip||fmt(items[i].v)+' '+esc(unit)),e.clientX,e.clientY));r.addEventListener('mouseleave',hideTip);});
 }
 
@@ -3216,6 +3226,11 @@ function matrixTable(container, rows, colsIn, {unit='รายการ', onClic
       `<div class="mtx-l" title="${esc(r.label)}"><span class="mtx-nm">${esc(r.label)}</span></div>`+
       `<div class="mtx-t"><div class="mtx-fill" style="width:${(100*r._n/mx).toFixed(2)}%">${use.map(c=>seg(r,c)).join('')}</div></div>`+
       `<div class="mtx-v"><b>${fmt(r._n)}</b><small>${(100*r._n/grand).toFixed(0)}%${r.right?' · '+esc(r.right):' '+esc(unit)}</small></div></div>`;
+  /* v31.46 ช่องชื่อกว้างตามชื่อที่ยาวที่สุด (วัดจริง) แต่ไม่เกิน 190px — ทุกแถวเท่ากัน แถบจึงเริ่มแนวเดียวกัน */
+  (()=>{ const cv=matrixTable._cv||(matrixTable._cv=document.createElement('canvas')), cx=cv.getContext('2d');
+    cx.font='600 12.5px '+(getComputedStyle(document.body).fontFamily||'sans-serif');
+    const w=Math.max(...RS.map(r=>cx.measureText(String(r.label||'')).width),0);
+    box.style.setProperty('--mtx-lw',Math.round(Math.min(190,Math.max(96,w+6)))+'px'); })();
   box.innerHTML='<div class="mtx">'+
     '<div class="mtx-lg">'+use.map(c=>`<span><i class="bdot" style="background:${c.color}"></i>${esc(c.label)}</span>`).join('')+
       `<b class="mtx-all">${esc(sumLabel)} ${fmt(SUM._n)} ${esc(unit)}</b></div>`+
@@ -3529,7 +3544,7 @@ function wrapTables(root){
    แล้วบังคับ "หัวคอลัมน์ชิดทางเดียวกับข้อมูลใต้มัน" เสมอ ตาจะได้ไล่ตรงคอลัมน์
    เรียกซ้ำได้ ไม่สะสมคลาส · ข้ามแถวหัวกลุ่ม (colspan) ที่จัดแนวเองอยู่แล้ว
    ============================================================ */
-const ALIGN_MAX=9;                // ยาวเกินนี้ถือว่าเป็น "ชื่อ/ข้อความ" ชิดซ้าย (v30.2 ผู้ใช้: ชื่อหมวดจัดกลางแล้วดูไม่ตรงกัน) · รหัสสาย/ปี/วันที่/เลขสัญญา สั้นกว่านี้ยังกึ่งกลาง
+/* v31.46 กติกาความยาว 9 ตัวอักษร (ALIGN_MAX) เลิกใช้ — กฎ 14 ใหม่: หัวกึ่งกลาง · ข้อมูลกึ่งกลาง · เงินชิดขวา */
 /* ช่องที่บรรจุ "วิดเจ็ต" เต็มช่อง (แถบสัดส่วน ฯลฯ) วางตัวเองอยู่แล้ว การจัดชิดไม่มีผล
    จึงไม่นับเข้าการตัดสินและไม่ไปยุ่งกับมัน — นิยามจากพฤติกรรม ไม่ใช่จากชื่อคลาส */
 const cellWidget=c=>{
@@ -3545,29 +3560,20 @@ function alignTables(root){
   const put=(el,cls,on)=>{ if(el.classList.contains(cls)!==on) el.classList.toggle(cls,on); };
   /* v31.37 ตารางไขว้ (matrixTable) เป็น "กราฟที่วาดด้วยตาราง" ไม่ใช่ตารางข้อมูล
      แนวคอลัมน์ของมันกำหนดมาในตัวเครื่องมือแล้ว (ชื่อชิดซ้าย ช่องตัวเลขกึ่งกลาง)
-     ถ้าปล่อยให้ตัวจัดแนวตารางมาแตะ จะตีกับกฎเฉพาะของมันเอง (กฎ 9) */
+     ถ้าปล่อยให้ตัวจัดแนวตารางมาแตะ จะตีกับกฎเฉพาะของมันเอง (กฎ 9)
+     v31.46 ผู้ใช้ (15 ก.ย. 69): "หัวตารางที่คอลัมน์ เอากลางหมด ส่วนข้อมูลถ้าเป็นชื่อเอากลาง ถ้าเงินเอาริมขวาตามหลักบัญชี"
+     → กฎ 14 ใหม่ (แทนกติกาความยาว 9 ตัวอักษรเดิม): หัวคอลัมน์กึ่งกลางทุกช่อง · ข้อมูลกึ่งกลางทุกช่อง (ชื่อ · รหัส · จำนวน · ช่วง กม.)
+       ยกเว้น "ช่องเงิน" ชิดขวา — เงินดูจากหัวคอลัมน์ (บาท · ลบ. · วงเงิน · งบ) ไม่ใช่จากคลาสที่ผู้เรียกใส่มา */
+  const MONEY=/บาท|ลบ\.|ล้านบาท|วงเงิน|งบประมาณ|งบ(?![\u0e00-\u0e7f])/;
   (root||document).querySelectorAll('table:not(.bandtbl)').forEach(t=>{
     const ths=[...t.querySelectorAll('thead th')];
     if(!ths.length) return;
     const rows=[...t.querySelectorAll('tbody tr')].filter(tr=>tr.children.length===ths.length);
     ths.forEach((th,ci)=>{
       const cells=rows.map(tr=>tr.children[ci]).filter(Boolean).filter(c=>!cellWidget(c));
-      const num = cells.length>0 && cells.every(c=>c.classList.contains('num'));
-      let center=false;
-      if(!num && cells.length && !th.classList.contains('num')){
-        // เซลล์ที่มีแต่ป้าย/ปุ่ม/ลิงก์ (ไม่มีข้อความลอยๆ ของตัวเอง) ถือว่าเป็นสัญลักษณ์
-        const token=cells.every(c=>c.children.length>0 &&
-          ![...c.childNodes].some(n=>n.nodeType===3 && n.data.trim()) &&
-          [...c.children].every(k=>/^inline/.test(getComputedStyle(k).display)));
-        const max=cells.reduce((m,c)=>Math.max(m,cellLen(c)),0);
-        /* v31.41 ผู้ใช้: "ทำไมหัวข้อคอลัมน์มันไม่กลาง" — ช่วง กม. อย่าง "0+000 – 2+000" ยาวเกิน 9 ตัว
-           แต่เป็น "ค่า" ไม่ใช่ข้อความ (มีแต่ตัวเลขกับเครื่องหมาย) จึงต้องกึ่งกลางแบบเดียวกับตัวเลข */
-        const numish=cells.every(c=>{ const t=c.textContent.replace(/\s+/g,' ').trim(); return /^[\d+.,\s–\-—]+$/.test(t)||t.length<=ALIGN_MAX; });
-        center = numish || max<=(token?20:ALIGN_MAX);
-      }
-      if(num) put(th,'num',true);          // ข้อมูลเป็นตัวเลขล้วน หัวก็ต้องชิดขวาตาม
-      put(th,'c',center);
-      cells.forEach(c=>{ if(!c.classList.contains('num')) put(c,'c',center); });
+      const money=MONEY.test(th.textContent.replace(/\s+/g,' '));
+      put(th,'c',true); put(th,'num',money);
+      cells.forEach(c=>{ put(c,'num',money); put(c,'c',!money); });
     });
   });
 }
@@ -3852,7 +3858,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.45', APP_DATE='14 ก.ย. 2569';
+const APP_VER='v31.46', APP_DATE='15 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -4027,8 +4033,10 @@ const INVARIANTS=[
    why:'ทุกชิ้นในกราฟเป็นภาพ เว้นตัวที่ประกาศผ่าน hitOn() (กฎ 8)',
    allow:['|svg.viz .hit, svg.viz .hit *']},
 
-  {id:'ตัวเลขกึ่งกลาง', sel:'td.num,th.num', prop:'text-align', want:'center',
-   why:'ผู้ใช้กำหนด (v29.9): คอลัมน์สั้นทุกชนิดรวมตัวเลขจัดกึ่งกลาง หัวตามข้อมูล — ตัวเลขชิดขวาในคอลัมน์กว้างดูเหมือน "หัวกับข้อมูลไม่ตรงกัน" (กฎ 14)', allow:[]},
+  {id:'หัวตารางกึ่งกลาง', sel:'th', prop:'text-align', want:'center',
+   why:'v31.46 ผู้ใช้: "หัวตารางที่คอลัมน์ เอากลางหมด" (กฎ 14)', allow:['.bandtbl th:first-child']},
+  {id:'ช่องเงินชิดขวา', sel:'td.num', prop:'text-align', want:'right',
+   why:'v31.46 ผู้ใช้: "ถ้าเงินเอาริมขวาตามหลักบัญชี" — ช่องเงินทุกตาราง (กฎ 14)', allow:[]},
 
   {id:'แผนที่ห้ามเลือกข้อความตอนลาก', sel:'#map', prop:'user-select', want:'none',
    why:'ลากแผนที่ด้วยเมาส์แล้วป้ายรหัส/ป้าย กม. ถูกไฮไลต์เป็นกล่องเต็มจอ (ผู้ใช้เจอ v29.8) — ป้ายเป็น <text> ใน SVG ซึ่งเบราว์เซอร์ถือว่าเลือกได้', allow:[]},
@@ -6094,7 +6102,7 @@ function renderOverviewBudget(){
 `;
   const mPairs=Object.entries(bM).sort((a,b)=>b[1]-a[1]);
   const mTot=mPairs.reduce((a,p)=>a+p[1],0)||1;
-  shareBars('chBudMuad', mPairs.map(p=>({label:recMuadLabel(p[0]), v:p[1]/1e6, color:recMuadColor(p[0]), last:p[0]==='ไม่ระบุ',
+  shareBars('chBudMuad', mPairs.map(p=>({label:recMuadLabel(p[0]), v:p[1]/1e6, color:recMuadColor(p[0]), last:p[0]==='ไม่ระบุ', more:`${(100*p[1]/mTot).toFixed(1)}% ของงบสะสม`,
     tip:`${fmt(p[1])} บาท (${(100*p[1]/mTot).toFixed(1)}%)`})), {unit:'ลบ.'});   // v23.5 — โชว์ตัวเลขท้ายแท่งเหมือนกราฟ Top 10
   const rPairs=Object.entries(bR).sort((a,b)=>b[1]-a[1]).slice(0,10);
   lolli('chBudRoad', rPairs.map(p=>({label:p[0], v:+(p[1]/1e6).toFixed(1), color:muadColor(roadMuad[p[0]]),
@@ -7836,7 +7844,7 @@ function renderHistory(){
   const roadMuad={...Object.fromEntries(Object.values(EMB.bridges||{}).map(b=>[b.code,b.muad])),
     ...Object.fromEntries(EMB.roads.map(r=>[r.code,r.muad]))}; // สะพานชุมชนใช้หมวดจากบัญชีสะพาน
   // กิจกรรมใช้งบมากสุด
-  const byAct={}; H.forEach(x=>{ const k=x.activity||'ไม่ระบุ'; byAct[k]=byAct[k]||{amt:0,n:0,bt:{}}; byAct[k].amt+=(x.amount||0); byAct[k].n++; byAct[k].bt[x.budgetType]=(byAct[k].bt[x.budgetType]||0)+(x.amount||0); });
+  const byAct={}; H.forEach(x=>{ const k=firstAct(x.activity); byAct[k]=byAct[k]||{amt:0,n:0,bt:{}}; byAct[k].amt+=(x.amount||0); byAct[k].n++; byAct[k].bt[x.budgetType]=(byAct[k].bt[x.budgetType]||0)+(x.amount||0); });
   const topAct=Object.entries(byAct).sort((a,b)=>b[1].amt-a[1].amt).slice(0,8);
   // ตารางรายชื่อสายทาง (คลิก -> สรุปรายสาย)
   const roadInfoH=Object.fromEntries(EMB.roads.map(r=>[r.code,r]));
@@ -7913,6 +7921,7 @@ function renderHistory(){
          แถว "ไม่ระบุเขต" ยังต้องอยู่ (กฎเดิม v29.8 ห้ามให้สัญญาหายเงียบ) */
       shareBars('chHistZone', keys.map(k=>{ const zi=KK_ZONES[k];
         return { label:k?('เขต '+k):'ไม่ระบุเขต', v:+(Z[k].amt/1e6).toFixed(1), color:k?zoneColor(+k):'#9aa5a3', last:!k,
+          more:(zi?`สส. ${zi.mp} · ${zi.party}`:'ระบุตำแหน่งไม่ได้')+` · ${Z[k].n} สัญญา · ${Z[k].codes.size} สาย/สะพาน`,
           tip:(zi?`สส. ${esc(zi.mp)} · ${esc(zi.party)}<br>`:'ระบุตำแหน่งไม่ได้<br>')+`${Z[k].n} สัญญา · ${fmtM(Z[k].amt)} · ${Z[k].codes.size} สาย/สะพาน · ปีล่าสุด ${Z[k].last||'-'}` }; }),
         {unit:'ลบ.', cols:2});
    },
@@ -9021,7 +9030,11 @@ let reqData=null, reqYears=[], reqYearPick=null, reqDroppedN=0;
 let reqCatPicks=[];   /* v31.42 ชนิดงบที่เลือกดูบนหน้าคำขอ · v31.44 เลือกได้หลายชนิด (ว่าง = ทุกชนิด) */
 const reqCatLbl=()=>reqCatPicks.join(' · ');
 let reqActPicks=[];   /* v31.45 ผู้ใช้: "หน้าคำขอเพิ่มดรอปดาวน์กิจกรรมเหมือนหน้าโครงการประจำปีด้วยสิ" (ว่าง = ทุกกิจกรรม) */
-const reqActOf=r=>(r.actv||r.act||r.proj||'ไม่ระบุ').trim()||'ไม่ระบุ';   /* ตัวอ่านกิจกรรมตัวเดียว ใช้ทั้งตัวกรองและกล่องกิจกรรม */
+/* v31.46 ผู้ใช้ (15 ก.ย. 69): "กรณีนำเสนอกล่อง kpi ถ้ามีหลายกิจกรรมนับแค่กิจกรรมแรกสุดก็พอ แล้วจัดหมวดหมู่เข้าด้วยกันเลย แต่ถ้าเป็นตารางก็โชว์หมด ถือว่าคลี่รายละเอียด"
+   → ตัวอ่านกิจกรรมสำหรับ "นับ/กรอง/กราฟ" ใช้กิจกรรมแรกก่อนเครื่องหมายคั่น ("ขยายถนน, ก่อสร้างสะพาน" → "ขยายถนน")
+     ตารางยังโชว์ข้อความเต็มตามชีท · ใช้ตัวเดียวกันทั้งหน้าคำขอและหน้ารายปี */
+const firstAct=t=>{ const k=String(t||'').split(/\s*[,;\n]\s*|\s+และ\s+/)[0].trim(); return k||'ไม่ระบุ'; };   /* คั่นด้วย , ; ขึ้นบรรทัด หรือ "และ" — ไม่ตัดที่ / หรือ + (เป็นส่วนของชื่อกิจกรรม เช่น Hot In-Plant + Recycling) */
+const reqActOf=r=>firstAct(r.actv||r.act||r.proj);   /* ตัวอ่านกิจกรรมตัวเดียว ใช้ทั้งตัวกรองและกล่องกิจกรรม */
 const reqFilterLbl=()=>[reqCatPicks.length?reqCatLbl():'', reqActPicks.length?'กิจกรรม '+reqActPicks.join(' · '):''].filter(Boolean).join(' · ');
 const reqCatKey=r=>r.cat==='— ไม่ระบุ'?r.cat:catShow(r.cat);   /* ป้ายชนิดงบที่ใช้ทั้งกล่อง/ตัวกรอง — เหลือจ่ายแยกเป็นชนิดของตัวเอง */
 async function loadRequests(force){ return loadSource('requests', force); }
@@ -9451,6 +9464,7 @@ function renderRequests(){
     /* v31.37 ผู้ใช้: "ไม่ต้องใส่ละเอียดขนาดนั้น แค่มีหมายเลขเขต วงเงิน %" */
     shareBars('chReqZone', keys.map(k=>{ const g=zG[k], zi=KK_ZONES[k];
       return { label:isNaN(k)?'ไม่ระบุเขต':('เขต '+k), v:g.n, color:isNaN(k)?'#9aa5a3':zoneColor(+k), last:isNaN(k),
+        more:(zi?'สส. '+zi.mp+' · '+zi.party:'ระบุตำแหน่งไม่ได้')+(g.amt?' · '+fmtM(g.amt):'')+(g.wait?' · รอประเมิน '+g.wait:''),
         tip:(zi?'สส. '+esc(zi.mp)+' · '+esc(zi.party)+'<br>':'')+g.n+' คำขอ · วงเงินระบุแล้ว '+fmt(g.amt)+' บาท'+(g.wait?' · รอประเมิน '+g.wait:'') }; }),
       {unit:'คำขอ', cols:2});
   });
@@ -9956,7 +9970,7 @@ function renderGap(){
           รูปแบบเดียวกับหน้าประวัติ (kico · worktile · hbar · lolli · gantt · ตาราง) ไม่คิดสูตรใหม่
    ══════════════════════════════════════════════════════════════════════════ */
 let yrPick=null, yrAgencies=[], yrCats=[], yrActs=[];   /* v31.44 ผู้ใช้เพิ่ม: "เอาให้เลือกชนิดงบด้วย" → yrCats[] */   /* v31.44 ผู้ใช้: "หน้าโครงการประจำปีด้วย เพิ่มให้เลือกกิจกรรม เลือกหน่วย แบบเลือกได้หลายตัวเลือก" (ว่าง = ทั้งหมด) */
-const yrActOf=x=>(x.activity||'').trim()||'ไม่ระบุ';
+const yrActOf=x=>firstAct(x.activity);   /* v31.46 นับกิจกรรมแรก (ตารางโชว์เต็ม) */
 /* ปีที่เลือกได้ = ปีที่มีสัญญา ∪ ปีที่มีคำขอ (v31.4 — ปีที่ยื่นขอแล้วแต่ยังไม่มีสัญญาก็ต้องเปิดดูส่วนเช็คคำขอได้) */
 function yrYears(){ const a=histData?histData.map(x=>x.year):[], b=(typeof reqData!=='undefined'&&reqData)?reqData.map(r=>r.year):[];
   return [...new Set([...a,...b].filter(Boolean))].sort((p,q)=>p-q); }
@@ -10125,14 +10139,14 @@ function renderYearly(){
       const byT={}; H.forEach(x=>{ const k=normCat(x.budgetType); byT[k]=byT[k]||{amt:0,n:0}; byT[k].amt+=(x.amount||0); byT[k].n++; });
       const ks=Object.keys(byT).sort((a,b)=>byT[b].amt-byT[a].amt);
       const TC=btColorMap(ks);
-      shareBars('yrType', ks.map(k=>({label:k, v:byT[k].amt/1e6, color:TC[k],
+      shareBars('yrType', ks.map(k=>({label:k, v:byT[k].amt/1e6, color:TC[k], more:`${byT[k].n} โครงการ · ${tot?(100*byT[k].amt/tot).toFixed(0):0}% ของปี`,
         tip:`<b>${esc(k)}</b><br>${byT[k].n} โครงการ · ${fmt(byT[k].amt)} บาท · ${tot?(100*byT[k].amt/tot).toFixed(0):0}% ของปี`})), {unit:'ลบ.', labelW:120});
    },
    'หมวด': ()=>{
       if(!H.length) return;
       const ms=[...MUAD_ORDER,'แขวงฯ','ถ่ายโอน','ไม่ระบุ'].filter(m=>H.some(x=>recMuad(x)===m));
       shareBars('yrMuad', ms.map(m=>{ const L=H.filter(x=>recMuad(x)===m), a=sum(L,x=>x.amount);
-        return {label:recMuadLabel(m), v:a/1e6, color:recMuadColor(m), last:m==='ไม่ระบุ',   /* v31.42 เรียงมาก→น้อยใน shareBars · ไม่ระบุไว้ท้าย */
+        return {label:recMuadLabel(m), v:a/1e6, color:recMuadColor(m), last:m==='ไม่ระบุ', more:`${L.length} โครงการ · ${new Set(L.map(x=>x.code).filter(Boolean)).size} สาย`,   /* v31.42 เรียงมาก→น้อยใน shareBars · ไม่ระบุไว้ท้าย */
           tip:`<b>${esc(recMuadLabel(m))}</b><br>${L.length} โครงการ · ${new Set(L.map(x=>x.code).filter(Boolean)).size} สาย · ${fmt(a)} บาท`}; }), {unit:'ลบ.', labelW:120});
    },
    'สายได้งบสูงสุด': ()=>{
@@ -10144,7 +10158,7 @@ function renderYearly(){
    },
    'กิจกรรม': ()=>{
       if(!H.length) return;
-      const byA={}; H.forEach(x=>{ const k=x.activity||'ไม่ระบุ'; byA[k]=byA[k]||{amt:0,n:0,bt:{}}; byA[k].amt+=(x.amount||0); byA[k].n++; byA[k].bt[x.budgetType]=(byA[k].bt[x.budgetType]||0)+(x.amount||0); });
+      const byA={}; H.forEach(x=>{ const k=firstAct(x.activity); byA[k]=byA[k]||{amt:0,n:0,bt:{}}; byA[k].amt+=(x.amount||0); byA[k].n++; byA[k].bt[x.budgetType]=(byA[k].bt[x.budgetType]||0)+(x.amount||0); });
       const top=Object.entries(byA).sort((a,b)=>b[1].amt-a[1].amt).slice(0,8);
       hbar('yrAct', top.map(([k,o])=>{ const dom=Object.entries(o.bt).sort((a,b)=>b[1]-a[1])[0]?.[0]||'';
         return {label:k, v:+(o.amt/1e6).toFixed(1), color:btColor(dom)||C.teal, tip:`${fmt(o.amt)} บาท · ${o.n} โครงการ · ชนิดงบหลัก: ${esc(dom)||'-'}`}; }), {unit:'ลบ.', labelW:230});
