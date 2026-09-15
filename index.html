@@ -1605,6 +1605,14 @@ try{ const DARK=['sundown','dusk','midnight','moonset','dawn'], DAYS=['sunset','
           <button id="mapListTg" class="listtg" title="ซ่อน/แสดงรายชื่อสายทาง เพื่อขยายแผนที่">◀</button>
           <div id="map">
             <!-- data-nodecor: เขตที่ DOM เปลี่ยนถี่มาก (กระเบื้อง/เส้นแผนที่) และไม่มีของให้ตกแต่ง — กฎ 10 -->
+            <!-- v31.47 ตัวกรองสีชั้นเส้นถนน (ผู้ใช้ 15 ก.ย. 69: "หมายเลขถนน ตัวหนังสือ พื้นหลัง กลืนกันไปหมด … ทล อาจจะเป็นกล่องขาว ตัวหนังสือดำก็ดี")
+                 รูปต้นทาง: เส้นถนนสีส้ม · ป้ายหมายเลขกล่องขาวตัวดำ · ชื่อถนนตัวดำขอบครีม
+                 ตัวกรองเดิม (ทำเข้มทั้งชั้น) ทำให้กล่องขาวกลายเป็นเทาเข้ม → ใช้ตารางแปลงค่าความสว่างแทน:
+                 ขาว→ขาว · ดำ→ดำ · สีส้ม (สว่างกลาง ๆ)→เทาเข้ม  ป้ายหมายเลขจึงเป็นกล่องขาวตัวดำ เส้นถนนเข้ม -->
+            <svg width="0" height="0" style="position:absolute" aria-hidden="true" data-nodecor><filter id="fRoadInk" color-interpolation-filters="sRGB">
+              <feColorMatrix type="saturate" values="0"/>
+              <feComponentTransfer><feFuncR type="table" tableValues="0 .1 .12 .3 1"/><feFuncG type="table" tableValues="0 .1 .12 .3 1"/><feFuncB type="table" tableValues="0 .1 .12 .3 1"/></feComponentTransfer>
+            </filter></svg>
             <div id="tilepane" data-nodecor></div>
             <svg id="vecpane" data-nodecor></svg>
             <div class="zoomctl"><button id="zin">+</button><button id="zout">−</button><button id="zfit" title="ภาพรวมทั้งโครงข่าย" style="font-size:14px;border-top:1px solid var(--grid)">⛶</button></div>
@@ -3858,7 +3866,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.46', APP_DATE='15 ก.ย. 2569';
+const APP_VER='v31.47', APP_DATE='15 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -6448,7 +6456,7 @@ const BASEMAPS={
          /* v31.44 ผู้ใช้: "สีถนนพื้นหลังเอาสีอื่นได้ไหม เช่นสีดำ สีมันใกล้กับถนน ทช ตามหมวดจัง"
             ชั้นเส้นถนนเป็นรูปสำเร็จ (ส้ม/เหลือง) เปลี่ยนสีในรูปไม่ได้ แต่กรองสีทั้งชั้นได้: ถอดสี + ทำให้เข้ม → เส้นถนนเป็นเทาเข้ม/ดำ
             ไม่ชนกับสีหมวดของสาย ทช. · ใช้ทั้งบนจอ (CSS filter) และแผนที่ A3 (canvas filter) */
-         filters:[null,'grayscale(1) brightness(.45) contrast(1.15)',null],
+         filters:[null,'url(#fRoadInk)',null],   /* v31.47 ตารางแปลงค่าความสว่าง (นิยามใน SVG ใต้แผนที่) — เดิม grayscale+brightness ทำป้ายหมายเลขเป็นกล่องเทา */
          maxZ:16, attrib:'© Esri · HERE · Garmin · OpenStreetMap contributors'}
 };
 /* ชั้นกระเบื้องของพื้นที่เลือก: พื้นชั้นเดียวก็คืนเป็นรายการ 1 ชั้น · คืน {bz,sc,T} = ซูมที่ขอกระเบื้องจริง / ตัวขยาย / ขนาดกระเบื้องบนจอ */
