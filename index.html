@@ -3869,7 +3869,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.49', APP_DATE='15 ก.ย. 2569';
+const APP_VER='v31.51', APP_DATE='15 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -6982,6 +6982,7 @@ function redrawMap(){
     const gapPx=z>=13?220:(z>=11?170:120);
     (M.hwLbls||[]).slice().sort((a,b)=>a.rank-b.rank).forEach(Lb=>{
       Lb.g.style.display='none';
+      (Lb.clones||[]).forEach(c=>c.style.display='none');   /* v31.50 ผู้ใช้: "ซูมเข้าแล้วป้ายทางหลวงค้าง" — โคลนต้องถูกซ่อนทุกครั้ง แม้รอบนี้วางไม่ได้เลย */
       if(!hwOn) return;
       if(z<10&&Lb.rank===3) return;   /* ระดับทั้งจังหวัด: ป้าย 4 หลักไม่ขึ้น (รก) — ซูมเข้าค่อยโผล่ */
       const mine=hwPlaced[Lb.n]||(hwPlaced[Lb.n]=[]);
@@ -9266,6 +9267,7 @@ function paintReqBar(){
   prev.disabled=!(i>=0&&i<yrList.length-1); prev.textContent=prev.disabled?'‹':'‹ '+yrList[i+1];
   next.disabled=!(i>0); next.textContent=next.disabled?'›':yrList[i-1]+' ›';
   if(ys.value!==String(reqYearPick)) ys.value=String(reqYearPick);
+  ys.dispatchEvent(new Event('ddsync'));   /* v31.51 ผู้ใช้: "ตอนเปลี่ยนปี ทำไมช่องนี้ยังขึ้นปีเดิม" — กด ‹ › เซ็ตค่าให้ช่องเลือกแล้ว แต่ป้ายของกล่องเลือกแบบใหม่ต้องถูกบอกให้ตามด้วย */
   const Y=reqYearOnly(), C={}; Y.forEach(r=>{ const k=reqCatKey(r); C[k]=(C[k]||0)+1; });
   const ks=Object.keys(C).sort((a,b)=>C[b]-C[a]);
   reqCatPicks=reqCatPicks.filter(k=>ks.includes(k));
