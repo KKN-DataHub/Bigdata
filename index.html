@@ -3869,7 +3869,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.51', APP_DATE='15 ก.ย. 2569';
+const APP_VER='v31.52', APP_DATE='15 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -8330,7 +8330,9 @@ function renderHistRoad(code){
           const rl=reqData.filter(r=>r.code===code&&r.year===reqLatest);
           if(rl.length){
             const segs=rl.flatMap(r=>{
-              const mk=segMarkTxt((r.cat||'')+' '+(r.act||'')+' '+(r.proj||''), r.amt); // สัญลักษณ์เดียวกับเลนปี
+              const mk0=segMarkTxt((r.cat||'')+' '+(r.act||'')+' '+(r.proj||''), r.amt); // สัญลักษณ์เดียวกับเลนปี
+              /* v31.52: ความหนาของแถบถนนตัดสินจาก "กิจกรรม" ก่อน (กติกา v31.37) — ชนิดงบ/ชื่อโครงการที่มีคำว่า "ก่อสร้าง" ห้ามลากงานบำรุงไปเป็นแถบเต็ม */
+              const mk=(mk0==='full'||mk0==='thin')?(roadCls({activity:r.act||r.proj||'',budgetType:r.cat||''})==='บำรุง'?'thin':'full'):mk0;
               const e=mk==='elec';
               return r.segs
                 .map(s=>({a:kmVal(s.a), b:kmVal(s.b)}))
@@ -8347,7 +8349,7 @@ function renderHistRoad(code){
           const zl=zbData.filter(r=>r.code===code);
           if(zl.length){
             const segs=zl.filter(r=>r.len!=null).map(r=>({a:r.d1, b:r.d2,
-              mk:segMarkTxt((r.g.k||'')+' '+(r.act||''), null), // สัญลักษณ์เดียวกับเลนปี (ระบบระบายน้ำ = รางระบายน้ำ)
+              mk:zbMark(r), // สัญลักษณ์เดียวกับเลนปี (ระบบระบายน้ำ = รางระบายน้ำ) · v31.52 ความหนาอ่านจากกิจกรรมก่อน
               tip:`<b>Zerobase · ${esc(r.g.k)}</b><br>${esc(r.act)}<br>${kmLbl(r.d1)} – ${kmLbl(r.d2)} (${fmt(+(r.d2-r.d1).toFixed(2))} กม.)${r.g.k==='ไฟฟ้าแสงสว่าง'?`<br>💡 ≈ ${fmt(zbPoles(r))} ต้น`:''}${r.note?`<br>📝 ${esc(r.note)}`:''}`}));
             extra.push({label:'Zerobase', color:'#e34948', segs, noSegN:zl.filter(r=>r.len==null).length});
           }
@@ -8438,7 +8440,10 @@ const histIsBuilding=x=>/อาคาร/.test((x.budgetType||'')+' '+(x.activit
 /* ปริมาณตามชนิดของ "แต่ละช่วง" (t: r=ถนน e=ไฟฟ้า b=สะพาน) — โครงการเดียวมีหลายชนิดปนได้ */
 const segKmType=(x,t)=>x.segs.filter(s=>(s.t||'r')===t).reduce((a,s)=>a+(s.b-s.a),0);
 /* ลักษณะงานถนน: ก่อสร้างใหม่ / ขยายผิว / บำรุง — วงเล็บกำกับช่วง กม. ชนะชื่อกิจกรรม */
-const roadClsTxt=t=>/ขยาย/.test(t)?'ขยาย':(/ก่อสร้าง/.test(t)?'ก่อสร้าง':(/บำรุง|ซ่อม|เสริมผิว|ปรับปรุง|ฟื้นฟู|ยกระดับ/.test(t)?'บำรุง':null));
+/* v31.52 ผู้ใช้ 15 ก.ย. 69: "ทำไมงานจังหวัดที่เป็นงานบำรุง กราฟมันยังใหญ่เป็นงานก่อสร้างอยู่ล่ะ"
+   ชื่อกิจกรรมภาษาอังกฤษ (Hot In-Plant / Recycling / Overlay / Slurry ฯลฯ) เป็นงานบำรุงทั้งหมด — ต้องรู้จักด้วย ไม่ใช่เจอแต่คำไทย */
+const ROAD_MAINT_EN=/hot\s*in|recycl|overlay|slurry|seal|micro\s*surf|para\s*asphalt/i;
+const roadClsTxt=t=>/ขยาย/.test(t)?'ขยาย':(/ก่อสร้าง/.test(t)?'ก่อสร้าง':((/บำรุง|ซ่อม|เสริมผิว|ปรับปรุง|ฟื้นฟู|ยกระดับ/.test(t)||ROAD_MAINT_EN.test(t))?'บำรุง':null));
 /* v31.37 ผู้ใช้ 12 ก.ย. 69: "บางงบใส่เป็นกิจกรรมบำรุง แต่กราฟใหญ่เท่าก่อสร้าง โดยเฉพาะพวกงบจังหวัด ดูกิจกรรมหน่อย"
    เดิมเอา "กิจกรรม + ชนิดงบ" มาต่อกันแล้วค่อยตัดสิน — ชนิดงบที่เขียนว่า "งบก่อสร้าง" จึงลากงานบำรุงไปเป็นก่อสร้าง
    แถบใน Strip Map จึงหนาเท่างานก่อสร้างทั้งที่เป็นงานบำรุง
@@ -8474,6 +8479,9 @@ const segMarkTxt=(t,amt)=>{ // จำแนกจากข้อความ (�
   if(/ป้าย|เครื่องหมายจราจร|อำนวยความปลอดภัย|อุปกรณ์/.test(t)&&(amt==null||amt<500000)) return 'sign';
   return roadClsTxt(t)==='บำรุง'?'thin':'full';
 };
+/* v31.52 เลน Zerobase: จำแนกชิ้นงานจากกลุ่ม+กิจกรรม แต่ความหนาแถบถนนอ่านจากกิจกรรมก่อน (ชื่อกลุ่มมี "ก่อสร้าง" ห้ามชนะ) */
+const zbMark=r=>{ const m=segMarkTxt((r.g.k||'')+' '+(r.act||''), null);
+  return (m==='full'||m==='thin')?(roadCls({activity:r.act||'',budgetType:r.g.k||''})==='บำรุง'?'thin':'full'):m; };
 const segMark=(x,sg)=>{
   const t=sg.lbl||((x.activity||'')+' '+(x.budgetType||''));
   if(/ITS|CCTV|กล้อง/i.test(sg.lbl||'')||(!sg.lbl&&/ITS|CCTV|กล้อง/i.test(x.activity||'')&&!SEG_E.test(x.activity||'')))return 'cctv';
@@ -10613,7 +10621,7 @@ async function printOnePage(code){
       if(rl.length){ const segs=rl.flatMap(q=>{ const mk=segMarkTxt((q.cat||'')+' '+(q.act||'')+' '+(q.proj||''), q.amt);
           return q.segs.map(sg=>({a:kmVal(sg.a),b:kmVal(sg.b)})).filter(sg=>sg.a!=null&&sg.b!=null&&sg.b>sg.a).map(sg=>({...sg,mk,tip:''})); });
         if(segs.length) extra.push({label:'คำของบ '+latestRequestYear(), color:'#e87ba4', segs}); } }
-    if(zl.length){ const segs=zl.filter(q=>q.len!=null).map(q=>({a:q.d1,b:q.d2,mk:segMarkTxt((q.g.k||'')+' '+(q.act||''), null),tip:''}));
+    if(zl.length){ const segs=zl.filter(q=>q.len!=null).map(q=>({a:q.d1,b:q.d2,mk:zbMark(q),tip:''}));
       if(segs.length) extra.push({label:'Zerobase', color:'#e34948', segs}); }
     if(rk.length){ const rl2=rk.filter(x=>x.ka!=null);
       if(rl2.length) extra.push({label:'จุดเสี่ยง', color:'#e34948',
