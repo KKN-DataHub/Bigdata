@@ -3054,7 +3054,7 @@ function shareBars(container,items,opt){
   const perRow=height?(height-38)/Math.max(1,Math.ceil(items.length/cols)):0;
   const roomy=perRow>=50, roomy2=perRow>=70;
   items=items.map(it=>(roomy&&it.more&&!it.sub)?{...it,sub:it.more}:it);
-  box.innerHTML='<div class="share-bars'+(roomy2?' roomy roomy2':roomy?' roomy':'')+'" style="min-height:'+Math.max(80,Math.ceil(items.length/cols)*rowH+38,height||0)+'px"><div class="share-total"><span>รวม</span><b>'+fmt(+total.toFixed(1))+' <small>'+esc(unit)+'</small></b></div><div class="share-list'+(cols>1?' share-2col':'')+'">'+items.map(it=>'<div class="share-row"><div class="share-caption"><span><i style="background:'+esc(it.color||C.teal)+'"></i>'+esc(it.label)+'</span><strong>'+fmt(+it.v.toFixed(2))+' <small>'+esc(unit)+'</small><em>'+percent(pw(it))+'</em></strong></div>'+(it.sub?'<div class="share-sub">'+esc(it.sub)+'</div>':'')+'<div class="share-track"><span style="width:'+pw(it)+'%;background:'+esc(it.color||C.teal)+'"></span></div>'+(it.foot?'<div class="share-foot">'+esc(it.foot)+'</div>':'')+'</div>').join('')+'</div></div>';
+  box.innerHTML='<div class="share-bars'+(roomy2?' roomy roomy2':roomy?' roomy':'')+'" style="min-height:'+Math.max(80,Math.ceil(items.length/cols)*rowH+38,height||0)+'px"><div class="share-total"><span>รวม</span><b>'+(items.some(x=>x.w!=null)?fmtM(wTot)+' <small>· '+fmt(+total.toFixed(1))+' '+esc(unit)+'</small>':fmt(+total.toFixed(1))+' <small>'+esc(unit)+'</small>')+'</b></div><div class="share-list'+(cols>1?' share-2col':'')+'">'+items.map(it=>'<div class="share-row"><div class="share-caption"><span><i style="background:'+esc(it.color||C.teal)+'"></i>'+esc(it.label)+'</span><strong>'+(it.w!=null?(it.w>0?fmtM(it.w):'<span style="color:var(--crit);font-size:.8em">รอประเมิน</span>'):fmt(+it.v.toFixed(2))+' <small>'+esc(unit)+'</small>')+'<em>'+percent(pw(it))+'</em></strong></div>'+(it.sub?'<div class="share-sub">'+esc(it.sub)+'</div>':'')+'<div class="share-track"><span style="width:'+pw(it)+'%;background:'+esc(it.color||C.teal)+'"></span></div>'+(it.foot?'<div class="share-foot">'+esc(it.foot)+'</div>':'')+'</div>').join('')+'</div></div>';
   box.querySelectorAll('.share-row').forEach((r,i)=>{hitOn(r,'help');r.addEventListener('mousemove',e=>showTip('<b>'+esc(items[i].label)+'</b><br>'+(items[i].tip||fmt(items[i].v)+' '+esc(unit)),e.clientX,e.clientY));r.addEventListener('mouseleave',hideTip);});
 }
 
@@ -3236,14 +3236,17 @@ function matrixTable(container, rows, colsIn, {unit='รายการ', onClic
   const use=cols.length?cols:(colsIn||[]);
   box.__rows=RS; box.__money=money;
   const w=(70/Math.max(1,use.length)).toFixed(3);
-  const big=r=>fmt(r._n);   // ตัวเลขหลักของแถวยังเป็นจำนวน (ผู้ใช้: "ไม่ได้เปลี่ยนรูปแบบนะ รูปแบบเดิม แค่การคิด % เอาเงินงบประมาณมาคิด")
+  /* v31.55 ผู้ใช้ 16 ก.ย. 69 (ภาพตารางช่วงวงเงิน): "ตัวเลขหนาด้านท้ายข้อมูลแบบนี้ทุกกล่องที่นำเสนอ ให้เอาเงินขึ้นก่อน แล้วด้านล่างค่อยจำนวน"
+     → โหมดเงิน: ตัวเลขหนา = วงเงิน · บรรทัดล่าง = % · จำนวน (ยังไม่มีวงเงิน = "รอประเมิน") */
+  const big=r=>money?(r._a>0?fmtM(r._a):'<span style="color:var(--crit);font-size:.85em">รอประเมิน</span>'):fmt(r._n);
+  const sub=r=>money?`${fmt(r._n)} ${esc(unit)}`:'';
   const cell=(r,c)=>{ const n=r.segs&&r.segs[c.k]||0, v=vOf(r,c.k), p=V(r)?100*v/V(r):0;
     if(!n) return '<td class="bc"><span class="bz">–</span></td>';
     const pend=money&&!v;                                        // มีรายการแต่ยังไม่มีวงเงิน
     return `<td class="bc" style="background:${hexA(c.color,0.10+0.30*Math.min(1,p/60))}" title="${esc(r.label)} · ${esc(c.label)} · ${fmt(n)} ${esc(unit)}${money?' · '+fmtM(v):''} · ${p.toFixed(1)}%"><b>${fmt(n)}</b><i>${pend?'รอประเมิน':p.toFixed(0)+'%'}</i></td>`; };
   const line=(r,cls)=>`<tr${cls?' class="'+cls+'"':''}${onClick&&!cls?' data-k="'+esc(r.label)+'" style="cursor:pointer"':''}>`+
       `<td class="bname" title="${esc(r.label)}">${esc(r.label)}</td>`+use.map(c=>cell(r,c)).join('')+
-      `<td class="btot"><b>${big(r)}</b><i>${esc(r.right||unit)}</i></td></tr>`;
+      `<td class="btot"><b>${big(r)}</b><i>${money?sub(r):esc(r.right||unit)}</i></td></tr>`;
   /* ── แถบเทียบด้านบน (v31.39) ───────────────────────────────────────────────
      ผู้ใช้: "ดูแว่บเดียวดูไม่ออกว่าอันไหนเยอะสุด เพราะไม่เห็นกราฟเปรียบเทียบ"
      ความยาวแถบ = ค่าจริงเทียบกับแถวที่มากที่สุด → ตาเห็นอันดับทันทีโดยไม่ต้องอ่านตัวเลข
@@ -3256,7 +3259,7 @@ function matrixTable(container, rows, colsIn, {unit='รายการ', onClic
   const bar=r=>`<div class="mtx-row"${onClick?' data-k="'+esc(r.label)+'" style="cursor:pointer"':''}>`+
       `<div class="mtx-l" title="${esc(r.label)}"><span class="mtx-nm">${esc(r.label)}</span></div>`+
       `<div class="mtx-t"><div class="mtx-fill" style="width:${(100*V(r)/mx).toFixed(2)}%">${use.map(c=>seg(r,c)).join('')}</div></div>`+
-      `<div class="mtx-v"><b>${big(r)}</b><small>${(money&&!(r._a>0))?'รอประเมิน':(100*V(r)/grand).toFixed(0)+'%'}${r.right?' · '+esc(r.right):' '+esc(unit)}</small></div></div>`;
+      `<div class="mtx-v"><b>${big(r)}</b><small>${money?((r._a>0?(100*V(r)/grand).toFixed(0)+'% · ':'')+sub(r)):((100*V(r)/grand).toFixed(0)+'%'+(r.right?' · '+esc(r.right):' '+esc(unit)))}</small></div></div>`;
   /* v31.46 ช่องชื่อกว้างตามชื่อที่ยาวที่สุด (วัดจริง) แต่ไม่เกิน 190px — ทุกแถวเท่ากัน แถบจึงเริ่มแนวเดียวกัน */
   (()=>{ const cv=matrixTable._cv||(matrixTable._cv=document.createElement('canvas')), cx=cv.getContext('2d');
     cx.font='600 12.5px '+(getComputedStyle(document.body).fontFamily||'sans-serif');
@@ -3264,7 +3267,7 @@ function matrixTable(container, rows, colsIn, {unit='รายการ', onClic
     box.style.setProperty('--mtx-lw',Math.round(Math.min(190,Math.max(96,w+6)))+'px'); })();
   box.innerHTML='<div class="mtx">'+
     '<div class="mtx-lg">'+use.map(c=>`<span><i class="bdot" style="background:${c.color}"></i>${esc(c.label)}</span>`).join('')+
-      `<b class="mtx-all">${esc(sumLabel)} ${fmt(SUM._n)} ${esc(unit)}</b></div>`+
+      `<b class="mtx-all">${esc(sumLabel)} ${money?fmtM(SUM._a)+' · ':''}${fmt(SUM._n)} ${esc(unit)}</b></div>`+
     '<div class="mtx-bars">'+RS.map(bar).join('')+'</div>'+
     `<button type="button" class="mtx-more" aria-expanded="false">▾ ดูรายละเอียดทุกช่อง</button>`+
     '<div class="tblwrap mtx-tbl" hidden><table class="bandtbl"><colgroup><col style="width:15%">'+
@@ -3595,7 +3598,7 @@ function alignTables(root){
      v31.46 ผู้ใช้ (15 ก.ย. 69): "หัวตารางที่คอลัมน์ เอากลางหมด ส่วนข้อมูลถ้าเป็นชื่อเอากลาง ถ้าเงินเอาริมขวาตามหลักบัญชี"
      → กฎ 14 ใหม่ (แทนกติกาความยาว 9 ตัวอักษรเดิม): หัวคอลัมน์กึ่งกลางทุกช่อง · ข้อมูลกึ่งกลางทุกช่อง (ชื่อ · รหัส · จำนวน · ช่วง กม.)
        ยกเว้น "ช่องเงิน" ชิดขวา — เงินดูจากหัวคอลัมน์ (บาท · ลบ. · วงเงิน · งบ) ไม่ใช่จากคลาสที่ผู้เรียกใส่มา */
-  const MONEY=/บาท|ลบ\.|ล้านบาท|วงเงิน|งบประมาณ|งบ(?![\u0e00-\u0e7f])/;
+  const MONEY=/บาท|ลบ\.|ล้านบาท|วงเงิน|งบประมาณ|(?<!ชนิด|แหล่ง|ประเภท)งบ(?![\u0e00-\u0e7f])/;   /* v31.55 "ชนิดงบ/แหล่งงบ" เป็นชื่อกลุ่ม ไม่ใช่เงิน — ห้ามชิดขวา (ชุดทดสอบ reqrank ⑤ข พบ) */
   (root||document).querySelectorAll('table:not(.bandtbl)').forEach(t=>{
     const ths=[...t.querySelectorAll('thead th')];
     if(!ths.length) return;
@@ -3892,7 +3895,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.54', APP_DATE='15 ก.ย. 2569';
+const APP_VER='v31.55', APP_DATE='16 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -4030,6 +4033,7 @@ function dataArrived(key){
    ══════════════════════════════════════════════════════════════════════════ */
 const RUNTIME_IDS={
   yrContractPlot:'กราฟสัญญาประจำปีหลังเลือกตัวกรอง',
+  hrLeftover   :'การ์ดคำขอเหลือจ่ายปีก่อนหน้าบนหน้าสายทาง — โผล่เฉพาะสายที่มีคำขอเหลือจ่ายปีก่อนที่ยังไม่อยู่ในประวัติ (v31.55)',
   printStripBox :'กล่องซ่อนสำหรับวาด Strip Map ก่อนคัดลอกไปหน้าพิมพ์ One-Page (สร้างชั่วคราวตอนกดพิมพ์)',   // v31.23 ทะเบียนนับการอ้างผ่าน querySelector ด้วย
 
   authRowM     :'แถวเข้าสู่ระบบในเมนู “เพิ่มเติม” — สร้างเฉพาะจอแคบ (จอกว้างใช้ปุ่มมุมบนขวาแทน)',
@@ -5595,8 +5599,11 @@ function groupBoxes(hostId, groups, colorOf, opt){
     `<div class="surfgrid catgrid${o.small?' catgrid-s':''}">${groups.map(([k,g])=>{ const p=100*val(g)/tot;
       return `<div class="surfbox catbox" style="border-left-color:${colorOf(k)}" title="${esc(g.label||k)} · ${g.tip||''}">`+
         `<div class="shead"><span class="cdot" style="background:${colorOf(k)}"></span><span class="sname">${esc(g.label||k)}</span></div>`+
-        `<div class="sval">${g.n}<small>${unit} · ${p.toFixed(0)}%</small></div>`+   /* รูปแบบเดิม — แต่ % คิดจากเงินเมื่อมี amtV */
-        (g.amt?`<div class="camt">${g.amt}</div>`:'')+
+        (money
+          ? `<div class="sval">${g.amtV>0?fmtM(g.amtV):'<span style="color:var(--crit);font-size:15px">รอประเมิน</span>'}<small>${g.amtV>0?p.toFixed(0)+'%':''}</small></div>`+
+            `<div class="camt">${fmt(g.n)} ${unit}</div>`   /* v31.55 ผู้ใช้: "เอาเงินขึ้นก่อน แล้วด้านล่างค่อยจำนวน" */
+          : `<div class="sval">${g.n}<small>${unit} · ${p.toFixed(0)}%</small></div>`+
+            (g.amt?`<div class="camt">${g.amt}</div>`:''))+
         (g.foot?`<div class="sfoot">${g.foot}</div>`:'')+`</div>`;
     }).join('')}</div>`;
   /* กฎ 22 (v31.39) — การ์ดคู่กันต้องเต็มเท่ากัน: ยืดตารางกล่องให้เต็มที่ว่างที่เหลือ */
@@ -8321,6 +8328,16 @@ function renderHistRoad(code){
       </tbody></table></div>
       <div class="footnote" style="margin-top:6px">รวมงบที่ประเมินแล้ว <b>${fmtM(rq.reduce((a,q)=>a+(q.amt||0),0))}</b> · ${rq.filter(q=>q.amt==null).length?rq.filter(q=>q.amt==null).length+' คำขอรอประเมินราคา':'ประเมินครบทุกคำขอ'}</div>
     </div>`:''}
+    ${(lo=>lo?`<div class="card" style="margin-top:14px" id="hrLeftover">
+      <h3><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${fadeHex('#e87ba4')};margin-right:7px"></span>คำของบปี ${lo.year} (เหลือจ่าย) — ยังไม่อยู่ในประวัติ (${lo.rows.length})</h3>
+      <div class="tblwrap" style="max-height:240px"><table><thead><tr><th>#</th><th>ปีที่ขอ</th><th>ชนิดงบ</th><th>กิจกรรม/โครงการ</th><th>ช่วง กม.</th><th class="num">งบประมาณ (บาท)</th></tr></thead><tbody>
+        ${lo.rows.map((q,i)=>`<tr><td style="color:var(--muted)">${i+1}</td><td>${q.year||'–'}</td>
+          <td><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${fadeHex(btColor(catName(q.cat||''))||'#e87ba4')};margin-right:6px"></span>${esc(catName(q.cat||'–'))}</td>
+          <td>${esc((q.act||q.proj)||'–')}</td>
+          <td style="font-variant-numeric:tabular-nums;font-size:11.5px">${q.segs&&q.segs.length?q.segs.map(sg=>`${esc(String(sg.a||''))} – ${esc(String(sg.b||''))}`).join('<br>'):'— ไม่ระบุ —'}</td>
+          <td class="num">${q.amt!=null?fmt(q.amt):'<span class="pill wait">⏳ รอประเมิน</span>'}</td></tr>`).join('')}
+      </tbody></table></div>
+    </div>`:'')(leftoverCarry(code))}
     ${(!bridge&&zl.length)?`<div class="card" style="margin-top:14px">
       <h3><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#e34948;margin-right:7px"></span>ความต้องการ (Zerobase) ของสายนี้</h3>
       <div class="tblwrap" style="max-height:360px"><table><thead><tr><th>#</th><th>กลุ่มกิจกรรม</th><th>กิจกรรม</th><th>ช่วง กม.</th><th class="num">ปริมาณ</th><th>หมายเหตุ</th></tr></thead><tbody>
@@ -8615,6 +8632,18 @@ function histSegCaption(sg){
 /* v31.18 กติกาข้อมูลร่วม: คำขอปีล่าสุด / สัญญาก่อน Equipment / ไม่เดาจำนวนกล้อง */
 const latestRequestYear=(rows=reqData||[])=>rows.reduce((y,r)=>Number.isFinite(+r.year)?Math.max(y||0,+r.year):y,null);
 const latestRequests=(rows=reqData||[])=>{const y=latestRequestYear(rows);return rows.filter(r=>+r.year===y);};
+/* v31.55 ผู้ใช้ 16 ก.ย. 69 (หน้าสายทาง): "ตัวคำขอ … โชว์ปีล่าสุดใช่ไหม แต่ต้องดูปีก่อนหน้าว่ามีชนิดงบเหลือจ่ายรึเปล่า
+   ถ้ามีก็จะต้องมีคำขอปีก่อนหน้า (เหลือจ่าย) ด้วยอีกอันนึง แล้วถ้าถูกใส่ไว้ในประวัติแล้วก็ค่อยเอาออก (ข้อมูลตรงกัน สายทาง งบประมาณ ชนิดงบ)"
+   → คำขอ "เหลือจ่าย" ของปีก่อนหน้าปีล่าสุดบนสายนี้ ที่ยังไม่ปรากฏในประวัติ (สายเดียวกัน + ชนิดงบเดียวกัน + วงเงินเท่ากัน = ทำแล้ว)
+   คืนค่า {year, rows} · ไม่มี = null · ชุดทดสอบ reqrank ⑤ */
+function leftoverCarry(code, rows=reqData||[], hist=histData||[]){
+  const y=latestRequestYear(rows); if(!y) return null;
+  const prev=rows.filter(r=>r.code===code&&+r.year===y-1&&isLeftover(r.cat));
+  if(!prev.length) return null;
+  const done=q=>hist.some(x=>x.code===code&&+x.year>=+q.year&&normCat(x.budgetType)===normCat(q.cat)&&q.amt!=null&&Math.round(+x.amount||0)===Math.round(+q.amt));
+  const left=prev.filter(q=>!done(q));
+  return left.length?{year:y-1, rows:left}:null;
+}
 const ASSET_KINDS=['elec','drain','cctv'];
 const assetName={elec:'ไฟฟ้าแสงสว่าง',drain:'ระบบระบายน้ำ',cctv:'ITS / กล้อง'};
 function equipKinds(x){
@@ -9611,7 +9640,7 @@ function renderRequests(){
     /* v31.53 ผู้ใช้: "ใช้จำนวนเงินเป็นตัวตั้งไม่ใช่จำนวน" + "ไม่ได้เปลี่ยนรูปแบบนะ" → โชว์จำนวนคำขอเหมือนเดิม แต่ % และแถบคิดจากวงเงิน (w) */
     shareBars('chReqZone', keys.map(k=>{ const g=zG[k], zi=KK_ZONES[k];
       return { label:isNaN(k)?'ไม่ระบุเขต':('เขต '+k), v:g.n, w:g.amt||0, color:isNaN(k)?'#9aa5a3':zoneColor(+k), last:isNaN(k),
-        more:(zi?'สส. '+zi.mp+' · '+zi.party:'ระบุตำแหน่งไม่ได้')+(g.amt?' · '+fmtM(g.amt):'')+(g.wait?' · รอประเมิน '+g.wait:''),
+        more:(zi?'สส. '+zi.mp+' · '+zi.party:'ระบุตำแหน่งไม่ได้')+' · '+g.n+' คำขอ'+(g.wait?' · รอประเมิน '+g.wait:''),   /* v31.55 เงินขึ้นตัวหนา จำนวนลงบรรทัดล่าง */
         tip:(zi?'สส. '+esc(zi.mp)+' · '+esc(zi.party)+'<br>':'')+g.n+' คำขอ · วงเงินระบุแล้ว '+fmt(g.amt)+' บาท'+(g.wait?' · รอประเมิน '+g.wait:'') }; }),
       {unit:'คำขอ', cols:2});
   });
@@ -10703,6 +10732,10 @@ async function printOnePage(code){
         </tbody></table>
       </div>
       <div>
+        ${(lo=>lo?`<h2>คำของบปี ${lo.year} (เหลือจ่าย) — ยังไม่อยู่ในประวัติ (${lo.rows.length})</h2>
+        <table><thead><tr><th>ปีที่ขอ</th><th>ชนิดงบ</th><th>กิจกรรม/โครงการ</th><th>ช่วง กม.</th><th class="r">งบประมาณ (บาท)</th></tr></thead><tbody>
+          ${lo.rows.slice(0,5).map(q=>`<tr><td>${q.year||'–'}</td><td>${esc(catName(q.cat||'–'))}</td><td style="font-size:10.5px">${esc(((q.act||q.proj)||'–'))}</td><td style="font-size:10.5px">${q.segs&&q.segs.length?q.segs.map(sg=>`${esc(String(sg.a||''))} – ${esc(String(sg.b||''))}`).join(', '):'–'}</td><td class="r">${q.amt!=null?fmt(q.amt):'รอประเมิน'}</td></tr>`).join('')}
+        </tbody></table>`:'')(leftoverCarry(code))}
         ${rq.length?`<h2>คำของบประมาณปีล่าสุด ${latestRequestYear()} (${rq.length})</h2>
         <table><thead><tr>${hasRank(rq)?'<th style="width:34px">ลำดับ</th>':''}<th>ปีที่ขอ</th><th>ชนิดงบ</th><th>กิจกรรม/โครงการ</th><th>ช่วง กม.</th><th class="r">งบประมาณ (บาท)</th></tr></thead><tbody>
           ${rq.slice(0,7).map((q,i)=>`<tr>${hasRank(rq)?`<td>${rankTxt(q,i)}</td>`:''}<td>${q.year||'–'}</td><td>${esc(catName(q.cat||'–'))}</td><td style="font-size:10.5px">${esc(((q.act||q.proj)||'–').slice(0,30))}</td><td style="font-size:10px">${q.segs&&q.segs.length?q.segs.map(sg=>esc(String(sg.a||''))+'–'+esc(String(sg.b||''))).join(', ').slice(0,24):'—'}</td><td class="r">${q.amt!=null?fmt(q.amt):'<span class="pill p-warn">รอประเมิน</span>'}</td></tr>`).join('')}
