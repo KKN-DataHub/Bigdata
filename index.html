@@ -3042,7 +3042,7 @@ function lineChart(container, labels, series, {unit='', height=240, fmtVal=fmt, 
 
 /* v31.20 ผู้ใช้: "แก้อันนี้ให้ที ดูยาก" — label every share directly, including the smallest groups. */
 function shareBars(container,items,opt){
-  const {unit='',height=null,cols=1}=opt||{};   /* v31.37 cols:2 = แถวเยอะให้จัดสองคอลัมน์ในกล่องเดียว */
+  const {unit='',height=null,cols=1,wFmt=fmtM}=opt||{};   /* v31.37 cols:2 = แถวเยอะให้จัดสองคอลัมน์ในกล่องเดียว · v31.57 wFmt = ตัวแสดงค่าตัวตั้ง (เงิน=fmtM · ระยะทาง=กม.) */
   const box=document.getElementById(container);if(!box)return;
   /* v31.42 ผู้ใช้ (14 ก.ย. 69): "กราฟแบบรูป 2 เรียงจากมากไปน้อยหน่อย" → เรียงแถวตามค่ามาก→น้อยเสมอ
      แถวที่ติดธง last (เช่น "ไม่ระบุเขต") ไปอยู่ท้ายสุดไม่ว่าค่าเท่าไร · ชุดทดสอบ bands ⑦ */
@@ -3060,7 +3060,7 @@ function shareBars(container,items,opt){
   const perRow=height?(height-38)/Math.max(1,Math.ceil(items.length/cols)):0;
   const roomy=perRow>=50, roomy2=perRow>=70;
   items=items.map(it=>(roomy&&it.more&&!it.sub)?{...it,sub:it.more}:it);
-  box.innerHTML='<div class="share-bars'+(roomy2?' roomy roomy2':roomy?' roomy':'')+'" style="min-height:'+Math.max(80,Math.ceil(items.length/cols)*rowH+38,height||0)+'px"><div class="share-total"><span>รวม</span><b>'+(items.some(x=>x.w!=null)?fmtM(wTot)+' <small>· '+fmt(+total.toFixed(1))+' '+esc(unit)+'</small>':fmt(+total.toFixed(1))+' <small>'+esc(unit)+'</small>')+'</b></div><div class="share-list'+(cols>1?' share-2col':'')+'">'+items.map(it=>'<div class="share-row"><div class="share-caption"><span><i style="background:'+esc(it.color||C.teal)+'"></i>'+esc(it.label)+'</span><strong>'+(it.w!=null?(it.w>0?fmtM(it.w):'<span style="color:var(--crit);font-size:.8em">รอประเมิน</span>'):fmt(+it.v.toFixed(2))+' <small>'+esc(unit)+'</small>')+'<em>'+percent(pw(it))+'</em></strong></div>'+(it.sub?'<div class="share-sub">'+esc(it.sub)+'</div>':'')+'<div class="share-track"><span style="width:'+pw(it)+'%;background:'+esc(it.color||C.teal)+'"></span></div>'+(it.foot?'<div class="share-foot">'+esc(it.foot)+'</div>':'')+'</div>').join('')+'</div></div>';
+  box.innerHTML='<div class="share-bars'+(roomy2?' roomy roomy2':roomy?' roomy':'')+'" style="min-height:'+Math.max(80,Math.ceil(items.length/cols)*rowH+38,height||0)+'px"><div class="share-total"><span>รวม</span><b>'+(items.some(x=>x.w!=null)?wFmt(wTot)+' <small>· '+fmt(+total.toFixed(1))+' '+esc(unit)+'</small>':fmt(+total.toFixed(1))+' <small>'+esc(unit)+'</small>')+'</b></div><div class="share-list'+(cols>1?' share-2col':'')+'">'+items.map(it=>'<div class="share-row"><div class="share-caption"><span><i style="background:'+esc(it.color||C.teal)+'"></i>'+esc(it.label)+'</span><strong>'+(it.w!=null?(it.w>0?wFmt(it.w):'<span style="color:var(--crit);font-size:.8em">รอประเมิน</span>'):fmt(+it.v.toFixed(2))+' <small>'+esc(unit)+'</small>')+'<em>'+percent(pw(it))+'</em></strong></div>'+(it.sub?'<div class="share-sub">'+esc(it.sub)+'</div>':'')+'<div class="share-track"><span style="width:'+pw(it)+'%;background:'+esc(it.color||C.teal)+'"></span></div>'+(it.foot?'<div class="share-foot">'+esc(it.foot)+'</div>':'')+'</div>').join('')+'</div></div>';
   box.querySelectorAll('.share-row').forEach((r,i)=>{hitOn(r,'help');r.addEventListener('mousemove',e=>showTip('<b>'+esc(items[i].label)+'</b><br>'+(items[i].tip||fmt(items[i].v)+' '+esc(unit)),e.clientX,e.clientY));r.addEventListener('mouseleave',hideTip);});
 }
 
@@ -3901,7 +3901,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.56', APP_DATE='16 ก.ย. 2569';
+const APP_VER='v31.57', APP_DATE='16 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -5593,7 +5593,7 @@ function groupBoxes(hostId, groups, colorOf, opt){
   const o=opt||{}, unit=o.unit||'รายการ';
   /* v31.53 ผู้ใช้: "ทุกหัวข้อที่แบ่งสัดส่วนเป็น % ใช้จำนวนเงินเป็นตัวตั้งไม่ใช่จำนวน"
      กลุ่มที่ส่ง amtV (บาท) มาด้วย → แถบและ % คิดจากเงิน · หน้าตากล่องคงเดิม (จำนวน · % · วงเงิน) — ผู้ใช้: "ไม่ได้เปลี่ยนรูปแบบนะ รูปแบบเดิม" */
-  const money=groups.some(([,g])=>g.amtV!=null);
+  const money=groups.some(([,g])=>g.amtV!=null), vFmt=o.vFmt||fmtM;   /* v31.57 vFmt = ตัวแสดงค่าตัวตั้ง (เงิน/ระยะทาง) */
   const val=g=>money?(+g.amtV||0):g.n;
   const tot=groups.reduce((a,[,g])=>a+val(g),0)||1;
   if(money) groups=groups.slice().sort((a,b)=>val(b[1])-val(a[1])||b[1].n-a[1].n);
@@ -5601,13 +5601,13 @@ function groupBoxes(hostId, groups, colorOf, opt){
     `<div class="onebar catbar">${groups.map(([k,g])=>{ const p=100*val(g)/tot;
       /* v31.36 ผู้ใช้ 12 ก.ย. 69: "ตัวแถบบนโชว์เฉพาะ % ก็พอ ตัวการ์ดบอกรายละเอียดอยู่แล้ว"
          เดิมยัดชื่อกลุ่มลงในท่อนด้วย ท่อนแคบ ๆ เลยมีแต่ตัวหนังสือเบียดกันจนอ่านไม่ออก */
-      return `<span style="width:${p.toFixed(3)}%;background:${colorOf(k)}" title="${esc(g.label||k)} ${money?fmtM(g.amtV):g.n+' '+unit} (${p.toFixed(0)}%)">${p>=6?p.toFixed(0)+'%':''}</span>`; }).join('')}</div>`+
+      return `<span style="width:${p.toFixed(3)}%;background:${colorOf(k)}" title="${esc(g.label||k)} ${money?vFmt(g.amtV):g.n+' '+unit} (${p.toFixed(0)}%)">${p>=6?p.toFixed(0)+'%':''}</span>`; }).join('')}</div>`+
     `<div class="surfgrid catgrid${o.small?' catgrid-s':''}">${groups.map(([k,g])=>{ const p=100*val(g)/tot;
       return `<div class="surfbox catbox" style="border-left-color:${colorOf(k)}" title="${esc(g.label||k)} · ${g.tip||''}">`+
         `<div class="shead"><span class="cdot" style="background:${colorOf(k)}"></span><span class="sname">${esc(g.label||k)}</span></div>`+
         (money
-          ? `<div class="sval">${g.amtV>0?fmtM(g.amtV):'<span style="color:var(--crit);font-size:15px">รอประเมิน</span>'}<small>${g.amtV>0?p.toFixed(0)+'%':''}</small></div>`+
-            `<div class="camt">${fmt(g.n)} ${unit}</div>`   /* v31.55 ผู้ใช้: "เอาเงินขึ้นก่อน แล้วด้านล่างค่อยจำนวน" */
+          ? `<div class="sval">${g.amtV>0?vFmt(g.amtV):'<span style="color:var(--crit);font-size:15px">'+(o.zeroLbl||'รอประเมิน')+'</span>'}<small>${g.amtV>0?p.toFixed(0)+'%':''}</small></div>`+
+            `<div class="camt">${fmt(g.n)} ${unit}${g.amt?' · '+g.amt:''}</div>`   /* v31.55 ผู้ใช้: "เอาเงินขึ้นก่อน แล้วด้านล่างค่อยจำนวน" */
           : `<div class="sval">${g.n}<small>${unit} · ${p.toFixed(0)}%</small></div>`+
             (g.amt?`<div class="camt">${g.amt}</div>`:''))+
         (g.foot?`<div class="sfoot">${g.foot}</div>`:'')+`</div>`;
@@ -5685,7 +5685,9 @@ function splitCodes(codes){
 }
 /* ข้อความท้ายการ์ด "X / 98 สาย" — ต่อท้ายด้วยสะพาน/อาคาร/นอกบัญชีเฉพาะที่มีจริง */
 function splitFoot(sp,unitTxt){
-  return `คิดเป็น ${(100*sp.road.length/Math.max(1,sp.nRoadAll)).toFixed(0)}% ของโครงข่าย`
+  /* v31.57 % ของโครงข่ายคิดจากระยะทางตามบัญชี ไม่ใช่จำนวนสาย (กฎ 24) */
+  const CI=codeInfo(), kmOf=cs=>cs.reduce((a,c)=>a+(+(CI[c]?.len_acct)||0),0), net=kmOf(ALL_CODES), got=kmOf(sp.road);
+  return `คิดเป็น ${net>0?(100*got/net).toFixed(0):0}% ของโครงข่าย (${fmt(+got.toFixed(1))} กม.)`
     +(sp.bridge.length?` · สะพานชุมชน ${sp.bridge.length}/${sp.nBridgeAll} แห่ง`:'')
     +(unitTxt||'')
     +(sp.out.length?` · นอกบัญชี ${sp.out.length} รหัส`:'');
@@ -5867,12 +5869,13 @@ function renderOverview(){
       const k=z==null?'':String(z);
       const o=Zn[k]||(Zn[k]={n:0,km:0}); o.n++; o.km+=(+r.len_acct||0); });
     const ks=Object.keys(Zn).sort((a,b)=>(a===''?99:+a)-(b===''?99:+b));
+    /* v31.57 ผู้ใช้ 16 ก.ย. 69: "ทุกอย่างที่ทำเป็น % ต้องเอาจากระยะทางหรือจำนวนเงินนะ ไม่เอาจำนวนนับเป็นหลัก"
+       → ตัวตั้ง % และตัวเลขหนา = ระยะทาง (กม.) · จำนวนสายลงบรรทัดรอง (กฎ 24) */
     shareBars('chOvZone', ks.map(k=>{ const o=Zn[k], zi=KK_ZONES[k];
-      return { label:k?('เขต '+k):'ไม่ระบุเขต', v:o.n, color:k?zoneColor(+k):'#9aa5a3', last:!k,
-        sub:zi?('สส. '+zi.mp+' · '+zi.party):'ระบุตำแหน่งไม่ได้',
-        foot:'ระยะทางรวม '+fmt(+o.km.toFixed(1))+' กม.',
+      return { label:k?('เขต '+k):'ไม่ระบุเขต', v:o.n, w:+o.km.toFixed(1), color:k?zoneColor(+k):'#9aa5a3', last:!k,
+        sub:(zi?('สส. '+zi.mp+' · '+zi.party):'ระบุตำแหน่งไม่ได้')+' · '+o.n+' สาย',
         tip:(zi?'สส. '+esc(zi.mp)+' · '+esc(zi.party)+'<br>':'')+o.n+' สาย · '+fmt(+o.km.toFixed(2))+' กม.' }; }),
-      {unit:'สาย', cols:2});
+      {unit:'สาย', cols:2, wFmt:x=>fmt(+x.toFixed(1))+' กม.'});
   });
   (()=>{ const box=document.getElementById('chSurfaceMuad'); if(!box) return;
     const ico={'ลาดยาง':'🛣️','คอนกรีต':'🧱','ลูกรัง':'🪨'};
@@ -7897,7 +7900,7 @@ function renderHistory(){
       ${kico('📋','var(--tile-blue)','โครงการ/สัญญา', `${H.length} <small>รายการ</small>`, `ปี ${years[0]}–${years[years.length-1]}`)}
       ${kico('💰','var(--tile-green)','วงเงินตามสัญญารวม', fmtM(tot), '')}
       ${kico('📈','var(--tile-violet)','วงเงินเฉลี่ยต่อโครงการ', fmtM(avgAmt), '')}
-      ${kico('✅','var(--tile-green)','ส่งงานงวดสุดท้ายแล้ว', `${delivered} <small>/ ${H.length}</small>`, `${(100*delivered/H.length).toFixed(0)}% ของรายการ`)}
+      ${kico('✅','var(--tile-green)','ส่งงานงวดสุดท้ายแล้ว', `${delivered} <small>/ ${H.length}</small>`, `${tot>0?(100*H.filter(x=>x.delivered).reduce((a,x)=>a+(x.amount||0),0)/tot).toFixed(0):0}% ของวงเงิน`)}   /* v31.57 % จากเงิน */
       ${kico('🛡️','#fdeeee','ยังติดค้ำประกันสัญญา', `<span style="color:var(--crit)">${underWarranty}</span> <small>โครงการ</small>`, 'ส่งงานงวดสุดท้าย + 2 ปี ยังไม่ครบ')}
       ${kico('👷','#fdf4e3','ผู้รับจ้าง', `${contractors.length} <small>ราย</small>`, '')}
     </div>
@@ -10451,8 +10454,11 @@ function renderZbOverview(){
     Object.entries(byRoad).forEach(([code,list])=>{ const m=roadInfo[code]?.muad||'ไม่ระบุ'; const o=byM[m]=byM[m]||{n:0,roads:new Set(),km:0,pl:0,br:0};
       o.n+=list.length; o.roads.add(code); o.km+=list.filter(zbIsRd).reduce((a,r)=>a+(r.len||0),0); o.pl+=list.filter(zbIsE).reduce((a,r)=>a+(zbPoles(r)||0),0); o.br+=list.filter(zbIsB).reduce((a,r)=>a+((r.len||0)*1000),0); });
     const keys=[...MUAD_ORDER,'ไม่ระบุ'].filter(m=>byM[m]);
-    groupBoxes('chZbMuadBox', keys.map(m=>[m,{label:m==='ไม่ระบุ'?m:'หมวด'+m, n:byM[m].n, amt:`ถนน ${fmt(+byM[m].km.toFixed(1))} กม.${byM[m].pl?` · ไฟฟ้า ${fmt(byM[m].pl)} ต้น`:''}${byM[m].br?` · สะพาน ${fmt(Math.round(byM[m].br))} ม.`:''}`,
-      foot:`${byM[m].roads.size} สาย`, tip:`${byM[m].n} คำขอ · ${byM[m].roads.size} สาย`}]), m=>m==='ไม่ระบุ'?'#9aa5a3':muadColor(m), {unit:'คำขอ'});
+    /* v31.57 % คิดจากระยะทางถนนที่ขอ (กฎ 24: ระยะทางหรือเงิน ไม่ใช่จำนวนนับ) · ไฟฟ้า/สะพานคนละหน่วย อยู่บรรทัดรอง */
+    groupBoxes('chZbMuadBox', keys.map(m=>[m,{label:m==='ไม่ระบุ'?m:'หมวด'+m, n:byM[m].n, amtV:+byM[m].km.toFixed(2),
+      amt:`${byM[m].roads.size} สาย${byM[m].pl?` · ไฟฟ้า ${fmt(byM[m].pl)} ต้น`:''}${byM[m].br?` · สะพาน ${fmt(Math.round(byM[m].br))} ม.`:''}`,
+      tip:`${byM[m].n} คำขอ · ${byM[m].roads.size} สาย · ถนน ${fmt(+byM[m].km.toFixed(1))} กม.`}]), m=>m==='ไม่ระบุ'?'#9aa5a3':muadColor(m),
+      {unit:'คำขอ', vFmt:x=>fmt(+x.toFixed(1))+' กม.', zeroLbl:'ไม่มีงานถนน'});
   }
   // ⑤ สายในบัญชีที่ยังไม่มีคำขอ Zerobase — เรียงตามหมวด (ผู้ใช้: "มีสายไหนยังไม่มีข้อมูล zerobase")
   {
