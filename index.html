@@ -1673,6 +1673,8 @@ try{ const DARK=['sundown','dusk','midnight','moonset','dawn'], DAYS=['sunset','
 <select class="search" id="reqCatSel" style="max-width:260px" multiple data-ph="ทุกชนิดงบ"></select>
         <b style="margin-left:8px">กิจกรรม</b>
         <select class="search" id="reqActSel" style="max-width:260px" multiple data-ph="ทุกกิจกรรม"></select>
+        <b style="margin-left:8px">เขตเลือกตั้ง</b>
+        <select class="search" id="reqZoneSel" style="max-width:200px" multiple data-ph="ทุกเขต"></select>
         <span class="note" style="margin:0" id="reqBarNote"></span>
       </div>
       <div id="reqBody"><div class="loading"><span class="spin"></span>กำลังดึงข้อมูลจาก Google Sheets…</div></div>
@@ -3901,7 +3903,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.57', APP_DATE='16 ก.ย. 2569';
+const APP_VER='v31.58', APP_DATE='21 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -6473,6 +6475,25 @@ function zoneOfRec(code,a,b){
   if(!EMB.roads.some(r=>r.code===code)) return null;
   return zoneOfKm(code,a,b);
 }
+/* v31.58 ผู้ใช้ 21 ก.ย. 69: "ในหน้าโครงการประจำปี กับแผน เพิ่มกรองเขตเลือกตั้งให้ที"
+   เขตของรายการ (สัญญา/คำขอ) เป็นข้อความสำหรับช่องกรอง: 'เขต N' หรือ 'ไม่ระบุเขต'
+   กติกาเดียวกับกล่องเขตทุกหน้า — ยึดช่วง กม. แรกบนเส้น GIS (gapZoneOf) ห้ามเดาเมื่อไม่รู้
+   จำคำตอบไว้เพราะช่องกรองเรียกซ้ำทุกครั้งที่วาดหน้า (ข้อมูลเส้นทางเป็น snapshot ไม่เปลี่ยนระหว่างเปิด) */
+const ZONE_NONE='ไม่ระบุเขต';
+const _zoneKeyCache=new Map();
+function recZoneKey(x){
+  const code=x&&x.code; if(!code) return ZONE_NONE;
+  const s0=(x.segs||[])[0];
+  const a=s0?((typeof s0.a==='number')?s0.a:kmVal(s0.a)):null;
+  const b=s0?((typeof s0.b==='number')?s0.b:kmVal(s0.b)):null;
+  const ck=code+'|'+a+'|'+b;
+  if(_zoneKeyCache.has(ck)) return _zoneKeyCache.get(ck);
+  let z=null; try{ z=zoneOfRec(code,a,(b==null?a:b)); }catch(e){}
+  const out=(z==null)?ZONE_NONE:('เขต '+z);
+  _zoneKeyCache.set(ck,out); return out;
+}
+const zoneKeyNo=k=>{ const m=/^เขต\s*(\d+)/.exec(String(k||'')); return m?+m[1]:999; };   /* 'ไม่ระบุเขต' ไปท้ายเสมอ */
+const zoneKeySort=(a,b)=>zoneKeyNo(a)-zoneKeyNo(b);
 /* ชื่อชนิดงบให้เทียบกันได้ข้ามชีท: "1.ยกระดับ" / "ยกระดับ" / "งบบำรุง" / "บำรุงเหลือจ่าย" -> คำเดียวกัน
    (ผู้ใช้สั่ง: อย่าละเอียดอ่อน เอาใจความสำคัญเป็นหลัก) */
 const normCat=s=>{
@@ -9213,13 +9234,15 @@ const REQ_PROBE_YEARS=Array.from({length:15},(_,i)=>68+i); // ไล่หา Q_
 let reqData=null, reqYears=[], reqYearPick=null, reqDroppedN=0;
 let reqCatPicks=[];   /* v31.42 ชนิดงบที่เลือกดูบนหน้าคำขอ · v31.44 เลือกได้หลายชนิด (ว่าง = ทุกชนิด) */
 const reqCatLbl=()=>reqCatPicks.join(' · ');
+let reqZonePicks=[];   /* v31.58 ผู้ใช้: "เพิ่มกรองเขตเลือกตั้ง" (ว่าง = ทุกเขต) */
 let reqActPicks=[];   /* v31.45 ผู้ใช้: "หน้าคำขอเพิ่มดรอปดาวน์กิจกรรมเหมือนหน้าโครงการประจำปีด้วยสิ" (ว่าง = ทุกกิจกรรม) */
 /* v31.46 ผู้ใช้ (15 ก.ย. 69): "กรณีนำเสนอกล่อง kpi ถ้ามีหลายกิจกรรมนับแค่กิจกรรมแรกสุดก็พอ แล้วจัดหมวดหมู่เข้าด้วยกันเลย แต่ถ้าเป็นตารางก็โชว์หมด ถือว่าคลี่รายละเอียด"
    → ตัวอ่านกิจกรรมสำหรับ "นับ/กรอง/กราฟ" ใช้กิจกรรมแรกก่อนเครื่องหมายคั่น ("ขยายถนน, ก่อสร้างสะพาน" → "ขยายถนน")
      ตารางยังโชว์ข้อความเต็มตามชีท · ใช้ตัวเดียวกันทั้งหน้าคำขอและหน้ารายปี */
 const firstAct=t=>{ const k=String(t||'').split(/\s*[,;\n]\s*|\s+และ\s+/)[0].trim(); return k||'ไม่ระบุ'; };   /* คั่นด้วย , ; ขึ้นบรรทัด หรือ "และ" — ไม่ตัดที่ / หรือ + (เป็นส่วนของชื่อกิจกรรม เช่น Hot In-Plant + Recycling) */
 const reqActOf=r=>firstAct(r.actv||r.act||r.proj);   /* ตัวอ่านกิจกรรมตัวเดียว ใช้ทั้งตัวกรองและกล่องกิจกรรม */
-const reqFilterLbl=()=>[reqCatPicks.length?reqCatLbl():'', reqActPicks.length?'กิจกรรม '+reqActPicks.join(' · '):''].filter(Boolean).join(' · ');
+const reqFilterLbl=()=>[reqCatPicks.length?reqCatLbl():'', reqActPicks.length?'กิจกรรม '+reqActPicks.join(' · '):'', reqZonePicks.length?reqZonePicks.join(' · '):''].filter(Boolean).join(' · ');
+const reqHasFilter=()=>!!(reqCatPicks.length||reqActPicks.length||reqZonePicks.length);
 const reqCatKey=r=>r.cat==='— ไม่ระบุ'?r.cat:catShow(r.cat);   /* ป้ายชนิดงบที่ใช้ทั้งกล่อง/ตัวกรอง — เหลือจ่ายแยกเป็นชนิดของตัวเอง */
 async function loadRequests(force){ return loadSource('requests', force); }
 defineSource({
@@ -9331,7 +9354,9 @@ const reqFiltered=()=>{
   reqCatPicks=reqCatPicks.filter(c=>Y.some(r=>reqCatKey(r)===c));   /* ชนิดที่ไม่มีในปีนี้หลุดออกเอง */
   const YC=reqCatPicks.length?Y.filter(r=>reqCatPicks.includes(reqCatKey(r))):Y;
   reqActPicks=reqActPicks.filter(a=>YC.some(r=>reqActOf(r)===a));   /* v31.45 กิจกรรมกรองซ้อนจากชนิดงบ (ปี → ชนิดงบ → กิจกรรม) */
-  return reqActPicks.length?YC.filter(r=>reqActPicks.includes(reqActOf(r))):YC;
+  const YA=reqActPicks.length?YC.filter(r=>reqActPicks.includes(reqActOf(r))):YC;
+  reqZonePicks=reqZonePicks.filter(z=>YA.some(r=>recZoneKey(r)===z));   /* v31.58 เขตเป็นชั้นสุดท้าย (ปี → ชนิดงบ → กิจกรรม → เขต) */
+  return reqZonePicks.length?YA.filter(r=>reqZonePicks.includes(recZoneKey(r))):YA;
 };
 const reqYearOnly=()=>(reqData||[]).filter(r=>String(r.year)===String(reqYearPick));   /* ปีที่เลือก ยังไม่กรองชนิดงบ */
 /* v31.42 แถบบนหน้าคำขอ: ปุ่ม ‹ › เลื่อนปี · ช่องชนิดงบมีเฉพาะชนิดที่มีคำขอในปีนั้น (พร้อมจำนวน) · ชุดทดสอบ reqfilter */
@@ -9359,13 +9384,24 @@ function paintReqBar(){
     if(as.innerHTML!==ahtml) as.innerHTML=ahtml;
     [...as.options].forEach(o=>o.selected=reqActPicks.includes(o.value));
     as.disabled=aks.length<2; as.dispatchEvent(new Event('ddsync')); }
+  /* v31.58 ช่องเขตเลือกตั้ง: ตัวเลือกคิดจากชนิดงบ+กิจกรรมที่ติ๊กไว้ (ชั้นสุดท้ายของการกรองซ้อน) */
+  const zs=document.getElementById('reqZoneSel');
+  if(zs){ const YC2=reqCatPicks.length?Y.filter(r=>reqCatPicks.includes(reqCatKey(r))):Y;
+    const YA2=reqActPicks.length?YC2.filter(r=>reqActPicks.includes(reqActOf(r))):YC2, Z={};
+    YA2.forEach(r=>{ const k=recZoneKey(r); Z[k]=(Z[k]||0)+1; });
+    const zks=Object.keys(Z).sort(zoneKeySort); reqZonePicks=reqZonePicks.filter(k=>zks.includes(k));
+    const zhtml=zks.map(k=>`<option value="${esc(k)}">${esc(k)} (${Z[k]})</option>`).join('');
+    if(zs.innerHTML!==zhtml) zs.innerHTML=zhtml;
+    [...zs.options].forEach(o=>o.selected=reqZonePicks.includes(o.value));
+    zs.disabled=zks.length<2; zs.dispatchEvent(new Event('ddsync')); }
   const note=document.getElementById('reqBarNote');
-  if(note) note.textContent=!(reqCatPicks.length||reqActPicks.length)?'':`กำลังดูเฉพาะ ${reqFilterLbl()} รวม ${reqFiltered().length} คำขอ`;   /* v31.45 ไม่มีคำอธิบายเมื่อไม่ได้กรอง (กฎ 23) */
+  if(note) note.textContent=!reqHasFilter()?'':`กำลังดูเฉพาะ ${reqFilterLbl()} รวม ${reqFiltered().length} คำขอ`;   /* v31.45 ไม่มีคำอธิบายเมื่อไม่ได้กรอง (กฎ 23) */
 }
 const reqRepaint=()=>{ paintReqBar(); renderRequests(); try{ paintReqPills(); }catch(_){} };
 document.getElementById('reqYearSel').addEventListener('change',e=>{ reqYearPick=e.target.value; reqRepaint(); });
 document.getElementById('reqCatSel').addEventListener('change',e=>{ reqCatPicks=ddPicked(e.target); reqRepaint(); });
 document.getElementById('reqActSel').addEventListener('change',e=>{ reqActPicks=ddPicked(e.target); reqRepaint(); });
+document.getElementById('reqZoneSel').addEventListener('change',e=>{ reqZonePicks=ddPicked(e.target); reqRepaint(); });
 document.getElementById('reqPrev').addEventListener('click',()=>{ const L=[...new Set((reqYears||[]).map(String))].sort((a,b)=>b-a), i=L.indexOf(String(reqYearPick)); if(i>=0&&i<L.length-1){ reqYearPick=L[i+1]; reqRepaint(); } });
 document.getElementById('reqNext').addEventListener('click',()=>{ const L=[...new Set((reqYears||[]).map(String))].sort((a,b)=>b-a), i=L.indexOf(String(reqYearPick)); if(i>0){ reqYearPick=L[i-1]; reqRepaint(); } });
 /* แถบบนหัวหน้าต้องเปลี่ยนตามปีที่เลือกด้วย ไม่ใช่ค้างที่ปีล่าสุด (กฎ 8) */
@@ -9375,7 +9411,7 @@ function paintReqPills(){
   host.innerHTML=`<span class="hpill"><span class="dot live"></span> ข้อมูลสดจาก Google Sheets</span>`+
     `<span class="hpill">▥ ${Q.length} คำขอ · ${new Set(Q.map(r=>r.code)).size} สาย</span>`+
     `<span class="hpill">📅 ${String(reqYearPick)===String(latestRequestYear())?'ปีล่าสุด ':'ปีงบ '}${reqYearPick}${reqYears.length>1?` · มีให้เลือก ${reqYears.length} ปี`:''}</span>`+
-    ((reqCatPicks.length||reqActPicks.length)?`<span class="hpill">🗂 เฉพาะ ${esc(reqFilterLbl())}</span>`:'')+
+    (reqHasFilter()?`<span class="hpill">🗂 เฉพาะ ${esc(reqFilterLbl())}</span>`:'')+
     `<span class="hpill">🕐 ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})} น.</span>`;
 }
 /* ══════════════════════════════════════════════════════════════════════════
@@ -9431,7 +9467,7 @@ function reqSrcModel(){
 }
 const reqSrcTitle=()=>'สรุปคำของบประมาณตามแหล่งงบ · '+
   (reqYearPick==='all'?('ทุกปี '+(reqYears||[]).join(' · ')):('ปีงบประมาณ '+reqYearPick))+
-  ((reqCatPicks.length||reqActPicks.length)?' · เฉพาะ'+reqFilterLbl():'');   /* v31.42 บอกด้วยว่ากรองชนิดงบอยู่ · v31.45 รวมกิจกรรม */
+  (reqHasFilter()?' · เฉพาะ'+reqFilterLbl():'');   /* v31.42 บอกด้วยว่ากรองชนิดงบอยู่ · v31.45 รวมกิจกรรม */
 
 function renderReqSrc(){
   const box=document.getElementById('reqSrcBody'); if(!box) return;
@@ -9495,7 +9531,7 @@ function exportReqSrcXlsx(){
     });
   });
   rows.push([{v:'รวมทั้งสิ้น',s:3},{v:'',s:3},{v:'',s:3},{v:'',s:3},{v:'',s:3},{v:grandN+' รายการ',s:3},{v:grand,s:3}]);
-  const fn='สรุปคำของบตามแหล่งงบ_'+(reqYearPick==='all'?'ทุกปี':reqYearPick)+((reqCatPicks.length||reqActPicks.length)?'_'+reqCatPicks.concat(reqActPicks).join('+').replace(/[\\/:*?"<>|]/g,''):'')+'.xlsx';
+  const fn='สรุปคำของบตามแหล่งงบ_'+(reqYearPick==='all'?'ทุกปี':reqYearPick)+(reqHasFilter()?'_'+reqCatPicks.concat(reqActPicks).concat(reqZonePicks).join('+').replace(/[\\/:*?"<>|]/g,''):'')+'.xlsx';
   saveBlob(xlsxBlob(rows,{name:'สรุปตามแหล่งงบ',widths:[6,34,13,40,22,16],freeze:2}), fn);
   banner('info','ดาวน์โหลด '+fn+' แล้ว — เปิดด้วย Excel ได้ทันที (ตัวเลขเป็นตัวเลขจริง คำนวณต่อได้)');
 }
@@ -9548,7 +9584,7 @@ function printReqSrc(){
 function renderRequests(){
   const Q=reqFiltered();
   const reqAll=reqYearPick==='all';
-  const yearLbl=(reqAll?`ทุกปี (${reqYears.join(' · ')})`:'ปี '+reqYearPick)+((reqCatPicks.length||reqActPicks.length)?' · เฉพาะ'+reqFilterLbl():'');
+  const yearLbl=(reqAll?`ทุกปี (${reqYears.join(' · ')})`:'ปี '+reqYearPick)+(reqHasFilter()?' · เฉพาะ'+reqFilterLbl():'');
   const byRoad={}; Q.forEach(r=>{ (byRoad[r.code]=byRoad[r.code]||[]).push(r); });
   const counts=Object.entries(byRoad).map(([c,l])=>[c,l.length]).sort((a,b)=>b[1]-a[1]);
   const specified=Q.filter(r=>r.amt!=null);
@@ -10156,7 +10192,7 @@ function renderGap(){
           ทุกการ์ดในหน้าคิดจากรายการปีนั้นชุดเดียว (H) — ยอดรวมทุกการ์ดต้องเท่ากับยอดรวมหน้า ·
           รูปแบบเดียวกับหน้าประวัติ (kico · worktile · hbar · lolli · gantt · ตาราง) ไม่คิดสูตรใหม่
    ══════════════════════════════════════════════════════════════════════════ */
-let yrPick=null, yrAgencies=[], yrCats=[], yrActs=[];   /* v31.44 ผู้ใช้เพิ่ม: "เอาให้เลือกชนิดงบด้วย" → yrCats[] */   /* v31.44 ผู้ใช้: "หน้าโครงการประจำปีด้วย เพิ่มให้เลือกกิจกรรม เลือกหน่วย แบบเลือกได้หลายตัวเลือก" (ว่าง = ทั้งหมด) */
+let yrPick=null, yrAgencies=[], yrCats=[], yrActs=[], yrZones=[];   /* v31.58 ผู้ใช้: "เพิ่มกรองเขตเลือกตั้งให้ที" → yrZones[] (ว่าง = ทุกเขต) */   /* v31.44 ผู้ใช้เพิ่ม: "เอาให้เลือกชนิดงบด้วย" → yrCats[] */   /* v31.44 ผู้ใช้: "หน้าโครงการประจำปีด้วย เพิ่มให้เลือกกิจกรรม เลือกหน่วย แบบเลือกได้หลายตัวเลือก" (ว่าง = ทั้งหมด) */
 const yrActOf=x=>firstAct(x.activity);   /* v31.46 นับกิจกรรมแรก (ตารางโชว์เต็ม) */
 /* ปีที่เลือกได้ = ปีที่มีสัญญา ∪ ปีที่มีคำขอ (v31.4 — ปีที่ยื่นขอแล้วแต่ยังไม่มีสัญญาก็ต้องเปิดดูส่วนเช็คคำขอได้) */
 function yrYears(){ const a=histData?histData.map(x=>x.year):[], b=(typeof reqData!=='undefined'&&reqData)?reqData.map(r=>r.year):[];
@@ -10199,7 +10235,12 @@ function renderYearly(){
   const actC={}; HA.forEach(x=>{ const k=yrActOf(x); actC[k]=(actC[k]||0)+1; });
   const actKs=Object.keys(actC).sort((a,b)=>actC[b]-actC[a]);
   yrActs=yrActs.filter(a=>actKs.includes(a));
-  const H=yrActs.length?HA.filter(x=>yrActs.includes(yrActOf(x))):HA;
+  const HB=yrActs.length?HA.filter(x=>yrActs.includes(yrActOf(x))):HA;
+  /* v31.58 เขตเลือกตั้งเป็นชั้นสุดท้ายของการกรองซ้อน: หน่วย → ชนิดงบ → กิจกรรม → เขต */
+  const zoneC={}; HB.forEach(x=>{ const k=recZoneKey(x); zoneC[k]=(zoneC[k]||0)+1; });
+  const zoneKs=Object.keys(zoneC).sort(zoneKeySort);
+  yrZones=yrZones.filter(z=>zoneKs.includes(z));
+  const H=yrZones.length?HB.filter(x=>yrZones.includes(recZoneKey(x))):HB;
   const info=codeInfo(), mB=muadByCode();
   const sum=(L,f)=>L.reduce((a,x)=>a+(f(x)||0),0);
   const tot=sum(H,x=>x.amount);
@@ -10232,7 +10273,8 @@ function renderYearly(){
   const agOpt=agencies.filter(a=>agC[a]).map(a=>`<option value="${esc(a)}"${yrAgencies.includes(a)?' selected':''}>${esc(a)} (${agC[a]})</option>`).join('');
   const actOpt=actKs.map(a=>`<option value="${esc(a)}"${yrActs.includes(a)?' selected':''}>${esc(a)} (${actC[a]})</option>`).join('');
   const catOpt=catKs.map(a=>`<option value="${esc(a)}"${yrCats.includes(a)?' selected':''}>${esc(a)} (${catC[a]})</option>`).join('');
-  const agLbl=(yrAgencies.length?` · เฉพาะ${esc(yrAgencies.join(' · '))}`:'')+(yrCats.length?` · ${esc(yrCats.join(' · '))}`:'')+(yrActs.length?` · กิจกรรม ${esc(yrActs.join(' · '))}`:'');
+  const zoneOpt=zoneKs.map(z=>`<option value="${esc(z)}"${yrZones.includes(z)?' selected':''}>${esc(z)} (${zoneC[z]})</option>`).join('');
+  const agLbl=(yrAgencies.length?` · เฉพาะ${esc(yrAgencies.join(' · '))}`:'')+(yrCats.length?` · ${esc(yrCats.join(' · '))}`:'')+(yrActs.length?` · กิจกรรม ${esc(yrActs.join(' · '))}`:'')+(yrZones.length?` · ${esc(yrZones.join(' · '))}`:'');
   const noHist=!HY.length;
 
   box.innerHTML=`
@@ -10247,6 +10289,8 @@ function renderYearly(){
       <select class="search" id="yrCatSel" style="max-width:220px" multiple data-ph="ทุกชนิดงบ">${catOpt}</select>
       <b style="margin-left:8px">กิจกรรม</b>
       <select class="search" id="yrActSel" style="max-width:260px" multiple data-ph="ทุกกิจกรรม">${actOpt}</select>
+      <b style="margin-left:8px">เขตเลือกตั้ง</b>
+      <select class="search" id="yrZoneSel" style="max-width:200px" multiple data-ph="ทุกเขต">${zoneOpt}</select>
 
     </div>
     <div class="secdiv"><h2>① สรุปปีงบ ${y}${agLbl} — งบเท่าไหร่ กี่โครงการ ทำอะไรบ้าง</h2></div>
@@ -10314,6 +10358,8 @@ function renderYearly(){
   csel.addEventListener('change',()=>{ yrActs=ddPicked(csel); renderYearly(); });
   const bsel=document.getElementById('yrCatSel');
   bsel.addEventListener('change',()=>{ yrCats=ddPicked(bsel); renderYearly(); });
+  const zsel=document.getElementById('yrZoneSel');
+  if(zsel) zsel.addEventListener('change',()=>{ yrZones=ddPicked(zsel); renderYearly(); });
 
   const CARDS={
    'ช่วงวงเงิน': ()=>{
@@ -11564,7 +11610,7 @@ const MAP_PRINT_DATA={"crs":"EPSG:32648","districts":[{"name":"อ.กระน�
    หมุดอำเภอตาม CentroidFill ใน QGIS Master คือจุดอ้างอิงพื้นที่ ไม่ใช่พิกัดอาคารที่ว่าการ */
 const MAP_PAPERS={A3:[420,297],A2:[594,420],A1:[841,594],A0:[1189,841]};
 function mapPrintModel(options={}){
- const o={paper:'A3',orientation:'landscape',muad:'',zone:'',highways:true,districts:true,districtPoints:true,water:true,rail:true,labels:true,grid:true,labelSize:'normal',...options};
+ const o={paper:'A3',orientation:'landscape',muad:'',zone:'',highways:true,districts:true,districtPoints:true,water:true,rail:true,labels:true,grid:true,zoneParty:false,labelSize:'normal',...options};
  if(!MAP_PAPERS[o.paper])throw Error('ขนาดกระดาษไม่ถูกต้อง');
  if(!['landscape','portrait'].includes(o.orientation))throw Error('แนวกระดาษไม่ถูกต้อง');
  if(o.muad&&!MUAD_ORDER.includes(o.muad))throw Error('ไม่พบหมวดที่เลือก');
@@ -11611,10 +11657,16 @@ function renderMapPrint(options={}){
  const fonts=Array.from(document.querySelectorAll('style')).flatMap(s=>s.textContent.match(/@font-face\s*\{[^}]*\}/g)||[]).join('\n');
  out.push(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}mm" height="${H}mm" viewBox="0 0 ${W} ${H}" role="img" aria-label="${E(m.title)}"><style>${fonts}text{font-family:Sarabun,Tahoma,sans-serif;fill:#203047;font-size:${f}px}path{stroke-linejoin:round;stroke-linecap:round}.halo{paint-order:stroke;stroke:white;stroke-width:1.5;stroke-linejoin:round}</style><defs><clipPath id="map-clip"><rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}"/></clipPath></defs><rect width="${W}" height="${H}" fill="white"/>`);
  out.push(text(W/2,12,m.title,`text-anchor="middle" style="font-size:${Math.min(6.8,f*1.5)}px;font-weight:700"`));
- out.push(text(W/2,19,`แขวงทางหลวงชนบทขอนแก่น · ${m.roads.length} สายทาง · ${o.paper} ${o.orientation==='portrait'?'แนวตั้ง':'แนวนอน'}`,`text-anchor="middle" style="font-size:${f*.9}px"`));
+ out.push(text(W/2,19,`แขวงทางหลวงชนบทขอนแก่น · ${m.roads.length} สายทาง · ${o.paper} ${o.orientation==='portrait'?'แนวตั้ง':'แนวนอน'}${(o.zone&&KK_ZONES[o.zone])?` · สส. ${KK_ZONES[o.zone].mp} · ${KK_ZONES[o.zone].party}`:''}`,`text-anchor="middle" style="font-size:${f*.9}px"`));
  out.push(`<g clip-path="url(#map-clip)"><rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" fill="#fafbf9"/>`);
  out.push(path(mpRings(MAP_PRINT_DATA.province),'fill="#fff" stroke="none" fill-rule="evenodd"',true));
- if(o.zone)out.push(path(mpRings(MAP_PRINT_DATA.zones[o.zone]),'fill="#dcebf4" stroke="#5587a3" stroke-width=".45" fill-rule="evenodd"',true));
+ /* v31.58 ผู้ใช้ 21 ก.ย. 69: "เวลาปริ้นแผนที่ ทำไมไม่โชว์สีตามพรรค สส ที่ได้ล่ะ"
+    เดิมเขตที่เลือกเป็นฟ้าอ่อนสีเดียวตายตัว ไม่ตรงกับบนจอที่ระบายตามพรรค — สีพรรคเป็นสีข้อมูล (กฎ 18) ต้องชุดเดียวกันทุกที่
+    เลือกเขตเดียว = ระบายสีพรรคของเขตนั้น · ติ๊ก "สีพรรคทุกเขต" = ระบายครบทุกเขต */
+ const zpColor=z=>(KK_ZONES[z]&&PARTY_COLOR[KK_ZONES[z].party])||'#5587a3';
+ const zoneFill=(z,op)=>path(mpRings(MAP_PRINT_DATA.zones[z]),`fill="${zpColor(z)}" fill-opacity="${op}" stroke="${zpColor(z)}" stroke-width=".45" fill-rule="evenodd"`,true);
+ if(o.zone)out.push(zoneFill(o.zone,'.15'));
+ else if(o.zoneParty)Object.keys(MAP_PRINT_DATA.zones).sort((a,b)=>a-b).forEach(z=>out.push(zoneFill(z,'.16')));
  if(o.water)MAP_PRINT_DATA.water.forEach(g=>{if(viewParts(mpRings(g)).length)out.push(path(mpRings(g),'fill="#d1e9ed" stroke="#a9d0d7" stroke-width=".12" fill-rule="evenodd"',true));});
  if(o.districts)MAP_PRINT_DATA.districts.forEach(d=>out.push(path(mpRings(d.geometry),'fill="none" stroke="#a5afb4" stroke-width=".22" stroke-dasharray="1.5 1"',true)));
  out.push(path(mpRings(MAP_PRINT_DATA.province),'fill="none" stroke="#778891" stroke-width=".4"',true));
@@ -11650,7 +11702,7 @@ function renderMapPrint(options={}){
  out.push(`<path d="M${sx},${sy}h${N(barW)}m-${N(barW)},-1.5v3m${N(barW)},-3v3" stroke="#253747" stroke-width=".45"/>`,text(sx,sy+5,'0',`style="font-size:${f*.72}px"`),text(sx+barW,sy+5,`${metres/1000} กม.`,`text-anchor="end" style="font-size:${f*.72}px"`),text(sx,sy-3,`มาตราส่วน 1 : ${Math.round(m.scale).toLocaleString('en-US')}`,`style="font-size:${f*.75}px"`));
  const legendX=Math.max(85,W*.23),legendY=H-25;let lx=legendX,ly=legendY;
  const keys=[...new Set(m.roads.map(r=>r.muad))].sort((a,b)=>MUAD_ORDER.indexOf(a)-MUAD_ORDER.indexOf(b)).map(n=>({n:'หมวด'+n,c:MUAD_COLOR[n]}));
- if(o.highways)keys.push({n:'ทางหลวงแผ่นดิน',c:'#535e65'});if(o.districtPoints&&MAP_PRINT_DATA.districtPoints.length)keys.push({n:'จุดอ้างอิงอำเภอ',c:'#d34537',point:true});if(o.zone)keys.push({n:'เขตเลือกตั้ง '+o.zone,c:'#5587a3'});if(o.districts)keys.push({n:'ขอบเขตอำเภอ',c:'#a5afb4'});if(o.rail)keys.push({n:'ทางรถไฟ',c:'#525961'});if(o.water)keys.push({n:'แหล่งน้ำ',c:'#a9d0d7'});
+ if(o.highways)keys.push({n:'ทางหลวงแผ่นดิน',c:'#535e65'});if(o.districtPoints&&MAP_PRINT_DATA.districtPoints.length)keys.push({n:'จุดอ้างอิงอำเภอ',c:'#d34537',point:true});if(o.zone)keys.push({n:'เขต '+o.zone+(KK_ZONES[o.zone]?' · '+KK_ZONES[o.zone].party:''),c:zpColor(o.zone)});else if(o.zoneParty)[...new Set(Object.keys(MAP_PRINT_DATA.zones).filter(z=>KK_ZONES[z]).map(z=>KK_ZONES[z].party))].forEach(pt=>keys.push({n:pt,c:PARTY_COLOR[pt]||'#9aa5a3'}));if(o.districts)keys.push({n:'ขอบเขตอำเภอ',c:'#a5afb4'});if(o.rail)keys.push({n:'ทางรถไฟ',c:'#525961'});if(o.water)keys.push({n:'แหล่งน้ำ',c:'#a9d0d7'});
  for(const item of keys){const width=item.n.length*f*.48+14;if(lx+width>W-9){lx=legendX;ly+=6;}out.push(item.point?`<circle cx="${lx+2}" cy="${ly-1}" r="1.2" fill="${item.c}"/>`:`<path d="M${lx},${ly-1}h6" stroke="${item.c}" stroke-width=".9"/>`,text(lx+8,ly,item.n,`style="font-size:${f*.75}px"`));lx+=width;}
  out.push(text(8,H-3,`WGS 84 / UTM 48N · กริด: กิโลเมตร · พิมพ์ขนาดจริง 100%`, `style="font-size:${f*.64}px;fill:#687b87"`),text(W-8,H-3,`${APP_VER} · ${new Date().toLocaleDateString('th-TH')}`,`text-anchor="end" style="font-size:${f*.64}px;fill:#687b87"`));
  out.push('</svg>');return {svg:out.join(''),model:m,placed,omitted};
@@ -11660,7 +11712,7 @@ let _mapPrintDialog=null;
 function openMapPrint(){
  if(_mapPrintDialog){_mapPrintDialog.showModal();return;}
  const previous=document.activeElement,d=document.createElement('dialog');d.className='map-print-dialog';d.setAttribute('data-nodecor','');d.setAttribute('aria-label','จัดพิมพ์แผนที่');
- d.innerHTML=`<div class="mp-head"><b>จัดพิมพ์แผนที่</b><button type="button" class="btn ghost mp-close" aria-label="ปิดหน้าจัดพิมพ์">✕ ปิด</button></div><div class="mp-controls"><label>หมวด<select class="search" name="muad"><option value="">ทุกหมวด</option>${MUAD_ORDER.map(m=>`<option>${esc(m)}</option>`).join('')}</select></label><label>เขตเลือกตั้ง<select class="search" name="zone"><option value="">ทุกเขต</option>${Object.keys(MAP_PRINT_DATA.zones).sort((a,b)=>a-b).map(z=>`<option value="${z}">เขต ${z}</option>`).join('')}</select></label><label>กระดาษ<select class="search" name="paper">${Object.keys(MAP_PAPERS).map(p=>`<option>${p}</option>`).join('')}</select></label><label>แนวกระดาษ<select class="search" name="orientation"><option value="landscape">แนวนอน</option><option value="portrait">แนวตั้ง</option></select></label><label>ป้ายชื่อ<select class="search" name="labelSize"><option value="small">เล็ก</option><option value="normal" selected>ปกติ</option><option value="large">ใหญ่</option></select></label><label class="mp-title-label">ชื่อแผนที่<input class="search" name="title" maxlength="110" placeholder="ตั้งชื่ออัตโนมัติตามพื้นที่"></label></div><div class="mp-layers">${[['highways','ทางหลวงแผ่นดิน'],['districts','ขอบเขต / ชื่ออำเภอ'],['districtPoints','จุดอ้างอิงอำเภอ'],['water','แหล่งน้ำ'],['rail','ทางรถไฟ'],['labels','รหัสสายทาง'],['grid','กริดพิกัด']].map(([n,t])=>`<label><input type="checkbox" name="${n}" checked> ${t}</label>`).join('')}</div><div class="mp-status" role="status" aria-live="polite"></div><div class="mp-preview"><iframe title="ตัวอย่างแผนที่ก่อนพิมพ์"></iframe></div><div class="mp-bottom"><span>เลือกกระดาษให้ตรง · ขนาดจริง 100% · ปิดหัวและท้ายกระดาษ</span><button type="button" class="btn ghost mp-svg">บันทึก SVG</button><button type="button" class="btn mp-print">พิมพ์ / PDF</button></div>`;
+ d.innerHTML=`<div class="mp-head"><b>จัดพิมพ์แผนที่</b><button type="button" class="btn ghost mp-close" aria-label="ปิดหน้าจัดพิมพ์">✕ ปิด</button></div><div class="mp-controls"><label>หมวด<select class="search" name="muad"><option value="">ทุกหมวด</option>${MUAD_ORDER.map(m=>`<option>${esc(m)}</option>`).join('')}</select></label><label>เขตเลือกตั้ง<select class="search" name="zone"><option value="">ทุกเขต</option>${Object.keys(MAP_PRINT_DATA.zones).sort((a,b)=>a-b).map(z=>`<option value="${z}">เขต ${z}</option>`).join('')}</select></label><label>กระดาษ<select class="search" name="paper">${Object.keys(MAP_PAPERS).map(p=>`<option>${p}</option>`).join('')}</select></label><label>แนวกระดาษ<select class="search" name="orientation"><option value="landscape">แนวนอน</option><option value="portrait">แนวตั้ง</option></select></label><label>ป้ายชื่อ<select class="search" name="labelSize"><option value="small">เล็ก</option><option value="normal" selected>ปกติ</option><option value="large">ใหญ่</option></select></label><label class="mp-title-label">ชื่อแผนที่<input class="search" name="title" maxlength="110" placeholder="ตั้งชื่ออัตโนมัติตามพื้นที่"></label></div><div class="mp-layers">${[['highways','ทางหลวงแผ่นดิน'],['districts','ขอบเขต / ชื่ออำเภอ'],['districtPoints','จุดอ้างอิงอำเภอ'],['water','แหล่งน้ำ'],['rail','ทางรถไฟ'],['labels','รหัสสายทาง'],['grid','กริดพิกัด'],['zoneParty','สีพรรคทุกเขต',false]].map(([n,t,on])=>`<label><input type="checkbox" name="${n}"${on===false?'':' checked'}> ${t}</label>`).join('')}</div><div class="mp-status" role="status" aria-live="polite"></div><div class="mp-preview"><iframe title="ตัวอย่างแผนที่ก่อนพิมพ์"></iframe></div><div class="mp-bottom"><span>เลือกกระดาษให้ตรง · ขนาดจริง 100% · ปิดหัวและท้ายกระดาษ</span><button type="button" class="btn ghost mp-svg">บันทึก SVG</button><button type="button" class="btn mp-print">พิมพ์ / PDF</button></div>`;
  document.body.appendChild(d);_mapPrintDialog=d;
  const field=n=>d.querySelector(`[name="${n}"]`),frame=d.querySelector('iframe'),status=d.querySelector('.mp-status'),print=d.querySelector('.mp-print'),save=d.querySelector('.mp-svg');
  field('muad').value=typeof M!=='undefined'&&MUAD_ORDER.includes(M.muadFilter)?M.muadFilter:'';field('zone').value=typeof M!=='undefined'?M.zoneSel||'':'';
