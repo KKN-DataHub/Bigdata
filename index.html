@@ -3986,7 +3986,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.66', APP_DATE='25 ก.ย. 2569';
+const APP_VER='v31.67', APP_DATE='25 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -5266,7 +5266,8 @@ function renderDcStuck(){
   const S=gapStuck(M), top=S.slice(0,10);
   if(!top.length){ box.innerHTML='<div class="note" style="padding:16px 4px;text-align:center">ทุกสายที่ยื่นขอมีสัญญารองรับแล้ว</div>'; return; }
   /* v29.9 ผู้ใช้สั่ง: เป็นกราฟสรุป (ตารางเต็มอยู่หน้าเช็คคำขอ) — แท่ง = วงเงินที่ขอแล้วไม่ได้ · ป้ายบอกจำนวนปีที่พลาด */
-  box.innerHTML=`<div class="chips" style="margin:6px 0 8px"><span class="pill bad">ค้าง ${S.length} สาย</span>`+
+  /* v31.67 นิยามเดียวกับหน้าเช็คคำขอ: "ค้าง" = ยื่นขอแล้วไม่ได้เลยสักรายการ (สายที่ได้บางส่วนไม่นับ) */
+  box.innerHTML=`<div class="chips" style="margin:6px 0 8px"><span class="pill bad">ขอแล้วไม่ได้เลย ${S.length} สาย</span>`+
       `<span class="chip">วงเงินที่ขอแล้วไม่ได้รวม ${fmtM(S.reduce((a,o)=>a+o.missAmt,0))}</span>`+
       `<span class="chip">คำขอ ${M.years.length} ปี: ${M.years.join(' · ')}</span></div><div id="chDcStuck"></div>`+
     (S.length>top.length?`<div class="footnote">แสดง 10 อันดับแรกจาก ${S.length} สาย — ครบทุกสายในหน้าโครงการประจำปี (ส่วนเช็คคำขอ)</div>`:'');
@@ -10313,7 +10314,9 @@ function gapModel(){
   const agg=(R,Hs)=>{
     const okR=R.filter(r=>r.status==='ok');
     const gotSet=new Set(); okR.forEach(r=>r.got.forEach(h=>gotSet.add(h)));
-    return {n:R.length, ok:okR.length, ask:sum(R,r=>r.ask), askOk:sum(okR,r=>r.ask),
+    /* v31.67 gotN = จำนวน "สัญญา" ที่ถูกจับคู่แบบไม่นับซ้ำ — คนละหน่วยกับ ok ที่นับ "รายการคำขอ"
+       คำขอหลายรายการชี้สัญญาฉบับเดียวกันได้ (สายเดียวขอหลายชนิดงบ) ok จึงมากกว่า gotN ได้ */
+    return {n:R.length, ok:okR.length, gotN:gotSet.size, ask:sum(R,r=>r.ask), askOk:sum(okR,r=>r.ask),
             askNo:sum(R.filter(r=>r.status==='no'),r=>r.ask),
             gotAmt:[...gotSet].reduce((a,h)=>a+(h.amount||0),0),
             vague:R.filter(r=>!r.exact).length,
@@ -10338,17 +10341,29 @@ function gapModel(){
   return {years, rows, hist, byYear, view};
 }
 /* สายที่ขอบ่อยแต่ยังไม่ได้ — สัญญาณว่า "ทำไมไม่ได้" ควรไปดูสายไหนก่อน (ใช้ร่วมกับหน้าตัดสินใจ) */
+/* v31.67 ผู้ใช้ 25 ก.ย. 69: "สายที่ขอแล้วยังไม่ได้ น่าจะปรับใหม่ คือสายนึงบางทีก็ขอหลายงบ
+   คัดเฉพาะสายที่ไม่ได้เลยดีกว่า"
+   เดิมนับสายที่มี "อย่างน้อย 1 รายการ" ไม่ได้ — สายที่ขอ 3 ชนิดงบแล้วได้ 1 ก็ยังโผล่ในลิสต์ค้าง
+   ใหม่: เหลือเฉพาะสายที่ "ไม่ได้เลยสักรายการ" (itemsOk===0) ในขอบเขตที่กำลังดูอยู่
+   ปี 2570 จริง: 110 สายที่ยื่นขอ = ไม่ได้เลย 76 · ได้บางส่วน 22 · ได้ครบ 12 (เดิมนับรวมเป็น 98) */
 function gapStuck(M){
   const by={};
   M.rows.forEach(r=>{
     const o=by[r.code]||(by[r.code]={code:r.code, name:r.name, muad:r.muad, zone:r.zone,
-                                     yrsAsk:new Set(), yrsOk:new Set(), askAmt:0, missAmt:0, itemsNo:0, cats:new Set()});
-    o.yrsAsk.add(r.year); if(r.status==='ok') o.yrsOk.add(r.year);
+                                     yrsAsk:new Set(), yrsOk:new Set(), askAmt:0, missAmt:0, itemsNo:0, itemsOk:0, cats:new Set()});
+    o.yrsAsk.add(r.year); if(r.status==='ok'){ o.yrsOk.add(r.year); o.itemsOk++; }
     o.askAmt+=r.ask; if(r.status==='no'){ o.missAmt+=r.ask; o.itemsNo++; o.cats.add(r.cat); }
   });
-  return Object.values(by).map(o=>({...o, nAsk:o.yrsAsk.size, nOk:o.yrsOk.size,
+  return Object.values(by).map(o=>({...o, nAsk:o.yrsAsk.size, nOk:o.yrsOk.size, nItems:o.itemsNo+o.itemsOk,
       nMiss:o.yrsAsk.size-o.yrsOk.size, yrs:[...o.yrsAsk].sort(), catTxt:[...o.cats].join(' · ')}))
-    .filter(o=>o.itemsNo>0).sort((a,b)=>b.nMiss-a.nMiss||b.missAmt-a.missAmt);
+    .filter(o=>o.itemsNo>0&&o.itemsOk===0).sort((a,b)=>b.nMiss-a.nMiss||b.missAmt-a.missAmt);
+}
+/* สายที่ได้บางส่วน (ขอหลายรายการ ได้บ้างไม่ได้บ้าง) — แยกออกมาเพื่อบอกจำนวนไว้ข้างกล่อง ไม่ให้ตัวเลขหายไปเฉย ๆ */
+function gapPartial(M){
+  const by={};
+  M.rows.forEach(r=>{ const o=by[r.code]||(by[r.code]={no:0, ok:0});
+    if(r.status==='ok') o.ok++; else o.no++; });
+  return Object.values(by).filter(o=>o.no>0&&o.ok>0).length;
 }
 function renderGap(){
   /* v31.4 — ส่วน "เช็คคำขอ" อยู่ท้ายหน้าโครงการประจำปี: ปี = ปีที่หน้านั้นเลือก (yrPick) ไม่มีตัวเลือกปีของตัวเอง
@@ -10367,7 +10382,9 @@ function renderGap(){
   const lb=v=>fmt(+(v/1e6).toFixed(1));
   /* v31.8 ผู้ใช้: "ตารางข้อมูลไม่น่าเอารวมกัน กด 70 อยู่ไม่น่าเอา 71 ไปรวม" — ตารางสายที่ขอแล้วไม่ได้ กรองตามปีที่เลือก (เลือก "ทุกปี" ได้) */
   const stuckAllYears=gapStuck(M);
-  const stuck=gapStuckAll?stuckAllYears:gapStuck({rows:M.rows.filter(r=>String(r.year)===String(gapYearPick))});
+  const stuckScope=gapStuckAll?M:{rows:M.rows.filter(r=>String(r.year)===String(gapYearPick))};
+  const stuck=gapStuckAll?stuckAllYears:gapStuck(stuckScope);
+  const partialN=gapPartial(stuckScope);   /* v31.67 สายที่ได้บางส่วน — ถูกคัดออกจากลิสต์ค้างแล้ว แต่ต้องบอกว่ามีกี่สาย */
   const yearLbl=gapYearPick==='all'?('ทุกปี '+M.years.join(' · ')):('ปีงบ '+gapYearPick);
 
   const catKeys=Object.keys(V.byCat).sort((a,b)=>V.byCat[b].ask-V.byCat[a].ask);
@@ -10386,10 +10403,10 @@ function renderGap(){
 
   `<div class="grid kpis">
      <div class="card kpi"><div class="lbl">คำของบ · ${esc(yearLbl)}</div><div class="val">${T.n}<small> รายการ</small></div><div class="foot">${new Set(V.rows.filter(r=>r.road).map(r=>r.code)).size} สายทาง · ขอ ${lb(T.ask)} ลบ.</div></div>
-     <div class="card kpi" style="border-left:4px solid var(--teal)"><div class="lbl">ได้ตามคำขอ</div><div class="val">${T.ok}<small>/${T.n}</small></div><div class="foot">${pct(T.ok,T.n)}% · วงเงินสัญญาที่ตรงคำขอ ${lb(T.gotAmt)} ลบ.</div></div>
+     <div class="card kpi" style="border-left:4px solid var(--teal)"><div class="lbl">ได้ตามคำขอ</div><div class="val">${T.ok}<small>/${T.n}</small></div><div class="foot">${pct(T.ok,T.n)}% ของรายการ · อยู่ใน ${T.gotN} สัญญา · ${lb(T.gotAmt)} ลบ.</div></div>
      <div class="card kpi" style="border-left:4px solid #e34948"><div class="lbl">โดนตัด / ยังไม่ได้</div><div class="val">${lb(T.askNo)}<small> ลบ.</small></div><div class="foot">${T.n-T.ok} รายการ ยังไม่มีสัญญารองรับ · ${pct(T.askNo,T.ask)}% ของที่ขอ</div></div>
-     <div class="card kpi" style="border-left:4px solid var(--gold)"><div class="lbl">โครงการจริงในปีเดียวกัน (ทุกสาย)</div><div class="val">${T.histN}<small> โครงการ</small></div><div class="foot">${T.histN?`${lb(T.histAmt)} ลบ. — รวมงานที่ไม่ได้ผ่านคำขอด้วย`:`${esc(yearLbl)} ยังไม่มีโครงการในประวัติ`}</div></div>
-     <div class="card kpi"><div class="lbl">สายที่ขอแล้วยังไม่ได้</div><div class="val">${stuck.length}<small> สาย</small></div><div class="foot">${gapStuckAll?'ทุกปีรวมกัน':esc(yearLbl)}</div></div>
+     <div class="card kpi" style="border-left:4px solid var(--gold)"><div class="lbl">โครงการจริงในปีเดียวกัน (ทุกสาย)</div><div class="val">${T.histN}<small> โครงการ</small></div><div class="foot">${T.histN?`${lb(T.histAmt)} ลบ. · ${T.gotN} มาจากคำขอ · ${Math.max(0,T.histN-T.gotN)} ไม่ได้ผ่านคำขอ`:`${esc(yearLbl)} ยังไม่มีโครงการในประวัติ`}</div></div>
+     <div class="card kpi"><div class="lbl">สายที่ขอแล้วไม่ได้เลย</div><div class="val">${stuck.length}<small> สาย</small></div><div class="foot">${gapStuckAll?'ทุกปีรวมกัน':esc(yearLbl)} · ไม่นับสายที่ได้บ้างแล้ว${partialN?` (${partialN} สาย)`:''}</div></div>
    </div>`+
 
   (noReq?'':`<div class="grid two" style="margin-top:14px">
@@ -10439,15 +10456,15 @@ function renderGap(){
 
   `<div class="card" style="margin-top:14px">
      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-       <h3 style="margin:0">สายทางที่ขอแล้วยังไม่ได้ — ${gapStuckAll?'ทุกปี เรียงตามจำนวนปีที่พลาด':esc(yearLbl)}</h3>
+       <h3 style="margin:0">สายทางที่ขอแล้วไม่ได้เลย — ${gapStuckAll?'ทุกปี เรียงตามจำนวนปีที่พลาด':esc(yearLbl)}</h3>
        <select class="search" id="gapStuckSel" style="max-width:200px"><option value="pick"${gapStuckAll?'':' selected'}>เฉพาะ${esc(yearLbl)}</option><option value="all"${gapStuckAll?' selected':''}>ทุกปี (${M.years.join(' · ')})</option></select>
      </div>
      
      <div class="tblwrap" style="max-height:480px"><table id="gapTable" data-sortable="1"><thead><tr>
-       <th>รหัสสายทาง</th><th>ชื่อสายทาง</th><th>หมวด</th><th>เขต</th><th class="num">ปีที่ขอ</th><th class="num">ปีที่ได้</th><th class="num">ปีที่พลาด</th>
+       <th>รหัสสายทาง</th><th>ชื่อสายทาง</th><th>หมวด</th><th>เขต</th><th class="num">ปีที่ขอ</th><th class="num">รายการที่ขอ</th><th class="num">ปีที่พลาด</th>
        <th class="num">วงเงินที่ไม่ได้ (บาท)</th><th>ชนิดงบที่ค้าง</th><th>ปีที่เคยขอ</th></tr></thead><tbody>
        ${stuck.map(o=>`<tr data-code="${esc(o.code)}"><td><b>${esc(o.code)}</b></td><td style="white-space:nowrap">${esc(o.name||'')}</td><td style="white-space:nowrap">${muadCell(o.muad)}</td><td>${o.zone||'—'}</td>`+
-         `<td class="num">${o.nAsk}</td><td class="num">${o.nOk}</td><td class="num">${o.nMiss}</td>`+
+         `<td class="num">${o.nAsk}</td><td class="num">${o.nItems}</td><td class="num">${o.nMiss}</td>`+
          `<td class="num">${o.missAmt?fmt(o.missAmt):'—'}</td><td>${esc(o.catTxt)}</td><td>${o.yrs.join(' · ')}</td></tr>`).join('')}
      </tbody></table></div>
    </div>`;
