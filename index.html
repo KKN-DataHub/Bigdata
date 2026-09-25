@@ -3986,7 +3986,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.64', APP_DATE='25 ก.ย. 2569';
+const APP_VER='v31.65', APP_DATE='25 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -6606,13 +6606,27 @@ const BASEMAPS={
   sat:{url:(z,x,y)=>`https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`, attrib:'© Esri · Maxar · Earthstar Geographics'},
   /* v31.49 ผู้ใช้: "พื้นหลังดึงแบบไม่มีป้ายก็ได้" → เหลือชั้นพื้นสว่างชั้นเดียว (ไม่มีชื่อถนน/ชื่ออำเภอ/หมายเลขจากผู้ให้บริการ)
      ทางหลวงแผ่นดินและป้ายหมายเลขวาดเองจาก EMB_HW (ดู hwLayer) — คุมสี/ตัวหนังสือได้เอง */
-  light:{layers:[(z,x,y)=>`https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/${z}/${y}/${x}`],
+  /* v31.65 ผู้ใช้ 25 ก.ย. 69 (ส่งภาพซูมลึก): "ซูมดูรายละเอียดแล้วมันแตกเยอะเลย แก้ได้ไหม"
+     ตรวจของจริงบนเครื่องผู้ใช้: ที่ซูม 17 กระเบื้องโหลดครบ ไม่มีพัง แต่เป็นรูป 256 px ถูกดึงเป็น 512 (ขยาย 2 เท่า)
+     ยิงทดสอบกลางเมืองขอนแก่นทีละระดับ: z14/15/16 ได้รูปจริง (12–16 KB · 300–460 สี)
+     แต่ z17/18/19 คืน "รูปเปล่าแผ่นเดียวกันเป๊ะ" (2,521 ไบต์ · 123 สี เท่ากันหมด)
+     => พื้นเดิมไม่มีข้อมูลจริงเกินซูม 16 ไม่ว่าจะขอลึกแค่ไหน ต้องเปลี่ยนเจ้า
+     เจ้าใหม่มีข้อมูลจริงถึงซูม 19 · เป็นพื้นเทาอ่อนไม่มีป้ายชื่อเหมือนเดิม (กติกาเดิม: ป้ายทั้งหมดเราวาดเอง)
+     · รองรับกระเบื้อง @2x (512 px) ใช้ตอนจอความละเอียดสูง
+     · ผู้ใช้เลือก "เปลี่ยนเจ้าใหม่ + มีของเดิมสำรองอัตโนมัติ" — ถ้ากระเบื้องใหม่ล่ม/ถูกบล็อก ถอยไปใช้ของเดิมทันที
+       (บทเรียน v31.36 ตอน OSM บล็อก: พื้นแผนที่ห้ามหายทั้งแผ่นโดยไม่มีทางถอย) */
+  light:{layers:[(z,x,y)=>`https://basemaps.cartocdn.com/light_nolabels/${z}/${x}/${y}${RETINA?'@2x':''}.png`],
+         fallback:[(z,x,y)=>`https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/${Math.min(z,16)}/${y}/${x}`],
+         fbMaxZ:16,
          /* v31.44 ผู้ใช้: "สีถนนพื้นหลังเอาสีอื่นได้ไหม เช่นสีดำ สีมันใกล้กับถนน ทช ตามหมวดจัง"
-            ชั้นเส้นถนนเป็นรูปสำเร็จ (ส้ม/เหลือง) เปลี่ยนสีในรูปไม่ได้ แต่กรองสีทั้งชั้นได้: ถอดสี + ทำให้เข้ม → เส้นถนนเป็นเทาเข้ม/ดำ
-            ไม่ชนกับสีหมวดของสาย ทช. · ใช้ทั้งบนจอ (CSS filter) และแผนที่ A3 (canvas filter) */
+            พื้นใหม่เส้นถนนเป็นเทาอ่อนอยู่แล้ว ไม่ใช่ส้ม/เหลือง จึงไม่ต้องกรองสีทับ */
          filters:[null],
-         maxZ:16, attrib:'© Esri · HERE · Garmin · OpenStreetMap contributors'}
+         maxZ:19, attrib:'© OpenStreetMap contributors · © CARTO'}
 };
+/* จอความละเอียดสูงขอกระเบื้อง 2 เท่าแล้ววาดขนาดเดิม = คมขึ้นจริงโดยไม่เปลืองเน็ตบนจอธรรมดา */
+const RETINA = (typeof devicePixelRatio!=='undefined' && devicePixelRatio>=1.5);
+/* เพดานซูมของหน้าแผนที่ — ยึดตามพื้นที่ลึกที่สุดที่มีข้อมูลจริง */
+const MAP_MAXZ=19;
 /* ชั้นกระเบื้องของพื้นที่เลือก: พื้นชั้นเดียวก็คืนเป็นรายการ 1 ชั้น · คืน {bz,sc,T} = ซูมที่ขอกระเบื้องจริง / ตัวขยาย / ขนาดกระเบื้องบนจอ */
 const baseLayers=b=>b.layers||[b.url];
 const baseZoom=(b,z)=>{ const bz=Math.min(z,b.maxZ||99), sc=Math.pow(2,z-bz); return {bz, sc, T:TILE*sc}; };
@@ -7022,7 +7036,8 @@ function initMap(){
   redrawMap();
 }
 function zoomAt(dz, px, py){
-  const z2=Math.max(6,Math.min(17,M.z+dz)); if(z2===M.z) return;
+  /* v31.65 พื้นใหม่มีข้อมูลจริงถึง 19 (ดาวเทียมก็ถึง 19) เพดานเดิม 17 จึงขยับได้ */
+  const z2=Math.max(6,Math.min(MAP_MAXZ,M.z+dz)); if(z2===M.z) return;
   const k=Math.pow(2,z2-M.z);
   const w=M.div.clientWidth,h=M.div.clientHeight;
   M.cx=(M.cx-w/2+px)*k-px+w/2; M.cy=(M.cy-h/2+py)*k-py+h/2; M.z=z2;
@@ -7048,9 +7063,17 @@ function redrawMap(){
         const img=document.createElement('img');
         img.style.display='none';
         img.onload=()=>{ img.style.visibility='visible'; };
-        img.onerror=()=>{ img.style.visibility='hidden'; };
+        /* v31.65 กระเบื้องเจ้าใหม่ล่ม/ถูกบล็อก -> ถอยไปเจ้าเดิมทีละแผ่น ไม่ใช่ปล่อยให้พื้นหายทั้งแผ่น
+           ลองสำรองได้ครั้งเดียวต่อแผ่น (__fb) กันวนซ้ำถ้าสำรองก็ล่มด้วย */
+        img.onerror=()=>{
+          const fb=B.fallback&&B.fallback[li];
+          if(fb&&!img.__fb){ img.__fb=1; M.baseFellBack=true; img.src=fb(bz,wx,ty); return; }
+          img.style.visibility='hidden';
+        };
         img.src=urlOf(bz,wx,ty);
-        img.alt=''; if(tsc!==1){ img.style.width=T+'px'; img.style.height=T+'px'; }
+        img.alt='';
+        /* ต้องบังคับขนาดเสมอเมื่อใช้ @2x เพราะรูปจริงกว้าง 512 แต่ต้องวางเท่ากรอบกระเบื้อง */
+        if(tsc!==1||RETINA){ img.style.width=T+'px'; img.style.height=T+'px'; }
         if(B.filters&&B.filters[li]) img.style.filter=B.filters[li];
         M.tileCache[key]=img; M.tiles.appendChild(img);
       }
@@ -7374,7 +7397,7 @@ function focusRoad(L, fromClick){
 }
 function fitBounds(b,maxZ){
   const w=M.div.clientWidth,h=M.div.clientHeight;
-  for(let z=Math.min(17,maxZ||17);z>=6;z--){
+  for(let z=Math.min(MAP_MAXZ,maxZ||MAP_MAXZ);z>=6;z--){
     const pw=lon2x(b[2],z)-lon2x(b[0],z), ph=lat2y(b[1],z)-lat2y(b[3],z);
     if(pw<w-90&&ph<h-90){ M.z=z; break; }
   }
@@ -12133,7 +12156,13 @@ async function renderRoadMapCanvas(code, r, f, stub){
     baseLayers(BASEMAPS[MAP_BASE]).forEach((urlOf,li)=>jobs.push(new Promise(res=>{   /* v31.42 พื้นหลายชั้น: วาดพื้นก่อน ป้ายชื่อทีหลัง */
       const im=new Image(); im.crossOrigin='anonymous';
       const to=setTimeout(()=>res(null),12000);
-      im.onload=()=>{clearTimeout(to);res({im,tx,ty,li});}; im.onerror=()=>{clearTimeout(to);res(null);};
+      im.onload=()=>{clearTimeout(to);res({im,tx,ty,li});};
+      /* v31.65 แผนที่ A3 ก็ต้องมีทางถอยเหมือนบนจอ ไม่งั้นพื้นหายเป็นช่อง ๆ ตอนปริ้น */
+      im.onerror=()=>{
+        const fb=BASEMAPS[MAP_BASE].fallback&&BASEMAPS[MAP_BASE].fallback[li];
+        if(fb&&!im.__fb){ im.__fb=1; im.src=fb(z,txx,ty); return; }
+        clearTimeout(to); res(null);
+      };
       im.src=urlOf(z,txx,ty);
     })));
   }
