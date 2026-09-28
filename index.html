@@ -440,6 +440,11 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;height:var(--sat);ba
   .pagehead{align-items:flex-start}
   .pgh-right{display:flex;flex-wrap:wrap;gap:6px}
   .roadnav select{max-width:100%!important;flex:1 1 100%}
+  /* v31.72 กฎ 13 — ด่าน narrow ที่สร้างกลับจับได้: กล่องเลือกแบบใหม่ (v22.0) ห่อ select ไว้ใน .dd-host กฎบรรทัดบนจึงไปโดนแต่ select ที่ถูกซ่อน
+     ชื่อสายยาว (ขก.4003 — แยกทางหลวงหมายเลข 2109 - บ้านเขาสวนกวาง) ดันแถบเลือกสายกว้างเกินจอ 16px หน้าจุดเสี่ยงบนมือถือจึงเลื่อนซ้ายขวาได้
+     → ให้แถบเลือกสายหดตามจอได้ ชื่อยาวตัดด้วย … (ตัวเลือกยังเห็นชื่อเต็มเมื่อกดเปิด) */
+  .pagehead>.roadnav{min-width:0;max-width:100%;flex:1 1 100%}
+  .roadnav>.dd-host{flex:1 1 100%;min-width:0;max-width:100%}
   .roadnav input.search{flex:1 1 140px;width:auto!important}
   #map{height:68vh;min-height:360px}
   .legendrow>div{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:5px 10px!important}
@@ -859,6 +864,9 @@ select.search{width:auto}
 @media(max-width:900px){
   .mappopup.mobdock .gmrow{gap:8px;margin-top:10px}
   .mappopup.mobdock .gmrow a.btn{padding:9px 14px!important;font-size:12.5px!important;margin-top:0!important}
+  /* v31.72 กฎ 17 ③ — ด่าน mobmap ที่สร้างกลับวัดได้ว่าปุ่มนำทาง/Google Maps/Street View บนมือถือสูงแค่ 35px
+     (กฎกำหนดอย่างน้อย 44px ให้นิ้วกดถูก) → ยกความสูงขั้นต่ำ ตัวหนังสือยังบรรทัดเดียวกลางปุ่ม · การ์ดตอนย่อไม่เปลี่ยน (ปุ่มอยู่ในส่วนที่กดคลี่) */
+  .mappopup.mobdock .gmrow a.btn{min-height:44px;justify-content:center}
 }
 
 /* v20.8 — หัวข้อคั่นกลุ่มในแถบรายชื่อสายทาง (ใช้กับบล็อกสะพานชุมชน) */
@@ -2692,7 +2700,9 @@ function tube(container, rows, {labelW=110, height=null, rightW=178, colorOf=nul
   const W=box.clientWidth||560, padT=avg!=null?22:6, padB=6;
   /* v31.9 ผู้ใช้: "ตัดกี่บาท น่าจะทำเป็นกล่องข้อความ ไม่ได้ให้จางขนาดนี้ … มองป้าดเดียวรู้ว่าขอไปเท่าไหร่ ได้เท่าไหร่ กี่% โดนตัดเท่าไหร่"
      ท้ายแถว = กล่องตัวเลข ขอ · ได้ (%) · ตัด (ลบ.) — จอแคบใช้กล่อง 3 บรรทัดแคบลง เพื่อให้หลอดยังมีที่ */
-  const compact=W<560, rw=compact?104:rightW, lines=compact?3:2, lh=12.5, bh=lines*lh+8;
+  /* v31.69 ถ้ามีเหลือจ่ายรอพิจารณา ต้องมีบรรทัดของมันเอง ไม่งั้นตัวเลขในกล่องบวกไม่ครบ (ขอ = ได้ + ตัด + รอ) */
+  const hasWait=rows.some(r=>+r.askWait>0);
+  const compact=W<560, rw=compact?104:rightW, lines=(compact?3:2)+(hasWait?1:0), lh=12.5, bh=lines*lh+8;
   /* v31.8 ผู้ใช้: "กล่องไหนข้อมูลน้อยกว่า อัพไซส์ขึ้นมาก็ได้" — ยืดแถวได้ถึง 96px หลอดหนาตาม */
   const minH=bh+8;
   const rowH=height?Math.max(minH,Math.min(96,(height-padT-padB)/Math.max(1,rows.length))):Math.max(minH,40);
@@ -2720,8 +2730,10 @@ function tube(container, rows, {labelW=110, height=null, rightW=178, colorOf=nul
     const line=(i,parts)=>{ const t=el('text',{class:'stattext',x:bx+7,y:by+4+lh*(i+1)-2,'font-size':10.5},svg);
       parts.forEach(([txt,col,bold])=>{ const sp=el('tspan',{fill:col||'var(--ink)','font-weight':bold?700:500},t); sp.textContent=txt; }); return t; };
     if(r.right||r.idle||!(r.a>0)){ const t=line(Math.floor((lines-1)/2),[[r.right||(r.idle?'ไม่ได้ยื่นขอ':'ไม่ระบุวงเงิน'),'var(--muted)',false]]); t.setAttribute('class','stattext ticktext'); }
-    else if(compact){ line(0,[[`ขอ ${fmt(r.a)}`,null,true]]); line(1,[[`ได้ ${fmt(r.askOk)} (${pct.toFixed(0)}%)`,'var(--pos-ink)',true]]); line(2,[[`ตัด ${fmt(r.askNo)} ลบ.`,'var(--neg-ink)',true]]); }
-    else { line(0,[[`ขอ ${fmt(r.a)} ลบ.`,null,true]]); line(1,[[`ได้ ${fmt(r.askOk)} (${pct.toFixed(0)}%)`,'var(--pos-ink)',true],[' · ','var(--muted)',false],[`ตัด ${fmt(r.askNo)}`,'var(--neg-ink)',true]]); }
+    else if(compact){ line(0,[[`ขอ ${fmt(r.a)}`,null,true]]); line(1,[[`ได้ ${fmt(r.askOk)} (${pct.toFixed(0)}%)`,'var(--pos-ink)',true]]); line(2,[[`ตัด ${fmt(r.askNo)} ลบ.`,'var(--neg-ink)',true]]);
+      if(hasWait) line(3,[[`รอ ${fmt(r.askWait||0)} ลบ.`,'var(--muted)',true]]); }
+    else { line(0,[[`ขอ ${fmt(r.a)} ลบ.`,null,true]]); line(1,[[`ได้ ${fmt(r.askOk)} (${pct.toFixed(0)}%)`,'var(--pos-ink)',true],[' · ','var(--muted)',false],[`ตัด ${fmt(r.askNo)}`,'var(--neg-ink)',true]]);
+      if(hasWait) line(2,[[`รอพิจารณา ${fmt(r.askWait||0)} ลบ.`,'var(--muted)',true]]); }
     const hit=el('rect',{x:0,y:y,width:W,height:rowH,fill:'transparent'},svg);
     hitOn(hit);   // กฎ 8
     hit.addEventListener('mousemove',e=>showTip(`<b>${esc(r.label)}</b><br>${r.tip||''}`,e.clientX,e.clientY));
@@ -3986,7 +3998,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.67', APP_DATE='25 ก.ย. 2569';
+const APP_VER='v31.72', APP_DATE='28 ก.ย. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -4134,7 +4146,12 @@ const RUNTIME_IDS={
   printStripTmp:'กล่องซ่อนสำหรับวาดแถบก่อนคัดลอกไปหน้าพิมพ์',
   photoBox     :'กล่องดูรูป สร้างเมื่อกดดูรูปครั้งแรก',
   mapSearchDrop:'กล่องผลค้นหาสายทาง สร้างเมื่อพิมพ์ค้นตอนรายชื่อซ้ายถูกซ่อน (v31.13)',
-  phLoad       :'ตัวหมุนระหว่างโหลดรูป ถูกลบทิ้งเมื่อรูปมาถึง'
+  phLoad       :'ตัวหมุนระหว่างโหลดรูป ถูกลบทิ้งเมื่อรูปมาถึง',
+  /* v31.72 ผู้ใช้ (28 ก.ย. 69): "กฎ 12 ยังไม่มีตัวตรวจเลย … สร้างกลับเลย" → contract.js ที่สร้างกลับจับได้ทันทีว่า
+     กล่องค้นหาด่วนสร้างตอนกดเปิดครั้งแรก แต่ไม่เคยประกาศไว้ที่นี่ (ทำงานได้ปกติ — แค่แยกไม่ออกว่าตั้งใจหรือพิมพ์ผิด) */
+  cmdBd        :'กล่องค้นหาด่วน (ปุ่ม 🔎 ค้นหาด่วน · Ctrl/⌘+K · ปุ่ม /) สร้างเมื่อเปิดครั้งแรก',
+  cmdInp       :'ช่องพิมพ์ในกล่องค้นหาด่วน สร้างพร้อม cmdBd',
+  cmdList      :'รายการผลค้นหาในกล่องค้นหาด่วน สร้างพร้อม cmdBd'
 };
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -7501,7 +7518,7 @@ function llFromEvent(e){
 function snapToRoad(L,lon,lat){
   const KX=111.32*Math.cos(lat*Math.PI/180), KY=110.57;
   let best=null;
-  (L.coordsList||[]).forEach(cs=>{
+  (L.coordsList||[]).forEach((cs,pi)=>{
     if(!cs||cs.length<2) return;
     let acc=0;
     for(let i=1;i<cs.length;i++){
@@ -7513,11 +7530,27 @@ function snapToRoad(L,lon,lat){
       const cx=ax+vx*t, cy=ay+vy*t;
       const dist=Math.hypot(qx-cx,qy-cy), segLen=Math.sqrt(seg);
       if(!best||dist<best.dist)
-        best={dist, km:acc+segLen*t, lon:a[0]+(b[0]-a[0])*t, lat:a[1]+(b[1]-a[1])*t};
+        best={dist, km:acc+segLen*t, lon:a[0]+(b[0]-a[0])*t, lat:a[1]+(b[1]-a[1])*t, pi};
       acc+=segLen;
     }
   });
   return best;
+}
+/* v31.72 กม. ของจุดที่คลิก = "สถานีจริง" ของสาย ไม่ใช่ระยะนับจากปลายเส้น GIS
+   ผู้ใช้ (28 ก.ย. 69): "กฎ 12 … 13, 17, 19 … สร้างกลับเลย" → ด่าน mobmap ⑦ ที่สร้างกลับแตะเส้น กส.4039 แล้วการ์ดขึ้น "กม. 0+018"
+   ทั้งที่สายนี้เริ่มที่ 16+980 (สายเดียวใน 98 สายที่ไม่ได้เริ่ม 0+000 — บทเรียน v29.3/29.4 ข้อสมมติเดิม "ทุกสายเริ่ม 0+000" กลับมาอีกที่)
+   → ใช้ช่วงสถานีจากหมุด GIS (KM_EXT) วิธีเดียวกับเขตราย กม. (roadZoneSegs) และ Strip Map:
+      สถานี = กม.เริ่ม + (ระยะตามเส้นถึงจุดที่คลิก ÷ ความยาวเส้นทั้งหมด) × ความยาวช่วงสถานี · สายที่ไม่มี KM_EXT ใช้ระยะตามเส้นตามเดิม */
+function stationKm(code, L, hit, lat){
+  const ext=kmExt(code); if(!hit) return null;
+  if(!ext||!(ext[1]>ext[0])) return hit.km;
+  const KX=111.32*Math.cos(lat*Math.PI/180), KY=110.57;
+  const lens=(L.coordsList||[]).map(cs=>{ let t=0; if(!cs) return 0;
+    for(let i=1;i<cs.length;i++) t+=Math.hypot((cs[i][0]-cs[i-1][0])*KX,(cs[i][1]-cs[i-1][1])*KY); return t; });
+  const tot=lens.reduce((a,b)=>a+b,0); if(!(tot>0)) return hit.km;
+  const before=lens.slice(0,hit.pi||0).reduce((a,b)=>a+b,0);
+  const f=Math.max(0,Math.min(1,(before+hit.km)/tot));
+  return ext[0]+f*(ext[1]-ext[0]);
 }
 /* 23.45 กม. -> "23+450" ตามรูปแบบหลัก กม. ของกรม */
 const kmStamp=k=>{ const w=Math.floor(k); return w+'+'+String(Math.round((k-w)*1000)).padStart(3,'0'); };
@@ -7562,7 +7595,7 @@ function openPopup(code, hitLL){
        v31.62 -> บรรทัด กม. อยู่ในหัวการ์ดตั้งแต่ตอนย่อ ทั้งจอกว้างและจอแคบ */
     d.classList.add('haskm');
     d.querySelector('.phead').insertAdjacentHTML('beforeend',
-      `<div class="pkm">📍 จุดที่คลิก ≈ <b>กม. ${kmStamp(hit.km)}</b></div>`);
+      `<div class="pkm">📍 จุดที่คลิก ≈ <b>กม. ${kmStamp(stationKm(code,L,hit,hitLL[1]))}</b></div>`);   /* v31.72 สถานีจริง (ดู stationKm) */
   }else{
     anchorLL=A;
     gmOpt={dir:true, svLat:S?S[1]:null, svLon:S?S[0]:null,
@@ -8266,13 +8299,17 @@ function renderHistory(){
   });
   // งานบนถนน/สะพานที่ถ่ายโอนไปแล้ว (จากชีทถ่ายโอน — ไม่รวมสะพานรีรูทซึ่งยังเป็นของแขวงฯ)
   const hTr=H.filter(x=>x.code&&TRANSFER[x.code]);
+  /* v31.57 กล่อง "ส่งงานงวดสุดท้ายแล้ว": % คิดจากวงเงิน ไม่ใช่จำนวนสัญญา (กฎ 24)
+     v31.70 ผู้ใช้ 28 ก.ย. 69 (ส่งภาพ): "กล่องตัวนี้เป็นอะไร" — คอมเมนต์บรรทัดนี้เคยอยู่ "ใน" สตริง HTML ข้างล่าง
+     จึงโผล่เป็นตัวหนังสือ "v31.57 % จากเงิน" พร้อมเครื่องหมายคอมเมนต์บนจอ และกินช่องตารางไปหนึ่งช่อง
+     ทำให้กล่อง "ผู้รับจ้าง" ตกไปอยู่แถวที่สามคนเดียว → คอมเมนต์ต้องอยู่นอกเครื่องหมาย ` เสมอ */
   document.getElementById('histBody').innerHTML=`
     ${historyIssueHtml(H)}
     <div class="grid kpis kpi3">
       ${kico('📋','var(--tile-blue)','โครงการ/สัญญา', `${H.length} <small>รายการ</small>`, `ปี ${years[0]}–${years[years.length-1]}`)}
       ${kico('💰','var(--tile-green)','วงเงินตามสัญญารวม', fmtM(tot), '')}
       ${kico('📈','var(--tile-violet)','วงเงินเฉลี่ยต่อโครงการ', fmtM(avgAmt), '')}
-      ${kico('✅','var(--tile-green)','ส่งงานงวดสุดท้ายแล้ว', `${delivered} <small>/ ${H.length}</small>`, `${tot>0?(100*H.filter(x=>x.delivered).reduce((a,x)=>a+(x.amount||0),0)/tot).toFixed(0):0}% ของวงเงิน`)}   /* v31.57 % จากเงิน */
+      ${kico('✅','var(--tile-green)','ส่งงานงวดสุดท้ายแล้ว', `${delivered} <small>/ ${H.length}</small>`, `${tot>0?(100*H.filter(x=>x.delivered).reduce((a,x)=>a+(x.amount||0),0)/tot).toFixed(0):0}% ของวงเงิน`)}
       ${kico('🛡️','#fdeeee','ยังติดค้ำประกันสัญญา', `<span style="color:var(--crit)">${underWarranty}</span> <small>โครงการ</small>`, 'ส่งงานงวดสุดท้าย + 2 ปี ยังไม่ครบ')}
       ${kico('👷','#fdf4e3','ผู้รับจ้าง', `${contractors.length} <small>ราย</small>`, '')}
     </div>
@@ -10263,6 +10300,22 @@ const segsOf=r=>(r.segs||[]).map(sg=>({a:(typeof sg.a==='number')?sg.a:kmVal(sg.
    ช่องรหัสสายทางเป็นชื่อหน่วย (ขทช.ขอนแก่น · บทช.น้ำพอง) ฝั่งสัญญาถอดรหัสสายไม่ได้ (code=null) จึงไม่เคยถูกจับคู่เลย
    → คีย์จับคู่ของงานไม่ผูกสาย = ปี | หน่วย (แขวงฯ / หมวดX) แล้วเทียบชนิดงบ ไม่มี กม. ให้เทียบ */
 const gapKey=(year,code,txt)=>year+'|'+(code?code:('U:'+unitKeyOf(txt)));
+/* v31.68 ผู้ใช้ 25 ก.ย. 69: "ยังงงตัวเลข 61/300 อยู่ ถ้าได้ 61 ก็ต้องมีโครงการ 61 โครงสิ"
+   ผู้ใช้ถูก — ของจริง ขก.4097 มีสัญญาฉบับเดียว (Hot In-Plant + Recycling 9.5 ลบ.) แต่มีคำขอ 3 รายการถูกนับว่า "ได้":
+   ตัวจริง 1 รายการ + "การ์ดเรล" + "ป้าย" ที่ "ไม่ได้กรอก กม." เลยตกเข้าเส้นทาง vague แล้วเกาะสัญญาเสริมผิวไปด้วย
+   เจอรูปแบบนี้ 16 สัญญา หน้าตาเหมือนกันหมด (งานจริง + การ์ดเรล + ป้าย) = ส่วนต่าง 61-38 = 23 รายการ
+   -> คู่ที่ไม่รู้ กม. (vague) ต้องเช็ก "ชื่องาน" เพิ่ม: ถ้าสองฝั่งมีชื่องานทั้งคู่แต่ไม่มีคำไหนร่วมกันเลย = คนละงาน ไม่นับ
+      ฝั่งใดไม่มีชื่องาน = ตัดสินไม่ได้ ปล่อยผ่านตามเดิม (ไม่เดาแทนผู้ใช้) */
+const ACT_STOP=new Set(['งาน','โครงการ','ถนน','สาย','ทาง','ที่','และ','ของ','ก่อสร้าง','ปรับปรุง','ซ่อมสร้าง','บำรุง','รักษา','ผิว','สายทาง','แห่ง','จำนวน','in','plant','hot']);
+const actTokens=t=>new Set(String(t||'').toLowerCase()
+  .replace(/[()\[\]\/\-–+.,]/g,' ').replace(/\s+/g,' ').trim()
+  .split(' ').filter(w=>w.length>1&&!ACT_STOP.has(w)));
+function actCompatible(a,b){
+  const A=actTokens(a), B=actTokens(b);
+  if(!A.size||!B.size) return true;          // ไม่มีชื่องานฝั่งใดฝั่งหนึ่ง = บอกไม่ได้ ปล่อยผ่าน
+  for(const w of A) if(B.has(w)) return true;
+  return false;
+}
 function gapMatch(rec, gotList){
   /* v31.9 ผู้ใช้ (7 ก.ย. 69): "ปี 2570 ไม่ได้รับงบจังหวัดและกลุ่มจังหวัดเลย นายดึงข้อมูลมาผิดรึเปล่า"
      เดิมจับคู่แค่ ปี · สาย · กม. — คำขอกลุ่มจังหวัดบนสายที่ได้งบบำรุงจึงถูกนับว่า "ได้" ทั้งที่ชนิดงบคนละอย่าง
@@ -10278,7 +10331,11 @@ function gapMatch(rec, gotList){
     const hs=segsOf(h);
     const kmOk=mine.length&&hs.length ? mine.some(m=>hs.some(x=>kmHit(m.a,m.b,x.a,x.b))) : null;
     if(kmOk===false) return;
-    if(kmOk===null || rc==='ไม่ระบุ' || hc==='ไม่ระบุ'){ vague.push(h); return; }
+    if(kmOk===null || rc==='ไม่ระบุ' || hc==='ไม่ระบุ'){
+      /* v31.68 ไม่รู้ กม. แล้วชื่องานคนละเรื่องกันชัด ๆ = ไม่ใช่คำขอเดียวกัน (การ์ดเรล/ป้าย ไม่ใช่งานเสริมผิว) */
+      if(actCompatible(rec.actv||rec.act||rec.proj, h.activity)) vague.push(h);
+      return;
+    }
     hits.push(h);
   });
   if(hits.length) return {got:hits, exact:true};
@@ -10305,7 +10362,15 @@ function gapModel(){
       ask:r.amt||0, muad:road?recMuad({code:r.code}):recMuad({roadFull:r.code}), zone:road?gapZoneOf(r.code,r.segs):null,
       got:got.got, gotN:got.got.length, exact:got.exact,
       gotAmt:got.got.reduce((a,h)=>a+(h.amount||0),0),
-      status:got.got.length?'ok':'no'};
+      /* v31.69 ผู้ใช้ 25 ก.ย. 69: "41 ก็ต้องคงไว้นะ ชั้นรู้ละ มันมีแผนเหลือจ่ายด้วย
+         แต่มันเป็นแผนนี้ ยังไม่ได้เข้าโครงการประจำปีเลย" (ตรงกับที่เคยสั่งไว้ v31.42:
+         "จะให้เหลือจ่ายไปโครงการประจำปีเลยก็ยังไม่ได้ เพราะยังไม่พิจารณา")
+         normCat() ตัดคำว่า "เหลือจ่าย" ทิ้งเพื่อให้จับคู่สัญญาได้ (ห้ามแก้ ดู v31.34)
+         ผลข้างเคียงคือคำขอเหลือจ่ายที่ยังไม่มีสัญญา ถูกเหมารวมเป็น "โดนตัด"
+         ทั้งที่ยังไม่ได้ถูกพิจารณาเลย → แยกเป็นสถานะที่สาม "wait"
+         เหลือจ่ายที่มีสัญญาแล้ว = ได้ตามปกติ (ทำจริงแล้ว) */
+      leftover:isLeftover(r.cat),
+      status:got.got.length?'ok':(isLeftover(r.cat)?'wait':'no')};
   });
   const hist=histData.filter(h=>h.year).map(h=>({...h, cat:normCat(h.budgetType),
       muad:recMuad(h), zone:h.code?gapZoneOf(h.code,h.segs):null}));   // กฎ 21: งานไม่ผูกสาย หมวด = หน่วย (เหมือนฝั่งคำขอ)
@@ -10316,7 +10381,9 @@ function gapModel(){
     const gotSet=new Set(); okR.forEach(r=>r.got.forEach(h=>gotSet.add(h)));
     /* v31.67 gotN = จำนวน "สัญญา" ที่ถูกจับคู่แบบไม่นับซ้ำ — คนละหน่วยกับ ok ที่นับ "รายการคำขอ"
        คำขอหลายรายการชี้สัญญาฉบับเดียวกันได้ (สายเดียวขอหลายชนิดงบ) ok จึงมากกว่า gotN ได้ */
+    const waitR=R.filter(r=>r.status==='wait');
     return {n:R.length, ok:okR.length, gotN:gotSet.size, ask:sum(R,r=>r.ask), askOk:sum(okR,r=>r.ask),
+            wait:waitR.length, askWait:sum(waitR,r=>r.ask),
             askNo:sum(R.filter(r=>r.status==='no'),r=>r.ask),
             gotAmt:[...gotSet].reduce((a,h)=>a+(h.amount||0),0),
             vague:R.filter(r=>!r.exact).length,
@@ -10403,9 +10470,10 @@ function renderGap(){
 
   `<div class="grid kpis">
      <div class="card kpi"><div class="lbl">คำของบ · ${esc(yearLbl)}</div><div class="val">${T.n}<small> รายการ</small></div><div class="foot">${new Set(V.rows.filter(r=>r.road).map(r=>r.code)).size} สายทาง · ขอ ${lb(T.ask)} ลบ.</div></div>
-     <div class="card kpi" style="border-left:4px solid var(--teal)"><div class="lbl">ได้ตามคำขอ</div><div class="val">${T.ok}<small>/${T.n}</small></div><div class="foot">${pct(T.ok,T.n)}% ของรายการ · อยู่ใน ${T.gotN} สัญญา · ${lb(T.gotAmt)} ลบ.</div></div>
-     <div class="card kpi" style="border-left:4px solid #e34948"><div class="lbl">โดนตัด / ยังไม่ได้</div><div class="val">${lb(T.askNo)}<small> ลบ.</small></div><div class="foot">${T.n-T.ok} รายการ ยังไม่มีสัญญารองรับ · ${pct(T.askNo,T.ask)}% ของที่ขอ</div></div>
+     <div class="card kpi" style="border-left:4px solid var(--teal)"><div class="lbl">ได้ตามคำขอ</div><div class="val">${lb(T.askOk)}<small> ลบ.</small></div><div class="foot">${pct(T.askOk,T.ask)}% ของที่ขอ · ${T.ok}/${T.n} รายการ · ทำสัญญาแล้ว ${lb(T.gotAmt)} ลบ. ใน ${T.gotN} ฉบับ</div></div>
+     <div class="card kpi" style="border-left:4px solid #e34948"><div class="lbl">โดนตัด / ยังไม่ได้</div><div class="val">${lb(T.askNo)}<small> ลบ.</small></div><div class="foot">${T.n-T.ok-T.wait} รายการ · ${pct(T.askNo,T.ask)}% ของที่ขอ${T.wait?` · ไม่รวมเหลือจ่ายที่ยังไม่พิจารณา ${lb(T.askWait)} ลบ.`:''}</div></div>
      <div class="card kpi" style="border-left:4px solid var(--gold)"><div class="lbl">โครงการจริงในปีเดียวกัน (ทุกสาย)</div><div class="val">${T.histN}<small> โครงการ</small></div><div class="foot">${T.histN?`${lb(T.histAmt)} ลบ. · ${T.gotN} มาจากคำขอ · ${Math.max(0,T.histN-T.gotN)} ไม่ได้ผ่านคำขอ`:`${esc(yearLbl)} ยังไม่มีโครงการในประวัติ`}</div></div>
+     ${T.wait?`<div class="card kpi" style="border-left:4px solid var(--muted)"><div class="lbl">เหลือจ่าย · ยังไม่พิจารณา</div><div class="val">${lb(T.askWait)}<small> ลบ.</small></div><div class="foot">${T.wait} รายการ · เป็นแผน ยังไม่เข้าโครงการประจำปี</div></div>`:''}
      <div class="card kpi"><div class="lbl">สายที่ขอแล้วไม่ได้เลย</div><div class="val">${stuck.length}<small> สาย</small></div><div class="foot">${gapStuckAll?'ทุกปีรวมกัน':esc(yearLbl)} · ไม่นับสายที่ได้บ้างแล้ว${partialN?` (${partialN} สาย)`:''}</div></div>
    </div>`+
 
@@ -10442,12 +10510,12 @@ function renderGap(){
      ${T.vague?`<div class="note"><span style="color:var(--gold)">⚠ ${T.vague} รายการไม่ระบุ กม.</span></div>`:''}
      <div class="tblwrap" style="max-height:380px"><table id="gapYearTable"><thead><tr>
        <th>ปีงบ</th><th class="num">คำขอ</th><th class="num">ได้</th><th class="num">ไม่ได้</th><th class="num">% ได้</th>
-       <th class="num">ขอ (ลบ.)</th><th class="num">สัญญาที่ตรงคำขอ (ลบ.)</th><th class="num">คำขอที่ไม่ได้ (ลบ.)</th>
+       <th class="num">ขอ (ลบ.)</th><th class="num">สัญญาที่ตรงคำขอ (ลบ.)</th><th class="num">คำขอที่ไม่ได้ (ลบ.)</th><th class="num">รอพิจารณา (ลบ.)</th>
        <th class="num">สัญญาทั้งปี</th><th class="num">วงเงินสัญญาทั้งปี (ลบ.)</th></tr></thead><tbody>
        ${M.years.map(y=>{ const b=M.byYear[y];
          return `<tr data-y="${y}"><td><b>${y}</b></td><td class="num">${b.n}</td><td class="num">${b.ok}</td>`+
            `<td class="num" style="color:${b.n-b.ok>0?'var(--bad)':'inherit'}">${b.n-b.ok}</td><td class="num">${pct(b.ok,b.n)}%</td>`+
-           `<td class="num">${lb(b.ask)}</td><td class="num">${lb(b.gotAmt)}</td><td class="num">${lb(b.askNo)}</td>`+
+           `<td class="num">${lb(b.ask)}</td><td class="num">${lb(b.gotAmt)}</td><td class="num">${lb(b.askNo)}</td><td class="num">${b.askWait?lb(b.askWait):'—'}</td>`+
            `<td class="num">${b.histN}</td><td class="num">${lb(b.histAmt)}</td></tr>`; }).join('')}
      </tbody></table></div>
    </div>`+
@@ -10478,9 +10546,11 @@ function renderGap(){
 
   /* v31.7 ทุกกลุ่มใช้แถบหลอดแบบเดียวกัน (ผู้ใช้: "หมวดก็หมวด ชนิดงบก็ชนิดงบ เขตก็เขต" — ไม่ซ้อนชนิดงบในหมวด)
      v31.8 ผู้ใช้: สีหลอดตามสีหมวด/ชนิดงบ/เขต (กิจกรรม = สีชนิดงบหลัก) · มีเส้นค่าเฉลี่ยทั้งปี · ท้ายแถวสั้น รายละเอียดอยู่ในตาราง */
-  const tubeRows=(G,keys,lab,extra)=>keys.map(k=>{ const g=G[k]||{n:0,ok:0,ask:0,askOk:0,askNo:0,gotAmt:0,histN:0};
+  const tubeRows=(G,keys,lab,extra)=>keys.map(k=>{ const g=G[k]||{n:0,ok:0,ask:0,askOk:0,askNo:0,askWait:0,wait:0,gotAmt:0,histN:0};
     const a=+(g.ask/1e6).toFixed(2), askOk=+(g.askOk/1e6).toFixed(2), askNo=+(g.askNo/1e6).toFixed(2);
-    return {label:lab?lab(k):k, k, a, askOk, askNo, b:+(g.gotAmt/1e6).toFixed(2), n:g.n, ok:g.ok, idle:!g.n, v:g.ask?+(100*g.askOk/g.ask).toFixed(1):0,
+    /* v31.69 เหลือจ่ายที่ยังไม่พิจารณาแยกออกจาก "ตัด" แล้ว ต้องโชว์ด้วย ไม่งั้น ขอ ≠ ได้ + ตัด */
+    const askWait=+((g.askWait||0)/1e6).toFixed(2);
+    return {label:lab?lab(k):k, k, a, askOk, askNo, askWait, wait:g.wait||0, b:+(g.gotAmt/1e6).toFixed(2), n:g.n, ok:g.ok, idle:!g.n, v:g.ask?+(100*g.askOk/g.ask).toFixed(1):0,
       /* v31.9 ผู้ใช้: "กล่องข้อมูลตอนชี้ เยอะจัง ไม่ต้องใส่ขนาดนั้น ถ้ามีตารางรายละเอียดแล้ว · โครงการในกลุ่มคืออะไร" → สั้นบรรทัดเดียว ไม่มีตัวเลขที่ไม่ได้คุยกัน */
       tip:g.n?`ขอ ${lb(g.ask)} ลบ. · ได้ ${lb(g.askOk)} ลบ. · ได้ตามคำขอ ${g.ok}/${g.n} รายการ`+(extra?extra(k):''):'ไม่ได้ยื่นขอ'}; });
   const avgPct=T.ask?+(100*T.askOk/T.ask).toFixed(1):0;
@@ -10613,11 +10683,14 @@ function renderYearly(){
   const tot=sum(H,x=>x.amount);
   const codes=new Set(H.map(x=>x.code).filter(Boolean));
   const withAmt=H.filter(x=>x.amount).length;
-  const delivered=H.filter(x=>x.delivered).length;
+  /* v31.72 กฎ 26 + กฎ 1 — ด่าน livecon ที่สร้างกลับ (ผู้ใช้ 28 ก.ย. 69: "… สร้างกลับเลย") เจอว่ากล่องนี้นับ "ยังไม่หมดสัญญา" รวมสัญญาที่ส่งงานแล้ว
+     แต่ยังไม่ถึงวันหมด ขณะที่ตัวติดตามสัญญาข้างล่างในหน้าเดียวกันไม่นับ → คำเดียวกันแต่ตัวเลขขัดกันเอง (4 กับ 1)
+     และ ส่งแล้ว + ยังไม่หมด + หมดแล้วยังไม่ส่ง บวกเกินจำนวนโครงการ · "ส่งแล้ว" ก็นับคนละแบบกับแถวรวมของตาราง (มีข้อความ vs มีวันที่)
+     → ใช้ตัวตัดสินสถานะตัวเดียวกับตัวติดตามสัญญาและแถวรวมของตาราง (contractComplete · contractState) */
+  const delivered=H.filter(contractComplete).length;
   const now=Date.now();
-  const endOf=x=>{ const d=parseThaiDate(x.end); return d?d.getTime():null; };
-  const active=H.filter(x=>{ const e=endOf(x); return e!=null&&e>=now; }).length;
-  const overdue=H.filter(x=>{ const e=endOf(x); return e!=null&&e<now&&!x.delivered; }).length;
+  const stN=k=>H.filter(x=>contractState(x,now)===k).length;
+  const active=stN('active'), upcoming=stN('upcoming'), overdue=stN('overdue');
   // ปริมาณงาน — สูตรเดียวกับ "ปริมาณงานสะสม" หน้าประวัติ แต่เฉพาะปีนี้ (และหน่วยที่กรอง)
   const roadKm=sum(H,x=>segKmType(x,'r')), elecKm=sum(H,x=>segKmType(x,'e')), poles=sum(H,x=>poleCount(x)), brM=sum(H,x=>segKmType(x,'b'))*1000;
   const segCls=(x,s)=>(s.lbl&&roadClsTxt(s.lbl))||roadCls(x);
@@ -10670,7 +10743,7 @@ function renderYearly(){
       ${kico('💰','var(--tile-green)','วงเงินตามสัญญารวม', fmtM(tot), `${withAmt} รายการที่ระบุวงเงิน · เฉลี่ย ${fmtM(tot/Math.max(1,withAmt))}`)}
       ${kico('🛤️','var(--tile-violet)','ระยะทางถนนที่ทำ', `${fmt(+roadKm.toFixed(1))} <small>กม.</small>`, `ก่อสร้าง ${fmt(+cls['ก่อสร้าง'].km.toFixed(1))} · ขยาย ${fmt(+cls['ขยาย'].km.toFixed(1))} · บำรุง ${fmt(+cls['บำรุง'].km.toFixed(1))} กม.`)}
       ${kico('💡','var(--tile-amber)','ไฟฟ้า · ITS / กล้อง', [poles?fmt(poles)+' <small>ต้น</small>':'', cameraPoints?fmt(cameraPoints)+' <small>จุด ITS</small>':''].filter(Boolean).join(' · ')||'—', `ไฟฟ้า ${hE.length} โครงการ · ITS ${hC.length} โครงการ`)}
-      ${kico('✅','var(--tile-green)','ส่งงานงวดสุดท้ายแล้ว', `${delivered} <small>/ ${H.length}</small>`, `${active?`ยังไม่หมดสัญญา ${active}`:'ไม่มีสัญญาที่ยังไม่หมด'}${overdue?` · <span style="color:var(--crit)">หมดแล้วยังไม่ส่งงาน ${overdue}</span>`:''}`)}
+      ${kico('✅','var(--tile-green)','ส่งงานงวดสุดท้ายแล้ว', `${delivered} <small>/ ${H.length}</small>`, `${active?`ยังไม่หมดสัญญา ${active}`:'ไม่มีสัญญาที่ยังไม่หมด'}${upcoming?` · ยังไม่เริ่ม ${upcoming}`:''}${overdue?` · <span style="color:var(--crit)">หมดแล้วยังไม่ส่งงาน ${overdue}</span>`:''}`)}
     </div>
     ${H.length?`
     <div class="card" style="margin-bottom:14px">
