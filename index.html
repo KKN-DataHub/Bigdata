@@ -485,6 +485,13 @@ th{position:sticky;top:0;background:var(--navy);color:#fff;font-weight:600;text-
    padding:8px 10px;white-space:nowrap;z-index:5;box-shadow:inset 0 -1px 0 rgba(255,255,255,.28)}
 td{padding:7px 10px;border-top:1px solid var(--grid);vertical-align:middle;line-height:1.45}
 tbody tr:hover{background:var(--teal-soft)}
+/* v31.91 ผู้ใช้: "ปรับเป็นเพิ่มปุ่ม onepage ด้านหลังดีกว่า" — คอลัมน์ปุ่ม One-Page (opBtnCell) ติดขอบขวาของกรอบตาราง
+   ตารางกว้างกว่าจอ (โครงการทั้งปี 13 คอลัมน์) ปุ่มยังเห็นตลอด ไม่ต้องเลื่อนไปหา · พื้นทึบกันตัวหนังสือที่เลื่อนลอดใต้ · พิมพ์ไม่ออก */
+th.opcol{right:0;z-index:6}
+td.opcol{position:sticky;right:0;z-index:1;background:var(--card);box-shadow:inset 1px 0 0 var(--grid)}
+tbody tr:hover td.opcol{background:var(--teal-soft)}
+tr.yr-table-total td.opcol{background:var(--teal-soft)}
+@media print{.opcol{display:none!important}}
 td.num{text-align:right;font-variant-numeric:tabular-nums}   /* v31.46 กฎ 14 (ผู้ใช้ 15 ก.ย. 69): "ถ้าเงินเอาริมขวาตามหลักบัญชี" — .num = ช่องเงิน */
 th.num{text-align:center;font-variant-numeric:tabular-nums}  /* หัวคอลัมน์กึ่งกลางเสมอ แม้เป็นคอลัมน์เงิน */
 /* คอลัมน์สั้น (รหัส · ปี · หมวด · สถานะ · ปุ่ม) จัดกึ่งกลาง — ใส่ให้อัตโนมัติโดย alignTables() */
@@ -4211,6 +4218,28 @@ async function copyViewLink(){
    แถวรวม (มีคำว่า "รวม" ในคอลัมน์แรกและพื้นเน้น) ถูกตรึงไว้ท้ายตารางเสมอ
    ============================================================ */
 const _numish=t=>{ const v=String(t).replace(/[,\s]/g,''); return v!=='' && !isNaN(v); };
+/* v31.90 ผู้ใช้ (14 ต.ค. 69 ภาพตาราง "รายการโครงการทั้งหมด"): "แล้วก็ให้ชั้นสามารถคัดลอกชื่อ อำเภอ สายทางได้หน่อย พอจะกดคัดลอกแล้วมันลิงค์ไปหน้า one page"
+   ต้นเหตุ: แถวตารางหลายตาราง (ตารางโครงการทั้งปี · ทะเบียน · คำขอ · เช็คคำขอ · Zerobase · จุดเสี่ยง …) กดแล้วพาไปหน้าอื่น
+     ลากคลุมข้อความในช่องเดียว = ปล่อยเมาส์แล้วเกิด "คลิก" ที่แถว → พาไปเลย · ดับเบิลคลิกเลือกคำ = คลิกแรกพาไปก่อนแล้ว
+   → ประตูเดียวที่ระดับเอกสาร (ทุกตารางได้พร้อมกัน ไม่ต้องตามแก้ทีละตาราง · ตารางใหม่ก็ได้เอง):
+     ① ลากเมาส์เกิน 5 px · มีข้อความถูกเลือกอยู่ในแถวนั้น · คลิกที่ 2-3 (ดับเบิล/สามที) → ไม่นับเป็นคลิกแถว (คัดลอกได้)
+     ปุ่ม/ลิงก์/ช่องเลือกในแถว · กด Enter · โค้ดเรียก .click() เอง ไม่ผ่านประตูนี้
+   v31.91 ผู้ใช้ (ตอบรายงาน v31.90 ที่ว่าคลิกครั้งเดียวรอ 0.25 วิ): "ปรับเป็นเพิ่มปุ่ม onepage ด้านหลังดีกว่า"
+     → เลิกหน่วงเวลา (ROW_NAV_WAIT ออก) · ตารางที่แถวพาไป One-Page (โครงการทั้งปี · ประวัติรายสาย · ทะเบียนสะพาน)
+       เลิกกดทั้งแถว — มีคอลัมน์ "One-Page" ท้ายแถว ปุ่ม 📄 เปิด (opBtnCell) แบบเดียวกับทะเบียนสายทาง · กดปุ่ม = ไปทันที
+       ตารางที่แถวพาไปที่อื่น (แผนที่ · รายละเอียดในหน้าเดิม) ยังกดทั้งแถวได้ ไม่หน่วง · ลากคลุมยังคัดลอกได้ด้วยประตูนี้ · ชุดทดสอบ rowcopy */
+(function rowCopyGate(){
+  let down=null;
+  const selIn=tr=>{ const g=window.getSelection&&window.getSelection(); return !!(g&&!g.isCollapsed&&String(g).trim()&&g.containsNode(tr,true)); };
+  document.addEventListener('mousedown',e=>{ down={x:e.clientX,y:e.clientY}; },true);
+  document.addEventListener('click',e=>{
+    if(!e.isTrusted||e.detail===0||e.button!==0) return;
+    const t=e.target, tr=t&&t.closest?t.closest('tbody tr'):null; if(!tr) return;
+    if(t.closest('a,button,input,select,textarea,label,summary,details,[contenteditable="true"]')) return;
+    const moved=!!down&&Math.hypot(e.clientX-down.x,e.clientY-down.y)>5;
+    if(moved||e.detail>1||selIn(tr)) e.stopPropagation();   /* ลาก/เลือกข้อความ = ไม่ใช่คลิกแถว — คลิกปกติผ่านทันที ไม่หน่วง */
+  },true);
+})();
 function makeSortable(table){
   if(!table || table.dataset.sortable) return;
   const head=table.tHead && table.tHead.rows[0]; if(!head) return;
@@ -4227,7 +4256,8 @@ function makeSortable(table){
       const rows=[...tb.rows];
       const pinned=rows.filter(r=>/รวม|ผลรวม|Total/i.test((r.cells[0]||{}).textContent||'') && r.style.background);
       const body=rows.filter(r=>!pinned.includes(r));
-      const val=r=>((r.cells[idx]||{}).textContent||'').trim();
+      /* v31.90 ช่องที่มี data-sv (ค่าที่ใช้เรียง) เรียงตามค่านั้น — เช่น ชนิดงบ = ลำดับของเจ้าของ · ไม่มี = ตามข้อความเหมือนเดิม */
+      const val=r=>{ const c=r.cells[idx]||{}; return String((c.dataset&&c.dataset.sv!=null)?c.dataset.sv:(c.textContent||'')).trim(); };
       const allNum=body.every(r=>val(r)==='' || val(r)==='—' || _numish(val(r)));
       body.sort((a,b)=>{
         const x=val(a), y=val(b);
@@ -4373,7 +4403,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.89', APP_DATE='12 ต.ค. 2569';
+const APP_VER='v31.91', APP_DATE='14 ต.ค. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -6033,7 +6063,7 @@ function exportCSV(){
   const tbl=m&&document.getElementById(m[0]);
   if(!tbl){ banner('info','หน้านี้ยังไม่มีตารางให้ส่งออกเป็น CSV'); return; }
   const rows=[...tbl.querySelectorAll('tr')].filter(tr=>tr.style.display!=='none'&&!tr.querySelector('[colspan]'))
-    .map(tr=>[...tr.children].map(c=>'"'+c.textContent.trim().replace(/\s+/g,' ').replace(/"/g,'""')+'"').join(','));
+    .map(tr=>[...tr.children].filter(c=>!c.hasAttribute('data-noexp')).map(c=>'"'+c.textContent.trim().replace(/\s+/g,' ').replace(/"/g,'""')+'"').join(','));   /* v31.91 ช่องปุ่ม (data-noexp) ไม่ออก */
   const blob=new Blob(['\ufeff'+rows.join('\r\n')],{type:'text/csv;charset=utf-8'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
   a.download=m[1]+'.csv'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
@@ -6973,18 +7003,12 @@ function renderRoadTable(){
   const btb=document.querySelector('#bridgeTable tbody');
   if(btb){
     const bs=Object.values(EMB.bridges||{}).sort((a,b)=>SUF3(a.code)-SUF3(b.code)||a.code.localeCompare(b.code,'th'));
-    btb.innerHTML=bs.map(b=>`<tr data-code-br="${b.code}" data-s="${esc(b.code+' '+(b.name||'')+' '+(b.amphoe||'')+' '+(b.tambon||'')+' '+(b.muad||'')+' '+(b.river||''))}" style="cursor:pointer">
+    btb.innerHTML=bs.map(b=>`<tr data-code-br="${b.code}" data-s="${esc(b.code+' '+(b.name||'')+' '+(b.amphoe||'')+' '+(b.tambon||'')+' '+(b.muad||'')+' '+(b.river||''))}">
       <td><b>${b.code}</b></td><td>${esc(b.name||'—')}</td><td>${esc(b.river||'—')}</td>
       <td style="white-space:nowrap">${muadCell(b.muad)}</td>   <!-- v31.41 กฎ 20: ช่องหมวดใช้ตัวช่วยกลางตัวเดียวกับทะเบียนสายทาง (tables.js จับได้ว่าเคยวาดเองต่างหาก) -->
       <td>${esc(b.tambon||'-')} / ${esc(b.amphoe||'-')}</td>
       <td class="num">${fmt(b.len)}</td><td class="num">${fmt(b.width)}</td><td>${esc(b.year)||'—'}</td>
-      <td><a href="javascript:void(0)" style="color:var(--teal);font-weight:700;white-space:nowrap">📄 เปิด</a></td></tr>`).join('');
-    btb.querySelectorAll('tr[data-code-br]').forEach(tr=>tr.addEventListener('click',()=>{
-      histRoadCode=tr.dataset.codeBr;
-      document.querySelector('.nav button[data-page="history"]').click();
-      document.querySelector('#pg-history .subtabs button[data-ht="road"]').click();
-      window.scrollTo({top:0,behavior:'smooth'});
-    }));
+      ${opBtnCell(b.code)}</tr>`).join('');   /* v31.91 กดที่ปุ่ม 📄 เปิด เท่านั้น (เดิมกดทั้งแถว) — แถวลากคลุมคัดลอกชื่อ/ตำบล/อำเภอได้ */
     const bsInp=document.getElementById('bridgeSearch');
     if(bsInp&&!bsInp.dataset.wired){ bsInp.dataset.wired='1';
       bsInp.addEventListener('input',e=>{ const q=e.target.value.trim().toLowerCase();
@@ -9005,7 +9029,7 @@ function renderHistory(){
         <div><h3 style="margin:0">รายชื่อสายทางที่มีประวัติโครงการ</h3></div>
         <input class="search" id="histSearch" style="width:220px" placeholder="ค้นหาสาย/ชื่อสายทาง...">
       </div>
-      <div class="tblwrap" style="max-height:480px"><table id="histTable"><thead><tr><th>รหัส</th><th>ชื่อสายทาง</th><th>หมวด</th><th class="num">จำนวนโครงการ</th><th class="num">วงเงินรวม (บาท)</th><th>ปีที่มีงาน</th><th>กิจกรรมที่เคยทำ</th></tr></thead><tbody></tbody></table></div>
+      <div class="tblwrap" style="max-height:480px"><table id="histTable"><thead><tr><th>รหัส</th><th>ชื่อสายทาง</th><th>หมวด</th><th class="num">จำนวนโครงการ</th><th class="num">วงเงินรวม (บาท)</th><th>ปีที่มีงาน</th><th>กิจกรรมที่เคยทำ</th><th class="c opcol" data-nosort data-noexp>One-Page</th></tr></thead><tbody></tbody></table></div>
     </div>`;
   /* ══════════════════════════════════════════════════════════════════════
      v27.0 กฎ 6 — วาดทีละการ์ด แต่ละใบมีชื่อและป้องกันตัวเอง
@@ -9168,13 +9192,13 @@ function renderHistory(){
             const b=!r&&(EMB.bridges||{})[code];
             const yrs=[...new Set(list.map(x=>x.year))].sort();
             const acts=[...new Set(list.map(x=>x.activity).filter(Boolean))];
-            return `<tr data-code="${code}" style="cursor:pointer">
+            return `<tr data-code="${code}">
               <td><b>${code}</b>${b?' <span class="pill wait" style="font-size:10px">สะพาน</span>':''}</td><td>${esc(r?.name||b?.name||'—')}</td><td style="white-space:nowrap">${muadCell(r?.muad||b?.muad)}</td>
               <td class="num"><b>${list.length}</b></td><td class="num">${amt?fmt(amt):'–'}</td>
               <td style="font-variant-numeric:tabular-nums;font-size:11.5px">${yrs.join(', ')}</td>
-              <td style="font-size:11.5px">${acts.slice(0,3).map(esc).join(' · ')}${acts.length>3?' · …':''}</td></tr>`;
+              <td style="font-size:11.5px">${acts.slice(0,3).map(esc).join(' · ')}${acts.length>3?' · …':''}</td>${opBtnCell(code)}</tr>`;
           }).join('');
-        document.querySelectorAll('#histTable tbody tr').forEach(tr=>tr.addEventListener('click',()=>openHistRoad(tr.dataset.code)));
+        /* v31.91 แถวไม่พาไปไหนแล้ว — ปุ่ม 📄 เปิด ท้ายแถว (opBtnCell) */
       };
       document.getElementById('histSearch').addEventListener('input',renderTbl);
       renderTbl();
@@ -9193,6 +9217,14 @@ document.querySelectorAll('#pg-history .subtabs button').forEach(b=>b.addEventLi
   document.getElementById('histRoadBody').style.display=road?'':'none';
   if(road&&histData) renderHistRoad(histRoadCode);
 }));
+/* v31.91 ผู้ใช้: "ปรับเป็นเพิ่มปุ่ม onepage ด้านหลังดีกว่า" — ช่องปุ่ม 📄 เปิด ท้ายแถว (หน้าตาเดียวกับคอลัมน์ One-Page ของทะเบียนสายทาง)
+   ไม่มีรหัส (งานที่ไม่ผูกสาย) = ขีด · data-noexp = ไม่ออกไปใน CSV · ตัวรับคลิกอยู่ที่เอกสารตัวเดียว ตารางวาดใหม่กี่รอบก็ไม่ต้องผูกใหม่ */
+function opBtnCell(code){   /* function (ไม่ใช่ const) — ทะเบียนสะพานวาดจากข้อมูลฝังได้ตั้งแต่ก่อนบรรทัดนี้ */
+  return code
+  ?'<td class="c opcol" data-noexp><a href="javascript:void(0)" class="opBtn" data-op="'+esc(code)+'" style="color:var(--teal);font-weight:700;white-space:nowrap" title="เปิด One-Page '+esc(code)+'">📄 เปิด</a></td>'
+  :'<td class="c opcol" data-noexp style="color:var(--muted)">—</td>'; }
+document.addEventListener('click',e=>{ const a=e.target&&e.target.closest?e.target.closest('a.opBtn[data-op]'):null; if(!a) return;
+  e.preventDefault(); e.stopPropagation(); gotoOnePage(a.dataset.op); });
 function gotoOnePage(code){
   histRoadCode=code;
   document.querySelector('.nav button[data-page="history"]').click();
@@ -12743,19 +12775,19 @@ function compactProjectKm(x){
 function renderYearProjectTable(rows,year){
   const table=document.getElementById('yrTable');if(!table)return;
   const card=table.closest('.card'),info=codeInfo(),view=YEAR_TABLE_VIEWS.get(year)||{act:'all',agency:'all',budget:'all',muad:'all',q:''};YEAR_TABLE_VIEWS.set(year,view);
-  const values={act:[...new Set(rows.flatMap(contractActivities))].sort(),agency:[...new Set(rows.map(histAgency))].sort(),budget:[...new Set(rows.map(x=>normCat(x.budgetType)))].sort(),muad:[...new Set(rows.map(recMuad))].sort()};
+  const values={act:[...new Set(rows.flatMap(contractActivities))].sort(),agency:[...new Set(rows.map(histAgency))].sort(),budget:[...new Set(rows.map(x=>normCat(x.budgetType)))].sort(catCmp),muad:[...new Set(rows.map(recMuad))].sort()};
   let controls=card.querySelector('.yr-table-controls');
   if(!controls){controls=document.createElement('div');controls.className='yr-table-controls';card.insertBefore(controls,table.parentElement);}
   const labels={act:'กิจกรรม',agency:'หน่วยดำเนินการ',budget:'ชนิดงบ',muad:'หมวด'};
   controls.innerHTML=Object.entries(labels).map(([k,label])=>`<label>${label} <select class="search" data-yr-filter="${k}" aria-label="กรอง${label}ตารางโครงการ"><option value="all">ทั้งหมด</option>${values[k].map(v=>'<option value="'+esc(v)+'">'+esc(v)+'</option>').join('')}</select></label>`).join('')+'<input class="search yr-table-query" aria-label="ค้นหาตารางโครงการ" placeholder="ค้นหารหัส / ชื่อสาย / สัญญา"><button class="btn ghost yr-table-reset">แสดงทั้งหมด</button>';
   Object.keys(labels).forEach(k=>{if(view[k]!=='all'&&!values[k].includes(view[k]))view[k]='all';controls.querySelector('[data-yr-filter="'+k+'"]').value=view[k];});controls.querySelector('input').value=view.q;
   const render=()=>{
-    const L=rows.filter(x=>(view.act==='all'||contractActivities(x).includes(view.act))&&(view.agency==='all'||histAgency(x)===view.agency)&&(view.budget==='all'||normCat(x.budgetType)===view.budget)&&(view.muad==='all'||recMuad(x)===view.muad)&&[x.code,info[x.code]?.name,x.contract,x.roadFull].join(' ').toLowerCase().includes(view.q.toLowerCase())).sort((a,b)=>(b.amount||0)-(a.amount||0));
+    const L=rows.filter(x=>(view.act==='all'||contractActivities(x).includes(view.act))&&(view.agency==='all'||histAgency(x)===view.agency)&&(view.budget==='all'||normCat(x.budgetType)===view.budget)&&(view.muad==='all'||recMuad(x)===view.muad)&&[x.code,info[x.code]?.name,x.contract,x.roadFull].join(' ').toLowerCase().includes(view.q.toLowerCase())).sort((a,b)=>(b.amount||0)-(a.amount||0)).sort((a,b)=>catCmp(a.budgetType,b.budgetType));   /* v31.90 ลำดับชนิดงบของเจ้าของ (sort คงลำดับเดิมในชนิดเดียวกัน) */
     const total=L.reduce((n,x)=>n+(x.amount||0),0),done=L.filter(contractComplete).length;
     card.querySelector('h3').textContent='รายการโครงการ ปีงบ '+year+' ('+L.length+' / '+rows.length+' โครงการ)';
-    table.tBodies[0].innerHTML=L.map(x=>`<tr${isRoadCode(x.code)?' data-code="'+esc(x.code)+'" style="cursor:pointer"':''}><td><b>${esc(x.code||'—')}</b>${x.code0?' <span class="chip" title="รหัสเดิม">'+esc(x.code0)+'</span>':''}</td><td style="white-space:nowrap">${esc(info[x.code]?.name||x.roadFull||'—')}</td><td>${muadCell(recMuad(x))}</td><td>${esc(histAgency(x))}</td><td>${esc(normCat(x.budgetType))}</td><td>${esc(x.activity||'—')}</td><td class="yr-km-cell">${compactProjectKm(x)}</td><td>${esc(x.contract||'—')}</td><td class="c">${esc(x.start||'—')}</td><td class="c">${esc(x.end||'—')}</td><td class="num">${x.amount?fmt(x.amount):'—'}</td><td class="c">${x.delivered?esc(x.delivered):'<span style="color:var(--muted)">ยังไม่ส่ง</span>'}</td></tr>`).join('')||( '<tr><td colspan="12">ไม่พบโครงการที่ตรงกับตัวกรอง</td></tr>');
-    if(L.length)table.tBodies[0].insertAdjacentHTML('beforeend',`<tr class="yr-table-total" style="background:var(--teal-soft);font-weight:700"><td>รวม</td><td>${new Set(L.map(x=>x.code).filter(Boolean)).size} สาย/หน่วย</td><td></td><td></td><td></td><td>${L.length} โครงการ</td><td></td><td></td><td></td><td></td><td class="num">${fmt(total)}</td><td class="c">${done}/${L.length}</td></tr>`);
-    table.querySelectorAll('tr[data-code]').forEach(tr=>tr.onclick=e=>{if(e.target.closest('details,summary,button,a,input,select'))return;gotoOnePage(tr.dataset.code);});
+    table.tBodies[0].innerHTML=L.map(x=>`<tr${isRoadCode(x.code)?' data-code="'+esc(x.code)+'"':''}><td><b>${esc(x.code||'—')}</b>${x.code0?' <span class="chip" title="รหัสเดิม">'+esc(x.code0)+'</span>':''}</td><td style="white-space:nowrap">${esc(info[x.code]?.name||x.roadFull||'—')}</td><td>${muadCell(recMuad(x))}</td><td>${esc(histAgency(x))}</td><td data-sv="${String(catRank(x.budgetType)).padStart(3,'0')+'|'+esc(catName(normCat(x.budgetType)))}">${esc(catShow(x.budgetType))}</td><td>${esc(x.activity||'—')}</td><td class="yr-km-cell">${compactProjectKm(x)}</td><td>${esc(x.contract||'—')}</td><td class="c">${esc(x.start||'—')}</td><td class="c">${esc(x.end||'—')}</td><td class="num">${x.amount?fmt(x.amount):'—'}</td><td class="c">${x.delivered?esc(x.delivered):'<span style="color:var(--muted)">ยังไม่ส่ง</span>'}</td>${opBtnCell(isRoadCode(x.code)?x.code:'')}</tr>`).join('')||( '<tr><td colspan="13">ไม่พบโครงการที่ตรงกับตัวกรอง</td></tr>');
+    if(L.length)table.tBodies[0].insertAdjacentHTML('beforeend',`<tr class="yr-table-total" style="background:var(--teal-soft);font-weight:700"><td>รวม</td><td>${new Set(L.map(x=>x.code).filter(Boolean)).size} สาย/หน่วย</td><td></td><td></td><td></td><td>${L.length} โครงการ</td><td></td><td></td><td></td><td></td><td class="num">${fmt(total)}</td><td class="c">${done}/${L.length}</td><td class="opcol" data-noexp></td></tr>`);
+    /* v31.91 แถวไม่พาไปไหนแล้ว — ไป One-Page ด้วยปุ่ม 📄 เปิด ท้ายแถว (opBtnCell) */
   };
   controls.querySelectorAll('select').forEach(e=>e.onchange=()=>{view[e.dataset.yrFilter]=e.value;render();});controls.querySelector('input').oninput=e=>{view.q=e.target.value;render();};
   controls.querySelector('button').onclick=()=>{YEAR_TABLE_VIEWS.delete(year);renderYearProjectTable(rows,year);};render();
@@ -12903,7 +12935,7 @@ function paintReqBar(){
   if(ys.value!==String(reqYearPick)) ys.value=String(reqYearPick);
   ys.dispatchEvent(new Event('ddsync'));   /* v31.51 ผู้ใช้: "ตอนเปลี่ยนปี ทำไมช่องนี้ยังขึ้นปีเดิม" — กด ‹ › เซ็ตค่าให้ช่องเลือกแล้ว แต่ป้ายของกล่องเลือกแบบใหม่ต้องถูกบอกให้ตามด้วย */
   const Y=reqYearOnly(), C={}; Y.forEach(r=>{ const k=reqCatKey(r); C[k]=(C[k]||0)+1; });
-  const ks=Object.keys(C).sort((a,b)=>C[b]-C[a]);
+  const ks=Object.keys(C).sort(catCmp);   /* v31.90 ลำดับชนิดงบของเจ้าของ (เดิมเรียงตามจำนวนคำขอ) */
   reqCatPicks=reqCatPicks.filter(k=>ks.includes(k));
   const html=ks.map(k=>`<option value="${esc(k)}">${esc(k)} (${C[k]})</option>`).join('');
   if(cs.innerHTML!==html) cs.innerHTML=html;   /* สร้างตัวเลือกใหม่เฉพาะเมื่อเปลี่ยนจริง — ไม่งั้นกล่องติ๊กจะปิดเองทุกครั้งที่ติ๊ก */
@@ -12978,7 +13010,10 @@ const SRC_NO=s=>{ const m=String(s||'').match(/^\s*(\d+)/); return m?+m[1]:999; 
    → เทียบชื่อแบบตัดเลขนำหน้า / คำว่า "งบ" / ช่องว่าง (ชีทเขียน "6.ปลอดภัย" ก็ได้) · ชื่อยาวกว่า (เช่น "อำนวยความปลอดภัย") จับคำหลัก — กลุ่มจังหวัดก่อนจังหวัด
      ชนิดอื่นนอกรายชื่อ = ต่อจากกลุ่มจังหวัด (อันดับ 9) เรียงตามชื่อ · ไม่ระบุชนิด = ท้ายชนิดอื่น
      เหลือจ่ายทุกชนิดอยู่ท้ายสุดเสมอ: บำรุงเหลือจ่าย → ปลอดภัยเหลือจ่าย → เหลือจ่ายชนิดอื่นตามลำดับเดียวกัน
-     ชนิดที่ปีนั้นไม่มีคำขอ ไม่ขึ้น (ทุกตารางสร้างจากคำขอที่มีจริงเท่านั้น) */
+     ชนิดที่ปีนั้นไม่มีคำขอ ไม่ขึ้น (ทุกตารางสร้างจากคำขอที่มีจริงเท่านั้น)
+   v31.90 ผู้ใช้ (14 ต.ค. 69 ส่งภาพตาราง "รายการโครงการทั้งหมด"): "เหมือนเคยบอกว่าให้เรียงตามลำดับชนิดงบแล้วนี่"
+     → เพิ่ม: ตารางโครงการทั้งปี (แถว · ตัวกรองชนิดงบ · กดหัวคอลัมน์ชนิดงบ) · ช่องเลือกชนิดงบหน้าโครงการประจำปีและหน้าคำขอ
+     กราฟ/กล่องสัดส่วน/ตารางไขว้ ยังเรียงจากมากไปน้อยตามกติกา v31.37 ("เรียงจากมากไปน้อยเสมอ … เปลี่ยนทุกที่") — เป็นการอ่านขนาด ไม่ใช่รายการ */
 const CAT_ORDER=['ยกระดับ','บำรุง','ปลอดภัย','อาคาร','วิจัย','พระราชดำริ','จังหวัด','กลุ่มจังหวัด'], CAT_LEFT=['บำรุง','ปลอดภัย'];
 function catRank(k){
   const s=String(k||''), left=isLeftover(s);
@@ -13854,7 +13889,7 @@ function renderYearly(){
   yrAgencies=yrAgencies.filter(a=>HY.some(x=>histAgency(x)===a));   /* ค่าที่ไม่มีในปีนี้หลุดออกเอง ไม่ค้างหน้าว่าง */
   const HA0=yrAgencies.length?HY.filter(x=>yrAgencies.includes(histAgency(x))):HY;
   const catC={}; HA0.forEach(x=>{ const k=normCat(x.budgetType); catC[k]=(catC[k]||0)+1; });
-  const catKs=Object.keys(catC).sort((a,b)=>catC[b]-catC[a]);
+  const catKs=Object.keys(catC).sort(catCmp);   /* v31.90 ลำดับชนิดงบของเจ้าของ (เดิมเรียงตามจำนวนโครงการ) */
   yrCats=yrCats.filter(c=>catKs.includes(c));
   const HA=yrCats.length?HA0.filter(x=>yrCats.includes(normCat(x.budgetType))):HA0;   /* หน่วย → ชนิดงบ → กิจกรรม กรองซ้อนกันตามลำดับช่อง */
   const actC={}; HA.forEach(x=>{ const k=yrActOf(x); actC[k]=(actC[k]||0)+1; });
@@ -13969,7 +14004,7 @@ function renderYearly(){
       <h3>รายการโครงการทั้งหมด ปีงบ ${y}${agLbl} (${H.length} โครงการ)</h3>
       
       <div class="tblwrap" style="max-height:560px"><table id="yrTable"><thead><tr>
-        <th>รหัส</th><th>ชื่อสายทาง</th><th>หมวด</th><th>หน่วย</th><th>ชนิดงบ</th><th>กิจกรรม</th><th style="min-width:150px">ช่วง กม.</th><th>เลขที่สัญญา</th><th class="c">เริ่ม</th><th class="c">สิ้นสุด</th><th class="num">วงเงิน (บาท)</th><th class="c">ส่งงานงวดสุดท้าย</th>
+        <th>รหัส</th><th>ชื่อสายทาง</th><th>หมวด</th><th>หน่วย</th><th>ชนิดงบ</th><th>กิจกรรม</th><th style="min-width:150px">ช่วง กม.</th><th>เลขที่สัญญา</th><th class="c">เริ่ม</th><th class="c">สิ้นสุด</th><th class="num">วงเงิน (บาท)</th><th class="c">ส่งงานงวดสุดท้าย</th><th class="c opcol" data-nosort data-noexp>One-Page</th>
       </tr></thead><tbody></tbody></table></div>
     </div>
     <div id="gapBody"><div class="loading"><span class="spin"></span>กำลังเทียบคำของบกับสัญญาปีนี้…</div></div>`;
