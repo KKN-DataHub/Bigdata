@@ -3853,24 +3853,50 @@ const GVIZ_MAX_INFLIGHT=8, GVIZ_RETRY_MS=[400,1000];
    แก้: จำ "ชื่อแท็บที่พบจริง" ไว้ในเครื่อง 7 วัน รอบต่อไปยิงเฉพาะแท็บที่รู้จัก + ข้างเคียง (ปีก่อน/ปีถัดไป 2 ปี เพื่อเจอแท็บใหม่เอง)
    ข้อมูลในแท็บยังดึงสดทุกครั้ง · กด "โหลดข้อมูลใหม่" = ไล่หาครบทุกชื่ออีกรอบ · ชื่อที่จำไว้ผิดไม่มีผล (แท็บที่ไม่มีจริงถูกกรองด้วยลายนิ้วมืออยู่แล้ว) */
 const TAB_CACHE_KEY='drr_tabs_v1', TAB_CACHE_MS=7*864e5;
-function tabCacheGet(src){ try{ const c=JSON.parse(localStorage.getItem(TAB_CACHE_KEY)||'{}')[src]; if(c&&Array.isArray(c.names)&&c.names.length&&Date.now()-c.t<TAB_CACHE_MS) return c.names; }catch(e){} return null; }
+/* v31.92 ผู้ใช้ (21 ต.ค. 69 ภาพหน้าภาพรวม ช่อง ③ ④ ยังหมุน): "โหลดช้าจัง"
+   วัดจริงบนเว็บ v31.91 (เครื่องที่เคยเปิดแล้ว): ยิง 78 ครั้ง เสร็จ 15.2 วิ — ③ คำขอ 7.7 วิ · ④ Zerobase 14.6 วิ
+   ต้นเหตุ: v31.14 จำเฉพาะชื่อแท็บที่ "พบ" — แบบชื่อที่ไม่เคยพบเลยถูกไล่หาครบทุกรอบ:
+     Q_68…Q_82 (คำขอใช้แท็บ 25xx) 15 ครั้ง · Z_68…Z_82 (Zerobase ใช้แท็บหมวดแบบเดิม) 15 ครั้ง · แท็บแผนเบิกจ่าย 3 · จุดเสี่ยง 4 แบบชื่อ × 5 หมวด 20 ครั้ง
+     + ตัวเทียบแท็บแรก (sentinel) ของคำขอ/Zerobase/จุดเสี่ยง รอเสร็จก่อนค่อยยิงหาแท็บ (ช้าไป 1 รอบ)
+     + หน้าภาพรวมรอประวัติ "สด" เสร็จก่อนค่อยดึงคำขอ/Zerobase ทั้งที่ประวัติครั้งก่อนขึ้นจอแล้ว · คิวยิงทีละ 8 มาก่อนได้ก่อน
+   แก้: ① ค้นครบทุกชื่อแล้วไม่พบ = จำว่า "ไม่มี" (names:[] · none) 7 วัน ไม่ยิงหาอีก · รายชื่อตายตัว (แผนเบิกจ่าย · จุดเสี่ยง) ยิงเฉพาะชื่อที่พบ
+        — จำเฉพาะตอนค้นครบและไม่มีครั้งไหนล้ม · ไม่ต่ออายุตอนไม่ได้ค้นครบ (ครบ 7 วันไล่หาครบใหม่เอง) · กด "โหลดข้อมูลใหม่" = ไล่หาครบทันที
+        — จุดเสี่ยง: ชื่อที่จำไว้หายไป (เปลี่ยนชื่อแท็บ) → ไล่หาหมวดที่ขาดครบทุกแบบในรอบเดียวกัน ข้อมูลไม่หายเงียบ
+      ② ตัวเทียบแท็บแรกยิงพร้อมกับการหาแท็บ (คำขอ · Zerobase · จุดเสี่ยง) · Zerobase ที่ไม่ต้องหาแท็บปี ไม่ต้องยิงตัวเทียบ
+      ③ ประวัติครั้งก่อนขึ้นจอแล้ว → หน้าภาพรวมดึงคำขอ/Zerobase/จุดเสี่ยงทันที และงานอัปเดตประวัติเบื้องหลังหลีกคิวให้ (GVIZ_BG)
+   ข้อมูลในแท็บยังดึงสดทุกครั้งเหมือนเดิม · ชุดทดสอบ loadspeed */
+function tabCacheGet(src){ try{ const c=JSON.parse(localStorage.getItem(TAB_CACHE_KEY)||'{}')[src]; if(c&&Array.isArray(c.names)&&(c.names.length||c.none)&&Date.now()-c.t<TAB_CACHE_MS) return c.names; }catch(e){} return null; }
+/* v31.92 จำผลการ "ค้นครบทุกชื่อ" — พบ = รายชื่อ · ไม่พบเลย = [] (none) · เรียกเฉพาะตอนค้นครบและไม่มีครั้งไหนล้ม */
+function tabCacheFull(src,found){ try{ const all=JSON.parse(localStorage.getItem(TAB_CACHE_KEY)||'{}'); const names=[...new Set(found||[])];
+  all[src]=names.length?{t:Date.now(),names}:{t:Date.now(),names:[],none:true}; localStorage.setItem(TAB_CACHE_KEY,JSON.stringify(all)); }catch(e){} }
+/* v31.92 รายชื่อตายตัว (ไม่ใช่ลำดับปี — ไม่มี "ข้างเคียง"): ยังไม่เคยค้น = ทุกชื่อ · เคยค้นแล้ว = เฉพาะชื่อที่พบ (ไม่พบเลย = ไม่ยิง) */
+function probeExact(src, list, force){ const known=force?null:tabCacheGet(src); return known?list.filter(n=>known.includes(n)):list.slice(); }
 function tabCacheSet(src,names){ try{ const all=JSON.parse(localStorage.getItem(TAB_CACHE_KEY)||'{}'); all[src]={t:Date.now(),names:[...new Set(names)]}; localStorage.setItem(TAB_CACHE_KEY,JSON.stringify(all)); }catch(e){} }
 function probeNames(src, fullNames, force){
   const known=force?null:tabCacheGet(src); if(!known) return fullNames.slice();
+  if(!known.length) return [];   /* v31.92 ค้นครบแล้วไม่พบเลย — ไม่ยิงหาจนครบ 7 วัน/กดโหลดข้อมูลใหม่ */
   const idx=new Set(); known.forEach(n=>{ const i=fullNames.indexOf(n); if(i>=0) [i-1,i,i+1,i+2].forEach(j=>{ if(j>=0&&j<fullNames.length) idx.add(j); }); });
   if(!idx.size) return fullNames.slice();
   return [...idx].sort((a,b)=>a-b).map(i=>fullNames[i]);
 }
 let _gvizInflight=0; const _gvizQueue=[];
 window.__gvizStat={ok:0,fail:0,retry:0,maxInflight:0};
-function _gvizNext(){ while(_gvizInflight<GVIZ_MAX_INFLIGHT && _gvizQueue.length){ const job=_gvizQueue.shift(); _gvizInflight++; window.__gvizStat.maxInflight=Math.max(window.__gvizStat.maxInflight,_gvizInflight);
+/* v31.92 ชีทที่จอแสดงข้อมูลครั้งก่อนอยู่แล้ว (เช่น ประวัติ) = งานเบื้องหลัง — หยิบงานของชีทอื่นที่จอยังรอก่อน */
+const GVIZ_BG=new Set();
+function _gvizNext(){ while(_gvizInflight<GVIZ_MAX_INFLIGHT && _gvizQueue.length){
+  const pi=_gvizQueue.findIndex(j=>!GVIZ_BG.has(j.sid)); const job=_gvizQueue.splice(pi<0?0:pi,1)[0];
+  _gvizInflight++; window.__gvizStat.maxInflight=Math.max(window.__gvizStat.maxInflight,_gvizInflight);
   job().finally(()=>{ _gvizInflight--; _gvizNext(); }); } }
+/* v31.92 งานใหม่ไม่ปล่อยทันที — รอให้ทุกแหล่งที่เริ่มพร้อมกันต่อคิวครบก่อน (1 tick) ลำดับหลีกคิวจึงมีผลตั้งแต่รอบแรก */
+let _gvizKickT=null;
+function _gvizKick(){ if(_gvizKickT) return; _gvizKickT=setTimeout(()=>{ _gvizKickT=null; _gvizNext(); },0); }
 function gvizJSONP(sheetId, params){
   return new Promise((resolve,reject)=>{
     let attempt=0;
-    const run=()=>new Promise(res=>{ _gvizQueue.push(()=>gvizJSONPRaw(sheetId,params).then(t=>{ window.__gvizStat.ok++; resolve(t); res(); },err=>{
+    const run=()=>new Promise(res=>{ const job=()=>gvizJSONPRaw(sheetId,params).then(t=>{ window.__gvizStat.ok++; resolve(t); res(); },err=>{
         if(attempt<GVIZ_RETRY_MS.length){ const wait=GVIZ_RETRY_MS[attempt++]; window.__gvizStat.retry++; res(); setTimeout(run,wait); }
-        else { window.__gvizStat.fail++; reject(err); res(); } })); _gvizNext(); });
+        else { window.__gvizStat.fail++; reject(err); res(); } });
+      job.sid=sheetId; _gvizQueue.push(job); _gvizKick(); });
     run();
   });
 }
@@ -4403,7 +4429,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.91', APP_DATE='14 ต.ค. 2569';
+const APP_VER='v31.92', APP_DATE='21 ต.ค. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -5409,7 +5435,7 @@ function loadSource(key, force){
   if(cfg.has() && force!==true) return Promise.resolve();
   if(cfg._busy) return cfg._busy;                      // กดรัวไม่ยิงซ้ำซ้อน
   const boxes=cfg.boxes||[];
-  if(force!==true && cfg.restore && !cfg.has() && cfg.restore()) dataArrived(key);
+  if(force!==true && cfg.restore && !cfg.has() && cfg.restore()){ dataArrived(key); (cfg.bgIds||[]).forEach(id=>GVIZ_BG.add(id)); }   /* v31.92 อัปเดตเบื้องหลัง หลีกคิว */
   if(!cfg.quiet && boxes.length && !cfg.has()){
     const el0=document.getElementById(boxes[0]);
     if(el0) el0.innerHTML='<div class="loading"><span class="spin"></span>'+
@@ -5446,7 +5472,7 @@ function loadSource(key, force){
           if(pe) pe.innerHTML='<span class="hpill"><span class="dot err"></span> เชื่อมต่อ Google Sheets ไม่ได้</span>'; }
         netFail(cfg.what||cfg.key, err, boxes);
       }
-    }finally{ cfg._busy=null; }
+    }finally{ cfg._busy=null; (cfg.bgIds||[]).forEach(id=>GVIZ_BG.delete(id)); }
   })();
   cfg._busy=run;
   return run;
@@ -6582,6 +6608,9 @@ function ovSumMore(force){
 }
 function ovSumLoad(force){
   let p; try{ p=Promise.resolve(loadHistory(force===true)); }catch(e){ p=Promise.resolve(); }
+  /* v31.92 "โหลดช้าจัง" — ประวัติครั้งก่อนขึ้นจอแล้ว (หรือมีอยู่แล้ว) ดึงแหล่งอื่นทันที ไม่รอประวัติสด (เดิมรอ ~4 วิ ก่อนเริ่ม)
+     กด "โหลดข้อมูลใหม่" (force) ยังเรียงเหมือนเดิม: ประวัติก่อน แล้วค่อยแหล่งอื่น */
+  if(force!==true && typeof histData!=='undefined' && histData){ ovSumMore(false); return p.catch(()=>{}); }
   return p.catch(()=>{}).then(()=>{ if(typeof histData!=='undefined'&&histData) ovSumMore(force); });
 }
 function ovSumGo(step){
@@ -8786,6 +8815,7 @@ defineSource({
   pills:'histPills',
   has:()=>!!histData,
   restore:()=>historySnapshotRestore(),save:()=>historySnapshotSave(),stale:()=>{histSnapshotState='stale';},
+  bgIds:[HIST_ID],   /* v31.92 ขึ้นประวัติครั้งก่อนแล้ว → อ่านสดเป็นงานเบื้องหลัง หลีกคิวให้คำขอ/Zerobase/จุดเสี่ยง */
   read:async(force)=>{
     const all=[];
     const S=v=>String(v??'').trim();
@@ -8835,19 +8865,21 @@ defineSource({
     // 1) sentinel: ชื่อ tab ที่ไม่มีจริง gviz จะส่ง "tab แรกของไฟล์" กลับมา -> ใช้กรองปีหลอก
     const fpOf=objs=>JSON.stringify(objs.slice(0,3))+objs.length;
     const sentinelJob=sheetData(HIST_ID,'sheet=__Y_PROBE_XX99__').catch(()=>null);
-    const planJob=Promise.all(PLAN_TABS.map(t=>sheetData(HIST_ID,'sheet='+encodeURIComponent(t)).catch(()=>null)));   // v31.24 แผนเบิกจ่ายกลาง (ไม่มีแท็บ = ข้ามไป)
+    const planNames=probeExact('hist_plan', PLAN_TABS, force);   // v31.92 เคยค้นครบแล้ว = ยิงเฉพาะชื่อที่พบ (ไม่พบ = ไม่ยิง)
+    const planJob=Promise.all(planNames.map(t=>sheetData(HIST_ID,'sheet='+encodeURIComponent(t)).then(o=>({t,o}),()=>({t,o:null,fail:true}))));   // v31.24 แผนเบิกจ่ายกลาง (ไม่มีแท็บ = ข้ามไป)
     // 2) ไล่หา tab ปีทั้งหมด Y_60 … Y_85 พร้อมกัน — เพิ่ม tab ปีใหม่ในชีทได้เลย ไม่ต้องแก้ไฟล์นี้
     const histNames=probeNames('hist', HIST_PROBE_YEARS.map(y=>'Y_'+y), force);   // v31.14 แท็บที่รู้จัก + ข้างเคียง
     const [sentinel,results,planObjs] = await Promise.all([sentinelJob,Promise.allSettled(histNames.map(n=>+n.slice(2)).map(y=>
       sheetData(HIST_ID, 'sheet=Y_'+y).then(objs=>({y, objs})))),planJob]);
     const sentinelFp=(sentinel&&sentinel.length)?fpOf(sentinel):null;
     /* v31.24 แท็บที่ไม่มีจริง gviz จะคืนแท็บแรกของไฟล์ → ตัดด้วยลายนิ้วมือ แล้วยังต้องมีหัวตารางที่ต้องการจริง */
-    deptPlanSheet={};
-    for(const objs of (planObjs||[])){
+    deptPlanSheet={}; let planFound=null;
+    for(const {t,o:objs} of (planObjs||[])){
       if(!objs||!objs.length||fpOf(objs)===sentinelFp) continue;
       const got=parseDeptPlanTab(objs);
-      if(Object.keys(got).length){ deptPlanSheet=got; break; }
+      if(Object.keys(got).length){ deptPlanSheet=got; planFound=t; break; }
     }
+    if(planNames.length===PLAN_TABS.length && sentinel && !(planObjs||[]).some(x=>x.fail)) tabCacheFull('hist_plan', planFound?[planFound]:[]);   // v31.92 ค้นครบ + ไม่มีครั้งไหนล้ม
     const foundTabs=[];
     let okTabs=0, lastErr=null, anyReply=false;   // anyReply = ชีทตอบกลับมาอย่างน้อย 1 ครั้ง
     const seenFingerprint=new Set();
@@ -12863,12 +12895,14 @@ defineSource({
        กติกาใหม่: ① ไล่ชื่อทั้ง Q_xx และ 25xx ② แท็บที่มีชื่อชัดเจน = ปีตามชื่อ ③ แท็บซ้ายสุด (ตอบเหมือน sentinel) แยกชื่อไม่ได้
        → นับเป็น "ปีก่อนหน้าปีแรกที่พบชื่อ" (ผู้ใช้เรียงแท็บเก่า→ใหม่ ซ้าย→ขวา) · ถ้าไม่พบชื่อเลย = 2571 (แบบเดิม) */
     let sentinel=null, sentinelFp=null;
-    try{ sentinel=await sheetData(REQ_ID,'sheet=__Q_PROBE_XX99__'); sentinelFp=JSON.stringify(sentinel.slice(0,25)); }catch(e){}
-    const names=[];   // v31.14 แต่ละแบบชื่อ (Q_xx · 25xx) ยิงเฉพาะที่รู้จัก + ข้างเคียง
-    const qN=probeNames('req_q', REQ_PROBE_YEARS.map(y=>'Q_'+y), force), yN=probeNames('req_y', REQ_PROBE_YEARS.map(y=>String(2500+y)), force);
+    const sentinelJob=sheetData(REQ_ID,'sheet=__Q_PROBE_XX99__').then(x=>x,()=>null);   // v31.92 ยิงพร้อมกับการหาแท็บ (เดิมรอเสร็จก่อน)
+    const names=[];   // v31.14 แต่ละแบบชื่อ (Q_xx · 25xx) ยิงเฉพาะที่รู้จัก + ข้างเคียง · v31.92 ค้นครบแล้วไม่พบ = ไม่ยิง
+    const qFull=REQ_PROBE_YEARS.map(y=>'Q_'+y), yFull=REQ_PROBE_YEARS.map(y=>String(2500+y));
+    const qN=probeNames('req_q', qFull, force), yN=probeNames('req_y', yFull, force);
     qN.forEach(n=>names.push({y:+n.slice(2), n})); yN.forEach(n=>names.push({y:+n-2500, n}));
     const foundQ=[], foundY=[];
-    const probes=await Promise.allSettled(names.map(t=>sheetData(REQ_ID,'sheet='+encodeURIComponent(t.n)).then(objs=>({y:t.y,n:t.n,objs}))));
+    const [sentinelRes, probes]=await Promise.all([sentinelJob, Promise.allSettled(names.map(t=>sheetData(REQ_ID,'sheet='+encodeURIComponent(t.n)).then(objs=>({y:t.y,n:t.n,objs}))))]);
+    if(sentinelRes){ sentinel=sentinelRes; sentinelFp=JSON.stringify(sentinel.slice(0,25)); }
     const seen=new Set(); let all=[]; const yearsFound=[]; let anyReply=!!sentinel, lastErr=null;
     for(const p of probes){
       if(p.status!=='fulfilled'){ lastErr=p.reason; continue; }
@@ -12883,6 +12917,8 @@ defineSource({
     if(!anyReply) throw lastErr||new Error('เชื่อมต่อ Google Sheets ไม่ได้');
     /* v31.12 กฎ 6: มีคำขอที่ล้ม (หลังลองใหม่แล้ว) = อ่านแท็บไม่ครบ ปีของแท็บซ้ายสุดจะเดาผิด → ฟ้องแล้วให้กดโหลดใหม่ ไม่เดาต่อ */
     const nFail=probes.filter(p=>p.status!=='fulfilled').length;
+    /* v31.92 ค้นครบทุกชื่อ + ตอบครบ + มีตัวเทียบ → จำว่าแบบชื่อไหน "ไม่มี" (พบ = จำไว้แล้วข้างบน) */
+    if(!nFail && sentinel){ if(!foundQ.length && qN.length===qFull.length) tabCacheFull('req_q', []); if(!foundY.length && yN.length===yFull.length) tabCacheFull('req_y', []); }
     if(nFail) throw new Error(`อ่านแท็บชีทคำขอไม่ครบ (${nFail} ครั้งไม่ได้รับคำตอบ) — เครือข่ายขัดข้อง กดโหลดข้อมูลใหม่`);
     // แท็บซ้ายสุด (เนื้อหาเดียวกับ sentinel) — ยังไม่ถูกอ่านเพราะแยกชื่อไม่ได้
     if(sentinel&&sentinel.length){
@@ -13430,11 +13466,15 @@ defineSource({
     // 1) sentinel: ชื่อ tab ที่ไม่มีจริง gviz จะส่ง "tab แรก" กลับมา -> จำลายนิ้วมือไว้กรองปีหลอก
     let sentinelFp=null;
     zbWarn=[]; zbDroppedN=0;
-    try{ sentinelFp=JSON.stringify(zbRawRows(await gvizJSONP(ZB_ID,'sheet=__ZB_PROBE_XX99__')).slice(0,25)); }catch(e){}
-    // 2) ไล่หา tab ปีพร้อมกันทุกปี
-    const zbNames=probeNames('zb', ZB_PROBE_YEARS.map(y=>'Z_'+y), force);   // v31.14
-    const probes=await Promise.allSettled(zbNames.map(n=>+n.slice(2)).map(y=>
-      gvizJSONP(ZB_ID,'sheet='+encodeURIComponent('Z_'+y)).then(t=>({y,t}))));
+    // 2) ไล่หา tab ปีพร้อมกันทุกปี — v31.92 ตัวเทียบยิงพร้อมกัน · ค้นครบแล้วไม่พบ Z_xx = ไม่ยิงทั้งการหาและตัวเทียบ (ไปอ่านแท็บหมวดเลย)
+    const zbFull=ZB_PROBE_YEARS.map(y=>'Z_'+y);
+    const zbNames=probeNames('zb', zbFull, force);   // v31.14
+    const legacyRead=()=>Promise.allSettled(ZB_LEGACY_TABS.map(t=>gvizJSONP(ZB_ID,'gid='+t.gid)));
+    const legacyEarly=zbNames.length?null:legacyRead();   // v31.92 ไม่มีแท็บปีให้หา = ต้องอ่านแท็บหมวดแบบเดิมแน่นอน — ต่อคิวทันที (ก่อนแหล่งอื่นที่เริ่มทีหลัง)
+    const zbSentJob=zbNames.length?gvizJSONP(ZB_ID,'sheet=__ZB_PROBE_XX99__').then(t=>JSON.stringify(zbRawRows(t).slice(0,25)),()=>null):Promise.resolve(null);
+    const [zbSent, probes]=await Promise.all([zbSentJob, Promise.allSettled(zbNames.map(n=>+n.slice(2)).map(y=>
+      gvizJSONP(ZB_ID,'sheet='+encodeURIComponent('Z_'+y)).then(t=>({y,t}))))]);
+    sentinelFp=zbSent;
     const foundZ=[];
     const seen=new Set(); let all=[]; const yearsFound=[]; let anyReply=(sentinelFp!=null);
     { const nFail=probes.filter(p=>p.status!=='fulfilled').length;   // v31.12 กฎ 6
@@ -13450,9 +13490,10 @@ defineSource({
       if(recs&&recs.length){ all=all.concat(recs); yearsFound.push(2500+p.value.y); foundZ.push('Z_'+p.value.y); }
     }
     if(foundZ.length) tabCacheSet('zb', foundZ);
+    else if(zbNames.length===zbFull.length && sentinelFp!=null) tabCacheFull('zb', []);   // v31.92 ค้นครบ ตอบครบ (ล้ม = โยนไปแล้วข้างบน) ไม่พบ
     // 3) ยังไม่มี tab Z_71 -> อ่านโครงเดิม (5 หมวด) เป็นปี 2571
     if(!yearsFound.includes(2571)){
-      const legacy=await Promise.allSettled(ZB_LEGACY_TABS.map(t=>gvizJSONP(ZB_ID,'gid='+t.gid)));
+      const legacy=await (legacyEarly||legacyRead());   // v31.92 ยิงไปแล้วตั้งแต่ต้น (ถ้าไม่มีแท็บปีให้หา)
       const seenL=new Set(); let legacyAll=[];
       legacy.forEach((p,li)=>{
         if(p.status!=='fulfilled') return;
@@ -15046,21 +15087,35 @@ defineSource({
       img1:/^https?:/.test(o.img1||'')?o.img1:'', img2:/^https?:/.test(o.img2||'')?o.img2:''})); // กันข้อความ placeholder ในช่องรูป
     // ชีทจุดเสี่ยงแยกแท็บตามหมวด (5 แท็บ) — ไล่อ่านทุกแท็บอัตโนมัติ
     // 1) แท็บแรกของไฟล์ (sentinel): ชื่อแท็บที่ไม่มีจริง gviz จะส่งแท็บแรกกลับมา → จำลายนิ้วมือไว้กรองชื่อหลอก
-    const first=await gvizJSONP(RISK_ID,'sheet=__RISK_PROBE_XX99__');
+    // 2) ไล่หาแท็บรายหมวดพร้อมกัน — ตั้งชื่อแท็บว่า "เมือง" / "หมวดเมือง" / "หมวดบำรุงทางเมือง" / "บทช.เมือง" ก็ได้
+    //    v31.92 ตัวเทียบ (แท็บแรก) ยิงพร้อมกัน · เคยค้นครบแล้ว = ยิงเฉพาะชื่อที่พบ (เดิม 20 ชื่อทุกครั้ง)
+    const firstJob=gvizJSONP(RISK_ID,'sheet=__RISK_PROBE_XX99__');
+    const candsAll=[]; MUAD_ORDER.forEach(m=>['หมวด'+m, m, 'หมวดบำรุงทาง'+m, 'บทช.'+m].forEach(n=>candsAll.push({m,n})));
+    const known=force?null:tabCacheGet('risk');
+    let cands=known?candsAll.filter(c=>known.includes(c.n)):candsAll;
+    const probeR=list=>Promise.allSettled(list.map(c=>gvizJSONP(RISK_ID,'sheet='+encodeURIComponent(c.n)).then(t=>({m:c.m,n:c.n,t}))));
+    const probesJob=probeR(cands);
+    const first=await firstJob;
     const fp0=fpR(first); const seen=new Set([fp0]);
     let all=parseT(first,null); let tabs=1;
-    // 2) ไล่หาแท็บรายหมวดพร้อมกัน — ตั้งชื่อแท็บว่า "เมือง" / "หมวดเมือง" / "หมวดบำรุงทางเมือง" / "บทช.เมือง" ก็เจอหมด
-    const cands=[]; MUAD_ORDER.forEach(m=>['หมวด'+m, m, 'หมวดบำรุงทาง'+m, 'บทช.'+m].forEach(n=>cands.push({m,n})));
-    const probes=await Promise.allSettled(cands.map(c=>gvizJSONP(RISK_ID,'sheet='+encodeURIComponent(c.n)).then(t=>({m:c.m,t}))));
-    const gotMuad=new Set();
-    for(const p of probes){
+    let probes=await probesJob;
+    const gotMuad=new Set(), foundN=[];
+    const take=list=>{ for(const p of list){
       if(p.status!=='fulfilled') continue;
-      const {m,t}=p.value; if(gotMuad.has(m)) continue;
+      const {m,n,t}=p.value; if(gotMuad.has(m)) continue;
       const fp=fpR(t);
       if(seen.has(fp)) continue; // ชื่อแท็บไม่มีจริง (ได้แท็บแรกกลับมา) หรือเนื้อหาซ้ำ
-      seen.add(fp); gotMuad.add(m); tabs++;
+      seen.add(fp); gotMuad.add(m); foundN.push(n); tabs++;
       all.push(...parseT(t,m));
+    } };
+    take(probes);
+    /* v31.92 ชื่อที่จำไว้ไม่พบแล้ว (เปลี่ยนชื่อแท็บ) → ไล่หาหมวดที่ขาดครบทุกแบบในรอบนี้เลย ไม่ปล่อยจุดเสี่ยงหายเงียบ */
+    if(known && foundN.length<known.length){
+      const rest=candsAll.filter(c=>!gotMuad.has(c.m)&&!cands.includes(c));
+      const more=await probeR(rest); take(more); probes=probes.concat(more); cands=cands.concat(rest);
     }
+    const searched=MUAD_ORDER.every(m=>gotMuad.has(m)||candsAll.filter(c=>c.m===m).every(c=>cands.includes(c)));   // ทุกหมวด: พบแล้ว หรือหาครบทุกแบบชื่อ
+    if(searched && !probes.some(p=>p.status==='rejected')) tabCacheFull('risk', foundN);   // v31.92 ค้นครบ ตอบครบ → จำ (ชื่อที่หายไปถูกแทนด้วยชื่อใหม่)
     // v31.15: รวบรวมก่อนค่อยเผยแพร่ข้อมูล ไม่ให้หน้าอื่นเห็นรูปที่ยังจับคู่ไม่เสร็จ
     if(probes.some(p=>p.status==='rejected')) photoWarnings.push('จุดเสี่ยงบางส่วนโหลดไม่ครบ — กดโหลดข้อมูลใหม่');
     const sources=[{id:RISK_IMG_ID,par:'gid='+RISK_IMG_GID,kind:'ก่อน'},
