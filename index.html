@@ -2847,6 +2847,15 @@ const YEAR_PALETTE=['#0d9488','#2a78d6','#d9a441','#4a3aa7','#008300','#0891b2',
 const yearColorMap=years=>{const s=[...new Set(years.map(String))].sort(); const o={}; s.forEach((y,i)=>o[y]=YEAR_PALETTE[i%YEAR_PALETTE.length]); return o;};
 
 const fmt = n => n==null||isNaN(n) ? '–' : Number(n).toLocaleString('th-TH', {maximumFractionDigits: 2});
+/* v31.93 ผู้ใช้ (22 ต.ค. 69 ภาพ Excel บัญชีสายทางเทียบทะเบียนสายทางบนเว็บ):
+     "ข้อมูลสายทางพวก ชนิดผิวบางสายนายปัดมาเยอะเกิน ทำให้เวลารวมยอดมันไม่ตรงกัน ไม่ต้องปัดหรอก"
+   ต้นเหตุ: ข้อมูลฝังในไฟล์ละเอียดถึงเมตร (ทศนิยม 3 ตรง Excel) แต่ทุกจุดแสดงด้วย fmt (ทศนิยมไม่เกิน 2) หรือ toFixed(1)/(2)
+     ขก.4097 ลาดยาง 1.196→1.2 · คอนกรีต 1.237→1.24 · ลูกรัง 6.917→6.92 บวกได้ 9.36 ≠ ระยะทาง 9.35
+     ตารางสรุปรายหมวด 260.01+274.6+288.57+261.69+260.55 = 1,345.42 ≠ แถวรวม 1,345.43
+   → fmtKm ตัวเดียว (กฎ 32) ทุกจุดที่แสดง กม. จากบัญชีสายทาง (ระยะทาง · ลาดยาง · คอนกรีต · ลูกรัง · ยาวสะพาน และยอดรวมของมัน):
+     ทศนิยม 3 ตำแหน่งเสมอแบบ Excel ของผู้ใช้ = ไม่ปัด (ข้อมูลมีแค่ 3 ตำแหน่ง) · 0 = "0" เหมือนเดิม · ไม่มีค่า = "–"
+     กราฟ (ความยาวแท่ง) ไม่เกี่ยว · กม.ของงานในสัญญา/คำขอ (คิดจากช่วง กม.) คนละเรื่อง ใช้ fmt เดิม · ชุดทดสอบ kmexact */
+const fmtKm = n => n==null||isNaN(n) ? '–' : (+n===0 ? '0' : Number(n).toLocaleString('th-TH', {minimumFractionDigits:3, maximumFractionDigits:3}));
 const fmtM = n => n==null||isNaN(n) ? '–' : (n>=1e6 ? (n/1e6).toLocaleString('th-TH',{maximumFractionDigits:1})+' ลบ.' : fmt(n));
 /* v24.1 — งบต่อ กม. ต้องใช้หน่วยเดียวกันทั้งบรรทัด (fmtM คืนเลขดิบเมื่อต่ำกว่า 1 ลบ. ทำให้อ่านสับสน) */
 const fmtPerKm = n => n==null||isNaN(n) ? '–'
@@ -4429,7 +4438,7 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.92', APP_DATE='21 ต.ค. 2569';
+const APP_VER='v31.93', APP_DATE='22 ต.ค. 2569';
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 
 const PAGES=[
@@ -5674,7 +5683,7 @@ function dcWhy(r,act){
   }
   if(act.risk&&r.riskOpen>0) w.push([r.riskPerKm>=0.5?'bad':'warn',`จุดเสี่ยงค้าง ${r.riskOpen} จุด`]);
   if(act.need&&r.needKm>0) w.push(['warn',`Zerobase ${fmt(+r.needKm.toFixed(1))} กม.`]);
-  if(r.len>=30) w.push(['','สายยาว '+fmt(+r.len.toFixed(1))+' กม.']);
+  if(r.len>=30) w.push(['','สายยาว '+fmtKm(r.len)+' กม.']);
   return w;
 }
 
@@ -5765,7 +5774,7 @@ function renderDcScatter(rows){
     return {x:+perKm.toFixed(3), y:pcuOf(r.code), r:r.len, label:r.code, color:muadColor(r.muad),
       _got:r.gotBaht||0, _len:r.len, _yr:r.lastYear,
       tip:`<b>${esc(r.code)}</b>`+                                  // v30.7 ผู้ใช้: กล่องที่รายละเอียดเยอะ ใส่แค่รหัสพอ ไม่ต้องชื่อเต็ม
-          `<br>PCU ${fmt(pcuOf(r.code))} คัน/วัน · ระยะทาง ${fmt(r.len)} กม.`+
+          `<br>PCU ${fmt(pcuOf(r.code))} คัน/วัน · ระยะทาง ${fmtKm(r.len)} กม.`+
           `<br>งบสะสม ${r.gotBaht?fmtM(r.gotBaht):'ยังไม่เคยได้งบ'} = <b>${fmt(+perKm.toFixed(2))} ลบ./กม.</b>`+
           `${r.lastYear?`<br>ได้งบล่าสุดปี ${r.lastYear}`:''}<br>หมวด${esc(r.muad||'-')}`};
   });
@@ -5848,7 +5857,7 @@ function renderDcRank(rows,act){
         <td style="white-space:nowrap"><b>${esc(r.code)}</b> <span style="font-size:11px;color:var(--ink2)">${esc(r.name||'')}</span>
             <div class="rk-why">${dcWhy(r,act).map(([c,t])=>`<span class="${c}">${esc(t)}</span>`).join('')}</div></td>
         <td style="white-space:nowrap">${muadCell(r.muad)}</td>
-        <td class="num">${fmt(+r.len.toFixed(2))}</td>
+        <td class="num">${fmtKm(r.len)}</td>
         <td class="num">${r.surfPct>0?r.surfPct.toFixed(0)+'%':'—'}</td>
         <td class="num">${r.lastYear||(act.age?'ไม่เคย':'—')}</td>
         <td class="num">${act.risk?(r.riskOpen||'—'):'—'}</td>
@@ -5874,10 +5883,10 @@ function renderDcAlerts(rows,act){
     'อาจเป็นสายที่ไม่เคยได้งบ หรือรหัสในชีทไม่ตรงบัญชี — ตรวจที่หน้าข้อมูลระบบ');
   const old5=rows.filter(r=>act.age&&r.age>=5&&r.age<90);
   if(old5.length) push(A,'crit','⏳',`<b>${old5.length} สาย</b>ไม่ได้รับงบมา 5 ปีขึ้นไป`,
-    'รวมระยะทาง '+fmt(+old5.reduce((a,r)=>a+r.len,0).toFixed(1))+' กม.');
+    'รวมระยะทาง '+fmtKm(old5.reduce((a,r)=>a+r.len,0))+' กม.');
   const luk=rows.filter(r=>r.surfPct>=50);
   if(luk.length) push(A,'warn','⚑',`<b>${luk.length} สาย</b>มีผิวลูกรังเกินครึ่งสาย`,
-    'รวม '+fmt(+luk.reduce((a,r)=>a+r.lukrang,0).toFixed(1))+' กม. ที่ยังเป็นลูกรัง');
+    'รวม '+fmtKm(luk.reduce((a,r)=>a+r.lukrang,0))+' กม. ที่ยังเป็นลูกรัง');
   if(act.risk){
     const rk=rows.filter(r=>r.riskPerKm>=0.5&&r.riskOpen>0);
     if(rk.length) push(A,'crit','⚠',`<b>${rk.length} สาย</b>มีจุดเสี่ยงค้างหนาแน่นเกิน 0.5 จุด/กม.`,
@@ -6354,7 +6363,7 @@ function renderOverview(){
 
   // แถบสถานะบนหัวหน้า (คงพิลล์งบไว้ถ้าเคยโหลดแล้ว — จะถูกเติมโดย renderOverviewBudget)
   document.getElementById('ovPills').innerHTML =
-    `<span class="hpill">🛣 ${OVF.muad?R.length:ALL_CODES.length} สาย · ${fmt(+totKm.toFixed(0))} กม.${OVF.muad?' · หมวด'+esc(OVF.muad):''}</span>`+
+    `<span class="hpill">🛣 ${OVF.muad?R.length:ALL_CODES.length} สาย · ${fmtKm(totKm)} กม.${OVF.muad?' · หมวด'+esc(OVF.muad):''}</span>`+
     `<span class="hpill">🌉 สะพานชุมชน ${Object.keys(EMB.bridges||{}).length} แห่ง</span>`+
     `<span class="hpill" id="ovBudPill" style="display:none"></span>`;
   if(histData) renderOverviewBudgetPill();
@@ -6372,13 +6381,13 @@ function renderOverview(){
   ovk.innerHTML =
     kico('🛣️','var(--tile-teal)','สายทางในบัญชี', `${nRoad} <small>สาย</small>`, (OVF.muad?'หมวด'+esc(OVF.muad):'')+share(nRoad,RALL.length),
       {go:'roadTable', title:'ไปที่ทะเบียนสายทาง'})+
-    kico('📏','var(--tile-blue)','ระยะทางรวม', `${fmt(totKm)} <small>กม.</small>`, `รวมสะพาน ${fmt(+bridgeLen.toFixed(2))} กม.`+share(totKm,totKmAll),
+    kico('📏','var(--tile-blue)','ระยะทางรวม', `${fmtKm(totKm)} <small>กม.</small>`, `รวมสะพาน ${fmtKm(bridgeLen)} กม.`+share(totKm,totKmAll),
       {go:'muadTable', title:'ดูระยะทางแยกรายหมวดในตาราง'})+
-    kico('🚧','var(--tile-slate)','ผิวลาดยาง', `${fmt(lat)} <small>กม.</small>`, `${(100*lat/Math.max(surfKm,1)).toFixed(1)}% ของผิวทาง`,
+    kico('🚧','var(--tile-slate)','ผิวลาดยาง', `${fmtKm(lat)} <small>กม.</small>`, `${(100*lat/Math.max(surfKm,1)).toFixed(1)}% ของผิวทาง`,
       {go:'chSurface', title:'ดูสัดส่วนผิวจราจร'})+
     kico('🌉','var(--tile-sky)','สะพาน', `${fmt(bridges)} <small>แห่ง</small>`, share(bridges,brAll).replace(/^ · /,''),
       {go:'page:map', title:'เปิดหน้าแผนที่เพื่อดูตำแหน่งสะพาน'})+
-    kico('📐','var(--tile-violet)','ความยาวสะพานรวม', `${fmt(bridgeLen)} <small>กม.</small>`, share(bridgeLen,brKmAll).replace(/^ · /,''),
+    kico('📐','var(--tile-violet)','ความยาวสะพานรวม', `${fmtKm(bridgeLen)} <small>กม.</small>`, share(bridgeLen,brKmAll).replace(/^ · /,''),
       {go:'muadTable', title:'ดูความยาวสะพานแยกรายหมวด'})+
     // v23.5 — KPI งบสะสมกลับมาอยู่แถวบนตามเดิม · ส่วน "ยาวที่สุด/PCU สูงสุด" ไปเป็นกราฟ Top 10 ด้านล่างแทน
     `<div class="card kpi iko"><div class="kico" style="background:var(--tile-green)">💰</div><div style="min-width:0" id="kpiBudget"><div class="lbl">งบสะสม (ตามสัญญา)</div><div class="val">…</div></div></div>`;
@@ -6395,9 +6404,9 @@ function renderOverview(){
     const d=byM[m];
     return `<tr data-muad="${esc(m)}" class="${OVF.muad===m?'selrow':''}" title="คลิกเพื่อกรองทั้งหน้าด้วยหมวดนี้"><td style="white-space:nowrap"><span class="msw" style="width:10px;height:10px;border-radius:3px;background:${muadColor(m)}"></span><b>${esc(m)}</b></td>
       <td class="num">${d.n}</td>
-      <td><div class="ibar" title="หมวด${esc(m)} · ${fmt(+d.km.toFixed(2))} กม. — ${(100*d.km/totKmAll).toFixed(1)}% ของโครงข่าย (${(100*d.km/mxKm).toFixed(0)}% ของหมวดที่ยาวที่สุด)"><div class="trk"><span style="width:${(100*d.km/mxKm).toFixed(1)}%;background:${muadColor(m)}"></span></div><b>${fmt(+d.km.toFixed(2))}</b><i class="ipct">${(100*d.km/totKmAll).toFixed(1)}%</i></div></td>
-      <td class="num">${d.br}</td><td class="num">${fmt(+d.brkm.toFixed(3))}</td></tr>`;
-  }).join('') + `<tr style="background:var(--teal-soft);font-weight:700"><td>รวม</td><td class="num">${RALL.length}</td><td class="num">${fmt(+totKmAll.toFixed(2))}</td><td class="num">${brAll}</td><td class="num">${fmt(+brKmAll.toFixed(3))}</td></tr>`;
+      <td><div class="ibar" title="หมวด${esc(m)} · ${fmtKm(d.km)} กม. — ${(100*d.km/totKmAll).toFixed(1)}% ของโครงข่าย (${(100*d.km/mxKm).toFixed(0)}% ของหมวดที่ยาวที่สุด)"><div class="trk"><span style="width:${(100*d.km/mxKm).toFixed(1)}%;background:${muadColor(m)}"></span></div><b>${fmtKm(d.km)}</b><i class="ipct">${(100*d.km/totKmAll).toFixed(1)}%</i></div></td>
+      <td class="num">${d.br}</td><td class="num">${fmtKm(d.brkm)}</td></tr>`;
+  }).join('') + `<tr style="background:var(--teal-soft);font-weight:700"><td>รวม</td><td class="num">${RALL.length}</td><td class="num">${fmtKm(totKmAll)}</td><td class="num">${brAll}</td><td class="num">${fmtKm(brKmAll)}</td></tr>`;
 
   document.querySelectorAll('#muadTable tbody tr[data-muad]').forEach(tr=>
     tr.addEventListener('click',()=>setOvFilter(tr.dataset.muad)));
@@ -6417,21 +6426,21 @@ function renderOverview(){
     /* v31.57 ผู้ใช้ 16 ก.ย. 69: "ทุกอย่างที่ทำเป็น % ต้องเอาจากระยะทางหรือจำนวนเงินนะ ไม่เอาจำนวนนับเป็นหลัก"
        → ตัวตั้ง % และตัวเลขหนา = ระยะทาง (กม.) · จำนวนสายลงบรรทัดรอง (กฎ 24) */
     shareBars('chOvZone', ks.map(k=>{ const o=Zn[k], zi=KK_ZONES[k];
-      return { label:k?('เขต '+k):'ไม่ระบุเขต', v:o.n, w:+o.km.toFixed(1), color:k?zoneColor(+k):'#9aa5a3', last:!k,
+      return { label:k?('เขต '+k):'ไม่ระบุเขต', v:o.n, w:o.km, color:k?zoneColor(+k):'#9aa5a3', last:!k,
         sub:(zi?('สส. '+zi.mp+' · '+zi.party):'ระบุตำแหน่งไม่ได้')+' · '+o.n+' สาย',
-        tip:(zi?'สส. '+esc(zi.mp)+' · '+esc(zi.party)+'<br>':'')+o.n+' สาย · '+fmt(+o.km.toFixed(2))+' กม.' }; }),
-      {unit:'สาย', cols:2, keep:true, wFmt:x=>fmt(+x.toFixed(1))+' กม.'});   /* v31.78 เรียงเลขเขต 1→11 (ผู้ใช้) */
+        tip:(zi?'สส. '+esc(zi.mp)+' · '+esc(zi.party)+'<br>':'')+o.n+' สาย · '+fmtKm(o.km)+' กม.' }; }),
+      {unit:'สาย', cols:2, keep:true, wFmt:x=>fmtKm(x)+' กม.'});   /* v31.78 เรียงเลขเขต 1→11 (ผู้ใช้) */
   });
   safeRun('เรื่องน้ำ', ()=>renderOvWater(R));   /* v31.81 */
   (()=>{ const box=document.getElementById('chSurfaceMuad'); if(!box) return;
     const ico={'ลาดยาง':'🛣️','คอนกรีต':'🧱','ลูกรัง':'🪨'};
     box.innerHTML=`<div class="surfrows">`+surfRows.map(m=>{ const d=byM[m], tt=d.lat+d.con+d.luk||1;
       const P=v=>(100*v/tt).toFixed(1);
-      return `<div class="srow${OVF.muad?(OVF.muad===m?' on':' dim'):''}" data-muad="${esc(m)}" title="หมวด${esc(m)} · ผิวทาง ${fmt(+tt.toFixed(1))} กม.">
+      return `<div class="srow${OVF.muad?(OVF.muad===m?' on':' dim'):''}" data-muad="${esc(m)}" title="หมวด${esc(m)} · ผิวทาง ${fmtKm(tt)} กม.">
         <div class="sn"><i style="background:${muadColor(m)}"></i>หมวด${esc(m)}</div>
         <div class="sbig"><b>${P(d.lat)}%</b> ลาดยาง</div>
         <div class="sb">${surfKeys.map(([lb,k,col])=>`<span style="width:${P(d[k])}%;background:${col}"></span>`).join('')}</div>
-        <div class="sp">${surfKeys.filter(([lb])=>lb!=='ลาดยาง').map(([lb,k,col])=>`<span title="${lb} ${fmt(+d[k].toFixed(1))} กม.">${ico[lb]} <b>${P(d[k])}%</b></span>`).join('')}<span class="skm">${fmt(+tt.toFixed(1))} กม.</span></div>
+        <div class="sp">${surfKeys.filter(([lb])=>lb!=='ลาดยาง').map(([lb,k,col])=>`<span title="${lb} ${fmtKm(d[k])} กม.">${ico[lb]} <b>${P(d[k])}%</b></span>`).join('')}<span class="skm">${fmtKm(tt)} กม.</span></div>
       </div>`; }).join('')+`</div>`;
     box.querySelectorAll('.srow').forEach(r=>r.addEventListener('click',()=>setOvFilter(r.dataset.muad)));
   })();
@@ -6439,7 +6448,7 @@ function renderOverview(){
 
 
   const _sn=document.getElementById('surfNote');
-  if(_sn) _sn.innerHTML = `ฐาน ${fmt(+surfKm.toFixed(1))} กม. (ไม่รวมช่วงสะพาน)`;
+  if(_sn) _sn.innerHTML = `ฐาน ${fmtKm(surfKm)} กม. (ไม่รวมช่วงสะพาน)`;
   /* v24.0 — เลิกใช้โดนัท (3 ชิ้น อ่านค่าจริงไม่ได้ ต้องไปไล่ legend)
      สาระคือประโยคเดียว "ลาดยาง 90.7%" จึงเอาตัวเลขขึ้นนำ แล้วต่อแถบสัดส่วนแถบเดียวใต้ */
   (()=>{ const box=document.getElementById('chSurface'); if(!box) return;
@@ -6449,18 +6458,18 @@ function renderOverview(){
     const tt=lat+con+luk||1;
     box.innerHTML=
       `<div class="heroblk"><div class="hn">${(100*lat/tt).toFixed(1)}<span>%</span></div>`+
-      `<div class="hl">ของผิวทางเป็น<b>ลาดยาง</b><div class="mu">${fmt(+lat.toFixed(1))} จาก ${fmt(+tt.toFixed(1))} กม.</div></div></div>`+
+      `<div class="hl">ของผิวทางเป็น<b>ลาดยาง</b><div class="mu">${fmtKm(lat)} จาก ${fmtKm(tt)} กม.</div></div></div>`+
       `<div class="onebar">${segs.map(([l,v,c])=>{ const p=100*v/tt;
-        return `<span style="width:${p.toFixed(3)}%;background:${c}" title="${l} ${fmt(+v.toFixed(1))} กม. (${p.toFixed(1)}%)">${p>=12?l+' '+p.toFixed(1)+'%':(p>=5?p.toFixed(0)+'%':'')}</span>`; }).join('')}</div>`+
+        return `<span style="width:${p.toFixed(3)}%;background:${c}" title="${l} ${fmtKm(v)} กม. (${p.toFixed(1)}%)">${p>=12?l+' '+p.toFixed(1)+'%':(p>=5?p.toFixed(0)+'%':'')}</span>`; }).join('')}</div>`+
       /* v29.5 — กล่องย่อยรายชนิด แทน legend บรรทัดเดียว
          legend เดิมอ่านได้แต่ "มีสีอะไรบ้าง" ต้องเพ่งถึงจะเจอตัวเลข
          กล่องย่อยยกตัวเลขขึ้นมาเป็นพระเอกทีละชนิด + บอกว่ากี่สายมีผิวชนิดนี้ */
       `<div class="surfgrid">${segs.map(([l,v,c,ico,bg])=>{
         const nRoad=R.filter(r=>(l==='ลาดยาง'?r.latyang:l==='คอนกรีต'?r.concrete:r.lukrang)>0).length;
         return `<div class="surfbox${v>0?'':' zero'}" style="border-left-color:${c}"
-             title="${l} ${fmt(+v.toFixed(2))} กม. · ${(100*v/tt).toFixed(1)}% ของผิวทาง · พบใน ${nRoad} สาย">`+
+             title="${l} ${fmtKm(v)} กม. · ${(100*v/tt).toFixed(1)}% ของผิวทาง · พบใน ${nRoad} สาย">`+
           `<div class="shead"><span class="sico" style="background:${bg}">${ico}</span><span class="sname">${l}</span></div>`+
-          `<div class="sval">${fmt(+v.toFixed(1))}<small>กม.</small></div>`+
+          `<div class="sval">${fmtKm(v)}<small>กม.</small></div>`+
           `<div class="sfoot">${(100*v/tt).toFixed(1)}% · ${nRoad} สาย</div></div>`;
       }).join('')}</div>`;
   })();
@@ -6470,8 +6479,8 @@ function renderOverview(){
   const goRoad=it=>{ const b=document.querySelector('.nav button[data-page="map"]'); if(b) b.click();
     setTimeout(()=>{ if(typeof selectRoad==='function') selectRoad(it.label); },320); };
   const topLen=R.filter(r=>(r.len_acct||0)>0).sort((a,b)=>b.len_acct-a.len_acct).slice(0,10);
-  lolli('chTopLen', topLen.map(r=>({label:r.code, v:+(r.len_acct||0).toFixed(2), color:muadColor(r.muad),
-      tip:`${esc(r.name||'')}<br>${fmt(r.len_acct)} กม. · หมวด${esc(r.muad||'-')}${pcuOf(r.code)!=null?`<br>PCU ${fmt(pcuOf(r.code))} คัน/วัน`:''}`})),
+  lolli('chTopLen', topLen.map(r=>({label:r.code, v:+(r.len_acct||0), valText:fmtKm(r.len_acct||0), color:muadColor(r.muad),
+      tip:`${esc(r.name||'')}<br>${fmtKm(r.len_acct)} กม. · หมวด${esc(r.muad||'-')}${pcuOf(r.code)!=null?`<br>PCU ${fmt(pcuOf(r.code))} คัน/วัน`:''}`})),
     {unit:'กม.', labelW:70, onClick:goRoad});
   const topP=pcuRows.slice(0,10);
   if(topP.length)
@@ -6650,7 +6659,7 @@ function renderOvSum(){
       `<div class="sv">${N1(km)}<small>กม. งานถนน</small></div>`+
       `<div class="sl">${extra(pl,br)}</div>`+
       chips([prev?chip('crit',`ปีก่อนค้างส่งงาน ${fmt(prev)} สัญญา`):'',
-             never.length?chip('warn',`ไม่พบสัญญา ${fmt(never.length)} สาย · ${N1(neverKm)} กม.`):'']);
+             never.length?chip('warn',`ไม่พบสัญญา ${fmt(never.length)} สาย · ${fmtKm(neverKm)} กม.`):'']);
   };
   /* ② ปีนี้ทำอะไร — ปีที่หน้าโครงการประจำปีเปิดขึ้นมาเอง */
   const year=()=>{
@@ -7019,8 +7028,8 @@ function renderRoadTable(){
       <td><b>${c}</b></td><td style="white-space:nowrap">${esc(r.name)}</td>
       <td style="white-space:nowrap">${muadCell(r.muad)}</td>
       <td>${esc(r.amphoe)}</td>
-      <td class="num">${fmt(r.len_acct)}</td><td class="num">${fmt(r.latyang)}</td><td class="num">${fmt(r.concrete)}</td><td class="num">${fmt(r.lukrang)}</td>
-      <td class="num">${fmt(+(r.bridge_len_acct||0).toFixed(3))}</td>
+      <td class="num">${fmtKm(r.len_acct)}</td><td class="num">${fmtKm(r.latyang)}</td><td class="num">${fmtKm(r.concrete)}</td><td class="num">${fmtKm(r.lukrang)}</td>
+      <td class="num">${fmtKm(r.bridge_len_acct||0)}</td>
       <td class="num">${r.bridges_acct||0}</td>
       <td class="num">${pcuOf(c)==null?'<span style="color:var(--muted)">—</span>':fmt(pcuOf(c))}</td>
       <td style="white-space:nowrap"><a href="javascript:void(0)" class="opLink" data-code="${c}" style="color:var(--teal);font-weight:700">📄 เปิด</a>
@@ -7422,7 +7431,7 @@ function initMap(){
     M.layers[code]={path:p, coordsList, base, stub, muad:r?.muad, zone,
       bounds:[Math.min(...lons),Math.min(...lats),Math.max(...lons),Math.max(...lats)], road:r};
     p.addEventListener('mousemove',e=>{ if(code!==activeCode){p.setAttribute('stroke-width',5);p.setAttribute('stroke-opacity',1);}
-      showTip(`<b>${code}</b> ${esc(r?.name||'')}<br>หมวด${esc(r?.muad||'-')} · ${fmt(r?.len_acct)} กม.${stub?'<br>◌ แนวประมาณ (ลากตรงจุดเริ่ม-จุดจบ) — รอสำรวจ GPS จริง':''}`,e.clientX,e.clientY); });
+      showTip(`<b>${code}</b> ${esc(r?.name||'')}<br>หมวด${esc(r?.muad||'-')} · ${fmtKm(r?.len_acct)} กม.${stub?'<br>◌ แนวประมาณ (ลากตรงจุดเริ่ม-จุดจบ) — รอสำรวจ GPS จริง':''}`,e.clientX,e.clientY); });
     p.addEventListener('mouseleave',()=>{ hideTip(); if(code!==activeCode){ restoreStyle(code); } });
     p.addEventListener('click',e=>{ e.stopPropagation(); selectRoad(code, llFromEvent(e)); });
   });
@@ -8265,7 +8274,7 @@ function openPopup(code, hitLL){
   d.insertAdjacentHTML('beforeend',
     `<button class="pmore" type="button">ดูข้อมูลเต็ม ▾</button>`+
     `<div class="pdet"><div class="pinfo">${esc(r?.name||'(ไม่มีข้อมูลใน Master)')}<br>` +
-    `อำเภอ${esc(r?.amphoe||'-')} · จังหวัด${esc(prov)}<br>ระยะทาง <b>${fmt(r?.len_acct)}</b> กม. · หมวด${esc(r?.muad||'-')}</div>`+
+    `อำเภอ${esc(r?.amphoe||'-')} · จังหวัด${esc(prov)}<br>ระยะทาง <b>${fmtKm(r?.len_acct)}</b> กม. · หมวด${esc(r?.muad||'-')}</div>`+
     `<div class="gmnote">${note}</div>`+
     `<div class="pact">`+gmButtons(hit?hit.lat:A[1], hit?hit.lon:A[0], gmOpt)+`</div>`+
     `<button class="btn rmBtn">🗺 แผนที่รายสาย (A3)</button></div>`);
@@ -8564,7 +8573,7 @@ function renderMapList(q){
     .map(c=>{ const r=rowsByCode[c], L=M&&M.layers[c];
       return `<div class="roaditem ${c===activeCode?'active':''} ${L&&!L.stub?'':'nogeo'}" data-code="${c}">
         <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${L?muadColor(r?.muad):'#c8c8c4'};margin-right:5px"></span><b>${c}</b> <span style="font-size:11px">${esc((r?.amphoe)?'· '+r.amphoe:'')}</span></span>
-        <span class="km">${L?(L.stub?'◌ ประมาณ · ':'')+fmt(r?.len_acct)+' กม.':'ไม่มี GIS'}</span></div>`; }).join('');
+        <span class="km">${L?(L.stub?'◌ ประมาณ · ':'')+fmtKm(r?.len_acct)+' กม.':'ไม่มี GIS'}</span></div>`; }).join('');
   // ---- v20.8: ต่อท้ายด้วยสะพานชุมชน — เดิมมีแต่บนแผนที่ ไม่มีในแถบรายชื่อ ----
   const comm=Object.values(EMB.bridges||{})
     .filter(b=>{
@@ -9356,12 +9365,12 @@ function renderHistRoad(code){
           <span class="chip">ข้าม${esc(bridge.river||'-')}</span>
           <span class="chip">ต.${esc(bridge.tambon||'-')} อ.${esc(bridge.amphoe||'-')}</span>
           <span class="chip">หมวด${esc(bridge.muad||'-')}</span>
-          <span class="chip">ระยะทางรวมเชิงลาด ${fmt(roadLen)} กม.</span>
+          <span class="chip">ระยะทางรวมเชิงลาด ${fmtKm(roadLen)} กม.</span>
           <span class="chip${pcuOf(code)==null?' chip-none':''}">🚗 ${pcuTxt(code)}</span>
           ${bridge.year?`<span class="chip">สร้างปี ${esc(bridge.year)}</span>`:''}`
         :`
           <span class="chip">อำเภอ${esc(r?.amphoe||'-')}</span><span class="chip">หมวด${esc(r?.muad||'-')}</span>
-          <span class="chip">ระยะทาง ${fmt(roadLen)} กม.</span>
+          <span class="chip">ระยะทาง ${fmtKm(roadLen)} กม.</span>
           <span class="chip${pcuOf(code)==null?' chip-none':''}">🚗 ${pcuTxt(code)}</span>`}
       </div>
       ${(()=>{ const rb=EMB.roadBridges?.[code]||[]; const nB=rb.length||r?.bridges_acct||0; const mB=rb.reduce((a,b)=>a+(b.len||0),0);
@@ -9378,9 +9387,9 @@ function renderHistRoad(code){
         ${pElec}${pDrain}${pCam}${pRisk}
         </div>`;
         return `<div class="grid kpis" style="margin-top:12px;grid-template-columns:repeat(4,1fr)">
-        ${kpill('🛣️','linear-gradient(160deg,#8b8f98,#52525b)','#52525b','ลาดยาง (AC)', `${fmt(r?.latyang||0)} <small>กม.</small>`, cdR.length?`สำรวจสภาพแล้ว ${cdR.length} ช่วง`:'')}
-        ${kpill('🧱','linear-gradient(160deg,#6ea8ef,#1d5fb8)','#2a78d6','คอนกรีต (คสล.)', `${fmt(r?.concrete||0)} <small>กม.</small>`, (r?.concrete||0)?'':'ไม่มีช่วงคอนกรีต')}
-        ${kpill('🪨','linear-gradient(160deg,#c9a97e,#8a6d4b)','#8a6d4b','ลูกรัง', `${fmt(r?.lukrang||0)} <small>กม.</small>`, (r?.lukrang||0)?'รอพัฒนาเป็นผิวถาวร':'ไม่มีช่วงลูกรัง')}
+        ${kpill('🛣️','linear-gradient(160deg,#8b8f98,#52525b)','#52525b','ลาดยาง (AC)', `${fmtKm(r?.latyang||0)} <small>กม.</small>`, cdR.length?`สำรวจสภาพแล้ว ${cdR.length} ช่วง`:'')}
+        ${kpill('🧱','linear-gradient(160deg,#6ea8ef,#1d5fb8)','#2a78d6','คอนกรีต (คสล.)', `${fmtKm(r?.concrete||0)} <small>กม.</small>`, (r?.concrete||0)?'':'ไม่มีช่วงคอนกรีต')}
+        ${kpill('🪨','linear-gradient(160deg,#c9a97e,#8a6d4b)','#8a6d4b','ลูกรัง', `${fmtKm(r?.lukrang||0)} <small>กม.</small>`, (r?.lukrang||0)?'รอพัฒนาเป็นผิวถาวร':'ไม่มีช่วงลูกรัง')}
         ${kpill('🌉','linear-gradient(160deg,#7c9dd6,#3b5aa0)','#3b5aa0','สะพานในสายทาง', nB?`${nB} <small>แห่ง</small>`:'—', mB?`รวมยาว ${fmt(Math.round(mB))} ม.`:'ไม่มีสะพานในสาย')}
         ${pElec}${pDrain}${pCam}${pRisk}
         </div>`;})()}
@@ -11700,7 +11709,7 @@ function pvInfo(code){
   const box=PV.wrap&&PV.wrap.querySelector('.pvinfo'); if(!box) return;
   const L=M&&M.layers[code], r=(L&&L.road)||{};
   box.querySelector('.xlih b').textContent=code+' '+(r.name||'');
-  box.querySelector('.xlib').innerHTML=[['หมวด',r.muad||'—'],['อำเภอ',r.amphoe||'—'],['ระยะทาง',r.len_acct!=null?fmt(r.len_acct)+' กม.':'—']]
+  box.querySelector('.xlib').innerHTML=[['หมวด',r.muad||'—'],['อำเภอ',r.amphoe||'—'],['ระยะทาง',r.len_acct!=null?fmtKm(r.len_acct)+' กม.':'—']]
     .map(([a,b])=>`<div class="r"><span>${esc(a)}</span><b>${esc(String(b))}</b></div>`).join('')+
     `<div class="pvbtns"><button type="button" class="btn ghost" data-pvgo="op">📄 One-Page</button><button type="button" class="btn ghost" data-pvgo="land">🩻 ภูมิประเทศ</button></div>`;
   box.dataset.code=code; box.hidden=false;
@@ -11742,7 +11751,7 @@ function pvBind(){
     const p=PV.ptr.get(e.pointerId), G=PV.gest;
     if(!p||!G){ if(e.pointerType==='mouse'&&!PV.ptr.size){ const now=performance.now(); if(now-PV.hovT<60) return; PV.hovT=now;
         const c=pvHit(e.offsetX,e.offsetY); cv.style.cursor=c?'pointer':'';
-        if(c){ const r=(M.layers[c]||{}).road||{}; showTip(`<b>${esc(c)}</b> ${esc(r.name||'')}<br>หมวด${esc(r.muad||'-')} · ${fmt(r.len_acct)} กม.`,e.clientX,e.clientY); } else hideTip(); }
+        if(c){ const r=(M.layers[c]||{}).road||{}; showTip(`<b>${esc(c)}</b> ${esc(r.name||'')}<br>หมวด${esc(r.muad||'-')} · ${fmtKm(r.len_acct)} กม.`,e.clientX,e.clientY); } else hideTip(); }
       return; }
     p.x=e.offsetX; p.y=e.offsetY;
     if(PV.ptr.size===1&&G.kind){
@@ -13364,7 +13373,7 @@ function renderRequests(){
     return `<tr data-code="${code}" style="cursor:pointer">
       <td><b>${code}</b></td><td style="white-space:nowrap">${esc(r?.name||'—')}</td><td style="white-space:nowrap">${muadCell(r?.muad)}</td>
       ${reqAll?`<td style="font-variant-numeric:tabular-nums;font-size:11.5px">${yrsIn.join(', ')}</td>`:''}
-      <td class="num">${fmt(r?.len_acct)}</td><td class="num"><b>${n}</b></td><td class="num">${km>0?fmt(+km.toFixed(2)):'—'}</td>
+      <td class="num">${fmtKm(r?.len_acct)}</td><td class="num"><b>${n}</b></td><td class="num">${km>0?fmt(+km.toFixed(2)):'—'}</td>
       <td class="num">${pct!=null?`<b style="color:${pct>=50?'var(--crit)':'var(--ink)'}">${pct.toFixed(0)}%</b>`:'—'}</td>
       <td class="num">${amt?fmt(amt):'<span style="color:var(--crit)">รอประเมิน</span>'}</td>
       <td style="font-size:11.5px">${catsIn.map(c=>esc(c)).join(' · ')}</td>
@@ -14267,7 +14276,7 @@ function renderZbOverview(){
         return `<tr data-code="${code}" style="cursor:pointer">
           <td><b>${code}</b></td><td style="white-space:nowrap">${esc(rd?.name||'—')}</td><td style="white-space:nowrap">${muadCell(rd?.muad)}</td>
           ${all?`<td style="font-variant-numeric:tabular-nums;font-size:11.5px">${yrs.join(', ')}</td>`:''}
-          <td class="num">${fmt(rd?.len_acct)}</td><td class="num"><b>${n}</b></td>
+          <td class="num">${fmtKm(rd?.len_acct)}</td><td class="num"><b>${n}</b></td>
           <td class="num">${rdKmR?fmt(+rdKmR.toFixed(2)):'–'}</td><td class="num">${plR?fmt(plR):'–'}</td><td class="num">${brR?fmt(Math.round(brR)):'–'}</td>
           <td class="num">${pct!=null?`<b style="color:${pct>=50?'var(--crit)':'var(--ink)'}">${pct.toFixed(0)}%</b>`:'—'}</td>
           <td>${gs.map(k=>{const g=ZB_GROUPS.find(g=>g.k===k);
@@ -14351,7 +14360,7 @@ async function openAnnualReport(){
       <div class="sub">แขวงทางหลวงชนบทขอนแก่น · กรมทางหลวงชนบท · ข้อมูลสด ณ ${new Date().toLocaleDateString('th-TH',{dateStyle:'long'})}</div></div>
       <div style="text-align:right;font-size:11.5px">Big Data สายทาง<br>${esc(document.querySelector('.brand .ver')?.textContent||'')}</div></div>
     <div class="kgrid" style="grid-template-columns:repeat(6,1fr)">
-      ${kb('🛣️','linear-gradient(160deg,#8b8f98,#52525b);color:#fff',ALL_CODES.length,'สายทางในบัญชี · '+fmt(+totKm.toFixed(0))+' กม.')}
+      ${kb('🛣️','linear-gradient(160deg,#8b8f98,#52525b);color:#fff',ALL_CODES.length,'สายทางในบัญชี · '+fmtKm(totKm)+' กม.')}
       ${kb('🌉','linear-gradient(160deg,#7c9dd6,#3b5aa0);color:#fff',R.reduce((a,r)=>a+(r.bridges_acct||0),0)+Object.keys(EMB.bridges||{}).length+' <small>แห่ง</small>','สะพานรวมทั้งโครงข่าย')}
       ${kb('📋','linear-gradient(160deg,#4fc3b8,#0b7d72);color:#fff',H.length,'โครงการในประวัติ (ปี '+(years[0]||'-')+'–'+(yLast||'-')+')')}
       ${kb('💰','linear-gradient(160deg,#ffd76e,#e8a417);color:#7a5a10',fmtM(H.reduce((a,x)=>a+(x.amount||0),0)),'งบสะสมตามสัญญา')}
@@ -14367,7 +14376,7 @@ async function openAnnualReport(){
         <h2>สรุปรายหมวดบำรุงทาง</h2>
         <table><thead><tr><th>หมวด</th><th class="r">สาย</th><th class="r">ระยะทาง (กม.)</th><th class="r">สะพาน</th><th class="r">โครงการปี ${yLast||'-'}</th><th class="r">วงเงิน (ลบ.)</th></tr></thead><tbody>
           ${MUAD_ORDER.map(m=>{const d=byM[m]; const pl=lastList.filter(x=>recMuad(x)===m);
-            return `<tr><td><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${muadColor(m)};margin-right:6px;-webkit-print-color-adjust:exact"></span>หมวด${m}</td><td class="r">${d.n}</td><td class="r">${fmt(+d.km.toFixed(1))}</td><td class="r">${d.br}</td><td class="r">${pl.length}</td><td class="r">${fmt(+(pl.reduce((a,x)=>a+(x.amount||0),0)/1e6).toFixed(2))}</td></tr>`;}).join('')}
+            return `<tr><td><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${muadColor(m)};margin-right:6px;-webkit-print-color-adjust:exact"></span>หมวด${m}</td><td class="r">${d.n}</td><td class="r">${fmtKm(d.km)}</td><td class="r">${d.br}</td><td class="r">${pl.length}</td><td class="r">${fmt(+(pl.reduce((a,x)=>a+(x.amount||0),0)/1e6).toFixed(2))}</td></tr>`;}).join('')}
         </tbody></table>
       </div>
       <div>
@@ -14375,8 +14384,8 @@ async function openAnnualReport(){
         ${(()=>{const sv=[['ลาดยาง',R.reduce((a,r)=>a+(r.latyang||0),0),'#52525b'],['คอนกรีต',R.reduce((a,r)=>a+(r.concrete||0),0),'#2a78d6'],['ลูกรัง',R.reduce((a,r)=>a+(r.lukrang||0),0),'#d9a441']];
           const sk=sv.reduce((a,x)=>a+x[1],0), bl=R.reduce((a,r)=>a+(r.bridge_len_acct||0),0);
           return `<table><thead><tr><th>ชนิดผิว</th><th class="r">ระยะทาง (กม.)</th><th>สัดส่วน</th></tr></thead><tbody>
-          ${sv.map(([n,v,c])=>`<tr><td>${n}</td><td class="r">${fmt(+v.toFixed(1))}</td><td><span class="bar" style="width:${(88*v/Math.max(sk,1)).toFixed(1)}%;background:${c}"></span></td></tr>`).join('')}
-          <tr style="font-weight:700"><td>รวมผิวทาง</td><td class="r">${fmt(+sk.toFixed(2))}</td><td style="font-size:9.5px;color:#8794a5">ระยะทางบัญชี ${fmt(+totKm.toFixed(2))} − สะพาน ${fmt(+bl.toFixed(2))}</td></tr>
+          ${sv.map(([n,v,c])=>`<tr><td>${n}</td><td class="r">${fmtKm(v)}</td><td><span class="bar" style="width:${(88*v/Math.max(sk,1)).toFixed(1)}%;background:${c}"></span></td></tr>`).join('')}
+          <tr style="font-weight:700"><td>รวมผิวทาง</td><td class="r">${fmtKm(sk)}</td><td style="font-size:9.5px;color:#8794a5">ระยะทางบัญชี ${fmtKm(totKm)} − สะพาน ${fmtKm(bl)}</td></tr>
         </tbody></table>`;})()}
         ${rk.length?`<h2>จุดเสี่ยงอันตรายแยกประเภท</h2>
         <table><thead><tr><th>ประเภท</th><th class="r">จำนวน (จุด)</th><th class="r">แก้แล้ว</th><th class="r">คงเหลือ</th></tr></thead><tbody>
@@ -14463,12 +14472,12 @@ async function printOnePage(code){
     <div class="hd"><div>
       <h1>One-Page บูรณาการ${brC?'สะพานชุมชน':'สายทาง'} <span style="font-size:26px">${code}</span></h1>
       <div class="sub">${esc(r?.name||brC?.name||'')}</div>
-      <div class="chips"><span class="chip">อำเภอ${esc(r?.amphoe||brC?.amphoe||'-')}</span><span class="chip">หมวด${esc(r?.muad||brC?.muad||'-')}</span><span class="chip">${brC?`สะพานยาว ${fmt(brC.len)} ม. · เชิงลาด ${fmt(roadLen)} กม.`:`ระยะทาง ${fmt(roadLen)} กม.`}</span></div></div>
+      <div class="chips"><span class="chip">อำเภอ${esc(r?.amphoe||brC?.amphoe||'-')}</span><span class="chip">หมวด${esc(r?.muad||brC?.muad||'-')}</span><span class="chip">${brC?`สะพานยาว ${fmt(brC.len)} ม. · เชิงลาด ${fmtKm(roadLen)} กม.`:`ระยะทาง ${fmtKm(roadLen)} กม.`}</span></div></div>
       <div style="text-align:right;font-size:11.5px">แขวงทางหลวงชนบทขอนแก่น<br>${new Date().toLocaleDateString('th-TH',{dateStyle:'long'})}<br>${esc(document.querySelector('.brand .ver')?.textContent||'')}</div></div>
     <div class="kgrid" style="grid-template-columns:repeat(9,1fr)">
-      ${kb('🛣️','#ececee',fmt(r?.latyang||0)+' <small>กม.</small>','ลาดยาง (AC)')}
-      ${kb('🧱','#e6f0fb',fmt(r?.concrete||0)+' <small>กม.</small>','คอนกรีต (คสล.)')}
-      ${kb('🪨','var(--tile-sand)',fmt(r?.lukrang||0)+' <small>กม.</small>','ลูกรัง')}
+      ${kb('🛣️','#ececee',fmtKm(r?.latyang||0)+' <small>กม.</small>','ลาดยาง (AC)')}
+      ${kb('🧱','#e6f0fb',fmtKm(r?.concrete||0)+' <small>กม.</small>','คอนกรีต (คสล.)')}
+      ${kb('🪨','var(--tile-sand)',fmtKm(r?.lukrang||0)+' <small>กม.</small>','ลูกรัง')}
       ${kb('🌉','var(--tile-sky)',(rb.length||r?.bridges_acct||0)+' <small>แห่ง</small>','สะพานในสายทาง')}
       ${kb('💡','var(--tile-amber)',assetValue(assets.elec),'ไฟฟ้าแสงสว่าง · '+assetNote(assets.elec))}
       ${kb('🕳️','#e8f1f0',assetValue(assets.drain),'ระบายน้ำ · '+assetNote(assets.drain))}
@@ -15263,7 +15272,7 @@ function renderRiskRoad(code){
       <div class="roadhead"><span class="code">${code}</span><span class="nm">${esc(rd?.name||'(ไม่พบในบัญชี Master)')}</span></div>
       <div class="chips">
         <span class="chip">อำเภอ${esc(rd?.amphoe||'-')}</span><span class="chip">${esc(recMuadLabel(muadByCode()[code]||list[0]?._m||'ไม่ระบุ'))}</span>
-        <span class="chip">ระยะทาง ${fmt(roadLen)} กม.</span>
+        <span class="chip">ระยะทาง ${fmtKm(roadLen)} กม.</span>
         <span class="chip${pcuOf(code)==null?' chip-none':''}">🚗 ${pcuTxt(code)}</span>
         <span class="chip">จุดเสี่ยง ${list.length} จุด · แก้แล้ว ${f} · เหลือ ${list.length-f}</span>
       </div>
@@ -15709,7 +15718,7 @@ async function renderRoadMapCanvas(code, r, f, stub){
   /* ================= ส่วนตารางล่าง (ตามแบบแผนที่แขวงฯ) ================= */
   const lat=r?.latyang||0, con=r?.concrete||0, luk=r?.lukrang||0, tot=r?.len_acct||0;
   const brs=EMB.roadBridges?.[code]||[];
-  const totLbl=v=>v?fmt(+v.toFixed(3)):'-';
+  const totLbl=v=>v?fmtKm(v):'-';   // v31.93 ทศนิยม 3 เสมอ (ตัวเดียวกับทะเบียน)
   const kmL=v=>{const k=Math.floor(v),m3=Math.round((v-k)*1000);return k+'+'+String(m3).padStart(3,'0');};
   let y1=mapY+mapH;               // แถวสัญลักษณ์
   const rowH=[64,104,62,58];      // ความสูง 4 แถวล่าง
