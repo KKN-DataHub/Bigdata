@@ -244,9 +244,9 @@ body{font-family:'Sarabun',Tahoma,'Segoe UI',system-ui,sans-serif;background-col
   /* v31.25 ลายพื้นของชุดสี (ตกแต่งล้วน · ชุดอื่นเป็น none · ปิดตอนพิมพ์) */
   background-image:var(--page-art);background-attachment:fixed;background-repeat:no-repeat}
 @media print{ body{background-image:none} }
-/* ══ โครงหน้ากลาง L1.2 — v31.97 (LAYOUT-L1-BD · KORN 29 ต.ค. 69) · คัดลอกเนื้อไฟล์ โครงหน้ากลาง.css ตรงตัวทั้งไฟล์ (ต่อจากก้อนธีมกลาง) ห้ามแก้ค่าในก้อนนี้ · กฎเฉพาะ Big Data อยู่นอกก้อน ใช้ตัวแปรธีมเท่านั้น · ด่าน themecentral.js / layoutcentral.js เทียบตรงตัว ══ */
+/* ══ โครงหน้ากลาง L1.3 — v31.98 (LAYOUT-L1.3-BD · KORN 30 ต.ค. 69 ปุ่มชุดสีหลุดขอบขวาที่ ~970 px) · คัดลอกเนื้อไฟล์ โครงหน้ากลาง.css ตรงตัวทั้งไฟล์ (ต่อจากก้อนธีมกลาง) ห้ามแก้ค่าในก้อนนี้ · กฎเฉพาะ Big Data อยู่นอกก้อน ใช้ตัวแปรธีมเท่านั้น · ด่าน themecentral.js / layoutcentral.js เทียบตรงตัว ══ */
 /* ════════════════════════════════════════════════════════════════════
-   โครงหน้ากลาง KORNECTZ — รุ่น L1.2 · 29 ต.ค. 2569 (L1 ประกาศ 29 ต.ค. 2569 · แก้ตัวหนังสือบนพื้น teal = --on-teal · ป้ายไอคอนระบบพื้นเข้มกรอบ teal)
+   โครงหน้ากลาง KORNECTZ — รุ่น L1.3 · 30 ต.ค. 2569 (L1 ประกาศ 29 ต.ค. 2569 · L1.2 แก้ตัวหนังสือบนพื้น teal = --on-teal · ป้ายไอคอนระบบพื้นเข้มกรอบ teal · L1.3 .pgh-right ห่อบรรทัดในกรอบหัวเพจ ปุ่มชุดสีไม่หลุดขอบขวา)
    มาตรฐานโครงหน้าของทุกระบบ คู่กับธีมกลาง (สี/ชื่อชุดสี) — ต้นแบบรูปแบบ = Big Data v31.95
    ประกอบด้วย: ① แถบประกาศวิ่ง (บนสุดของเนื้อหา) ② หัวเพจ + ลวดลายประจำระบบ + ปุ่มเลือกชุดสีอยู่แถบบน (แผงทรงเดียวกับ CostBase)
    ③ แถบข้างมีชื่อฟังก์ชัน ย่อเหลือไอคอนได้ ④ ไอคอนประจำระบบมุมบนซ้ายสุด
@@ -341,7 +341,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;height:var(--sat);ba
 .hpill .dot.wait{background:#f7c948}
 .hpill .dot.err{background:#ff7d6b}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(61,220,125,.5)}70%{box-shadow:0 0 0 6px rgba(61,220,125,0)}100%{box-shadow:0 0 0 0 rgba(61,220,125,0)}}
-.pgh-right{display:flex;gap:8px;align-items:flex-start;flex:none;margin-left:auto;position:relative;z-index:2;flex-wrap:wrap}
+.pgh-right{display:flex;gap:8px;align-items:flex-start;flex:0 1 auto;min-width:0;max-width:100%;margin-left:auto;position:relative;z-index:2;flex-wrap:wrap}
 .hbtn{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.32);color:#fff;font-family:inherit;font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:9px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:background .15s}
 .hbtn:hover{background:rgba(255,255,255,.26)}
 
@@ -4576,10 +4576,10 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v31.97', APP_DATE='30 ต.ค. 2569';   /* v31.97 โครงหน้ากลาง L1.1 + แผงชุดสีเหมือน CostBase (KORN 29 ต.ค. 69 · LAYOUT-L1-BD) · v31.96 ธีมกลาง T2 ชุดสี 16 ชุด (KORN 29 ต.ค. 69 · THEME-T2-BD) · v31.95 แถบอัปเดตวิ่ง + แก้เมนูชุดสีค้างเมื่อเลื่อนหน้า (KORN 28 ต.ค. 69) · v31.95 แถบอัปเดตวิ่ง + แก้เมนูชุดสีค้างเมื่อเลื่อนหน้า (KORN 28 ต.ค. 69) · v31.94 BD-003 ผลตรวจไนติงเกล + มติประชุมทีมนัดที่ 1 (26 ต.ค. 69) */
+const APP_VER='v31.98', APP_DATE='30 ต.ค. 2569';   /* v31.98 โครงหน้ากลาง L1.3 ปุ่มชุดสีไม่หลุดขอบขวาหัวเพจ (KORN 30 ต.ค. 69 · LAYOUT-L1.3-BD) · v31.97 โครงหน้ากลาง L1.1 + แผงชุดสีเหมือน CostBase (KORN 29 ต.ค. 69 · LAYOUT-L1-BD) · v31.96 ธีมกลาง T2 ชุดสี 16 ชุด (KORN 29 ต.ค. 69 · THEME-T2-BD) · v31.95 แถบอัปเดตวิ่ง + แก้เมนูชุดสีค้างเมื่อเลื่อนหน้า (KORN 28 ต.ค. 69) · v31.95 แถบอัปเดตวิ่ง + แก้เมนูชุดสีค้างเมื่อเลื่อนหน้า (KORN 28 ต.ค. 69) · v31.94 BD-003 ผลตรวจไนติงเกล + มติประชุมทีมนัดที่ 1 (26 ต.ค. 69) */
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 /* v31.95 ข้อความบนแถบอัปเดตวิ่ง — รุ่นถัดไปแก้เฉพาะอาร์เรย์นี้ (เลขรุ่น/วันที่ต่อหน้าให้เองจาก APP_VER_TXT) */
-const UPDATE_NOTES=['ปรับหน้าตาเป็นโครงหน้ากลาง (แถบข้าง แถบอัปเดต หัวเพจมีลายถนน)','ปรับแผงเลือกชุดสีให้เหมือน CostBase · เลือกชุดกลางคืนเองแล้วล็อกทั้งคืน','แก้สีตัวหนังสือบนปุ่มสีเขียวในชุดกลางคืนให้อ่านชัด'];   /* ใส่เป็นรายการสั้น ๆ ขึ้นต้นด้วย เพิ่ม/แก้/ปรับ */
+const UPDATE_NOTES=['แก้ปุ่มเลือกชุดสีบนหัวเพจหลุดขอบขวาเมื่อจอกว้างราว 970 px'];   /* ใส่เป็นรายการสั้น ๆ ขึ้นต้นด้วย เพิ่ม/แก้/ปรับ */
 
 const PAGES=[
   {id:'overview', enter:()=>ovSumLoad(),     body:'ovBudget',                                     retry:()=>loadHistory(true),
