@@ -1,6 +1,6 @@
 {
- "built": "2026-11-07T10:59:09",
- "tool": "P4-1.1 · 7 พ.ย. 2569",
+ "built": "2026-11-10T15:32:59",
+ "tool": "P6-A · 9 พ.ย. 2569",
  "datasets": {
   "registry": {
    "file": "08. Master\\ข้อมูลเปลี่ยนน้อย\\BD_01_ทะเบียน.xlsx",
@@ -16,7 +16,7 @@
   },
   "history": {
    "file": "08. Master\\ข้อมูลเปลี่ยนบ่อย\\BD_02_ประวัติ.xlsx",
-   "md5": "1A441889444DE1E3AD1874C2C77893CD",
+   "md5": "3A6C97B3A6DEB5E53DAB1922C3001EBF",
    "tabs": {
     "Y_63": 8,
     "Y_64": 1,
@@ -30,32 +30,32 @@
    "money": {
     "วงเงินตามสัญญา": 4276301866.0
    },
-   "log_rows": 2
+   "log_rows": 3
   },
   "requests": {
    "file": "08. Master\\ข้อมูลเปลี่ยนบ่อย\\BD_03_แผน.xlsx",
-   "md5": "4D2A261D4615DE5BC946228D04C289BB",
+   "md5": "07725472B9D873943023A9C03E461879",
    "tabs": {
-    "Q_71": 209,
+    "Q_71": 224,
     "แผนเบิกจ่าย": 0
    },
    "money": {
-    "งบประมาณ": 3766550000.0
+    "งบประมาณ": 4411200000.0
    },
-   "log_rows": 2
+   "log_rows": 3
   },
   "zerobase": {
    "file": "08. Master\\ข้อมูลเปลี่ยนบ่อย\\BD_04_Zerobase.xlsx",
-   "md5": "03BFCE1C99830BCFF9AF9F8A046005D2",
+   "md5": "787641F7B3E1B899BFF6CDFA94C73328",
    "tabs": {
     "Z_71": 46
    },
    "money": {},
-   "log_rows": 1
+   "log_rows": 2
   }
  },
  "scope": "web",
  "file": "bd-data.js",
- "md5": "1242B9E5A301AF508A9DF323FC1B0723",
- "bytes": 449841
+ "md5": "31B5431A6E75A76E27BCBFDC7C96B8E5",
+ "bytes": 446757
 }
