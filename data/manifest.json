@@ -1,5 +1,5 @@
 {
- "built": "2026-11-10T17:53:23",
+ "built": "2026-11-10T17:58:55",
  "tool": "P6-A.3 · 10 พ.ย. 2569",
  "datasets": {
   "registry": {
@@ -70,6 +70,6 @@
  },
  "scope": "web",
  "file": "bd-data.js",
- "md5": "7F9F68E1C2D435FA3EE712855FAC2946",
+ "md5": "49B6F882842F0D8547B7F4B2B610DB5E",
  "bytes": 452501
 }
