@@ -2006,8 +2006,8 @@ try{ const NIGHT=[["sundown",18,19.5],["dusk",19.5,21],["moon",21,22.5],["midnig
         <button class="btn ghost" type="button" id="reqPrev" title="ปีก่อนหน้า" disabled>‹</button>
         <select class="search" id="reqYearSel" style="max-width:200px"></select>
         <button class="btn ghost" type="button" id="reqNext" title="ปีถัดไป" disabled>›</button>
-        <b style="margin-left:8px">ชนิดงบ</b>
-<select class="search" id="reqCatSel" style="max-width:260px" multiple data-ph="ทุกชนิดงบ"></select>
+        <b style="margin-left:8px">แหล่งงบ</b>
+<select class="search" id="reqCatSel" style="max-width:260px" multiple data-ph="ทุกแหล่งงบ"></select>
         <b style="margin-left:8px">กิจกรรม</b>
         <select class="search" id="reqActSel" style="max-width:260px" multiple data-ph="ทุกกิจกรรม"></select>
         <b style="margin-left:8px">เขตเลือกตั้ง</b>
@@ -3881,7 +3881,7 @@ function amtBandTable(container, items, {unit='รายการ'}={}){
     g.segs[k]=(g.segs[k]||0)+1; g.amts[k]=(g.amts[k]||0)+(+x.amt||0); g.n++; g.amt+=(+x.amt||0); });
   /* v31.53 % ในช่อง = ส่วนแบ่ง "เงิน" ของช่วงนั้นในชนิดงบ (จำนวนโครงยังโชว์เป็นตัวเลขประกอบ) */
   matrixTable(container, Object.entries(G).map(([c,g])=>({label:c, segs:g.segs, amts:g.amts, right:fmtM(g.amt)})),
-    AMT_SEGS, {unit, sumLabel:'รวมทุกชนิดงบ'});
+    AMT_SEGS, {unit, sumLabel:'รวมทุกแหล่งงบ'});
 }
 
 /* ══ v31.37 ผู้ใช้ 12 ก.ย. 69 เลือกเอง (จาก 3 แบบที่ส่งไปให้ดู):
@@ -4661,10 +4661,10 @@ const NAV_SVG={
    ผลคือแก้โค้ดไป 3 รอบใหญ่ (v25 · v26 · v27) แต่ป้ายยังค้างอยู่ที่ v24.6
    ผู้ใช้เปิดไฟล์ใหม่แล้วนึกว่าได้ไฟล์เก่า — ตอนนี้ป้าย · รายงาน · ไฟล์สำรอง
    อ่านจากตัวแปรเดียวนี้ และด่านตรวจจะร้องถ้าป้ายไม่ตรง */
-const APP_VER='v32.04', APP_DATE='9 พ.ย. 2569';   /* v32.04 Zerobase: ก่อสร้างสะพาน นับเป็นสะพาน (KORN 9 พ.ย. 69 "แก้แดชบอร์ดก่อนอัป") */   /* v32.03 แก้ตามผลตรวจไนติงเกล v32.02 (KORN 7 พ.ย. 69 "แก้ให้ครบก่อนอัป"): ขอแท็บที่ไม่มี = ว่าง · ป้ายทะเบียนถอยไปชุดฝัง · ความสด 2 ระดับ · Equipment บอกว่าชีทเดิมถูกลบ · v32.02 อ่านทะเบียนสายทาง · ประวัติ · คำของบ · Zerobase จากไฟล์ Master Excel ผ่าน data/bd-data.js (KORN 6 พ.ย. 69 · P5 แผนจัดระเบียบ) · v32.01 โครงหน้ากลาง L1.6 ตราโลโก้ KORNECTZ ท้ายแถบข้าง (KORN 4 พ.ย. 69 · K-60* · LAYOUT-L1.6 · สี NECT #4cc3b6 ข้อยกเว้น J3.8) · v31.99 โครงหน้ากลาง L1.4 แถบข้างซ้ายมีลวดลายประจำระบบ (KORN 30 ต.ค. 69 · BD-L1.4) · v31.98 โครงหน้ากลาง L1.3 ปุ่มชุดสีไม่หลุดขอบขวาหัวเพจ (KORN 30 ต.ค. 69 · LAYOUT-L1.3-BD) · v31.97 โครงหน้ากลาง L1.1 + แผงชุดสีเหมือน CostBase (KORN 29 ต.ค. 69 · LAYOUT-L1-BD) · v31.96 ธีมกลาง T2 ชุดสี 16 ชุด (KORN 29 ต.ค. 69 · THEME-T2-BD) · v31.95 แถบอัปเดตวิ่ง + แก้เมนูชุดสีค้างเมื่อเลื่อนหน้า (KORN 28 ต.ค. 69) · v31.95 แถบอัปเดตวิ่ง + แก้เมนูชุดสีค้างเมื่อเลื่อนหน้า (KORN 28 ต.ค. 69) · v31.94 BD-003 ผลตรวจไนติงเกล + มติประชุมทีมนัดที่ 1 (26 ต.ค. 69) */
+const APP_VER='v32.05', APP_DATE='10 พ.ย. 2569';   /* v32.05 คำบนจอ ชนิดงบ เปลี่ยนเป็น แหล่งงบ ทุกหน้า · หัวคอลัมน์ข้อมูลรับทั้งสองคำ · ตารางสรุปคำของบชั้นเดียวเมื่อไม่มีคอลัมน์แหล่งงบแยก (KORN 10 พ.ย. 69 "แหล่งงบ ชนิดงบ มันคืออันเดียวกัน" · "เปลี่ยนด้วย") */   /* v32.04 Zerobase: ก่อสร้างสะพาน นับเป็นสะพาน (KORN 9 พ.ย. 69 "แก้แดชบอร์ดก่อนอัป") */   /* v32.03 แก้ตามผลตรวจไนติงเกล v32.02 (KORN 7 พ.ย. 69 "แก้ให้ครบก่อนอัป"): ขอแท็บที่ไม่มี = ว่าง · ป้ายทะเบียนถอยไปชุดฝัง · ความสด 2 ระดับ · Equipment บอกว่าชีทเดิมถูกลบ · v32.02 อ่านทะเบียนสายทาง · ประวัติ · คำของบ · Zerobase จากไฟล์ Master Excel ผ่าน data/bd-data.js (KORN 6 พ.ย. 69 · P5 แผนจัดระเบียบ) · v32.01 โครงหน้ากลาง L1.6 ตราโลโก้ KORNECTZ ท้ายแถบข้าง (KORN 4 พ.ย. 69 · K-60* · LAYOUT-L1.6 · สี NECT #4cc3b6 ข้อยกเว้น J3.8) · v31.99 โครงหน้ากลาง L1.4 แถบข้างซ้ายมีลวดลายประจำระบบ (KORN 30 ต.ค. 69 · BD-L1.4) · v31.98 โครงหน้ากลาง L1.3 ปุ่มชุดสีไม่หลุดขอบขวาหัวเพจ (KORN 30 ต.ค. 69 · LAYOUT-L1.3-BD) · v31.97 โครงหน้ากลาง L1.1 + แผงชุดสีเหมือน CostBase (KORN 29 ต.ค. 69 · LAYOUT-L1-BD) · v31.96 ธีมกลาง T2 ชุดสี 16 ชุด (KORN 29 ต.ค. 69 · THEME-T2-BD) · v31.95 แถบอัปเดตวิ่ง + แก้เมนูชุดสีค้างเมื่อเลื่อนหน้า (KORN 28 ต.ค. 69) · v31.95 แถบอัปเดตวิ่ง + แก้เมนูชุดสีค้างเมื่อเลื่อนหน้า (KORN 28 ต.ค. 69) · v31.94 BD-003 ผลตรวจไนติงเกล + มติประชุมทีมนัดที่ 1 (26 ต.ค. 69) */
 const APP_VER_TXT=APP_VER+' · '+APP_DATE;
 /* v31.95 ข้อความบนแถบอัปเดตวิ่ง — รุ่นถัดไปแก้เฉพาะอาร์เรย์นี้ (เลขรุ่น/วันที่ต่อหน้าให้เองจาก APP_VER_TXT) */
-const UPDATE_NOTES=['แก้ Zerobase: งานก่อสร้างสะพานนับเป็นสะพาน ไม่ไปรวมกับงานถนน'];   /* ใส่เป็นรายการสั้น ๆ ขึ้นต้นด้วย เพิ่ม/แก้/ปรับ */
+const UPDATE_NOTES=['ปรับ คำว่า ชนิดงบ เป็น แหล่งงบ ทุกหน้า (ช่องเดียวกัน)'];   /* ใส่เป็นรายการสั้น ๆ ขึ้นต้นด้วย เพิ่ม/แก้/ปรับ */
 
 const PAGES=[
   {id:'overview', enter:()=>ovSumLoad(),     body:'ovBudget',                                     retry:()=>loadHistory(true),
@@ -5918,7 +5918,7 @@ function renderDcStuck(){
       `<span class="chip">คำขอ ${M.years.length} ปี: ${M.years.join(' · ')}</span></div><div id="chDcStuck"></div>`+
     (S.length>top.length?`<div class="footnote">แสดง 10 อันดับแรกจาก ${S.length} สาย — ครบทุกสายในหน้าโครงการประจำปี (ส่วนเช็คคำขอ)</div>`:'');
   hbar('chDcStuck', top.map(o=>({label:`${o.code} · พลาด ${o.nMiss} ปี`, v:+(o.missAmt/1e6).toFixed(1), color:o.nMiss>1?'#e34948':C.gold, code:o.code,
-      tip:`<b>${esc(o.code)}</b> ${esc(String(o.name||'').slice(0,40))}<br>หมวด${esc(o.muad)} · เขต ${o.zone||'—'}<br>ขอ ${o.nAsk} ปี · ได้ ${o.nOk} ปี · พลาด ${o.nMiss} ปี (${o.yrs.join(' · ')})<br>ชนิดงบที่ค้าง: ${esc(o.catTxt)}<br>วงเงินที่ไม่ได้ ${fmtM(o.missAmt)}`})),
+      tip:`<b>${esc(o.code)}</b> ${esc(String(o.name||'').slice(0,40))}<br>หมวด${esc(o.muad)} · เขต ${o.zone||'—'}<br>ขอ ${o.nAsk} ปี · ได้ ${o.nOk} ปี · พลาด ${o.nMiss} ปี (${o.yrs.join(' · ')})<br>แหล่งงบที่ค้าง: ${esc(o.catTxt)}<br>วงเงินที่ไม่ได้ ${fmtM(o.missAmt)}`})),
     {unit:'ลบ.', labelW:150, onClick:r=>{ const b=document.querySelector('.nav button[data-page="map"]'); if(b) b.click();
       setTimeout(()=>{ if(typeof selectRoad==='function') selectRoad(r.code); },320); }});
 }
@@ -7046,10 +7046,10 @@ function renderOverviewBudget(){
     <div class="grid" style="grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:14px">
       <div class="gcell"><h3 style="font-size:13px">งบรวมต่อหมวด (ลบ.)</h3><div id="chBudMuad"></div></div>
       <div class="gcell"><h3 style="font-size:13px">งบรวมต่อสายทาง Top 10 (ลบ.)</h3><div id="chBudRoad"></div></div>
-      <div class="gcell"><h3 style="font-size:13px">งบแยกตามชนิดงบ</h3><div id="chBudType"></div></div>
+      <div class="gcell"><h3 style="font-size:13px">งบแยกตามแหล่งงบ</h3><div id="chBudType"></div></div>
     </div>
     <div class="grid two" style="margin-top:14px">
-      <div class="gcell"><h3 style="font-size:13px">เงินไหลจากชนิดงบ ไปลงหมวดไหน</h3>
+      <div class="gcell"><h3 style="font-size:13px">เงินไหลจากแหล่งงบ ไปลงหมวดไหน</h3>
         
         <div id="chBudFlow"></div></div>
       <div class="gcell"><h3 style="font-size:13px">งบกระจุกอยู่ที่ไหน (Pareto)</h3>
@@ -9032,7 +9032,7 @@ defineSource({
   read:async(force)=>{
     const all=[];
     const S=v=>String(v??'').trim();
-    const FIELDS=[['จำนวนเสาไฟฟ้า','poleQty'],['จำนวนกล้อง','cameraQty'],['จำนวนกล้อง CCTV','cameraQty'],['เลขที่สัญญา','contract'],['ประเภทงบ','budgetClass'],['ชนิดงบ','budgetType'],['กิจกรรม','activity'],
+    const FIELDS=[['จำนวนเสาไฟฟ้า','poleQty'],['จำนวนกล้อง','cameraQty'],['จำนวนกล้อง CCTV','cameraQty'],['เลขที่สัญญา','contract'],['ประเภทงบ','budgetClass'],['ชนิดงบ','budgetType'],['แหล่งงบ','budgetSrc'] /* v32.05 หัว แหล่งงบ = ช่องเดียวกับ ชนิดงบ (KORN 10 พ.ย. 69 "แหล่งงบ ชนิดงบ มันคืออันเดียวกัน" · "เปลี่ยนด้วย") */,['กิจกรรม','activity'],
       ['ลักษณะงาน','worktype'],['รหัสสายทาง','roadFull'],['เริ่มต้นสัญญา','start'],['สิ้นสุดสัญญา','end'],
       ['ส่งงานงวดสุดท้าย','delivered'],['วงเงินตามสัญญา','amount'],['ผู้รับจ้าง','contractor'],
       ['ผู้ควบคุมงาน','supervisor'],['หน่วยดำเนินการ','agency'],
@@ -9054,7 +9054,7 @@ defineSource({
         const code=extractRoadCode(o.roadFull)||null; // งานอาคาร/งานที่ไม่ผูกสายทาง -> null (นับในภาพรวม ไม่ขึ้นรายสาย)
         const year=yearFromContract(contract)||tabYear;
         if(!year) return; // tab แรกของไฟล์ที่ไม่รู้ปี: ต้องอ่านปีจากเลขที่สัญญาเท่านั้น
-        let bt=S(o.budgetType)||'ไม่ระบุ';
+        let bt=S(o.budgetType)||S(o.budgetSrc)||'ไม่ระบุ';   /* v32.05 มี ชนิดงบ ใช้ก่อน · ว่าง/ไม่มี ใช้หัว แหล่งงบ */
         bt=bt.replace(/\s*เหลือจ่าย\s*$/,'')||bt; // "บำรุงเหลือจ่าย" -> "บำรุง", "ปลอดภัยเหลือจ่าย" -> "ปลอดภัย"
         const parsedKm=historySegments(o.kmA,o.kmB,S(o.activity),S(o.worktype),bt);
         const planRaw=historyProgressField(raw,'แผน'),resultRaw=historyProgressField(raw,'ผล');
@@ -9254,7 +9254,7 @@ function renderHistory(){
       return `<div class="grid ${bldCard?'two':''}" style="margin-bottom:14px">${agencyCard}${bldCard}</div>`; })()}
     <div class="grid two">
       <div class="card"><h3>วงเงินตามสัญญาต่อปีงบประมาณ (ล้านบาท)</h3><div id="chHistYear"></div></div>
-      <div class="card"><h3>วงเงินต่อปี แยกตามชนิดงบ (ครบทุกชนิด) (ล้านบาท)</h3><div id="chHistType"></div></div>
+      <div class="card"><h3>วงเงินต่อปี แยกตามแหล่งงบ (ครบทุกแหล่ง) (ล้านบาท)</h3><div id="chHistType"></div></div>
     </div>
     <div class="grid two" style="margin-top:14px">
       <div class="card"><h3>วงเงินต่อปี แยกตามหมวดบำรุงทาง</h3><div id="chHistMuad"></div></div>
@@ -9381,7 +9381,7 @@ function renderHistory(){
         [{name:'วงเงิน', color:C.teal, vals:years.map(y=>+(H.filter(x=>x.year===y).reduce((a,x)=>a+(x.amount||0),0)/1e6).toFixed(1))}],
         {unit:'ลบ.', height:300, area:true});
    },
-   'วงเงินรายปีแยกชนิดงบ': ()=>{
+   'วงเงินรายปีแยกแหล่งงบ': ()=>{
       /* v31.39 ผู้ใช้: "กราฟแบบรูป 2 ก็ดูยาก เปลี่ยนดีกว่า" — แท่งซ้อนเทียบกันไม่ได้เพราะท่อนกลางไม่ได้เริ่มที่ศูนย์
          เปลี่ยนเป็นแถบเทียบรายปี (ยาวตามเงินจริง) + ตารางละเอียดพับไว้ ใช้เครื่องมือเดียวกับกล่องอื่น */
       hstack('chHistType', years.map(y=>({label:'ปี '+y,
@@ -9404,7 +9404,7 @@ function renderHistory(){
       hbar('chHistAct', topAct.map(e=>{
         const domBt=Object.entries(e[1].bt).sort((a,b)=>b[1]-a[1])[0]?.[0]||'';
         return {label:e[0], v:+(e[1].amt/1e6).toFixed(1), color:TCOLOR[domBt]||btColor(domBt)||C.teal,
-          tip:`${fmt(e[1].amt)} บาท · ${e[1].n} โครงการ · ชนิดงบหลัก: ${esc(domBt)||'-'}`};}), {unit:'ลบ.', labelW:230, height:330});
+          tip:`${fmt(e[1].amt)} บาท · ${e[1].n} โครงการ · แหล่งงบหลัก: ${esc(domBt)||'-'}`};}), {unit:'ลบ.', labelW:230, height:330});
       (()=>{ const box=document.getElementById('chHistAct'); const lg=document.createElement('div'); lg.className='legendrow';
         const used=[...new Set(topAct.map(e=>Object.entries(e[1].bt).sort((a,b)=>b[1]-a[1])[0]?.[0]||''))].filter(Boolean);
         lg.innerHTML=used.map(t=>`<span class="lg"><span class="sw" style="background:${TCOLOR[t]||btColor(t)||C.teal}"></span>${esc(t)}</span>`).join('');
@@ -9630,14 +9630,14 @@ function renderHistRoad(code){
     </div>
     <div class="card" style="margin-top:14px">
       <h3>รายการโครงการทั้งหมดของสายนี้</h3>
-      ${list.length?`<div class="tblwrap" style="max-height:420px"><table><thead><tr><th>ปีงบ</th><th>ชนิดงบ</th><th>หน่วยดำเนินการ</th><th>กิจกรรม</th><th>ช่วง กม.</th><th class="num">วงเงิน (บาท)</th><th>ส่งงานงวดสุดท้าย</th><th>ผู้ควบคุมงาน</th><th>ผู้รับจ้าง</th></tr></thead><tbody>
+      ${list.length?`<div class="tblwrap" style="max-height:420px"><table><thead><tr><th>ปีงบ</th><th>แหล่งงบ</th><th>หน่วยดำเนินการ</th><th>กิจกรรม</th><th>ช่วง กม.</th><th class="num">วงเงิน (บาท)</th><th>ส่งงานงวดสุดท้าย</th><th>ผู้ควบคุมงาน</th><th>ผู้รับจ้าง</th></tr></thead><tbody>
         ${list.map(x=>`<tr><td><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${YCOLOR[String(x.year)]};margin-right:6px"></span>${x.year}</td><td>${esc(x.budgetType)}</td><td>${esc(x.agency)||'–'}</td><td>${esc(x.activity)||'–'}${x.code0?` <span class="pill ok" style="font-size:10px">เดิม ${esc(x.code0)}</span>`:''}${(w=>w&&w>=_today?` <span class="pill wait warrTag" style="font-size:10px" data-w="${thD(w)}">🛡 ติดค้ำ</span>`:'')(warrantyEnd(x))}</td><td style="font-variant-numeric:tabular-nums;font-size:11.5px">${esc(x.kmRange)||'–'}${poleCount(x)?`<br><span style="color:var(--teal-ink);font-weight:600">💡 ≈ ${fmt(poleCount(x))} ต้น</span>`:''}${bridgeM(x)?`<br><span style="color:var(--s1);font-weight:600">🌉 ${fmt(bridgeM(x))} ม.</span>`:''}</td><td class="num">${x.amount?fmt(x.amount):'–'}</td><td${thDateSv(x.delivered)}>${esc(thDateTxt(x.delivered))||'–'}</td><td>${esc(x.supervisor)||'–'}</td><td>${esc(x.contractor)||'–'}</td></tr>`).join('')}
       </tbody></table></div>${wl.length?`<div class="footnote" style="margin-top:7px">🛡 ติดค้ำประกันสัญญา ${wl.length} โครงการ · รวม ${fmt(+wKm.toFixed(2))} กม.${roadLen?` (${Math.min(100,100*wKm/roadLen).toFixed(0)}% ของสาย)`:''} · วงเงิน ${fmtM(wTot)} — ชี้ที่ป้าย 🛡 เพื่อดูวันหมดค้ำ`:''}</div>`:'<div class="note" style="padding:8px 0">ยังไม่มีประวัติโครงการของสายนี้ (มีเฉพาะความต้องการ Zerobase ด้านล่าง)</div>'}
     </div>
     <!-- v31.56 ผู้ใช้: "เอา 70 เหลือจ่าย ขึ้นก่อน 71 ปกติสิ … ปีก่อนหน้า ปีก่อนหน้าเหลือจ่าย ปีล่าสุด" → การ์ดคำขอเรียงตามเวลา: ปีก่อนหน้า (เหลือจ่าย) มาก่อน ปีล่าสุดปิดท้าย -->
     ${(lo=>lo?`<div class="card" style="margin-top:14px" id="hrLeftover">
       <h3><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${fadeHex('#e87ba4')};margin-right:7px"></span>คำของบปี ${lo.year} (เหลือจ่าย) — ยังไม่อยู่ในประวัติ (${lo.rows.length})</h3>
-      <div class="tblwrap" style="max-height:240px"><table><thead><tr><th>#</th><th>ปีที่ขอ</th><th>ชนิดงบ</th><th>กิจกรรม/โครงการ</th><th>ช่วง กม.</th><th class="num">งบประมาณ (บาท)</th></tr></thead><tbody>
+      <div class="tblwrap" style="max-height:240px"><table><thead><tr><th>#</th><th>ปีที่ขอ</th><th>แหล่งงบ</th><th>กิจกรรม/โครงการ</th><th>ช่วง กม.</th><th class="num">งบประมาณ (บาท)</th></tr></thead><tbody>
         ${lo.rows.map((q,i)=>`<tr><td style="color:var(--muted)">${i+1}</td><td>${q.year||'–'}</td>
           <td><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${fadeHex(btColor(catName(q.cat||''))||'#e87ba4')};margin-right:6px"></span>${esc(catName(q.cat||'–'))}</td>
           <td>${esc((q.act||q.proj)||'–')}</td>
@@ -9647,7 +9647,7 @@ function renderHistRoad(code){
     </div>`:'')(leftoverCarry(code))}
     ${rq.length?`<div class="card" style="margin-top:14px">
       <h3><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#e87ba4;margin-right:7px"></span>คำของบประมาณปีล่าสุด ${latestRequestYear()} (${rq.length})</h3>
-      <div class="tblwrap" style="max-height:320px"><table><thead><tr><th>${hasRank(rq)?'ลำดับ':'#'}</th><th>ปีที่ขอ</th><th>ชนิดงบ</th><th>กิจกรรม/โครงการ</th><th>ช่วง กม.</th><th class="num">งบประมาณ (บาท)</th></tr></thead><tbody>
+      <div class="tblwrap" style="max-height:320px"><table><thead><tr><th>${hasRank(rq)?'ลำดับ':'#'}</th><th>ปีที่ขอ</th><th>แหล่งงบ</th><th>กิจกรรม/โครงการ</th><th>ช่วง กม.</th><th class="num">งบประมาณ (บาท)</th></tr></thead><tbody>
         ${rq.map((q,i)=>`<tr><td style="color:var(--muted)">${hasRank(rq)?rankTxt(q,i):(i+1)}</td><td>${q.year||'–'}</td>
           <td><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${btColor(catName(q.cat||''))||'#e87ba4'};margin-right:6px"></span>${esc(catName(q.cat||'–'))}</td>
           <td>${esc((q.act||q.proj)||'–')}</td>
@@ -13023,7 +13023,7 @@ function renderYearProjectTable(rows,year){
   const values={act:[...new Set(rows.flatMap(contractActivities))].sort(),agency:[...new Set(rows.map(histAgency))].sort(),budget:[...new Set(rows.map(x=>normCat(x.budgetType)))].sort(catCmp),muad:[...new Set(rows.map(recMuad))].sort()};
   let controls=card.querySelector('.yr-table-controls');
   if(!controls){controls=document.createElement('div');controls.className='yr-table-controls';card.insertBefore(controls,table.parentElement);}
-  const labels={act:'กิจกรรม',agency:'หน่วยดำเนินการ',budget:'ชนิดงบ',muad:'หมวด'};
+  const labels={act:'กิจกรรม',agency:'หน่วยดำเนินการ',budget:'แหล่งงบ',muad:'หมวด'};
   controls.innerHTML=Object.entries(labels).map(([k,label])=>`<label>${label} <select class="search" data-yr-filter="${k}" aria-label="กรอง${label}ตารางโครงการ"><option value="all">ทั้งหมด</option>${values[k].map(v=>'<option value="'+esc(v)+'">'+esc(v)+'</option>').join('')}</select></label>`).join('')+'<input class="search yr-table-query" aria-label="ค้นหาตารางโครงการ" placeholder="ค้นหารหัส / ชื่อสาย / สัญญา"><button class="btn ghost yr-table-reset">แสดงทั้งหมด</button>';
   Object.keys(labels).forEach(k=>{if(view[k]!=='all'&&!values[k].includes(view[k]))view[k]='all';controls.querySelector('[data-yr-filter="'+k+'"]').value=view[k];});controls.querySelector('input').value=view.q;
   const render=()=>{
@@ -13084,13 +13084,15 @@ defineSource({
         let code=road?rc:codeRaw;
         if(road && REROUTE[code]) code=REROUTE[code].to;   // สะพานรีรูท → นับใต้สายใหม่ เหมือนประวัติ
         recs.push({year, code, codeRaw, road, unitKey:road?null:unitKeyOf(codeRaw+' '+G(o,'ชื่อสายทาง')),   // กฎ 21 (unit = หน่วยนับ อยู่ด้านล่าง)
-          cat:S(o['ชนิดงบ'])||'— ไม่ระบุ',
+          /* v32.05 KORN 10 พ.ย. 69 "แหล่งงบ ชนิดงบ มันคืออันเดียวกัน" · "เปลี่ยนด้วย" — หัว ชนิดงบ ก่อน · ไม่มี/ว่าง ใช้หัว แหล่งงบ (ช่องเดียวกัน) */
+          cat:S(o['ชนิดงบ'])||G(o,'แหล่งงบ','แหล่งงบประมาณ')||'— ไม่ระบุ',
           proj:S(o['ชื่อโครงการ']??o['กิจกรรม']),
           act:S(o['กิจกรรมโดยสังเขป']??o['ลักษณะงาน']??o['กิจกรรม']),
           /* v28.0 — คอลัมน์ที่ตารางสรุปตามแหล่งงบต้องใช้ (มีในชีทอยู่แล้ว แค่ไม่เคยอ่านเข้ามา)
              ค่าในคอลัมน์แหล่งงบมีเลขนำมาเอง เช่น "1.จังหวัด" … "10.กลุ่มจังหวัด"
              ระบบจึงเรียงลำดับตามเลขนั้นได้เลย ไม่ต้องมีรายชื่อตายตัวในโค้ด */
-          src:G(o,'แหล่งงบ','แหล่งงบประมาณ')||'— ไม่ระบุแหล่งงบ',
+          /* v32.05 ไม่มีคอลัมน์แหล่งงบแยก (ข้อมูลจริงหลัง 10 พ.ย. 69) = แหล่งงบคือค่าช่องงบเดียวกัน (cat) — ตารางสรุปจึงเป็นชั้นเดียว */
+          src:G(o,'แหล่งงบ','แหล่งงบประมาณ')||S(o['ชนิดงบ'])||'— ไม่ระบุ',
           actv:G(o,'กิจกรรม','ประเภทงาน'),
           rname:G(o,'ชื่อสายทาง'),
           qty:G(o,'ปริมาณงาน'), unit:G(o,'หน่วยนับ'),
@@ -13220,7 +13222,7 @@ function reqHiddenTxt(){
   const Y=reqYearOnly(), inZone=reqZonePicks.length?Y.filter(r=>reqZonePicks.includes(recZoneKey(r))):Y;
   const shown=new Set(reqFiltered()), hid=inZone.filter(r=>!shown.has(r));
   if(!hid.length) return '';
-  if(reqActPicks.length) return ` · ไม่รวม${reqCatPicks.length?'ชนิดงบ/':''}กิจกรรมอื่น ${hid.length} คำขอ`;
+  if(reqActPicks.length) return ` · ไม่รวม${reqCatPicks.length?'แหล่งงบ/':''}กิจกรรมอื่น ${hid.length} คำขอ`;
   const C={}; hid.forEach(r=>{ const k=reqCatKey(r); C[k]=(C[k]||0)+1; });
   const ks=Object.keys(C).sort((a,b)=>C[b]-C[a]||a.localeCompare(b,'th'));
   return ' · ไม่รวม '+ks.slice(0,3).map(k=>`${k} ${C[k]}`).join(' · ')+(ks.length>3?` · อีก ${ks.length-3} ชนิด ${ks.slice(3).reduce((a,k)=>a+C[k],0)} คำขอ`:'');
@@ -13286,15 +13288,19 @@ function reqSrcModel(){
       return a&&b?(a+' – '+b):(a||b||''); }).filter(Boolean).join(', ');
     return t||'ทั้งสาย';
   };
+  /* v32.05 KORN 10 พ.ย. 69 "แหล่งงบ ชนิดงบ มันคืออันเดียวกัน" · "เปลี่ยนด้วย"
+     ไม่มีคอลัมน์แหล่งงบแยก → แหล่งงบ = ค่าช่องงบ (r.cat) · กลุ่มที่แหล่งงบ = ช่องงบเดียวกันทั้งกลุ่ม เป็นชั้นเดียว (flat: หัวกลุ่ม → รายการ ไม่มีหัวซ้อนชื่อซ้ำ)
+     กลุ่ม flat เรียงด้วย catCmp (ลำดับของเจ้าของ) · ข้อมูลที่มีคอลัมน์แหล่งงบแยกค่าต่างจากช่องงบ ยัง 2 ชั้นและเรียงตามเลขนำหน้าเหมือนเดิม (ก2) */
   const bySrc={};
-  Q.forEach(r=>{ const k=r.src||'— ไม่ระบุแหล่งงบ'; (bySrc[k]=bySrc[k]||[]).push(r); });
+  Q.forEach(r=>{ const k=r.src||r.cat||'— ไม่ระบุ'; (bySrc[k]=bySrc[k]||[]).push(r); });
+  const flatOf=k=>bySrc[k].every(r=>(r.cat||'— ไม่ระบุ')===k);
   return Object.keys(bySrc)
-    .sort((a,b)=>SRC_NO(a)-SRC_NO(b)||a.localeCompare(b,'th'))
+    .sort((a,b)=>(flatOf(a)-flatOf(b))||(flatOf(a)?catCmp(a,b):(SRC_NO(a)-SRC_NO(b)||a.localeCompare(b,'th'))))
     .map(src=>{
-      const list=bySrc[src], byCat={};
+      const list=bySrc[src], byCat={}, flat=flatOf(src);
       list.forEach(r=>{ const c=r.cat||'— ไม่ระบุ'; (byCat[c]=byCat[c]||[]).push(r); });
       return {
-        src, n:list.length,
+        src, flat, label:flat?catName(src):src, n:list.length,
         amt:list.reduce((a,r)=>a+(r.amt||0),0),
         wait:list.filter(r=>r.amt==null).length,
         cats:Object.keys(byCat).sort(catCmp).map(c=>({   /* v31.86 ลำดับชนิดงบที่เจ้าของกำหนด */
@@ -13328,12 +13334,12 @@ function renderReqSrc(){
   const RK=M.some(g=>g.cats.some(c=>hasRank(c.items)));
   let rows='';
   M.forEach(g=>{
-    rows+=`<tr class="srcgrp"><td colspan="${NC-1}"><b>${esc(g.src)}</b>`+
+    rows+=`<tr class="srcgrp"><td colspan="${NC-1}"><b>${esc(g.label)}</b>`+
       `<span style="font-weight:400;color:var(--ink2);font-size:11.5px"> · ${g.n} รายการ`+
       (g.wait?` · รอประเมินราคา ${g.wait}`:'')+`</span></td>`+
       `<td class="num"><b>${fmt(g.amt)}</b></td></tr>`;
     g.cats.forEach(c=>{
-      rows+=`<tr class="srccat"><td colspan="${NC-1}">${esc(catName(c.cat))}`+
+      if(!g.flat) rows+=`<tr class="srccat"><td colspan="${NC-1}">${esc(catName(c.cat))}`+   /* v32.05 ชั้นเดียว: ไม่มีหัวชั้นสอง */
         `<span style="font-weight:400;color:var(--muted);font-size:11px"> · ${c.n} รายการ</span></td>`+
         `<td class="num">${fmt(c.amt)}</td></tr>`;
       c.items.forEach((it,i)=>{
@@ -13348,7 +13354,7 @@ function renderReqSrc(){
       });
     });
   });
-  /* ปิดการเรียงคอลัมน์: ตารางนี้เป็นรายงานแบ่งกลุ่ม 2 ชั้น ถ้าเรียงใหม่ แถวหัวกลุ่มกับยอดรวมจะหลุดจากพวก */
+  /* ปิดการเรียงคอลัมน์: ตารางนี้เป็นรายงานแบ่งกลุ่ม (1–2 ชั้น · v32.05) ถ้าเรียงใหม่ แถวหัวกลุ่มกับยอดรวมจะหลุดจากพวก */
   box.innerHTML=`<div class="tblwrap" style="max-height:560px"><table id="reqSrcTable" data-sortable="1"><thead><tr>
       <th data-nosort style="width:42px">${RK?'ลำดับ':'ที่'}</th><th data-nosort style="width:20%">กิจกรรม</th><th data-nosort style="width:88px">รหัสสายทาง</th>
       <th data-nosort>ชื่อสายทาง</th><th data-nosort style="width:96px">หมวด</th><th data-nosort style="width:15%">ช่วงดำเนินการ (กม.)</th><th data-nosort class="num" style="width:120px">งบประมาณ (บาท)</th>
@@ -13372,9 +13378,9 @@ function exportReqSrcXlsx(){
   let grand=0, grandN=0;
   M.forEach(g=>{
     grand+=g.amt; grandN+=g.n;
-    rows.push([{v:g.src,s:2},{v:'',s:2},{v:'',s:2},{v:'',s:2},{v:'',s:2},{v:g.n+' รายการ',s:2},{v:g.amt,s:2}]);
+    rows.push([{v:g.label,s:2},{v:'',s:2},{v:'',s:2},{v:'',s:2},{v:'',s:2},{v:g.n+' รายการ',s:2},{v:g.amt,s:2}]);
     g.cats.forEach(c=>{
-      rows.push(['', catName(c.cat), '', '', '', c.n+' รายการ', c.amt]);
+      if(!g.flat) rows.push(['', catName(c.cat), '', '', '', c.n+' รายการ', c.amt]);   /* v32.05 ชั้นเดียว */
       c.items.forEach((it,i)=>rows.push([RK?(it.rank==null?'–':it.rank):(i+1), it.actv, it.code, it.rname, it.muad, it.km, it.amt==null?'รอประเมิน':it.amt]));
     });
   });
@@ -13392,10 +13398,10 @@ function printReqSrc(){
   const RK=M.some(g=>g.cats.some(c=>hasRank(c.items)));   // v31.40 ลำดับจากชีท (ถ้ามี) แทนเลขนับ
   let body='';
   M.forEach(g=>{
-    body+=`<tr class="g"><td colspan="6"><b>${esc(g.src)}</b> · ${g.n} รายการ`+
+    body+=`<tr class="g"><td colspan="6"><b>${esc(g.label)}</b> · ${g.n} รายการ`+
       (g.wait?` · รอประเมินราคา ${g.wait}`:'')+`</td><td class="n"><b>${fmt(g.amt)}</b></td></tr>`;
     g.cats.forEach(c=>{
-      body+=`<tr class="c"><td colspan="6">${esc(catName(c.cat))} · ${c.n} รายการ</td><td class="n">${fmt(c.amt)}</td></tr>`;
+      if(!g.flat) body+=`<tr class="c"><td colspan="6">${esc(catName(c.cat))} · ${c.n} รายการ</td><td class="n">${fmt(c.amt)}</td></tr>`;   /* v32.05 ชั้นเดียว */
       c.items.forEach((it,i)=>{
         body+=`<tr><td class="n">${RK?rankTxt(it,i):(i+1)}</td><td>${esc(it.actv)}</td><td><b>${esc(it.code)}</b></td>`+
           `<td>${esc(it.rname)}</td><td>${esc(it.muad)}</td><td>${esc(it.km)}</td>`+
@@ -13458,13 +13464,13 @@ function renderRequests(){
       <div class="card kpi"><div class="lbl">หมวดที่มีคำขอ</div><div class="val">${muadWithReq.length} <small>/ ${MUAD_ORDER.length} หมวด</small></div></div>
     </div>
     <!-- v31.2 ผู้ใช้สั่ง (7 ก.ย. 69): สัดส่วนชนิดงบเป็นกล่องแยกชนิด (จำนวน · % · วงเงิน) มาก่อน → มุมมองรายสาย → Top 10 -->
-    <div class="card" style="margin-top:14px"><h3>สัดส่วนคำขอแยกตามชนิดงบ/แผนงาน</h3><div id="chReqCat"></div></div>
+    <div class="card" style="margin-top:14px"><h3>สัดส่วนคำขอแยกตามแหล่งงบ/แผนงาน</h3><div id="chReqCat"></div></div>
     <!-- v31.36 ผู้ใช้: "เพิ่มกล่องแบ่งตามเรทงบ โดยแบ่งจากชนิดงบ และในแต่ละชนิดงบให้แบ่งตามเรทงบประมาณ" -->
     <div class="card" style="margin-top:14px"><h3>คำขอแยกตามช่วงวงเงิน (เรทงบ)</h3><div id="chReqBand"></div></div>
     <!-- v31.4 ผู้ใช้: "เพิ่มกล่องคำขอแบ่ง ตามเขต ตามกิจกรรม ด้วย" — กล่องชุดเดียวกับชนิดงบ -->
     <div class="grid two" style="margin-top:14px">
       <div class="card"><h3>คำขอแยกตามเขตเลือกตั้ง</h3><div id="chReqZone"></div></div>
-      <div class="card"><h3>คำขอแยกตามกิจกรรม × ชนิดงบ</h3><div id="chReqAct"></div></div>
+      <div class="card"><h3>คำขอแยกตามกิจกรรม × แหล่งงบ</h3><div id="chReqAct"></div></div>
     </div>
     <div class="grid two" style="margin-top:14px">
       <div class="card" style="display:flex;flex-direction:column">
@@ -13492,7 +13498,7 @@ function renderRequests(){
     <div class="card" style="margin-top:14px">
       <h3>สรุปรายสายทาง (ทั้ง ${counts.length} สายที่มีคำขอ)</h3>
       <div class="tblwrap" style="max-height:520px"><table id="reqRoadTable"><thead><tr>
-        <th>รหัส</th><th>ชื่อสายทาง</th><th>หมวด</th>${reqAll?'<th>ปีที่ขอ</th>':''}<th class="num">ระยะทางสาย (กม.)</th><th class="num">จำนวนคำขอ</th><th class="num">ระยะที่ขอรวม (กม.)</th><th class="num">% ของสาย</th><th class="num">งบระบุแล้ว (บาท)</th><th>ชนิดงบที่ขอ</th><th>One-Page</th>
+        <th>รหัส</th><th>ชื่อสายทาง</th><th>หมวด</th>${reqAll?'<th>ปีที่ขอ</th>':''}<th class="num">ระยะทางสาย (กม.)</th><th class="num">จำนวนคำขอ</th><th class="num">ระยะที่ขอรวม (กม.)</th><th class="num">% ของสาย</th><th class="num">งบระบุแล้ว (บาท)</th><th>แหล่งงบที่ขอ</th><th>One-Page</th>
       </tr></thead><tbody></tbody></table></div>
     </div>`;
   safeRun('สรุปตามแหล่งงบ', renderReqSrc);
@@ -13812,8 +13818,8 @@ function gapMatch(rec, gotList){
 }
 let gapYearPick='all', gapStuckAll=false;   // v31.8 gapStuckAll: ตารางสายที่ขอแล้วไม่ได้ ดูทุกปี
 /* v31.9 ผู้ใช้: "รวมตารางมามั่ว น่าจะขั้นหัวข้อ หรือทำเป็นแท็บเล็กๆ บนตาราง" — ตารางรายละเอียดแยกแท็บตามกลุ่ม ลำดับเดียวกับหลอด */
-const GAP_DETAIL_TABS=['ชนิดงบ','หมวด','กิจกรรม','เขต'];
-let gapDetailTab='ชนิดงบ';
+const GAP_DETAIL_TABS=['แหล่งงบ','หมวด','กิจกรรม','เขต'];   /* v32.05 ป้ายแท็บ = คีย์ เปลี่ยนคู่กับ addDetail('แหล่งงบ') (KORN 10 พ.ย. 69 "แหล่งงบ ชนิดงบ มันคืออันเดียวกัน" · "เปลี่ยนด้วย") */
+let gapDetailTab='แหล่งงบ';
 const gapZoneOf=(code,segs)=>{ const sg=segsOf({segs});
   return sg.length ? zoneOfRec(code, sg[0].a, sg[0].b??sg[0].a) : zoneOfRec(code,null); };
 function gapModel(){
@@ -13938,7 +13944,7 @@ function renderGap(){
    </div>`+
   (noReq?`<div class="card" style="margin-bottom:14px;border-left:4px solid var(--gold)"><div class="note" style="margin:0;padding:6px 2px">ปีงบ ${esc(gapYearPick)} ไม่มีคำของบ · ปีที่มีคำขอ: ${M.years.join(' · ')}</div></div>`:'')+
   /* v31.9 กันเงียบ: จับคู่ต้องชนิดงบตรงกัน — ถ้าชื่อชนิดงบของสองชีทไม่ตรงกันเลยสักชื่อ ทุกหลอดจะเป็น 0% เงียบๆ → ต้องบอกให้เห็น */
-  (catDrift?`<div class="card" style="margin-bottom:14px;border-left:4px solid #e34948"><div class="note" style="margin:0;padding:6px 2px">⚠ ชนิดงบในคำขอ (${[...reqCatSet].slice(0,3).map(esc).join(' · ')}) กับในสัญญา (${[...histCatSet].slice(0,3).map(esc).join(' · ')}) สะกดไม่ตรงกันสักชื่อ</div></div>`:'')+
+  (catDrift?`<div class="card" style="margin-bottom:14px;border-left:4px solid #e34948"><div class="note" style="margin:0;padding:6px 2px">⚠ แหล่งงบในคำขอ (${[...reqCatSet].slice(0,3).map(esc).join(' · ')}) กับในสัญญา (${[...histCatSet].slice(0,3).map(esc).join(' · ')}) สะกดไม่ตรงกันสักชื่อ</div></div>`:'')+
 
   `<div class="grid kpis">
      <div class="card kpi"><div class="lbl">คำของบ · ${esc(yearLbl)}</div><div class="val">${T.n}<small> รายการ</small></div><div class="foot">${new Set(V.rows.filter(r=>r.road).map(r=>r.code)).size} สายทาง · ขอ ${lb(T.ask)} ลบ.</div></div>
@@ -13950,7 +13956,7 @@ function renderGap(){
    </div>`+
 
   (noReq?'':`<div class="grid two" style="margin-top:14px">
-     <div class="card"><h3>ผลคำของบ — แต่ละชนิดงบ · ${esc(yearLbl)}</h3>
+     <div class="card"><h3>ผลคำของบ — แต่ละแหล่งงบ · ${esc(yearLbl)}</h3>
        
        <div id="gapChCat"></div></div>
      <div class="card"><h3>ผลคำของบ — แต่ละหมวด · ${esc(yearLbl)}</h3>
@@ -14004,7 +14010,7 @@ function renderGap(){
      
      <div class="tblwrap" style="max-height:480px"><table id="gapTable" data-sortable="1"><thead><tr>
        <th>รหัสสายทาง</th><th>ชื่อสายทาง</th><th>หมวด</th><th>เขต</th><th class="num">ปีที่ขอ</th><th class="num">รายการที่ขอ</th><th class="num">ปีที่พลาด</th>
-       <th class="num">วงเงินที่ไม่ได้ (บาท)</th><th>ชนิดงบที่ค้าง</th><th>ปีที่เคยขอ</th></tr></thead><tbody>
+       <th class="num">วงเงินที่ไม่ได้ (บาท)</th><th>แหล่งงบที่ค้าง</th><th>ปีที่เคยขอ</th></tr></thead><tbody>
        ${stuck.map(o=>`<tr data-code="${esc(o.code)}"><td><b>${esc(o.code)}</b></td><td style="white-space:nowrap">${esc(o.name||'')}</td><td style="white-space:nowrap">${muadCell(o.muad)}</td><td>${o.zone||'—'}</td>`+
          `<td class="num">${o.nAsk}</td><td class="num">${o.nItems}</td><td class="num">${o.nMiss}</td>`+
          `<td class="num">${o.missAmt?fmt(o.missAmt):'—'}</td><td>${esc(o.catTxt)}</td><td>${o.yrs.join(' · ')}</td></tr>`).join('')}
@@ -14031,12 +14037,12 @@ function renderGap(){
   const detail=[];   // แถวตารางรายละเอียด (ประเภท · กลุ่ม)
   const addDetail=(type,rows)=>rows.filter(r=>!r.idle).forEach(r=>detail.push({type, ...r}));
   const actCat=k=>{ const c={}; V.rows.filter(r=>(r.act||'')===k).forEach(r=>{ c[r.cat]=(c[r.cat]||0)+(r.ask||0); }); return Object.entries(c).sort((a,b)=>b[1]-a[1])[0]?.[0]||''; };
-  safeRun('หลอด ชนิดงบ', ()=>{
+  safeRun('หลอด แหล่งงบ', ()=>{
     if(noReq) return;
-    const rows=tubeRows(V.byCat, askedCats); addDetail('ชนิดงบ',rows);
+    const rows=tubeRows(V.byCat, askedCats); addDetail('แหล่งงบ',rows);
     tube('gapChCat', rows, {labelW:150, colorOf:k=>isLeftover(k)?fadeHex(btColor(catBase(k))||C.teal):(btColor(k)||C.teal), avg:avgPct});
     if(idleCats.length) document.getElementById('gapChCat').insertAdjacentHTML('beforeend',
-      `<div class="footnote xnote">ชนิดงบที่ไม่ได้ยื่นขอ: ${idleCats.map(esc).join(' · ')}</div>`);
+      `<div class="footnote xnote">แหล่งงบที่ไม่ได้ยื่นขอ: ${idleCats.map(esc).join(' · ')}</div>`);
   });
   safeRun('หลอด หมวด', ()=>{
     if(noReq) return;
@@ -14205,8 +14211,8 @@ function renderYearly(){
       <button class="btn ghost" type="button" id="yrNext" ${yi>=years.length-1?'disabled':''} title="ปีถัดไป">${yi<years.length-1?years[yi+1]:''} ›</button>
       <b style="margin-left:8px">หน่วยดำเนินการ</b>
       <select class="search" id="yrAgencySel" style="max-width:220px" multiple data-ph="ทุกหน่วย">${agOpt}</select>
-      <b style="margin-left:8px">ชนิดงบ</b>
-      <select class="search" id="yrCatSel" style="max-width:220px" multiple data-ph="ทุกชนิดงบ">${catOpt}</select>
+      <b style="margin-left:8px">แหล่งงบ</b>
+      <select class="search" id="yrCatSel" style="max-width:220px" multiple data-ph="ทุกแหล่งงบ">${catOpt}</select>
       <b style="margin-left:8px">กิจกรรม</b>
       <select class="search" id="yrActSel" style="max-width:260px" multiple data-ph="ทุกกิจกรรม">${actOpt}</select>
       <b style="margin-left:8px">เขตเลือกตั้ง</b>
@@ -14240,7 +14246,7 @@ function renderYearly(){
     <!-- v31.8 ผู้ใช้เรียงใหม่: หน่วยดำเนินการ · ชนิดงบ · หมวด · กิจกรรม · เขต · ลำดับสูงสุด -->
     <div class="grid two">
       <div class="card"><h3>หน่วยดำเนินการ (ล้านบาท)</h3><div id="yrAgency"></div></div>
-      <div class="card"><h3>วงเงินแยกตามชนิดงบ (ล้านบาท)</h3><div id="yrType"></div></div>
+      <div class="card"><h3>วงเงินแยกตามแหล่งงบ (ล้านบาท)</h3><div id="yrType"></div></div>
     </div>
     <div class="card" style="margin-top:14px"><h3>โครงการแยกตามช่วงวงเงิน (เรทงบ)</h3><div id="yrBand"></div></div>
     <div class="grid two" style="margin-top:14px">
@@ -14261,7 +14267,7 @@ function renderYearly(){
       <h3>รายการโครงการทั้งหมด ปีงบ ${y}${agLbl} (${H.length} โครงการ)</h3>
       
       <div class="tblwrap" style="max-height:560px"><table id="yrTable"><thead><tr>
-        <th>รหัส</th><th>ชื่อสายทาง</th><th>หมวด</th><th>หน่วย</th><th>ชนิดงบ</th><th>กิจกรรม</th><th style="min-width:150px">ช่วง กม.</th><th>เลขที่สัญญา</th><th class="c">เริ่ม</th><th class="c">สิ้นสุด</th><th class="num">วงเงิน (บาท)</th><th class="c">ส่งงานงวดสุดท้าย</th><th class="c opcol" data-nosort data-noexp>One-Page</th>
+        <th>รหัส</th><th>ชื่อสายทาง</th><th>หมวด</th><th>หน่วย</th><th>แหล่งงบ</th><th>กิจกรรม</th><th style="min-width:150px">ช่วง กม.</th><th>เลขที่สัญญา</th><th class="c">เริ่ม</th><th class="c">สิ้นสุด</th><th class="num">วงเงิน (บาท)</th><th class="c">ส่งงานงวดสุดท้าย</th><th class="c opcol" data-nosort data-noexp>One-Page</th>
       </tr></thead><tbody></tbody></table></div>
     </div>
     <div id="gapBody"><div class="loading"><span class="spin"></span>กำลังเทียบคำของบกับสัญญาปีนี้…</div></div>`;
@@ -14287,7 +14293,7 @@ function renderYearly(){
       /* v31.36 แถวละชนิดงบ ท่อนละช่วงวงเงิน (เรทงบ) — ตัวเดียวกับหน้าคำของบ */
       amtBandTable('yrBand', H.map(x=>({cat:normCat(x.budgetType), amt:x.amount})), {unit:'โครงการ'});
    },
-   'ชนิดงบ': ()=>{
+   'แหล่งงบ': ()=>{
       if(!H.length) return;
       const byT={}; H.forEach(x=>{ const k=normCat(x.budgetType); byT[k]=byT[k]||{amt:0,n:0}; byT[k].amt+=(x.amount||0); byT[k].n++; });
       const ks=Object.keys(byT).sort((a,b)=>byT[b].amt-byT[a].amt);
@@ -14314,7 +14320,7 @@ function renderYearly(){
       const byA={}; H.forEach(x=>{ const k=firstAct(x.activity); byA[k]=byA[k]||{amt:0,n:0,bt:{}}; byA[k].amt+=(x.amount||0); byA[k].n++; byA[k].bt[x.budgetType]=(byA[k].bt[x.budgetType]||0)+(x.amount||0); });
       const top=Object.entries(byA).sort((a,b)=>b[1].amt-a[1].amt).slice(0,8);
       hbar('yrAct', top.map(([k,o])=>{ const dom=Object.entries(o.bt).sort((a,b)=>b[1]-a[1])[0]?.[0]||'';
-        return {label:k, v:+(o.amt/1e6).toFixed(1), color:btColor(dom)||C.teal, tip:`${fmt(o.amt)} บาท · ${o.n} โครงการ · ชนิดงบหลัก: ${esc(dom)||'-'}`}; }), {unit:'ลบ.', labelW:230});
+        return {label:k, v:+(o.amt/1e6).toFixed(1), color:btColor(dom)||C.teal, tip:`${fmt(o.amt)} บาท · ${o.n} โครงการ · แหล่งงบหลัก: ${esc(dom)||'-'}`}; }), {unit:'ลบ.', labelW:230});
    },
    'เขตเลือกตั้ง': ()=>{
       if(!H.length) return;
@@ -14615,7 +14621,7 @@ async function openAnnualReport(){
   </div>
   <div class="pg">
     <div class="hd"><div><h1>บัญชีโครงการปีงบประมาณ ${yLast||'-'}</h1><div class="sub">เรียงตามวงเงิน · ${lastList.length} โครงการ · รวม ${fmtM(lastList.reduce((a,x)=>a+(x.amount||0),0))}</div></div></div>
-    <table style="margin-top:10px"><thead><tr><th>#</th><th>รหัสสาย</th><th>ชนิดงบ</th><th>กิจกรรม</th><th>ช่วง กม.</th><th class="r">วงเงิน (บาท)</th><th>หน่วยดำเนินการ</th><th>ผู้รับจ้าง</th><th>สถานะค้ำ</th></tr></thead><tbody>
+    <table style="margin-top:10px"><thead><tr><th>#</th><th>รหัสสาย</th><th>แหล่งงบ</th><th>กิจกรรม</th><th>ช่วง กม.</th><th class="r">วงเงิน (บาท)</th><th>หน่วยดำเนินการ</th><th>ผู้รับจ้าง</th><th>สถานะค้ำ</th></tr></thead><tbody>
       ${[...lastList].sort((a,b)=>(b.amount||0)-(a.amount||0)).map((x,i)=>{const we=warrantyEnd(x);
         return `<tr><td>${i+1}</td><td><b>${x.code||'—'}</b></td><td>${esc(x.budgetType)}</td><td>${esc(x.activity)||'–'}</td><td style="font-size:10.5px">${esc(x.kmRange)||'–'}</td><td class="r">${x.amount?fmt(x.amount):'–'}</td><td>${esc(x.agency)||'–'}</td><td>${esc(x.contractor)||'–'}</td><td>${we&&we>=new Date()?'<span class="pill p-warn">🛡 ติดค้ำ</span>':(x.delivered?'<span class="pill p-ok">ส่งงานแล้ว</span>':'—')}</td></tr>`;}).join('')}
     </tbody></table>
@@ -14708,7 +14714,7 @@ async function printOnePage(code){
     <div class="cols" style="margin-top:4px">
       <div>
         <h2>ประวัติโครงการของสายนี้ (${list.length})</h2>
-        <table><thead><tr><th>ปี</th><th>ชนิดงบ</th><th>กิจกรรม</th><th>ช่วง กม.</th><th class="r">วงเงิน (บาท)</th><th>ผู้รับจ้าง</th></tr></thead><tbody>
+        <table><thead><tr><th>ปี</th><th>แหล่งงบ</th><th>กิจกรรม</th><th>ช่วง กม.</th><th class="r">วงเงิน (บาท)</th><th>ผู้รับจ้าง</th></tr></thead><tbody>
           ${list.slice(0,14).map(x=>{const we=warrantyEnd(x);
             return `<tr><td><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${YCOLOR[String(x.year)]};margin-right:5px;-webkit-print-color-adjust:exact"></span>${x.year}</td><td>${esc(x.budgetType)}</td><td style="font-size:10.5px">${esc((x.activity||'–').slice(0,30))}${we&&we>=_t?' <span class="pill p-warn">🛡</span>':''}</td><td style="font-size:10px">${esc((x.kmRange||'–').slice(0,26))}</td><td class="r">${x.amount?fmt(x.amount):'–'}</td><td style="font-size:10.5px">${esc((x.contractor||'–').slice(0,16))}</td></tr>`;}).join('')}
           ${list.length>14?`<tr><td colspan="6" style="color:#8794a5;font-style:italic">…อีก ${list.length-14} โครงการ</td></tr>`:''}
@@ -14716,11 +14722,11 @@ async function printOnePage(code){
       </div>
       <div>
         ${(lo=>lo?`<h2>คำของบปี ${lo.year} (เหลือจ่าย) — ยังไม่อยู่ในประวัติ (${lo.rows.length})</h2>
-        <table><thead><tr><th>ปีที่ขอ</th><th>ชนิดงบ</th><th>กิจกรรม/โครงการ</th><th>ช่วง กม.</th><th class="r">งบประมาณ (บาท)</th></tr></thead><tbody>
+        <table><thead><tr><th>ปีที่ขอ</th><th>แหล่งงบ</th><th>กิจกรรม/โครงการ</th><th>ช่วง กม.</th><th class="r">งบประมาณ (บาท)</th></tr></thead><tbody>
           ${lo.rows.slice(0,5).map(q=>`<tr><td>${q.year||'–'}</td><td>${esc(catName(q.cat||'–'))}</td><td style="font-size:10.5px">${esc(((q.act||q.proj)||'–'))}</td><td style="font-size:10.5px">${q.segs&&q.segs.length?q.segs.map(sg=>`${esc(String(sg.a||''))} – ${esc(String(sg.b||''))}`).join(', '):'–'}</td><td class="r">${q.amt!=null?fmt(q.amt):'รอประเมิน'}</td></tr>`).join('')}
         </tbody></table>`:'')(leftoverCarry(code))}
         ${rq.length?`<h2>คำของบประมาณปีล่าสุด ${latestRequestYear()} (${rq.length})</h2>
-        <table><thead><tr>${hasRank(rq)?'<th style="width:34px">ลำดับ</th>':''}<th>ปีที่ขอ</th><th>ชนิดงบ</th><th>กิจกรรม/โครงการ</th><th>ช่วง กม.</th><th class="r">งบประมาณ (บาท)</th></tr></thead><tbody>
+        <table><thead><tr>${hasRank(rq)?'<th style="width:34px">ลำดับ</th>':''}<th>ปีที่ขอ</th><th>แหล่งงบ</th><th>กิจกรรม/โครงการ</th><th>ช่วง กม.</th><th class="r">งบประมาณ (บาท)</th></tr></thead><tbody>
           ${rq.slice(0,7).map((q,i)=>`<tr>${hasRank(rq)?`<td>${rankTxt(q,i)}</td>`:''}<td>${q.year||'–'}</td><td>${esc(catName(q.cat||'–'))}</td><td style="font-size:10.5px">${esc(((q.act||q.proj)||'–').slice(0,30))}</td><td style="font-size:10px">${q.segs&&q.segs.length?q.segs.map(sg=>esc(String(sg.a||''))+'–'+esc(String(sg.b||''))).join(', ').slice(0,24):'—'}</td><td class="r">${q.amt!=null?fmt(q.amt):'<span class="pill p-warn">รอประเมิน</span>'}</td></tr>`).join('')}
           ${rq.length>7?`<tr><td colspan="${hasRank(rq)?6:5}" style="color:#8794a5;font-style:italic">…อีก ${rq.length-7} คำขอ</td></tr>`:''}
         </tbody></table>`:''}
