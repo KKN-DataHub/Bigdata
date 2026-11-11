@@ -1,6 +1,6 @@
 {
- "built": "2026-11-10T18:03:41",
- "tool": "P6-A.3 · 10 พ.ย. 2569",
+ "built": "2026-11-11T10:11:27",
+ "tool": "P6-A.5 · 11 พ.ย. 2569",
  "datasets": {
   "registry": {
    "file": "08. Master\\ข้อมูลเปลี่ยนน้อย\\BD_01_ทะเบียน.xlsx",
@@ -66,10 +66,21 @@
    "money": {},
    "log_rows": 3,
    "items": 46
+  },
+  "plan": {
+   "file": "08. Master\\ข้อมูลเปลี่ยนบ่อย\\BD_09_คุมแผน.xlsx",
+   "md5": "FC35D316141310156B0636A4A84AB993",
+   "tabs": {
+    "P_70": 0
+   },
+   "money": {},
+   "log_rows": 1,
+   "fed": 0,
+   "as_of": "2026-11-11"
   }
  },
  "scope": "web",
  "file": "bd-data.js",
- "md5": "719A4DCCF89417C1EAB951BBFA468CBF",
- "bytes": 452501
+ "md5": "EA7AA79D4447F374300425CBB2A1A9FE",
+ "bytes": 515366
 }
