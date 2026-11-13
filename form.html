@@ -238,7 +238,7 @@ body{font-family:'Sarabun',Tahoma,'Segoe UI',system-ui,sans-serif;background-col
 
 /* โครงหน้ากลาง L1 (คัดลอกเนื้อตรงตัวจาก 00. โครงหน้ากลาง\โครงหน้ากลาง.css) */
 /* ════════════════════════════════════════════════════════════════════
-   โครงหน้ากลาง KORNECTZ — รุ่น L1.6 · 4 พ.ย. 2569 (L1.6 ตราโลโก้ KORNECTZ ท้ายแถบข้าง (ปรับรอบสอง 4 พ.ย. 69: กว้าง 198 px · เส้นคั่นตอนย่อแถบ) · L1.5 หัวเพจมือถือ ≤600px เตี้ยลงเหมือนกันทุกระบบ · L1 ประกาศ 29 ต.ค. 2569 · L1.2 แก้ตัวหนังสือบนพื้น teal = --on-teal · ป้ายไอคอนระบบพื้นเข้มกรอบ teal · L1.3 .pgh-right ห่อบรรทัดในกรอบหัวเพจ ปุ่มชุดสีไม่หลุดขอบขวา · L1.4 แถบข้างมีลวดลายประจำระบบหมุนตั้ง 90° ใช้ตัวแปร --hero-pat ร่วมกับหัวเพจ)
+   โครงหน้ากลาง KORNECTZ — รุ่น L2 · 11 พ.ย. 2569 (L2 มติ K-63*: แถบข้างลอย · ด็อกลอยมือถือแทนแถบไอคอน 64 px · หัวเพจพารัลแลกซ์ · มุม 20 px · ส่วน L2 อยู่ท้ายไฟล์ ทับ L1.6 · L1.6 ตราโลโก้ KORNECTZ ท้ายแถบข้าง (ปรับรอบสอง 4 พ.ย. 69: กว้าง 198 px · เส้นคั่นตอนย่อแถบ) · L1.5 หัวเพจมือถือ ≤600px เตี้ยลงเหมือนกันทุกระบบ · L1 ประกาศ 29 ต.ค. 2569 · L1.2 แก้ตัวหนังสือบนพื้น teal = --on-teal · ป้ายไอคอนระบบพื้นเข้มกรอบ teal · L1.3 .pgh-right ห่อบรรทัดในกรอบหัวเพจ ปุ่มชุดสีไม่หลุดขอบขวา · L1.4 แถบข้างมีลวดลายประจำระบบหมุนตั้ง 90° ใช้ตัวแปร --hero-pat ร่วมกับหัวเพจ)
    มาตรฐานโครงหน้าของทุกระบบ คู่กับธีมกลาง (สี/ชื่อชุดสี) — ต้นแบบรูปแบบ = Big Data v31.95
    ประกอบด้วย: ① แถบประกาศวิ่ง (บนสุดของเนื้อหา) ② หัวเพจ + ลวดลายประจำระบบ + ปุ่มเลือกชุดสีอยู่แถบบน (แผงทรงเดียวกับ CostBase)
    ③ แถบข้างมีชื่อฟังก์ชัน ย่อเหลือไอคอนได้ ④ ไอคอนประจำระบบมุมบนซ้ายสุด
@@ -395,6 +395,63 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;height:var(--sat);ba
 .app[data-system="rd"] .pghero,.app[data-system="rd"] .sidebar{--hero-pat:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 130' fill='none' stroke='white' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'%3E %3Cg stroke-opacity='.12'%3E %3Cpath d='M0 40 C80 20 150 70 240 52 S380 14 470 36 S590 70 640 56'/%3E %3Cpath d='M0 62 C80 42 150 92 240 74 S380 36 470 58 S590 92 640 78'/%3E %3Cpath d='M0 84 C80 64 150 114 240 96 S380 58 470 80 S590 114 640 100'/%3E %3C/g%3E %3Cg stroke-opacity='.26'%3E %3Cpath d='M300 86 L346 86 L380 74 L520 74 L554 86 L600 86'/%3E %3Cpath d='M380 74V66H520V74'/%3E %3Cpath d='M450 74v-8' stroke-dasharray='3 4'/%3E %3Cpath d='M380 60H520' stroke-opacity='.18'/%3E%3Cpath d='M380 55v10M520 55v10' stroke-opacity='.18'/%3E %3Cpath d='M300 102H600' stroke-opacity='.16'/%3E %3Cpath d='M346 98v8M380 98v8M450 98v8M520 98v8M554 98v8' stroke-opacity='.18'/%3E %3C/g%3E %3Cg stroke-opacity='.18'%3E%3Ccircle cx='616' cy='30' r='11'/%3E%3Cpath d='M616 17v26M603 30h26'/%3E%3C/g%3E %3C/svg%3E")}
 .app[data-system="bim"] .pghero,.app[data-system="bim"] .sidebar{--hero-pat:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 130' fill='none' stroke='white' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'%3E %3Cg stroke-opacity='.10'%3E %3Cpath d='M270 118 L330 84 L390 118 L450 84 L510 118 L570 84 L630 118'/%3E %3Cpath d='M270 98 L330 64 L390 98 L450 64 L510 98 L570 64 L630 98'/%3E %3C/g%3E %3Cg stroke-opacity='.26'%3E %3Cpath d='M400 112 L460 78 L520 112 L460 128 Z' stroke-opacity='.14'/%3E %3Cpath d='M400 112V52L460 18L520 52V112L460 78Z'/%3E %3Cpath d='M460 78V18'/%3E %3Cpath d='M400 92L460 58L520 92' stroke-opacity='.2'/%3E %3Cpath d='M400 72L460 38L520 72' stroke-opacity='.2'/%3E %3Cpath d='M532 104V44L580 16L628 44V104L580 76Z' stroke-opacity='.18'/%3E %3Cpath d='M580 76V16' stroke-opacity='.18'/%3E %3C/g%3E %3C/svg%3E")}
 
+/* ════ L2 · 11 พ.ย. 2569 (มติ K-63*) — ทับบน L1.6 ส่วนข้างบนไม่แก้ ════ */
+:root{--rad:20px;--l2-float:12px}
+/* ① แถบข้างลอย */
+@media(min-width:861px){
+  .sidebar{top:var(--l2-float);bottom:var(--l2-float);left:var(--l2-float);border-radius:22px;background:linear-gradient(180deg,var(--navy) 0%,var(--navy-d) 100%);box-shadow:0 14px 36px rgba(0,0,0,.22)}
+  .sidebar::before{width:calc(100vh - 2 * var(--l2-float));border-radius:22px}
+  .main{margin-left:calc(var(--sbw) + 2 * var(--l2-float))}
+  .main.sbmini{margin-left:calc(var(--sbw-mini) + 2 * var(--l2-float))}
+  .sbtoggle{background:var(--gold);color:#1B2A4A;border:2px solid var(--page);right:-12px}
+  .brand{border-bottom:0;padding-bottom:8px}
+  .kitbrand{border-radius:0 0 22px 22px}
+}
+.nav button.active{background:rgba(255,255,255,.16);color:#fff;font-weight:700}
+.nav button.active::before{content:"";position:absolute;left:-8px;top:8px;bottom:8px;width:4px;border-radius:0 4px 4px 0;background:var(--gold)}
+.nav button{border-radius:12px}
+.nav .l2b{margin-left:auto;min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:var(--crit);color:#fff;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.sidebar.collapsed .nav .l2b{position:absolute;top:6px;right:10px;min-width:9px;height:9px;padding:0;font-size:0}
+.l2-search{display:flex;align-items:center;gap:8px;margin:2px 10px 6px;padding:8px 11px;border-radius:12px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.72);font-family:inherit;font-size:12.5px;cursor:pointer;text-align:left;position:relative;z-index:1}
+.l2-search:hover{background:rgba(255,255,255,.14);color:#fff}
+.l2-search kbd{margin-left:auto;font-family:inherit;font-size:10px;border:1px solid currentColor;border-radius:5px;padding:0 5px;opacity:.75}
+.sidebar.collapsed .l2-search{justify-content:center;margin:2px 10px 6px;padding:9px 0}
+.sidebar.collapsed .l2-search span,.sidebar.collapsed .l2-search kbd{display:none}
+/* ② ด็อกลอยบนมือถือ */
+.l2-dock,.l2-more,.l2-more-bg{display:none}
+@media(max-width:860px){
+  .sidebar{display:none}
+  .main{margin-left:0!important;padding:12px 12px calc(96px + env(safe-area-inset-bottom,0px))}
+  .l2-dock{display:flex;position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:1200;gap:2px;padding:6px;border-radius:99px;background:color-mix(in srgb,var(--navy) 92%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 12px 30px rgba(0,0,0,.32);transition:transform .32s cubic-bezier(.3,.7,.3,1),opacity .32s}
+  .l2-dock.hide{transform:translate(-50%,160%);opacity:0}
+  .l2-more-bg{position:fixed;inset:0;z-index:1250;background:rgba(0,0,0,.4)}
+  .l2-more{position:fixed;left:0;right:0;bottom:0;z-index:1260;background:var(--card);border-radius:24px 24px 0 0;padding:10px 16px calc(24px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 30px rgba(0,0,0,.25);animation:l2Up .25s ease-out}
+  .l2-more.open,.l2-more-bg.open{display:block}
+}
+.l2-dock button{display:flex;align-items:center;gap:0;height:44px;padding:0 12px;border:0;border-radius:99px;background:none;color:rgba(255,255,255,.78);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;position:relative;transition:background .25s,gap .25s,color .25s}
+.l2-dock button svg{width:20px;height:20px;flex:none}
+.l2-dock button .t{max-width:0;overflow:hidden;white-space:nowrap;transition:max-width .3s}
+.l2-dock button.on{background:#fff;color:#1B2A4A;gap:7px}
+.l2-dock button.on .t{max-width:120px}
+.l2-dock .dt{position:absolute;top:6px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--crit);border:1.5px solid var(--navy)}
+.l2-more .gb{width:40px;height:5px;border-radius:99px;background:var(--grid);margin:0 auto 12px}
+.l2-more .sec{font-size:11px;font-weight:700;color:var(--muted);margin:6px 2px 8px}
+.l2-more .g{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.l2-more .g button{border:1px solid var(--grid);background:var(--tint-soft);border-radius:16px;padding:12px 6px;font-family:inherit;font-size:11.5px;color:var(--ink);display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer}
+.l2-more .g button svg{width:22px;height:22px}
+.l2-more .g button.on{background:var(--teal-soft);border-color:var(--teal);color:var(--teal-ink);font-weight:700}
+.l2-more .brandrow{display:flex;justify-content:center;margin-top:14px;padding:10px;border-radius:14px;background:var(--navy)}
+.l2-more .brandrow svg{width:170px;height:auto}
+@keyframes l2Up{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+/* ③ หัวเพจพารัลแลกซ์ */
+.page .pghero{will-change:transform;z-index:0}
+.page .pghero~*{position:relative;z-index:1}
+/* ④ มุมมนมาก */
+.pghero{border-radius:var(--rad)}
+.updtick{border-radius:12px}
+@media(prefers-reduced-motion:reduce){.l2-dock,.l2-dock button,.l2-dock button .t{transition:none}.page .pghero{transform:none!important;opacity:1!important}}
+@media print{.l2-dock,.l2-more,.l2-more-bg{display:none!important}}
+
 
 /* ── ต้นแบบ P6 หน้ากรอกข้อมูล รอบ 4 (ใช้ตัวแปรธีมเท่านั้น) ──
    โครง: การ์ดนำทาง 3 ขั้น → แท็บชุดข้อมูล → ฟอร์มซ้าย + แผงผลตรวจขวา (แถบเตือนซ้ำ + แผนภาพแนวสาย) → รายการรอส่ง */
@@ -434,6 +491,22 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;height:var(--sat);ba
 .inp.warn{border-color:var(--gold);background:var(--tint-warn)}
 .roadcard{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--ink2);background:var(--tint-soft);border:1px dashed var(--grid);border-radius:8px;padding:6px 10px;margin-top:6px}
 .roadcard b{color:var(--strong)}
+.rpick{position:relative}
+.rpick .inp{padding-right:38px}
+.rclr{position:absolute;right:3px;top:50%;transform:translateY(-50%);width:32px;height:32px;border:0;border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;font:inherit;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center}
+.rclr[hidden]{display:none}
+.rclr:hover{background:var(--tint-soft);color:var(--ink)}
+.rdrop{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:40;max-height:268px;overflow-y:auto;background:var(--card);border:1px solid var(--grid);border-radius:10px;box-shadow:0 10px 28px rgba(16,24,40,.22);padding:4px}
+.rdrop[hidden]{display:none}
+.ropt{display:flex;gap:9px;align-items:baseline;padding:8px 9px;border-radius:7px;font-size:13px;line-height:1.4;color:var(--ink2);cursor:pointer}
+.ropt b{flex:none;color:var(--strong);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ropt span{min-width:0}
+.ropt.act,.ropt:hover{background:var(--tint-soft)}
+.rnone{padding:10px;font-size:12.5px;color:var(--muted)}
+.seg button.off{color:var(--muted);font-weight:400}
+.kindnote{display:flex;gap:9px;align-items:flex-start;background:var(--tint-wait);border:1px solid var(--tint-warn-b);color:var(--tint-wait-ink);border-radius:10px;padding:8px 12px;font-size:12.5px;line-height:1.55}
+.kindnote[hidden]{display:none}
+.kindnote b{color:var(--ink)}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chip{font:inherit;font-size:12px;padding:5px 10px;border-radius:99px;border:1px solid var(--grid);background:var(--card);color:var(--ink2);cursor:pointer}
 .chip.on{background:var(--teal);border-color:var(--teal);color:var(--on-teal);font-weight:600}
@@ -532,7 +605,31 @@ table.t tr:last-child td{border-bottom:0}
 .opt input{margin-top:3px}
 .opt b{color:var(--ink)}
 .opt small{display:block;color:var(--muted)}
-.actrow{display:grid;grid-template-columns:38px minmax(0,420px) 34px;gap:8px;align-items:center;margin-bottom:6px}
+.actrow{display:grid;grid-template-columns:minmax(0,420px) 34px;gap:8px;align-items:center;margin-bottom:6px}
+/* 1.5 ตารางกิจกรรมและช่วงที่ทำ (แบบ ก): 1 แถว = 1 กิจกรรมใน 1 ช่วง · หัวตารางครั้งเดียว · จอแคบหัวตารางหาย ใช้ป้ายเล็กเหนือช่องแทน */
+.wk{border:1px solid var(--grid);border-radius:10px;background:var(--card);overflow:hidden}
+.wkh,.wkr{display:grid;grid-template-columns:minmax(0,2.1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1.05fr) 36px;gap:8px;align-items:center;padding:7px 10px}
+.wkh{background:var(--tint-grp);font-size:11.5px;font-weight:700;color:var(--strong);padding-top:6px;padding-bottom:6px}
+.wkr{border-top:1px solid var(--grid)}
+.wkr .cell{display:flex;gap:6px;align-items:center;min-width:0}
+.wkr .mlab{display:none;font-size:11px;font-weight:600;color:var(--ink2)}
+.wkr .unit{flex:none;font-size:12px;color:var(--muted)}
+.wkr .dash{flex:1;color:var(--muted);text-align:center;font-size:12px}
+.wkr>.btn.sm{width:36px;padding-left:0;padding-right:0;justify-content:center}
+.tagm{flex:none;font-size:10.5px;font-weight:700;color:var(--teal-ink);background:var(--teal-soft);border-radius:99px;padding:2px 8px}
+.wkf{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px;font-size:11.5px;color:var(--muted)}
+.kmline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.kmline .inp{width:130px}
+.kmline span{color:var(--muted);font-size:12px}
+@media(max-width:520px){
+  .wkh{display:none}
+  .wkr{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) 36px;align-items:end}
+  .wkr .c-act{grid-column:1/-1}
+  .wkr .kc{flex-direction:column;align-items:stretch;gap:2px}
+  .wkr .mlab{display:block}
+  .wkr .dash{display:none}
+  .kmline .inp{width:110px}
+}
 .actlab{font-size:11px;font-weight:700;color:var(--muted)}
 .steps2{margin:0 0 6px;padding-left:22px;font-size:12.5px;line-height:1.5}
 .steps2 li{margin-bottom:10px}
@@ -546,6 +643,64 @@ pre.json{background:var(--tint-track);border:1px solid var(--grid);border-radius
 .navsep{height:1px;background:rgba(255,255,255,.14);margin:8px 14px}
 .navcap{font-size:10.5px;color:var(--navsub);padding:4px 18px 2px;letter-spacing:.04em}
 @media(max-width:860px){.navcap{display:none}}
+/* 1.6 แถบ "คำขอที่ส่งเข้ามา" (ท้ายหน้ากรอก) — จอแคบหัวตารางหาย แถวพับเป็น 2–4 บรรทัด */
+.bqh{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:11.5px;color:var(--muted)}
+.bqh .r{margin-left:auto;display:flex;gap:8px;align-items:center}
+.bqf{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0 0;font-size:11.5px;color:var(--muted)}
+.bql{border:1px solid var(--grid);border-radius:10px;overflow:hidden;margin-top:10px}
+.bqr,.bqk{display:grid;grid-template-columns:128px 104px minmax(0,1.5fr) minmax(0,150px) minmax(0,132px) 150px;gap:10px;align-items:center;padding:7px 12px;font-size:12.5px}
+.bql.nono .bqr,.bql.nono .bqk{grid-template-columns:128px 104px minmax(0,1.5fr) minmax(0,170px) 150px}
+.bqk{background:var(--tint-grp);font-size:11.5px;font-weight:700;color:var(--strong)}
+.bqr{border-top:1px solid var(--grid);color:var(--ink)}
+.bqr.hit{background:var(--tint-warn);box-shadow:inset 4px 0 0 var(--gold)}
+.bqr .bq-rd{min-width:0;overflow-wrap:anywhere} .bqr .bq-rd b{color:var(--strong)} .bqr .bq-rd span{color:var(--muted);font-size:11.5px;margin-left:6px}
+.bqr .bq-km,.bqr .bq-dt,.bqr .bq-no{font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.bqr .bq-dt,.bqr .bq-no{color:var(--ink2)}
+.bqn{font-size:11.5px;color:var(--muted);margin-top:8px;line-height:1.6}
+@media(max-width:700px){
+ .bqk{display:none}
+ .bqr,.bql.nono .bqr{grid-template-columns:minmax(0,1fr) auto;gap:3px 10px;padding:9px 12px}
+ .bqr .bq-kd{grid-column:1;grid-row:1} .bqr .bq-st{grid-column:2;grid-row:1;justify-self:end}
+ .bqr .bq-rd{grid-column:1/-1} .bqr .bq-km{grid-column:1} .bqr .bq-no{grid-column:2;justify-self:end}
+ .bqr .bq-dt{grid-column:1/-1;font-size:11.5px}
+ .bqr .bq-no.has::before{content:'สัญญา ';color:var(--muted)} .bqr .bq-no:not(.has){display:none}
+ .bqh .r{margin-left:0;width:100%}
+}
+/* 1.7 แท็บ "ทะเบียนสายทาง": ตาราง ช่อง | ในทะเบียนตอนนี้ | ค่าที่เสนอ · รายการสะพานในสาย — จอแคบหัวตารางหาย ช่องเรียงลง */
+.rgt{border:1px solid var(--grid);border-radius:10px;background:var(--card);overflow:hidden}
+.rgh,.rgr{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.15fr) minmax(0,1.5fr);gap:10px;align-items:center;padding:7px 12px}
+.rgh{background:var(--tint-grp);font-size:11.5px;font-weight:700;color:var(--strong)}
+.rgr{border-top:1px solid var(--grid);font-size:13px}
+.rgr.chg{box-shadow:inset 4px 0 0 var(--gold);background:var(--tint-warn)}
+.rgr .rg-l{font-weight:600;color:var(--ink)}
+.rgr .rg-c{color:var(--ink2);font-variant-numeric:tabular-nums;overflow-wrap:anywhere;min-width:0}
+.rgr .rg-c.none,.rg-n{color:var(--muted);font-style:italic;font-size:12px}
+.rgr .rg-p{display:flex;flex-direction:column;gap:6px;min-width:0}
+.rgr .mlab{display:none;font-size:11px;font-weight:600;color:var(--muted);font-style:normal}
+.rgsum{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;font-size:12px;color:var(--ink2);font-variant-numeric:tabular-nums}
+.rgsum:empty{display:none}
+#regBody>.fsec:first-of-type{border-top:1px solid var(--grid);padding-top:12px;margin-top:12px}
+.fsec>.ft .btn.sm{margin-left:auto}
+.brl{border:1px solid var(--grid);border-radius:10px;overflow:hidden;background:var(--card)}
+.brk,.brr{display:grid;grid-template-columns:76px minmax(0,1.4fr) minmax(0,1fr) 72px 76px 62px;gap:10px;align-items:center;padding:7px 12px;font-size:12.5px}
+.brk{background:var(--tint-grp);font-size:11.5px;font-weight:700;color:var(--strong)}
+.brr{border-top:1px solid var(--grid);color:var(--ink)}
+.brr.sel{background:var(--tint-warn);box-shadow:inset 4px 0 0 var(--gold)}
+.brr .n,.brk .n{text-align:right;font-variant-numeric:tabular-nums}
+.brr .br-km{font-variant-numeric:tabular-nums;font-weight:600;color:var(--strong)}
+.brr .br-nm,.brr .br-rv{min-width:0;overflow-wrap:anywhere}
+.brr .br-bt{justify-self:end}
+.brr .br-no{grid-column:1/-1;font-size:11.5px;color:var(--muted)}
+.brr .mlab{display:none;color:var(--muted)}
+@media(max-width:600px){
+ .rgh,.brk{display:none}
+ .rgr{grid-template-columns:minmax(0,1fr);gap:4px;padding:9px 12px}
+ .rgr .mlab{display:inline}
+ .brr{grid-template-columns:minmax(0,1fr) auto;gap:3px 10px;padding:9px 12px}
+ .brr .br-km{grid-column:1} .brr .br-bt{grid-column:2;grid-row:1}
+ .brr .br-nm,.brr .br-rv{grid-column:1/-1}
+ .brr .n{text-align:left} .brr .mlab{display:inline}
+}
 </style>
 
 <div class="app" data-system="bd">
@@ -562,7 +717,7 @@ pre.json{background:var(--tint-track);border:1px solid var(--grid);border-radius
         <div class="pgh-ico" id="phIco"></div>
         <div>
           <h2 id="phT">กรอกข้อมูลเข้า Master</h2>
-          <div class="desc" id="phD">ประวัติโครงการ · Zerobase · สภาพสายทาง · อุปกรณ์ — ส่งแล้วรอ ผู้ดูแล ตรวจและอนุมัติก่อนขึ้นแดชบอร์ด</div>
+          <div class="desc" id="phD">ทะเบียนสายทาง · ประวัติโครงการ · Zerobase · สภาพสายทาง · อุปกรณ์ — ส่งแล้วรอ ผู้ดูแล ตรวจและอนุมัติก่อนขึ้นแดชบอร์ด</div>
           <div class="pillrow" id="phP"></div>
         </div>
       </div>
@@ -578,11 +733,13 @@ pre.json{background:var(--tint-track);border:1px solid var(--grid);border-radius
         <div class="st"><span class="n">3</span><div><b>ผู้ดูแล ตรวจแถบเตือนแล้วอนุมัติ</b><span>อนุมัติแล้วเข้า Master และขึ้นแดชบอร์ดรอบรีเฟรชถัดไป</span></div></div>
       </div>
       <div class="seg" role="tablist" id="kindTabs">
+        <button type="button" role="tab" data-k="reg">ทะเบียนสายทาง</button>
         <button type="button" role="tab" data-k="hist" class="on">ประวัติโครงการ</button>
         <button type="button" role="tab" data-k="zb">Zerobase</button>
         <button type="button" role="tab" data-k="cond">สภาพสายทาง</button>
         <button type="button" role="tab" data-k="eq">อุปกรณ์</button>
       </div>
+      <div class="kindnote" id="kindNote" role="status" aria-live="polite" hidden></div>
       <div class="p6grid">
         <form class="pcard" id="form" autocomplete="off" novalidate></form>
         <div class="side stack">
@@ -590,6 +747,7 @@ pre.json{background:var(--tint-track);border:1px solid var(--grid);border-radius
         </div>
       </div>
       <div class="pcard" id="basketCard"></div>
+      <div class="pcard" id="boardCard"></div>
     </div>
 
     <!-- ② คำขอของฉัน -->
@@ -704,7 +862,7 @@ function themeByClock(force){
 <script>
 /* โครงหน้ากลาง L1 (คัดลอกเนื้อตรงตัวจาก 00. โครงหน้ากลาง\โครงหน้ากลาง.js) */
 /* ════════════════════════════════════════════════════════════════════
-   โครงหน้ากลาง KORNECTZ — รุ่น L1.6 · 4 พ.ย. 2569 · คู่กับ โครงหน้ากลาง.css (L1.6 เพิ่มตราโลโก้ KORNECTZ ท้ายแถบข้าง · ตรรกะส่วนอื่นเหมือน L1.2)
+   โครงหน้ากลาง KORNECTZ — รุ่น L2 · 11 พ.ย. 2569 · คู่กับ โครงหน้ากลาง.css (L2 เพิ่มตัวแปร L2 ท้ายไฟล์: ด็อกลอยมือถือ · แผ่น "เพิ่มเติม" · พารัลแลกซ์ — เรียก L2.init({name,pages,dock,go}) หลัง KitShell.init · KitShell ไม่เปลี่ยน · L1.6 เพิ่มตราโลโก้ KORNECTZ ท้ายแถบข้าง · ตรรกะส่วนอื่นเหมือน L1.2)
    ต้องโหลดหลัง ธีมกลาง.js (ใช้ THEMES · isNight · nightTheme · themeSelectable · dayTheme · DEFAULT_THEME · DAY_KEY)
    ให้: ไอคอนประจำระบบ 6 ระบบ · แถบประกาศวิ่ง · ปุ่มย่อ/ขยายแถบข้าง · แผงเลือกชุดสีมาตรฐาน · applyTheme มาตรฐาน
    แผงเลือกชุดสี = ทรงเดียวกับ CostBase 8.50 (KORN สั่ง 29 ต.ค. 69 "เอาตามรูปแรก (Costbase)") — ระบบไม่เขียนแผงเอง
@@ -908,6 +1066,45 @@ var KitShell = (function () {
   return { init: init, systems: KIT_SYSTEMS, closePanel: closePanel, themeButtons: themeButtons, paintTheme: paintTheme, themeTick: themeTick };
 })();
 
+/* ════ L2 · 11 พ.ย. 2569 (มติ K-63*) — L2.init เรียกหลัง KitShell.init ════ */
+var L2 = (function () {
+  var O = { pages: [], dock: [], go: function () {} }, dock, more, moreBg, cur = '';
+  function el(h) { var d = document.createElement('div'); d.innerHTML = h; return d.firstChild; }
+  function pg(id) { return O.pages.filter(function (p) { return p[0] === id; })[0]; }
+  function buildDock() {
+    var items = O.dock.map(function (id) { var p = pg(id); return '<button type="button" data-p="' + id + '" aria-label="' + p[1] + '">' + p[2] + '<span class="t">' + p[1] + '</span>' + (p[3] ? '<i class="dt"></i>' : '') + '</button>'; }).join('') +
+      '<button type="button" data-more="1" aria-label="เพิ่มเติม"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg><span class="t">เพิ่มเติม</span></button>';
+    dock = el('<nav class="l2-dock" aria-label="เมนูหลัก">' + items + '</nav>'); document.body.appendChild(dock);
+    moreBg = el('<div class="l2-more-bg"></div>'); document.body.appendChild(moreBg);
+    more = el('<div class="l2-more" role="dialog" aria-label="เมนูทั้งหมด"><div class="gb"></div><div class="sec">ทุกหน้าใน ' + (O.name || '') + '</div><div class="g">' + O.pages.map(function (p) { return '<button type="button" data-p="' + p[0] + '">' + p[2] + p[1] + '</button>'; }).join('') + '</div>' + (typeof KIT_BRANDMARK !== 'undefined' ? '<div class="brandrow">' + KIT_BRANDMARK.full + '</div>' : '') + '</div>');
+    document.body.appendChild(more);
+    function openMore(v) { more.classList.toggle('open', v); moreBg.classList.toggle('open', v); }
+    dock.addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; if (b.dataset.more) { openMore(!more.classList.contains('open')); return; } openMore(false); O.go(b.dataset.p); });
+    more.addEventListener('click', function (e) { var b = e.target.closest('button[data-p]'); if (b) { openMore(false); O.go(b.dataset.p); } });
+    moreBg.addEventListener('click', function () { openMore(false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') openMore(false); });
+    var last = window.scrollY;
+    window.addEventListener('scroll', function () { var y = window.scrollY; if (Math.abs(y - last) < 8) return; dock.classList.toggle('hide', y > last && y > 120); last = y; }, { passive: true });
+  }
+  function setActive(id) {
+    cur = id;
+    if (dock) dock.querySelectorAll('button[data-p]').forEach(function (b) { b.classList.toggle('on', b.dataset.p === id); });
+    if (more) more.querySelectorAll('button[data-p]').forEach(function (b) { b.classList.toggle('on', b.dataset.p === id); });
+    if (dock && O.dock.indexOf(id) < 0) { var m = dock.querySelector('[data-more]'); if (m) m.classList.add('on'); } else if (dock) { var m2 = dock.querySelector('[data-more]'); if (m2) m2.classList.remove('on'); }
+    if (dock) dock.classList.remove('hide');
+  }
+  function parallax() {
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var tick = false;
+    function run() { tick = false; var h = document.querySelector('.page.active .pghero'); if (!h) return; var y = Math.min(window.scrollY, 420); h.style.transform = y ? 'translateY(' + (y * .42).toFixed(1) + 'px) scale(' + (1 - y / 4200).toFixed(4) + ')' : ''; h.style.opacity = y ? Math.max(0, 1 - y / 300).toFixed(3) : ''; }
+    window.addEventListener('scroll', function () { if (!tick) { tick = true; requestAnimationFrame(run); } }, { passive: true });
+    L2.resetParallax = run;
+  }
+  var pxOn = false;
+  function init(o) { for (var k in o) O[k] = o[k]; [dock, more, moreBg].forEach(function (n) { if (n && n.parentNode) n.parentNode.removeChild(n); }); buildDock(); if (!pxOn) { pxOn = true; parallax(); } }
+  return { init: init, setActive: setActive, resetParallax: function () {} };
+})();
+
 </script>
 <script>
 /* ข้อมูลตรวจซ้ำ: สำเนาจาก 01. ระบบ\Deploy\data\bd-data.js (ฉบับเว็บ ไม่มีคอลัมน์ชื่อคน) */
@@ -937,7 +1134,8 @@ const SNAP=(function(){
     tabs('requests',/^Q_\d\d$/).forEach(tab=>table('requests',tab).forEach(o=>req.push([2500+(+tab.slice(2)),S(o['รหัสสายทาง']),km(o['กม.เริ่ม']),km(o['กม.จบ']),o['แหล่งงบ']||o['ชนิดงบ']||'',o['กิจกรรม']||'',o['งบประมาณ']||0])));
     const zt=tabs('zerobase',/^Z_\d\d$/).sort().slice(-1)[0];
     const zb=zt?table('zerobase',zt).map(o=>[2500+(+zt.slice(2)),S(o['รหัสสายทาง']),km(o['กม.เริ่ม']),km(o['กม.จบ']),o['กิจกรรม']||'',o['หมายเหตุ']||'']):[];
-    return {built:D.built,roads:roads,hist:hist,req:req,zb:zb,std:D.std||null};
+    return {built:D.built,roads:roads,hist:hist,req:req,zb:zb,std:D.std||null,
+      reg:{roads:D.registry.roads,bridges:D.registry.roadBridges||null}};   /* 1.7 แท็บทะเบียนสายทาง: ค่าครบช่องของสาย + สะพานในสาย */
   }catch(e){ return null; }
 })();
 
@@ -951,6 +1149,10 @@ const ROAD={}; SNAP.roads.forEach(r=>ROAD[r[0]]={code:r[0],name:r[1],len:r[2],mu
 const HIST=SNAP.hist.map(h=>({y:h[0],no:h[1],code:h[2],type:h[3],kind:h[4],act:h[5],work:h[6],amt:h[7],unit:h[8],rng:h[9]}));
 const REQ=SNAP.req.map(q=>({y:q[0],code:q[1],a:q[2],b:q[3],kind:q[4],act:q[5],amt:q[6]}));
 const ZB=SNAP.zb.map(z=>({y:z[0],code:z[1],a:z[2],b:z[3],act:z[4]}));
+/* 1.7 ทะเบียนสายทาง: ค่าครบช่องของสายและสะพานในสาย จากไฟล์ข้อมูล (SNAP.reg) — ไม่มี = แท็บทะเบียนบอกว่าเปิดไม่ได้ ไม่เดาค่า */
+const REGD=(SNAP.reg&&Array.isArray(SNAP.reg.roads))?SNAP.reg:null, REGR={};
+if(REGD) REGD.roads.forEach(r=>{ if(r&&r.code) REGR[r.code]=r; });
+const REGB=(REGD&&REGD.bridges&&typeof REGD.bridges==='object')?REGD.bridges:null;
 /* ───── รายการมาตรฐาน (ผู้ดูแล คุมคนเดียว) ─────
    รอบ 4 (ผู้ดูแล 10 พ.ย. 69): "แหล่งงบ ชนิดงบ มันคืออันเดียวกัน" → ช่องนี้ชื่อ แหล่งงบ · กิจกรรมชุดใหม่ตามรูปที่ ผู้ดูแล อัป
    ตัวจริงอ่านจากแท็บ "รายการมาตรฐาน" ใน BD_01 ที่ ผู้ดูแล แก้เอง ผู้กรอกเพิ่มเองไม่ได้ */
@@ -1008,12 +1210,63 @@ const normNo=s=>String(s||'').replace(/\s+/g,'');
 const parseKm=s=>{s=String(s||'').trim(); if(!s) return null; let m=s.match(/^(\d+)\+(\d{1,3})$/); if(m) return +m[1]+(+m[2].padEnd(3,'0'))/1000; m=s.match(/^\d+(\.\d+)?$/); return m?+s:NaN;};
 const thDate=d=>{const t=new Date(d);return isNaN(t)?'—':t.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'})+' '+t.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})+' น.';};
 const todayISO=()=>{const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+/* ───── 1.6 แถบ "คำขอที่ส่งเข้ามา" (ผู้ดูแล 11 พ.ย. 69 "สามารถโชว์แถบได้ไหมว่ามีใครกรอกอะไรเข้ามาบ้าง เพื่อมันซ็ำคนอื่นจะได้เห้นว่าใครกรอกมาแล้ว" → "ทุกคนเห็น ไม่มีชื่อ")
+   อ่านจากตู้รับ (เปิดที่อยู่ตู้รับ ?board=1 · ไม่ใช้รหัส · ตู้รับรุ่น 1.2 ขึ้นไป): ชนิด · รหัสสาย · ช่วง กม. · เลขที่สัญญา · เวลาที่ส่ง · สถานะ 2 อย่าง (รอตรวจ / ผู้ดูแลรับแล้ว)
+   สถานะของแถบ (ม.5): load กำลังโหลด · ok มีรายการ/ว่าง · old ตู้รับยังเป็นรุ่นที่ไม่มีทางอ่านนี้ = "ยังดูรายการไม่ได้" (ไม่ใช่พัง) · err ต่อไม่ได้ + ลองใหม่
+   ข้อมูลจากตู้รับถือเป็นของนอกหน้า: คัดชนิด/ตัวเลข/ความยาวก่อนใช้ และวาดผ่าน esc() เสมอ · โหลดไม่ได้ = ไม่มีแถว (ไม่เตือนซ้ำจากรายการเก่า) */
+const BQ={st:'idle',rows:[],at:null,total:0,more:false,partial:false,no:false,days:30,f:'all',road:'',kinds:null};   /* kinds = ชุดที่ตู้รับรุ่นนั้นแสดงในรายการ (ตู้รับ 1.3 ขึ้นไปบอกมา · ไม่บอก = null) */
+const BQ_KEY={'ประวัติ':'hist','Zerobase':'zb','สภาพสายทาง':'cond','อุปกรณ์':'eq','ทะเบียนสาย':'regedit','สะพานในสาย':'regbr','สายใหม่':'regnew'};
+const bqKm=q=>q.r.length?q.r.map(x=>fmtKm(x[0])+(x[1]!=null?'–'+fmtKm(x[1]):'')).join(', '):(q.k==='Zerobase'?'ทั้งสาย':q.k==='ทะเบียนสาย'?'ข้อมูลสาย':q.k==='สายใหม่'?'สายใหม่':'—');
+const bqWhen=t=>{ const m=/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(t||''); return m?thDate(new Date(+m[1],+m[2]-1,+m[3],+m[4],+m[5])):'—'; };
+const bqSt=q=>q.s==='d'?'ผู้ดูแลรับแล้ว':'รอตรวจ';
+/* เลขที่สัญญา: ตู้รับเก็บเฉพาะตัวอักษร ตัวเลข . - / ไม่เกิน 30 ตัว ไม่มีช่องว่าง → ก่อนเทียบ ทำเลขที่พิมพ์ในฟอร์มให้เป็นรูปเดียวกัน (กติกาเดียวกับ tidy_ ของตู้รับ) */
+const bqNo=v=>String(v==null?'':v).replace(/[^0-9A-Za-zก-๙.\-\/ ]/g,'').replace(/\s+/g,' ').trim().slice(0,30).replace(/ /g,'');
+const bqLine=q=>q.k+' · '+q.c+' · '+bqKm(q)+(q.n?' · สัญญา '+q.n:'')+' · ส่ง '+bqWhen(q.t)+' · '+bqSt(q);
+function bqClean(rows){
+  return (Array.isArray(rows)?rows:[]).slice(0,200).map(x=>{ if(!x||!BQ_KEY[x.k]||typeof x.c!=='string'||!x.c) return null;
+    const r=(Array.isArray(x.r)?x.r:[]).filter(y=>Array.isArray(y)&&typeof y[0]==='number'&&isFinite(y[0])).slice(0,12).map(y=>[y[0],typeof y[1]==='number'&&isFinite(y[1])?y[1]:null]);
+    return {k:x.k,c:x.c.slice(0,24),r,t:typeof x.t==='string'?x.t.slice(0,19):'',s:x.s==='d'?'d':'w',n:typeof x.n==='string'?x.n.slice(0,30):''}; }).filter(Boolean);
+}
+async function loadBoard(){
+  if(BQ.st==='load') return;
+  if(!INBOX_URL){ BQ.st='old'; BQ.rows=[]; renderBoard(); return; }
+  BQ.st='load'; renderBoard();
+  const ac=typeof AbortController!=='undefined'?new AbortController():null, tm=setTimeout(()=>{ if(ac) ac.abort(); },20000);
+  let st='err', o=null, why='net';   /* why: net = ต่อไม่ถึงตู้รับ · tub = ตู้รับตอบมาแต่ขัดข้อง/ตอบไม่เป็นรูป (ไนติงเกล 11 พ.ย. 69: อย่าโทษเน็ตเมื่อไม่ใช่) */
+  try{ const r=await fetch(INBOX_URL+'?board=1',{method:'GET',cache:'no-store',signal:ac?ac.signal:undefined}); why='tub'; o=await r.json();
+    st=(o&&o.ok&&o.board&&Array.isArray(o.board.rows))?'ok':(o&&o.ok&&o.service)?'old':'err'; }catch(e){ st='err'; }
+  clearTimeout(tm);
+  if(st==='ok') Object.assign(BQ,{rows:bqClean(o.board.rows),at:/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(o.board.at||'')?String(o.board.at).slice(11,16):new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}),total:+o.board.total||0,more:!!o.board.more,partial:!!o.board.partial,no:!!o.board.no,days:+o.board.days||30,kinds:Array.isArray(o.board.kinds)?o.board.kinds.filter(x=>typeof x==='string').slice(0,20):null});
+  else BQ.rows=[];
+  BQ.st=st; BQ.why=why; renderBoard(); if(LAST) run();   /* ผลตรวจของฟอร์มที่เปิดอยู่คิดใหม่ตามรายการล่าสุด */
+}
+function renderBoard(){
+  const el=$('#boardCard'); if(!el) return;
+  const cur=(LAST&&LAST.c&&LAST.c.R)?LAST.c.R.code:''; BQ.road=cur;
+  const H='<h3>คำขอที่ส่งเข้ามา <span class="sub">ทุกคนเห็นรายการเดียวกัน · ไม่แสดงชื่อผู้ส่ง</span></h3>';
+  const again=t=>`<button type="button" class="btn sm" data-bq="reload">↻ ${t}</button>`;
+  if(BQ.st==='idle'||BQ.st==='load'){ el.innerHTML=H+'<div class="empty" id="bqState" data-st="load" role="status">กำลังโหลดรายการ…</div>'; return; }
+  if(BQ.st==='old'){ el.innerHTML=H+`<div class="ck info" id="bqState" data-st="old" role="status"><span class="ic">i</span><div class="tx"><b>ยังดูรายการคำขอที่ส่งเข้ามาไม่ได้</b><small>ส่วนนี้ยังไม่เปิดใช้ — กรอกและส่งคำขอได้ตามปกติ</small></div></div><div class="actions">${again('ลองใหม่')}</div>`; return; }
+  if(BQ.st==='err'){ el.innerHTML=H+`<div class="ck bad" id="bqState" data-st="err" role="alert"><span class="ic">✕</span><div class="tx">${BQ.why==='tub'?'<b>โหลดรายการไม่ได้ — ตู้รับขัดข้องชั่วคราว</b><small>ลองใหม่ในอีกสักครู่ · ':'<b>โหลดรายการไม่ได้ — ต่อตู้รับไม่ได้</b><small>เน็ตหลุด หรือหน้านี้ถูกเปิดในที่ที่ต่อออกไม่ได้ · '}กรอกและส่งคำขอได้ตามปกติ แต่หน้านี้จะไม่เตือนถ้าซ้ำกับคำขอของคนอื่น</small></div></div><div class="actions">${again('ลองใหม่')}</div>`; return; }
+  const all=BQ.rows, mine=cur?all.filter(q=>q.c===cur):[];
+  if(BQ.f==='road'&&!mine.length) BQ.f='all';
+  const list=BQ.f==='road'?mine:mine.concat(all.filter(q=>q.c!==cur));
+  const nW=all.filter(q=>q.s==='w').length, at=BQ.at?esc(BQ.at)+' น.':'—';
+  const top=`<div class="bqh"><span>รอตรวจทุกรายการ · รับแล้วย้อนหลัง ${BQ.days} วัน</span><span class="pill ex">ทั้งหมด ${BQ.more?Math.max(BQ.total,all.length):all.length}</span><span class="pill wait">⧗ รอตรวจ ${nW}</span><span class="pill ok">✓ ผู้ดูแลรับแล้ว ${all.length-nW}</span><span class="r">อัปเดต ${at} ${again('โหลดใหม่')}</span></div>`;
+  if(!all.length){ el.innerHTML=H+top+`<div class="empty" id="bqState" data-st="empty" role="status">ยังไม่มีคำขอที่รอตรวจ และไม่มีคำขอที่ผู้ดูแลรับไปใน ${BQ.days} วันนี้</div>`; return; }
+  const seg=mine.length?`<div class="bqf"><div class="seg" id="bqSeg"><button type="button" data-bqf="road" class="${BQ.f==='road'?'on':''}">สาย ${esc(cur)} · ${mine.length}</button><button type="button" data-bqf="all" class="${BQ.f==='all'?'on':''}">ทุกสาย · ${all.length}</button></div><span>รายการของสายที่กำลังกรอกขึ้นก่อน</span></div>`:'';
+  const row=q=>`<div class="bqr${q.c===cur?' hit':''}" role="listitem" data-c="${esc(q.c)}" data-s="${q.s}"><span class="bq-dt">${esc(bqWhen(q.t))}</span><span class="bq-kd"><span class="pill ex">${esc(q.k)}</span></span><span class="bq-rd"><b>${esc(q.c)}</b>${ROAD[q.c]?`<span>${esc(ROAD[q.c].name)}</span>`:''}</span><span class="bq-km">${esc(bqKm(q))}</span>${BQ.no?`<span class="bq-no${q.n?' has':''}">${esc(q.n||'—')}</span>`:''}<span class="bq-st">${q.s==='d'?'<span class="pill ok">✓ ผู้ดูแลรับแล้ว</span>':'<span class="pill wait">⧗ รอตรวจ</span>'}</span></div>`;
+  el.innerHTML=H+top+seg+`<div class="bql${BQ.no?'':' nono'}" id="bqState" data-st="rows" role="list"><div class="bqk"><span>ส่งเมื่อ</span><span>ชนิด</span><span>สายทาง</span><span>ช่วง กม.</span>${BQ.no?'<span>เลขที่สัญญา</span>':''}<span>สถานะ</span></div>${list.map(row).join('')}</div>`+
+    `<div class="bqn">${BQ.more?'แสดง '+all.length+' แถวล่าสุด จากทั้งหมด '+BQ.total+' · ':''}${BQ.partial?'รายการยังมาไม่ครบ กดโหลดใหม่อีกครั้ง · ':''}<b>รอตรวจ</b> = ส่งแล้ว ผู้ดูแลยังไม่ได้รับไปตรวจ · <b>ผู้ดูแลรับแล้ว</b> = ผู้ดูแลรับไปตรวจแล้ว (หน้านี้ไม่รู้ผลอนุมัติ) · แถวพื้นเหลือง = สายเดียวกับที่กำลังกรอก</div>`;
+}
+document.addEventListener('click',e=>{ const b=e.target.closest&&e.target.closest('#boardCard [data-bq],#boardCard [data-bqf]'); if(!b) return;
+  if(b.dataset.bq==='reload') loadBoard(); else { BQ.f=b.dataset.bqf; renderBoard(); } });
 
 /* ───── แถบข้าง: เฉพาะเมนูระบบกรอก (ผู้ดูแล 9 พ.ย. 69 "โชว์เฉพาะหน้ากรอกข้อมูล ฟังก์ชันอื่นของ bigdata ไม่ต้องโชว์") ───── */
 /* หน้าจริง: ไม่มีเมนูอธิบายระบบ (ตรวจก่อนอนุมัติ · ภาพรวมระบบกรอก เป็นของต้นแบบให้ ผู้ดูแล ดู) */
-const NEW=[['✎','กรอกข้อมูล','entry'],['⧗','คำขอของฉัน','mine'],['✔','ตรวจก่อนอนุมัติ','approve'],['☰','รายการมาตรฐาน','lists'],['◎','ภาพรวมระบบกรอก','flow']].filter(n=>!REAL||!['approve','flow'].includes(n[2]));
+const NEW=[['✎','กรอกข้อมูล','entry'],['⧗','คำขอของฉัน','mine'],['✔','ตรวจก่อนอนุมัติ','approve'],['☰','รายการมาตรฐาน','lists'],['◎','ภาพรวมระบบกรอก','flow']].filter(n=>!REAL||!['approve','flow','lists'].includes(n[2]));   /* 1.4 (ผู้ดูแล 11 พ.ย. 69 "ไม่ต้องโชว์แถบรายการมาตรฐาน"): หน้าจริงไม่มีเมนู รายการมาตรฐาน */
 let BYNAME='';   /* หน้าจริง: จำชื่อผู้ส่งไว้ระหว่างที่หน้ายังเปิดอยู่ ไม่ต้องพิมพ์ซ้ำทุกรายการ */
-const HERO={entry:['กรอกข้อมูลเข้า Master','ประวัติโครงการ · Zerobase · สภาพสายทาง · อุปกรณ์ — ส่งแล้วรอ ผู้ดูแล ตรวจและอนุมัติก่อนขึ้นแดชบอร์ด'],
+const HERO={entry:['กรอกข้อมูลเข้า Master',(REAL?'ทะเบียนสายทาง · ประวัติโครงการ · Zerobase':'ทะเบียนสายทาง · ประวัติโครงการ · Zerobase · สภาพสายทาง · อุปกรณ์')+' — ส่งแล้วรอ ผู้ดูแล ตรวจและอนุมัติก่อนขึ้นแดชบอร์ด'],
   mine:['คำขอของฉัน','ติดตามคำขอที่ส่ง: รอตรวจ · อนุมัติแล้ว · ตีกลับ'],approve:['ตรวจก่อนอนุมัติ','หน้าตาไฟล์ Excel รออนุมัติที่ ผู้ดูแล ใช้ตัดสิน แยกแท็บตาม 4 ชนิดรายการ (อยู่ในเครื่อง ไม่อยู่บนเว็บ)'],
   lists:['รายการมาตรฐาน','ตัวเลือกในช่องเลือกทุกช่อง — ผู้ดูแล เพิ่ม/แก้คนเดียว · ชื่อกิจกรรมเดียวกันทั้งประวัติและ Zerobase'],
   flow:['ภาพรวมระบบกรอก','ทางเดินข้อมูลจากหน้ากรอกถึง Master · สิ่งที่มีในต้นแบบ · เรื่องที่รอตัดสิน']};
@@ -1022,12 +1275,13 @@ nav.innerHTML='<div class="navcap">ระบบกรอกข้อมูล</d
   NEW.map(n=>`<button type="button" data-v="${n[2]}" data-tip="${n[1]}" aria-label="${n[1]}"><span class="ico">${n[0]}</span><span class="lbl">${n[1]}</span></button>`).join('');
 function toast(t){const e=document.createElement('div');e.className='kit-toast';e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.classList.add('out'),2600);setTimeout(()=>e.remove(),3200);}
 function show(v){
-  if(!HERO[v]||(REAL&&(v==='approve'||v==='flow'))) v='entry';   /* หน้าจริง: หน้าอธิบายระบบของต้นแบบเปิดไม่ได้ แม้พิมพ์ #approve / #flow เอง */
+  if(!HERO[v]||(REAL&&(v==='approve'||v==='flow'||v==='lists'))) v='entry';   /* หน้าจริง: หน้าอธิบายระบบของต้นแบบและหน้ารายการมาตรฐานเปิดไม่ได้ แม้พิมพ์ #approve / #flow / #lists เอง */
   document.querySelectorAll('.view').forEach(x=>x.hidden=x.id!=='v-'+v);
   nav.querySelectorAll('button[data-v]').forEach(b=>b.classList.toggle('active',b.dataset.v===v));
   $('#phT').textContent=HERO[v][0]; $('#phD').textContent=HERO[v][1];
   if(v==='mine') renderMine(); if(v==='approve') renderXL(); if(v==='flow') renderFlow(); if(v==='lists') renderLists();
   try{history.replaceState(null,'','#'+v);}catch(e){}
+  if(typeof L2!=='undefined'){ L2.setActive(v); L2.resetParallax(); }   /* โครงหน้ากลาง L2: บอกด็อกลอยว่าอยู่หน้าไหน */
 }
 nav.addEventListener('click',e=>{const b=e.target.closest('button'); if(!b) return; show(b.dataset.v);});
 $('#snapAt').textContent='ข้อมูล '+thDate(SNAP.built);
@@ -1035,30 +1289,64 @@ $('#snapAt').textContent='ข้อมูล '+thDate(SNAP.built);
 $('#phP').innerHTML='<span class="hpill"><span class="dot wait"></span> ต้นแบบ — ปุ่มส่งใช้ได้จริง</span><span class="hpill">ตรวจซ้ำกับ Master · '+HIST.length+' สัญญา · '+REQ.length+' คำของบ · '+ZB.length+' Zerobase</span>';
 
 /* ───── ฟอร์ม 4 ชนิด: ประวัติ · Zerobase · สภาพสายทาง · อุปกรณ์ ───── */
-let kind='hist', N_YEARS=3;
+/* 1.7: หัวข้อที่เปิดตอนเข้าหน้า = ทะเบียนสายทาง (ผู้ดูแล 12 พ.ย. 69 "เปิดที่ทะเบียน") — เปลี่ยนที่นี่ที่เดียว */
+const START_KIND='reg';
+let kind=START_KIND, N_YEARS=3;
 const BASKET=[]; let MINE=[], seq=1;
 const FY_NOW=2570;
 const NEWK=k=>k==='cond'||k==='eq';
 const yearOpts=(from,to,def)=>{let s='';for(let y=from;y<=to;y++) s+=`<option value="${y}"${y===def?' selected':''}>${y}</option>`;return s;};
 const dl=(id,arr)=>`<datalist id="${id}">${arr.map(v=>`<option value="${esc(v)}"></option>`).join('')}</datalist>`;
 const sel=(id,arr,def,blank)=>`<select class="inp" id="${id}">${blank?'<option value="">— เลือก —</option>':''}${arr.map(v=>`<option${v===def?' selected':''}>${esc(v)}</option>`).join('')}</select>`;
-const roadDL=dl('roadList',SNAP.roads.map(r=>r[0]+' · '+r[1]));
 function fld(label,inner,hint,cls,attr){return `<div class="fld ${cls||''}"${attr||''}><label>${label}</label>${inner}${hint?`<div class="hint">${hint}</div>`:''}</div>`;}
 /* รอบ 4.2 (ผู้ดูแล 10 พ.ย. 69 "เวลาใช้จริงคำอธิบายแบบนี้ไม่มีนะ"): ตัดคำอธิบายเชิงผู้พัฒนาใต้ช่องทั้งฟอร์ม เหลือเฉพาะคำแนะนำที่ผู้กรอกต้องใช้ */
-function roadField(hint){return fld('รหัสสายทาง <i>*</i>','<input class="inp" id="f_road" list="roadList" placeholder="พิมพ์ ขก. หรือชื่อสาย">'+roadDL+'<div id="roadCard"></div>',hint||'','w2');}
+/* 1.4 (ผู้ดูแล 11 พ.ย. 69 "ให้เลือกเฉพาะรหัสก็พอ แล้วก็ให้ลบง่ายๆ หน่อย เช่นพอเลือกแล้ว กดเลือกใหม่ให้ล้างอันเดิมไปเลย อันนี้มันกดต่อไม่ได้"):
+   เลิกใช้รายการของเบราว์เซอร์ (กรองตามค่าที่ค้างในช่อง จึงเลือกใหม่ไม่ได้) → รายการของหน้าเอง · เลือกแล้วในช่องเหลือแค่รหัส ชื่อสายอยู่ในการ์ดใต้ช่อง
+   กดที่ช่องอีกครั้ง = ล้างค่าเดิม เปิดรายการเต็ม · ออกจากช่องโดยไม่เลือก = ได้ค่าเดิมคืน · ปุ่ม ✕ = ล้างจริง */
+function roadField(hint){return fld('รหัสสายทาง <i>*</i>','<div class="rpick"><input class="inp" id="f_road" role="combobox" aria-expanded="false" aria-controls="roadDrop" aria-autocomplete="list" autocomplete="off" placeholder="พิมพ์ ขก. หรือชื่อสาย"><button type="button" class="rclr" id="roadClr" aria-label="ล้างรหัสสายทาง" title="ล้าง" hidden>✕</button><div class="rdrop" id="roadDrop" role="listbox" aria-label="รายการสายทาง" hidden></div></div><div id="roadCard"></div>',hint||'','w2');}
+const rkey=s=>String(s||'').toLowerCase().replace(/[\s.·]/g,'');
+function wireRoad(){
+  const inp=$('#f_road'), drop=$('#roadDrop'), clr=$('#roadClr'); if(!inp||!drop) return;
+  let prev='', open=false, act=-1, list=[], quiet=false;
+  const fire=()=>{ quiet=true; inp.dispatchEvent(new Event('input',{bubbles:true})); quiet=false; };   /* แจ้งฟอร์มให้ตรวจใหม่ โดยไม่เปิดรายการซ้ำ */
+  const sync=()=>{ clr.hidden=!inp.value; };
+  const draw=()=>{ const q=rkey(inp.value);
+    list=SNAP.roads.filter(r=>!q||rkey(r[0]).includes(q)||rkey(r[1]).includes(q));
+    if(act>=list.length) act=list.length-1;
+    drop.innerHTML=list.length?list.map((r,i)=>`<div class="ropt${i===act?' act':''}" role="option" id="ropt${i}" data-i="${i}" aria-selected="${i===act}"><b>${esc(r[0])}</b><span>${esc(r[1])}</span></div>`).join(''):'<div class="rnone">ไม่พบสายทางที่ตรงกับ “'+esc(inp.value.trim())+'”</div>';
+    if(act>=0){ inp.setAttribute('aria-activedescendant','ropt'+act); const e=drop.querySelector('.ropt.act'); if(e&&e.scrollIntoView) e.scrollIntoView({block:'nearest'}); } else inp.removeAttribute('aria-activedescendant'); };
+  const openList=()=>{ if(open) return; open=true; act=-1; drop.hidden=false; inp.setAttribute('aria-expanded','true'); draw(); };
+  const hide=()=>{ open=false; drop.hidden=true; inp.setAttribute('aria-expanded','false'); inp.removeAttribute('aria-activedescendant'); };
+  /* เปิดเพื่อเลือกใหม่: ค่าที่ค้างอยู่เป็นรหัสในทะเบียน → จำไว้ แล้วล้างช่อง ให้เห็นรายการเต็ม */
+  const reopen=()=>{ if(open) return; if(ROAD[roadOf()]){ prev=inp.value; inp.value=''; sync(); } openList(); };
+  const pick=i=>{ const r=list[i]; if(!r) return; prev=''; inp.value=r[0]; hide(); sync(); fire(); };
+  inp.addEventListener('focus',reopen); inp.addEventListener('click',reopen);
+  inp.addEventListener('input',()=>{ if(quiet) return; prev=''; sync(); if(!open) openList(); else { act=-1; draw(); } });
+  inp.addEventListener('keydown',e=>{
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){ e.preventDefault(); if(!open){ reopen(); return; } if(!list.length) return; act=e.key==='ArrowDown'?(act+1)%list.length:(act<=0?list.length-1:act-1); draw(); }
+    else if(e.key==='Enter'){ if(open&&(act>=0||list.length===1)){ e.preventDefault(); pick(act>=0?act:0); } }
+    else if(e.key==='Escape'&&open){ e.stopPropagation(); if(!inp.value&&prev){ inp.value=prev; prev=''; sync(); } hide(); } });
+  inp.addEventListener('blur',()=>{ if(!inp.value&&prev){ inp.value=prev; sync(); } prev='';
+    /* พิมพ์รหัสเองครบแล้วออกจากช่อง → จัดให้เป็นรหัสตามทะเบียน */
+    const c=roadOf(); if(ROAD[c]&&inp.value!==c){ inp.value=c; fire(); }
+    hide(); });
+  drop.addEventListener('mousedown',e=>e.preventDefault());   /* กดในรายการไม่ให้ช่องเสียโฟกัสก่อนเลือกเสร็จ */
+  drop.addEventListener('click',e=>{ const o=e.target.closest('.ropt'); if(o) pick(+o.dataset.i); });
+  clr.addEventListener('mousedown',e=>e.preventDefault());
+  clr.addEventListener('click',()=>{ prev=''; inp.value=''; sync(); fire(); hide(); inp.focus(); });
+  sync();
+}
 const numIn=(id,ph,hint)=>`<input class="inp num" id="${id}" inputmode="decimal"${ph?` placeholder="${ph}"`:''}>`;
 /* กิจกรรม (รอบ 3.1 · ผู้ดูแล “ปุ่มเรียงเต็มดูรก”): กิจกรรมหลัก 1 ช่อง + เพิ่มกิจกรรมร่วมได้
    รอบ 4: ตัวเลือกขึ้นตามแหล่งงบที่เลือก (ประวัติ) · Zerobase ไม่มีแหล่งงบ = ทุกกลุ่ม · กิจกรรมแรก = กิจกรรมหลักที่แดชบอร์ดใช้นับ/กรอง · เก็บลง Master คั่นด้วย ", " */
 let ACTS=[''];
 const actSrc=()=>kind==='hist'?(($('#f_kind')||{}).value||''):'';
-function actField(){return `<div class="fld" style="grid-column:1/-1"><label>กิจกรรม <i>*</i></label><div id="actBox"></div><div class="hint" id="actHint"></div></div>`;}
+function actField(){return `<div class="fld" style="grid-column:1/-1"><label>กิจกรรม <i>*</i></label><div id="actBox"></div></div>`;}
 function actSel(i,v){ const used=ACTS.filter((x,j)=>j!==i&&x);
-  return `<select class="inp" data-ai="${i}" aria-label="${i?'กิจกรรมร่วม '+i:'กิจกรรมหลัก'}"><option value="">${i?'— เลือกกิจกรรมร่วม —':'— เลือกกิจกรรมหลัก —'}</option>${actGroups(actSrc()).map(g=>`<optgroup label="${esc(g[0])}">${g[1].map(a=>`<option${a===v?' selected':''}${used.includes(a)?' disabled':''}>${esc(a)}</option>`).join('')}</optgroup>`).join('')}</select>`; }
+  return `<select class="inp" data-ai="${i}" aria-label="${i?'กิจกรรมที่ '+(i+1):'กิจกรรม'}"><option value="">${i?'— เลือกกิจกรรมเพิ่ม —':'— เลือกกิจกรรม —'}</option>${actGroups(actSrc()).map(g=>`<optgroup label="${esc(g[0])}">${g[1].map(a=>`<option${a===v?' selected':''}${used.includes(a)?' disabled':''}>${esc(a)}</option>`).join('')}</optgroup>`).join('')}</select>`; }
 function drawActs(){ const b=$('#actBox'); if(!b) return;
-  b.innerHTML=ACTS.map((v,i)=>`<div class="actrow"><span class="actlab">${i?'ร่วม':'หลัก'}</span>${actSel(i,v)}${i?`<button type="button" class="btn sm" data-adel="${i}" aria-label="เอากิจกรรมร่วมออก">✕</button>`:'<span></span>'}</div>`).join('')+
-   (ACTS.length<5?'<button type="button" class="btn sm" id="addAct">＋ เพิ่มกิจกรรมร่วม</button>':'');
-  const src=actSrc(), n=actAllowed(src).length;
-  $('#actHint').textContent='งานเดียวหลายอย่าง กด “＋ เพิ่มกิจกรรมร่วม”'; }
+  b.innerHTML=ACTS.map((v,i)=>`<div class="actrow">${actSel(i,v)}${i?`<button type="button" class="btn sm" data-adel="${i}" aria-label="เอากิจกรรมที่ ${i+1} ออก">✕</button>`:'<span></span>'}</div>`).join('')+
+   (ACTS.length<5?'<button type="button" class="btn sm" id="addAct">＋ เพิ่มกิจกรรม</button>':''); }
 function rangeRows(multi){return `<div id="rngBox"></div>${multi?'<button type="button" class="btn sm" id="addRng">＋ เพิ่มช่วง</button> <span class="hint" style="font-size:11px;color:var(--muted)">งานเดียวหลายช่วงได้ — เลือกกิจกรรมของแต่ละช่วง · ช่วงไฟฟ้าแสงสว่างหรือ ITS ใส่จำนวนเสาไฟ/กล้องได้เลย</span>':''}<datalist id="rngKinds"><option value="ไฟฟ้า"></option><option value="กล้อง CCTV"></option><option value="รางระบายน้ำ"></option><option value="ทางเท้า"></option></datalist>`;}
 const personSec=inner=>`<div class="fsec"><div class="ft">ข้อมูลบุคคล <span class="lockbadge">🔒 ไม่ขึ้นเว็บ</span></div><div class="fgrid">${inner}</div></div>`;
 /* รอบ 4.2 (ผู้ดูแล "ช่องจำนวนกล้องกับไฟฟ้า…ต้องสามารถระบุได้ในช่วงดำเนินการ"): จำนวนเสาไฟ/กล้องอยู่ในแถวช่วง · ชนิดดูจากคำใน "ระบุช่วง" */
@@ -1067,6 +1355,7 @@ const QLAB={pole:'จำนวนเสาไฟฟ้า (ต้น)',cctv:'จ
 /* Zerobase ไม่ผูกปีงบ (ผู้ดูแล "zerobase เราไม่บอกปีงบสิ… เซ็ต 0 ใหม่ เมื่อได้รับงบแล้ว อัพเดททุกปี") — ใช้รายการ Zerobase ชุดล่าสุดใน Master */
 const ZB_YEAR=Math.max(2571,...SNAP.zb.map(z=>z[0]||0));
 const FORMS={
+ reg:()=>regForm(),
  hist:()=>`<h3>ประวัติโครงการ <span class="sub">1 สัญญา = 1 รายการ</span></h3>
   <div class="fsec"><div class="ft">สัญญา</div><div class="fgrid">
    ${fld('ปีงบประมาณ <i>*</i>','<select class="inp" id="f_year">'+yearOpts(2563,2572,FY_NOW)+'</select>')}
@@ -1082,22 +1371,21 @@ const FORMS={
    ${fld('ผู้ควบคุมงาน','<input class="inp" id="f_sup">')}
    ${fld('คณะกรรมการตรวจรับ','<input class="inp" id="f_com" placeholder="คั่นด้วย ,">','ช่องนี้ไม่ขึ้นเว็บ')}
   </div></div>
-  <div class="fsec"><div class="ft">งาน</div><div class="fgrid">
-   ${actField()}
-   ${fld('ลักษณะงาน (พิมพ์บรรยาย)','<textarea class="inp" id="f_work" rows="2" placeholder="เช่น ซ่อมสร้างผิวทางแอสฟัลต์คอนกรีต โดยวิธี Pavement In-Place Recycling"></textarea>','','w2')}
+  <div class="fsec"><div class="ft">สายทางและลักษณะงาน</div><div class="fgrid">
    ${roadField()}
+   ${fld('ลักษณะงาน (พิมพ์บรรยาย)','<textarea class="inp" id="f_work" rows="2" placeholder="เช่น ซ่อมสร้างผิวทางแอสฟัลต์คอนกรีต โดยวิธี Pavement In-Place Recycling"></textarea>','','w2')}
   </div></div>
-  <div class="fsec"><div class="ft">ช่วงดำเนินการ (กม.) <i style="color:var(--crit-ink);font-style:normal">*</i></div>${rangeRows(true)}</div>
+  <div class="fsec"><div class="ft">กิจกรรมและช่วงที่ทำ <i style="color:var(--crit-ink);font-style:normal">*</i></div>${workRows()}</div>
   ${footer()}`,
  /* รอบ 4.4 (ผู้ดูแล 10 พ.ย. 69): วันที่ + ผู้รับจ้าง/ผู้ควบคุมงาน/กรรมการ ย้ายขึ้นไปอยู่ส่วน "สัญญา" กับเลขที่สัญญา · ผู้รับจ้าง/ผู้ควบคุมงานขึ้นเว็บแล้ว จึงไม่มีป้าย "ไม่ขึ้นเว็บ" (เหลือเฉพาะกรรมการตรวจรับ) */
  /* รอบ 4.2: ไม่มีช่องปีงบ — Zerobase คือรายการความต้องการชุดเดียว ได้งบแล้วถอดออก ปรับทุกปี · ช่อง แผน/ผล/แผนเบิกจ่าย ของประวัติถอดออกจากฟอร์ม (รอตัดสินเจ้าของข้อมูล) */
  zb:()=>`<h3>Zerobase <span class="sub">ความต้องการที่ยังไม่ได้งบ · ได้งบแล้วถอดออก</span></h3>
   <div class="fsec"><div class="fgrid">
-   ${actField()}
    ${roadField()}
-  </div></div>
-  <div class="fsec"><div class="ft">ช่วง (กม.) — ว่างได้ถ้าทั้งสาย</div>${rangeRows(false)}</div>
-  <div class="fsec"><div class="fgrid">${fld('ลักษณะงานเพิ่มเติม','<input class="inp" id="f_note">','','w2')}</div></div>${footer()}`,
+   ${actField()}
+   <div class="fld" style="grid-column:1/-1"><label>ช่วง กม.</label><div id="rngBox"></div></div>
+   ${fld('ลักษณะงานเพิ่มเติม','<input class="inp" id="f_note">','','w2')}
+  </div></div>${footer()}`,
  /* รอบ 4.4: ช่อง "หมายเหตุ" เรียกว่า ลักษณะงานเพิ่มเติม (ลงคอลัมน์ หมายเหตุ ของ BD_04 เหมือนเดิม) · เอาช่อง หมวดเดิม ออกจากฟอร์ม — ตัวอนุมัติเติมหมวดจากทะเบียนให้เอง */
  /* สภาพสายทาง → BD_07_สภาพสายทาง.xlsx แท็บ สภาพสายทาง · สำรวจซ้ำ = รายการใหม่ ไม่ทับของเดิม */
  cond:()=>`<h3>สภาพสายทาง <span class="sub">1 ช่วงสำรวจ = 1 รายการ · สำรวจซ้ำให้กรอกเป็นรายการใหม่</span></h3>
@@ -1146,7 +1434,27 @@ function footer(){return `<div class="fsec"><div class="ft">ผู้ส่ง <
    <div id="ackBox"></div>
    <div class="actions"><span class="grow" id="footHint"></span><button type="button" class="btn" id="btnClear">ล้างฟอร์ม</button><button type="button" class="btn pri" id="btnAdd">＋ เพิ่มลงรายการส่ง</button></div></div>`;}
 let RNG=[];
+/* 1.5 (ผู้ดูแล 11 พ.ย. 69 "ช่วงการกรอกงาน ยังดูยากอยู่ มันดูรกๆ ยังไงไม่รู้ ทั้ง ประวัติและ zerobase" → เลือกจากภาพร่าง "ข้อ 3 ตารางแบบ ก."):
+   ประวัติ — ตารางเดียว 1 แถว = 1 กิจกรรมใน 1 ช่วง · แถวแรกคือกิจกรรมหลัก (ไม่มีก้อน กิจกรรมหลัก/กิจกรรมร่วม และช่อง กิจกรรมของช่วง แยกกันแล้ว)
+   กิจกรรมของรายการ = กิจกรรมของทุกแถวไม่นับซ้ำ เรียงตามแถว · ไฟล์คำขอรูปเดิม: แถวที่เป็นกิจกรรมหลักส่ง n ว่าง แถวอื่นส่ง n = ชื่อกิจกรรม · จำนวนเสาไฟ/กล้องอยู่ในแถวของกิจกรรมนั้น
+   Zerobase — เลือกกิจกรรม (เพิ่มได้) + ช่วง กม. บรรทัดเดียว (ว่างได้ถ้าทั้งสาย) */
+const WK_MAX=12;
+function workRows(){return `<div class="wk"><div class="wkh"><span>กิจกรรม</span><span>กม.เริ่ม</span><span>กม.จบ</span><span>จำนวน</span><span></span></div><div id="rngBox"></div></div><div class="wkf"><button type="button" class="btn sm" id="addRng">＋ เพิ่มแถว</button><span>1 แถว = 1 กิจกรรมใน 1 ช่วง · แถวแรกคือกิจกรรมหลัก</span></div>`;}
+const actOpts=(v,ph)=>'<option value="">'+ph+'</option>'+actGroups('').map(g=>'<optgroup label="'+esc(g[0])+'">'+g[1].map(a=>'<option'+(a===v?' selected':'')+'>'+esc(a)+'</option>').join('')+'</optgroup>').join('');
+function drawWork(){
+  $('#rngBox').innerHTML=RNG.map((r,i)=>{ const k=QK(r.n), u=k==='pole'?'ต้น':'ตัว';
+    return `<div class="wkr"><div class="cell c-act"><select class="inp" data-r="${i}" data-f="n" aria-label="${i?'กิจกรรมแถวที่ '+(i+1):'กิจกรรมหลัก'}">${actOpts(r.n,i?'— เลือกกิจกรรม —':'— เลือกกิจกรรมหลัก —')}</select>${i?'':'<span class="tagm">หลัก</span>'}</div>
+      <div class="cell kc"><span class="mlab">กม.เริ่ม</span><input class="inp num" data-r="${i}" data-f="a" value="${esc(r.a)}" placeholder="0+000" aria-label="กม.เริ่ม แถวที่ ${i+1}"></div>
+      <div class="cell kc"><span class="mlab">กม.จบ</span><input class="inp num" data-r="${i}" data-f="b" value="${esc(r.b)}" placeholder="0+000" aria-label="กม.จบ แถวที่ ${i+1}"></div>
+      <div class="cell kc">${k?`<span class="mlab">จำนวน (${u})</span><span class="cell"><input class="inp num" data-r="${i}" data-f="q" inputmode="numeric" value="${esc(r.q||'')}" placeholder="0" aria-label="${QLAB[k]} แถวที่ ${i+1}"><span class="unit">${u}</span></span>`:'<span class="dash">—</span>'}</div>
+      ${RNG.length>1?`<button type="button" class="btn sm" data-del="${i}" aria-label="ลบแถวที่ ${i+1}">✕</button>`:'<span></span>'}</div>`; }).join('');
+  const ab=$('#addRng'); if(ab) ab.hidden=RNG.length>=WK_MAX;
+}
+function drawZbRange(){ const r=RNG[0];
+  $('#rngBox').innerHTML=`<div class="kmline"><input class="inp num" data-r="0" data-f="a" value="${esc(r.a)}" placeholder="0+000" aria-label="กม.เริ่ม"><span>ถึง</span><input class="inp num" data-r="0" data-f="b" value="${esc(r.b)}" placeholder="0+000" aria-label="กม.จบ"><span>ว่างได้ถ้าทั้งสาย</span></div>`; }
 function drawRanges(){
+  if(kind==='hist') return drawWork();
+  if(kind==='zb') return drawZbRange();
   const multi=kind==='hist', note=kind==='hist'||kind==='zb';
   const lb=kind==='eq'?['กม.เริ่ม <i>*</i>','กม.จบ (ว่าง = จุด)']:kind==='cond'?['กม.เริ่ม <i>*</i>','กม.จบ <i>*</i>']:['เริ่ม','จบ'];
   /* รอบ 4.2: ประวัติ — พิมพ์ "ไฟฟ้า" หรือ "กล้อง" ในระบุช่วง แล้วช่องจำนวน (เสา/กล้อง) ของช่วงนั้นโผล่ */
@@ -1166,9 +1474,9 @@ function rngQty(i){ const w=document.querySelector('[data-rq="'+i+'"]'); if(!w) 
 function buildForm(prefill){
   $('#form').innerHTML=FORMS[kind]();
   RNG=[{a:'',b:'',n:'',q:''}]; ACTS=[''];
-  if(prefill) prefillDemo(); else drawRanges();
+  if(kind==='reg'){ regRestore(); drawRegBody(); } else if(prefill) prefillDemo(); else drawRanges();
   drawActs(); eqVis();
-  wire(); run();
+  wire(); wireRoad(); run();
 }
 function prefillDemo(){
   const set=(id,v)=>{const e=$('#'+id); if(e) e.value=v;};
@@ -1177,22 +1485,22 @@ function prefillDemo(){
   if(kind==='hist'){
     const h=HIST.find(x=>x.y===2569&&x.rng.length&&ROAD[x.code]&&x.rng[0][1]-x.rng[0][0]>2)||HIST.find(x=>x.rng.length);
     set('f_year',2570); set('f_no','45/2570'); set('f_kind','บำรุง'); set('f_amt',money(9850000)); set('f_work','ซ่อมสร้างผิวทางแอสฟัลต์คอนกรีต (ตัวอย่าง)');
-    set('f_road',h.code+' · '+ROAD[h.code].name); const a=h.rng[0][0]+0.5, L=ROAD[h.code].len;
-    RNG=[{a:fmtKm(a),b:fmtKm(Math.min(a+1.5,L)),n:'',q:''},{a:fmtKm(a+0.2),b:fmtKm(Math.min(a+1,L)),n:'ไฟฟ้าแสงสว่าง',q:'24'}];
+    set('f_road',h.code); const a=h.rng[0][0]+0.5, L=ROAD[h.code].len;
+    RNG=[{a:fmtKm(a),b:fmtKm(Math.min(a+1.5,L)),n:'Recycling',q:''},{a:fmtKm(a+0.2),b:fmtKm(Math.min(a+1,L)),n:'ไฟฟ้าแสงสว่าง',q:'24'}];
     set('f_d1','2027-01-12'); set('f_d2','2027-05-11'); set('f_con','หจก. ตัวอย่างก่อสร้าง'); set('f_sup','ตัวอย่าง');
     acts(['Recycling','ไฟฟ้าแสงสว่าง']);   /* รอบ 4.2: ตัวอย่างเดิมใช้ชื่อชุดรายการกรม (ยกเลิกแล้วตั้งแต่ 4.1) จึงขึ้น "ต้องแก้" ตั้งแต่เปิดหน้า */
   } else if(kind==='zb'){
     const z=ZB.find(x=>ROAD[x.code]&&REQ.some(q=>q.code===x.code&&q.a!=null))||ZB.find(x=>ROAD[x.code]);
     const q=REQ.find(r=>r.code===z.code&&r.a!=null);
     const za=String(z.act||'').split(/\s*,\s*/).find(x=>STD.act.v.includes(x));
-    set('f_year',2571); acts([za||'ปรับปรุงถนน']); set('f_road',z.code+' · '+ROAD[z.code].name);
+    set('f_year',2571); acts([za||'ปรับปรุงถนน']); set('f_road',z.code);
     RNG=[q?{a:fmtKm(q.a),b:fmtKm(q.b),n:''}:{a:'',b:'',n:''}];
   } else if(kind==='cond'){
-    const R=demoRoad(); set('f_road',R.code+' · '+R.name); RNG=[{a:'0+000',b:fmtKm(Math.min(2,R.len)),n:''}];
+    const R=demoRoad(); set('f_road',R.code); RNG=[{a:'0+000',b:fmtKm(Math.min(2,R.len)),n:''}];
     set('c_lanes','2'); set('c_w','6.00'); set('c_sh','1.50'); set('c_surf','ลาดยาง AC'); set('c_thick','5'); set('c_layers','1');
     set('c_date',todayISO()); set('c_cond','พอใช้'); set('c_surveyor','ตัวอย่าง ผู้สำรวจ');
   } else {
-    const R=demoRoad(); set('f_road',R.code+' · '+R.name); RNG=[{a:'1+200',b:fmtKm(Math.min(2.4,R.len)),n:''}];
+    const R=demoRoad(); set('f_road',R.code); RNG=[{a:'1+200',b:fmtKm(Math.min(2.4,R.len)),n:''}];
     set('e_type','ไฟฟ้าแสงสว่าง'); set('e_kind','โคม LED กิ่งเดี่ยว'); set('e_qty','24'); set('e_trans','1+250'); set('e_yr','2566');
     set('e_date',todayISO()); set('e_cond','ดี'); set('e_surveyor','ตัวอย่าง ผู้สำรวจ');
   }
@@ -1205,32 +1513,36 @@ function eqVis(){
 }
 function wire(){
   const f=$('#form');
-  f.oninput=f.onchange=e=>{ const t=e.target; if(t.classList.contains('money')){const v=money(t.value); if(v!==t.value){t.value=v; try{t.setSelectionRange(v.length,v.length);}catch(x){}}}
-    if(t.dataset.r!=null){RNG[+t.dataset.r][t.dataset.f]=t.value; if(t.dataset.f==='n'){ rngQty(+t.dataset.r);
-        /* เลือกกิจกรรมของช่วงที่ยังไม่อยู่ในกิจกรรมของสัญญา → เติมเป็นกิจกรรมร่วมให้ (กิจกรรมของสัญญากับของช่วงต้องตรงกัน) */
-        if((kind==='hist'||kind==='zb')&&t.value&&!ACTS.includes(t.value)&&ACTS.filter(Boolean).length<5){ if(ACTS.length===1&&!ACTS[0]) ACTS=[t.value]; else ACTS.push(t.value); drawActs(); } } }
+  f.oninput=f.onchange=e=>{ const t=e.target; if(kind==='reg') regInput(e); if(t.classList.contains('money')){const v=money(t.value); if(v!==t.value){t.value=v; try{t.setSelectionRange(v.length,v.length);}catch(x){}}}
+    if(t.dataset.r!=null){ const ri=+t.dataset.r, was=RNG[ri][t.dataset.f]; RNG[ri][t.dataset.f]=t.value;
+      /* เลือกกิจกรรมของแถว: ช่องจำนวน (เสาไฟ/กล้อง) โผล่หรือหายตามกิจกรรม — ชนิดของจำนวนเปลี่ยน (หาย หรือ เสาไฟ ↔ กล้อง) แล้วล้างค่า ไม่ให้จำนวนเสาไฟค้างไปเป็นจำนวนกล้อง (ผู้ตรวจอิสระ 11 พ.ย. 69) · วาดแถวใหม่ตอนเลือกเสร็จ แล้วคืนโฟกัสให้ช่องเดิม */
+      if(t.dataset.f==='n'){ if(kind==='hist'){ if(QK(t.value)!==QK(was)) RNG[ri].q=''; if(e.type==='change'){ drawWork(); const s=document.querySelector('#rngBox select[data-r="'+ri+'"]'); if(s) s.focus(); } } else rngQty(ri); } }
     if(t.id==='f_kind'&&e.type==='change'){ const ok=actAllowed(actSrc()); ACTS=ACTS.map(a=>ok.includes(a)?a:''); if(ACTS.length>1) ACTS=[ACTS[0]].concat(ACTS.slice(1).filter(Boolean)); drawActs(); }
     if(t.id==='e_type'&&e.type==='change') eqVis();
     if(t.dataset.ai!=null&&e.type==='change'){ACTS[+t.dataset.ai]=t.value; drawActs();} run(); };
   f.onclick=e=>{
+    if(kind==='reg'&&regClick(e)) return;
     if(e.target.id==='addAct'){ACTS.push(''); drawActs(); const s=document.querySelector('#actBox select[data-ai="'+(ACTS.length-1)+'"]'); if(s) s.focus(); run(); return;}
     const ad=e.target.closest('[data-adel]'); if(ad){ACTS.splice(+ad.dataset.adel,1); drawActs(); run(); return;}
-    if(e.target.id==='addRng'){RNG.push({a:'',b:'',n:'',q:''}); drawRanges(); run(); return;}
+    if(e.target.id==='addRng'){ if(RNG.length>=WK_MAX) return; RNG.push({a:'',b:'',n:'',q:''}); drawRanges(); const s=document.querySelector('#rngBox select[data-r="'+(RNG.length-1)+'"]'); if(s) s.focus(); run(); return;}
     const d=e.target.closest('[data-del]'); if(d){RNG.splice(+d.dataset.del,1); drawRanges(); run(); return;}
-    if(e.target.id==='btnClear'){buildForm(false); return;}
+    if(e.target.id==='btnClear'){BRSEL=null; buildForm(false); return;}
     if(e.target.id==='btnAdd'){addToBasket(); return;}
   };
 }
-function roadOf(){const v=($('#f_road')||{}).value||''; const m=v.match(/(ขก|กส|ชย|รอ)\.\s?\d{3,4}/); return m?m[0].replace(/\s/,''):v.trim();}
+/* 1.4 (ผู้ตรวจอิสระ 11 พ.ย. 69): รหัสสายต้องตรงกับทะเบียนทั้งค่า — เดิมจับรหัสจากส่วนหนึ่งของข้อความ พิมพ์เกินหลัก (ขก.10011) จึงผ่านเป็น ขก.1001 และส่งออกเป็นสายที่ไม่ได้พิมพ์
+   รับได้ 2 รูป: รหัสล้วน (ไม่สนจุด/ช่องว่าง) หรือ "รหัส · ชื่อสาย" ครบทั้งชื่อ (รูปของรุ่นก่อน เผื่อวางข้อความ) · ไม่ตรง = คืนข้อความที่พิมพ์ ให้ผลตรวจบอกว่าไม่พบ */
+function roadOf(){const v=(($('#f_road')||{}).value||'').trim(), k=rkey(v); if(!k) return ''; const hit=SNAP.roads.find(r=>rkey(r[0])===k||rkey(r[0]+r[1])===k); return hit?hit[0]:v;}
 const kmOut=(raw,v)=>raw===''||raw==null?'':(v!=null&&!isNaN(v)?fmtKm(v):String(raw).trim());
 const numOut=v=>v===''?'':(isNaN(+v)?v:+v);
 function collect(){
+  if(kind==='reg') return collectReg();
   const g=id=>{const e=$('#'+id);return e?e.value.trim():'';};
   /* รอบ 4.2: ช่วงของประวัติมี q = จำนวนเสาไฟ/กล้องในช่วงนั้น (qk บอกชนิด: pole · cctv) — ตัวดึงรวมลงคอลัมน์ จำนวนเสาไฟฟ้า / จำนวนกล้อง CCTV ของ Master */
   /* Zerobase: กิจกรรมของช่วงถูกเติมเข้ากิจกรรมของรายการแล้ว จึงไม่ส่งเป็นคำกำกับช่วง (ช่อง กม. ใน Master ของ Zerobase เก็บตัวเลข กม. ล้วน) */
-  const r={kind,code:roadOf(),by:g('f_by'),msg:g('f_msg'),ranges:RNG.map(x=>{ const o={a:parseKm(x.a),b:parseKm(x.b),n:kind==='zb'?'':x.n,ra:String(x.a||'').trim(),rb:String(x.b||'').trim()};
+  const r={kind,code:roadOf(),by:g('f_by'),msg:g('f_msg'),ranges:RNG.map(x=>{ const o={a:parseKm(x.a),b:parseKm(x.b),n:kind==='zb'||(kind==='hist'&&x.n===RNG[0].n)?'':x.n,ra:String(x.a||'').trim(),rb:String(x.b||'').trim()};
       const k=kind==='hist'?QK(x.n):'', q=String(x.q||'').replace(/,/g,'').trim(); if(k&&q!==''){ o.q=numOut(q); o.qk=k; } return o; }),
-    act:ACTS.filter((x,i,a)=>x&&a.indexOf(x)===i)};
+    act:(kind==='hist'?RNG.map(x=>x.n):ACTS).filter((x,i,a)=>x&&a.indexOf(x)===i)};
   /* Zerobase ไม่ถามปีงบ — ใช้ชุดล่าสุด (ZB_YEAR) เฉพาะเพื่อตรวจซ้ำในหน้า · ไฟล์คำขอไม่ส่งปี ตัวดึงลงแท็บ Zerobase ล่าสุดของ Master เอง */
   if(!NEWK(kind)) r.year=kind==='zb'?ZB_YEAR:+g('f_year');
   /* ไฟล์คำขอ: ช่องแหล่งงบใช้คีย์ "แหล่งงบ" (รอบ 4 · เดิม bkind) */
@@ -1258,31 +1570,36 @@ function checkRoad(r,bad,ok){
   else ok.push(['สายทางมีในทะเบียน',R.name+' · '+R.len.toFixed(3)+' กม.'+(r.kind==='eq'?' · หมวด'+R.muad+(REAL?'':' → แท็บ '+R.muad):'')]);
   return R;
 }
-function check(r){ return NEWK(r.kind)?checkNew(r):checkOld(r); }
+function check(r){ return REGK(r.kind)?checkReg(r):NEWK(r.kind)?checkNew(r):checkOld(r); }
 function checkOld(r){
-  const bad=[],warn=[],ok=[],lanes={hist:[],req:[],zb:[]};
+  const bad=[],warn=[],ok=[],info=[],lanes={hist:[],req:[],zb:[]};
   const R=checkRoad(r,bad,ok);
-  const rs=r.ranges.filter(x=>x.ra||x.rb);
-  if(!rs.length&&r.kind!=='zb') bad.push(['ยังไม่ได้ใส่ช่วง กม.','']);
-  rs.forEach((x,i)=>{const lb=rs.length>1?'ช่วงที่ '+(i+1)+' ':'';
+  const rs=r.ranges.filter(x=>x.ra||x.rb), isH=r.kind==='hist', many=isH&&r.ranges.length>1;
+  if(!rs.length&&r.kind!=='zb'&&!(isH&&RNG.some(x=>x.n))) bad.push(['ยังไม่ได้ใส่ช่วง กม.','']);
+  /* ประวัติ (ตาราง): แถวที่เลือกกิจกรรมแล้วต้องมีช่วง กม. · แถวที่มีช่วงแล้วต้องเลือกกิจกรรม (แถวแรกว่าง = ข้อ "กิจกรรมหลัก" ด้านล่าง) · แถวที่ว่างทั้งแถวไม่นับ */
+  if(isH) RNG.forEach((x,i)=>{ const has=String(x.a||'').trim()||String(x.b||'').trim(), lb=many?'แถวที่ '+(i+1)+' ':'';
+    if(x.n&&!has) bad.push([lb+'ยังไม่ได้ใส่ช่วง กม.',x.n]); else if(i>0&&has&&!x.n) bad.push([lb+'ยังไม่ได้เลือกกิจกรรม','']); });
+  r.ranges.forEach((x,i)=>{ if(!(x.ra||x.rb)) return; const lb=many?'แถวที่ '+(i+1)+' ':'';
     if(x.a==null||isNaN(x.a)||x.b==null||isNaN(x.b)) bad.push([lb+'รูปแบบ กม. ไม่ถูก','ใช้แบบ 1+250 หรือ 1.250']);
     else if(x.b<=x.a) bad.push([lb+'กม.จบ ต้องมากกว่า กม.เริ่ม',fmtKm(x.a)+' – '+fmtKm(x.b)]);
     else if(R&&x.b>R.len+0.005) bad.push([lb+'เกินระยะตามบัญชี',fmtKm(x.b)+' > '+fmtKm(R.len)+' ('+R.code+')']);
     if(x.q!==undefined&&(typeof x.q!=='number'||!(x.q>0))) bad.push([lb+QLAB[x.qk].replace(/ \(.*/,'')+' ต้องเป็นตัวเลขมากกว่า 0','ได้ “'+x.q+'”']);
   });
   const good=rs.filter(x=>!isNaN(x.a)&&!isNaN(x.b)&&x.a!=null&&x.b>x.a);
-  if(good.length&&!bad.some(b=>/กม|ช่วง/.test(b[0]))) ok.push(['ช่วง กม. อยู่ในบัญชี',good.map(x=>fmtKm(x.a)+'–'+fmtKm(x.b)).join(' · ')]);
+  if(good.length&&!bad.some(b=>/กม|ช่วง|ระยะ/.test(b[0]))) ok.push(['ช่วง กม. อยู่ในบัญชี',good.map(x=>fmtKm(x.a)+'–'+fmtKm(x.b)).join(' · ')]);
   if(r.kind==='hist'&&!(r.amt>0)) bad.push(['วงเงินตามสัญญาต้องเป็นตัวเลขมากกว่า 0','']);
   if(r.kind==='hist'&&!r.no) bad.push(['ยังไม่ได้ใส่เลขที่สัญญา','']);
   if(r.kind==='hist'&&!r['แหล่งงบ']) bad.push(['ยังไม่ได้เลือกแหล่งงบ','']);
   if(!r.act.length) bad.push(['ยังไม่ได้เลือกกิจกรรม','']);
-  else if(!ACTS[0]) bad.push(['ยังไม่ได้เลือกกิจกรรมหลัก','เลือกกิจกรรมหลักก่อน แล้วค่อยเพิ่มกิจกรรมร่วม']);
+  else if(!(isH?RNG[0].n:ACTS[0])) bad.push(['ยังไม่ได้เลือกกิจกรรมหลัก',isH?'แถวแรกคือกิจกรรมหลัก — เลือกกิจกรรมของแถวแรก':'เลือกกิจกรรมช่องแรกก่อน']);
   else { const okA=actAllowed(r.kind==='hist'?r['แหล่งงบ']:''), off=r.act.filter(a=>!okA.includes(a)); if(off.length) bad.push(['กิจกรรมไม่อยู่ในกลุ่มของแหล่งงบ '+r['แหล่งงบ'],off.join(', ')]); }
   if(!r.by) bad.push(['ยังไม่ได้ใส่ชื่อผู้ส่ง','']);
   // ซ้ำ = แถบเตือน (ผู้ดูแล 9 พ.ย. 69)
   if(r.kind==='hist'&&r.no){ const n=normNo(r.no); const d=HIST.filter(h=>h.no===n); if(d.length) warn.push(['เลขที่สัญญาซ้ำ',d.map(h=>(REAL?'ปีงบ '+h.y:'Y_'+String(h.y).slice(2))+' · '+h.no+' · '+h.code+' · '+fmt(h.amt)+' บาท').join(' | ')]);
     const b=BASKET.filter(x=>x.r.kind==='hist'&&normNo(x.r.no)===n); if(b.length) warn.push(['เลขที่สัญญาซ้ำกับรายการรอส่ง','']);
-    MINE.filter(m=>m.status==='รอตรวจ'&&m.items.some(i=>i.r.kind==='hist'&&normNo(i.r.no)===n)).forEach(m=>warn.push(['เลขที่สัญญาซ้ำกับคำขอที่รอ ผู้ดูแล ตรวจ',m.id])); }
+    MINE.filter(m=>m.status==='รอตรวจ'&&m.items.some(i=>i.r.kind==='hist'&&normNo(i.r.no)===n)).forEach(m=>warn.push(['เลขที่สัญญาซ้ำกับคำขอที่รอ ผู้ดูแล ตรวจ',m.id]));
+    /* 1.6: เลขที่สัญญาตรงกับคำขอที่ส่งเข้ามาแล้ว (ของทุกคน) — ถ้าเตือนจากคำขอที่ส่งจากหน้านี้เองไปแล้ว ไม่เตือนซ้ำอีกบรรทัด */
+    if(!warn.some(w=>/^เลขที่สัญญาซ้ำกับคำขอที่รอ/.test(w[0]))){ const nb=bqNo(r.no), q=BQ.rows.filter(q=>q.n&&nb&&bqNo(q.n)===nb); if(q.length) warn.push(['เลขที่สัญญาซ้ำกับคำขอที่ส่งเข้ามาแล้ว',q.map(bqLine).join(' | ')]); } }
   if(R){
     HIST.filter(h=>h.code===r.code).forEach(h=>h.rng.forEach(([a,b])=>{ const o=Math.max(0,...good.map(x=>ovl(x.a,x.b,a,b))); lanes.hist.push({a,b,y:h.y,lab:h.no,hit:o>0});
       if(o>0&&h.y>=r.year-N_YEARS&&h.y<=r.year) warn.push([(r.kind==='hist'?'ช่วงดำเนินการทับงานเดิม':'ทับงานที่เพิ่งทำ')+' '+o.toFixed(3)+' กม.','ปี '+h.y+' · '+h.no+' · '+(h.work||h.act||'')+' · '+fmtKm(a)+'–'+fmtKm(b)]); }));
@@ -1293,10 +1610,17 @@ function checkOld(r){
       lanes.zb.push({a:za,b:zbb,y:z.y,lab:z.act+(whole?' (ทั้งสาย)':''),hit:o>0});
       if(o>0&&r.kind==='zb'&&z.y===r.year) warn.push(['Zerobase ซ้ำ',z.act+' · '+(whole?'ทั้งสาย':fmtKm(z.a)+'–'+fmtKm(z.b))]); });
     BASKET.filter(x=>x.r.code===r.code&&x.r.kind===r.kind).forEach(x=>{const o=Math.max(0,...good.map(g=>Math.max(0,...x.r.ranges.map(y=>ovl(g.a,g.b,y.a,y.b))))); if(o>0) warn.push(['ทับกับรายการรอส่งของคุณเอง',fmtKm(x.r.ranges[0].a)+'–'+fmtKm(x.r.ranges[0].b)]);});
+    /* 1.6: คำขอที่ส่งเข้ามาแล้ว (ของทุกคน · จากแถบท้ายหน้า) — สายเดียวกัน + ชนิดเดียวกัน + ช่วงทับ = แถบเตือน ไม่บล็อก · คำขอ Zerobase ที่ไม่ใส่ช่วง = ทั้งสาย */
+    let bqHit=0;
+    BQ.rows.filter(q=>q.c===r.code&&BQ_KEY[q.k]===r.kind).forEach(q=>{ const segs=q.r.length?q.r.map(y=>[y[0],y[1]!=null?y[1]:y[0]]):[[0,R.len]];
+      const o=good.length?Math.max(0,...good.map(g=>Math.max(0,...segs.map(y=>ovl(g.a,g.b,y[0],y[1]))))):(r.kind==='zb'?1:0);
+      if(o>0){ bqHit++; warn.push([good.length?'ทับกับคำขอที่ส่งเข้ามาแล้ว '+o.toFixed(3)+' กม.':'สายนี้มีคำขอ Zerobase ส่งเข้ามาแล้ว',bqLine(q)]); } });
+    /* บรรทัดเขียวขึ้นเฉพาะเมื่อได้รายการครบ — ตู้รับบอกว่ามีมากกว่าที่ส่งมา (more) หรือยังอ่านไม่ครบ (partial) = เทียบได้บางส่วน ไม่อ้างว่าไม่ทับ (ไนติงเกล 11 พ.ย. 69 · ม.5) */
+    if(BQ.st==='ok'&&!bqHit&&(good.length||r.kind==='zb')){ if(BQ.more||BQ.partial) info.push(['เทียบกับคำขอที่ส่งเข้ามาได้บางส่วน','รายการในแถบท้ายหน้ายังมาไม่ครบ — '+BQ.rows.length+' รายการที่เห็นไม่ทับ แต่ยังบอกไม่ได้ว่าไม่ทับกับรายการที่เหลือ']); else ok.push(['ไม่ทับกับคำขอที่ส่งเข้ามาแล้ว','เทียบ '+BQ.rows.length+' รายการในแถบ “คำขอที่ส่งเข้ามา”']); }
   }
   if(!warn.length&&R&&good.length) ok.push(['ไม่ซ้ำกับงานเดิม/คำของบ/Zerobase','ย้อนดู '+N_YEARS+' ปี']);
   const rows=[['รายการนี้',good.map(g=>({a:g.a,b:g.b,lab:'',me:1}))],['ประวัติ',lanes.hist],['คำของบ',lanes.req],['Zerobase',lanes.zb]];
-  return {bad,warn,ok,rows,R,good};
+  return {bad,warn,ok,info,rows,R,good};
 }
 /* ด่านของ 2 ชุดใหม่: สายในทะเบียน · กม. ในบัญชี (กติกาเดียวกับฟอร์มเดิม: เกินความยาว +5 ม. = ตก) · เริ่ม < จบ · ช่องบังคับ · ช่องตัวเลข
    ซ้ำกับรายการรอส่ง/รอ ผู้ดูแล ตรวจ (สาย + ช่วงทับ + ประเภทเดียวกัน) = แถบเตือน ไม่บล็อก */
@@ -1337,32 +1661,373 @@ function checkNew(r){
   const rows=[['รายการนี้',me],['รอส่ง/รอตรวจ',other]];
   return {bad,warn,ok,rows,R,good:seg?[seg]:[]};
 }
+/* ───── 1.7 แท็บ "ทะเบียนสายทาง" (ผู้ดูแล 11 พ.ย. 69 "เพิ่มหัวข้อทะเบียนสายทาง เผื่อมีใครเสนอแก้ไขอะไร" · "แถบทะเบียนอยู่อันแรกสุด") ─────
+   3 เรื่องย่อย: แก้ข้อมูลสาย (ชุด ทะเบียนสาย) · สะพานในสาย (ชุด สะพานในสาย) · เสนอสายใหม่ (ชุด สายใหม่) — ส่งแล้วรอ ผู้ดูแล อนุมัติ ทะเบียนจึงเปลี่ยน
+   ด่านในหน้านี้เตือนล่วงหน้าให้ตรงกับตัวตรวจตอนรับคำขอ (ตัวตรวจตอนรับเป็นตัวตัดสิน · หน้านี้เข้มกว่าได้ ห้ามหลวมกว่า)
+   ระยะสะพานที่เพิ่ม/แก้: ไม่ถามว่าหักจากผิวไหน ขึ้นแถบเหลืองให้ ผู้ดูแล ปรับผิวทางตอนอนุมัติ (ผู้ดูแล 11 พ.ย. 69 "ผู้ดูแลจัดการตอนอนุมัติ") · สายใหม่ต้องใส่รหัสเอง ("ผู้กรอกต้องใส่รหัส")
+   ไฟล์คำขอ: ข้อมูล = {kind, code, by, msg, why, เสนอ:{หัวคอลัมน์: ค่า}, เดิม:{หัวคอลัมน์: ค่าที่เห็นตอนกรอก}} · ชุดสะพานมี act (เพิ่ม/แก้) + old_km · ใส่เฉพาะช่องที่แก้ · ช่องตัวเลขส่งเป็นตัวเลข ช่องข้อความส่งเป็นข้อความ */
+const REG_KINDS=['regedit','regbr','regnew'], REGK=k=>REG_KINDS.includes(k);
+const REG_SET={regedit:'ทะเบียนสาย',regbr:'สะพานในสาย',regnew:'สายใหม่'};
+const REG_OTHER='อื่น ๆ', SUM_TOL=0.001, REG_OVER_M=5, REG_NEAR_M=30, SINCE_MIN=2440, LEN_ODD_KM=100;
+const NEW_CODE=/^(ขก|กส|ชย|รอ)\.[0-9]{4}$/;
+const REG_KMF=[['ระยะทาง (กม.)','len','len_acct'],['ลูกรัง (กม.)','luk','lukrang'],['ลาดยาง (กม.)','lat','latyang'],['คอนกรีต (กม.)','con','concrete']];
+const BR_F=[['ตำแหน่ง กม.','pos'],['ชื่อสะพาน','name'],['ลำน้ำ','river'],['ความยาว (ม.)','len'],['ความกว้าง (ม.)','wid']];
+let REGM='edit', BRSEL=null, REG_ROAD='', REG_KEEP=null;
+const regOrigin=()=>stdv('ที่มาของสาย');   /* null = ไฟล์ข้อมูลยังไม่มีชุดตัวเลือก → บอกว่ายังเลือกไม่ได้ ไม่เดาค่า */
+const regMuads=()=>[...new Set(Object.values(REGR).map(r=>r.muad).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'th'));
+const km3=v=>(v==null||v===''||isNaN(v))?'—':Number(v).toFixed(3);
+const numTxt=v=>String(+(+v).toFixed(3));
+const staM=m=>Math.floor(m/1000)+'+'+String(m%1000).padStart(3,'0');
+/* ช่องตัวเลขของแท็บทะเบียน: รับเฉพาะตัวเลขล้วน (มีจุดทศนิยมได้) — มีจุลภาค หน่วย เครื่องหมาย หรือเลขไทย = ไม่รับ ให้ผู้กรอกแก้เอง · ว่าง = null */
+const regNum=s=>{ s=String(s==null?'':s).trim(); if(!s) return null; return /^[0-9]+(\.[0-9]+)?$/.test(s)?Number(s):NaN; };
+/* บรรจุเมื่อ: วัน/เดือน/ปี พ.ศ. 4 หลัก หรือ ปี พ.ศ. 4 หลัก · เลขอารบิก → {t: ข้อความรูปเดียว "8/11/2535" หรือ "2535"} · ไม่รับ → {e: เหตุ} · ว่าง → null */
+function regSince(s){
+  s=String(s==null?'':s).trim(); if(!s) return null;
+  const beNow=new Date().getFullYear()+543, how='ใส่ วัน/เดือน/ปี พ.ศ. เช่น 8/11/2535 หรือปี พ.ศ. 4 หลัก เช่น 2535', out='อยู่นอกช่วงที่รับ ('+SINCE_MIN+'–'+beNow+')';
+  if(/[๐-๙]/.test(s)) return {e:'ใช้เลขอารบิก (0–9) · '+how};
+  let m=/^([0-9]{4})$/.exec(s);
+  if(m) return (+m[1]>=SINCE_MIN&&+m[1]<=beNow)?{t:m[1]}:{e:'ปี พ.ศ. '+m[1]+' '+out};
+  m=/^([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4})$/.exec(s);
+  if(!m) return {e:how};
+  const d=+m[1], mo=+m[2], y=+m[3];
+  if(y<2400) return {e:'ปีต้องเป็น พ.ศ. 4 หลัก · '+how};
+  const dt=new Date(y-543,mo-1,d);
+  if(dt.getFullYear()!==y-543||dt.getMonth()!==mo-1||dt.getDate()!==d) return {e:'ไม่มีวันที่นี้ในปฏิทิน · '+how};
+  if(y<SINCE_MIN) return {e:'ปี พ.ศ. '+y+' '+out};
+  const n=new Date(); if(dt>new Date(n.getFullYear(),n.getMonth(),n.getDate())) return {e:'วันที่อยู่ในอนาคต'};
+  return {t:d+'/'+mo+'/'+y};
+}
+/* สะพานในสายจากไฟล์ข้อมูล: m = ตำแหน่งเป็นเมตร (ไม่มีตำแหน่งในทะเบียน = null) · len/width เป็นเมตร · ชื่อ "-" ในไฟล์ข้อมูล = ทะเบียนไม่มีชื่อ */
+function regBridges(code){
+  const a=(REGB&&Array.isArray(REGB[code]))?REGB[code]:[];
+  const out=a.map((b,i)=>{ b=b||{}; const k=parseKm(b.km), m=(k==null||isNaN(k))?null:Math.round(k*1000), nn=!b.name||b.name==='-';
+    return {i,m,name:nn?'':String(b.name),noname:nn,river:b.river?String(b.river):'',len:typeof b.len==='number'?b.len:null,width:typeof b.width==='number'?b.width:null}; });
+  out.forEach(b=>{ b.dup=b.m!=null&&out.some(o=>o!==b&&o.m===b.m); });
+  return out;
+}
+function regSeg(){ return '<div class="seg" id="regSeg" role="tablist" aria-label="เรื่องที่จะเสนอ" style="margin-bottom:12px">'+[['edit','แก้ข้อมูลสาย'],['br','สะพานในสาย'],['new','เสนอสายใหม่']].map(m=>`<button type="button" role="tab" data-regm="${m[0]}" aria-selected="${REGM===m[0]}" class="${REGM===m[0]?'on':''}">${m[1]}</button>`).join('')+'</div>'; }
+function regFoot(){ return `<div class="fsec"><div class="ft">เหตุผลและผู้ส่ง</div><div class="fgrid">
+   ${fld('เหตุผล / หลักฐานที่ขอแก้ <i>*</i>','<input class="inp" id="f_why" placeholder="เช่น ตามผลสำรวจ ต.ค. 2569">','','w2')}
+   ${fld('ชื่อผู้ส่ง <i>*</i>','<input class="inp" id="f_by" value="'+(REAL?esc(BYNAME):'ตัวอย่าง ผู้กรอก')+'">','ชื่อผู้ส่งไม่ขึ้นเว็บ')}
+   ${fld('ถึงผู้อนุมัติ','<input class="inp" id="f_msg">','','w2')}</div>
+   <div id="ackBox"></div>
+   <div class="actions"><span class="grow" id="footHint"></span><button type="button" class="btn" id="btnClear">ล้างฟอร์ม</button><button type="button" class="btn pri" id="btnAdd">＋ เพิ่มลงรายการส่ง</button></div></div>`; }
+function regForm(){
+  const head='<h3>ทะเบียนสายทาง <span class="sub">เสนอแก้ข้อมูลในทะเบียน · อนุมัติแล้วทะเบียนจึงเปลี่ยน</span></h3>';
+  if(!REGD) return head+'<div class="ck bad" id="regState" data-st="err" role="alert"><span class="ic">✕</span><div class="tx"><b>เปิดส่วนทะเบียนสายทางไม่ได้ — ไฟล์ข้อมูลไม่มีส่วนทะเบียน</b><small>ลองโหลดหน้าใหม่ ถ้ายังไม่ได้แจ้งผู้ดูแลระบบ · หัวข้ออื่นยังกรอกได้ตามปกติ</small></div></div>';
+  return head+regSeg()+(REGM==='new'?'':'<div class="fsec"><div class="ft">สายทาง</div><div class="fgrid">'+roadField()+'</div></div>')+'<div id="regBody"></div>'+regFoot();
+}
+const regRow=(lab,cur,inner,none)=>`<div class="rgr" data-rk="${lab}"><span class="rg-l">${lab}</span><span class="rg-c${none?' none':''}"><span class="mlab">ในทะเบียนตอนนี้ · </span>${cur}</span><span class="rg-p">${inner}</span></div>`;
+function originCtl(id,blank){
+  const o=regOrigin();
+  if(!o) return `<select class="inp" id="${id}" aria-label="ที่มาของสาย" disabled><option value="">— ยังเลือกไม่ได้ —</option></select><div class="rg-n" id="${id}_st" data-st="err" role="status">ยังเลือกที่มาไม่ได้ — ไฟล์ข้อมูลยังไม่มีตัวเลือก แจ้งผู้ดูแลระบบ</div>`;
+  return `<select class="inp" id="${id}" aria-label="ที่มาของสาย"><option value="">${blank}</option>${o.map(v=>'<option>'+esc(v)+'</option>').join('')}</select><input class="inp" id="${id}_x" placeholder="ระบุที่มา" aria-label="ระบุที่มาของสาย" hidden>`;
+}
+const muadSel=(id,blank)=>`<select class="inp" id="${id}" aria-label="หมวด"><option value="">${blank}</option>${regMuads().map(v=>'<option>'+esc(v)+'</option>').join('')}</select>`;
+function regEditHtml(G){
+  const none='ยังไม่มีในทะเบียน', nIn=(id,lab)=>`<input class="inp num" id="${id}" inputmode="decimal" placeholder="ไม่แก้" aria-label="${lab} ค่าที่เสนอ">`;
+  return `<div class="fsec"><div class="ft">ข้อมูลสาย <span style="font-weight:400;color:var(--muted)">กรอกเฉพาะช่องที่ต้องการแก้ · ช่องที่เว้นว่าง = ไม่แก้</span></div>
+   <div class="rgt" id="regTbl" data-st="rows"><div class="rgh"><span>ช่อง</span><span>ในทะเบียนตอนนี้</span><span>ค่าที่เสนอ</span></div>
+   ${regRow('ชื่อสายทาง',esc(G.name||'—'),'<input class="inp" id="g_name" placeholder="ไม่แก้" aria-label="ชื่อสายทาง ค่าที่เสนอ">')}
+   ${regRow('หมวด',esc(G.muad||'—'),muadSel('g_muad','— ไม่แก้ —'))}
+   ${REG_KMF.map(f=>regRow(f[0],km3(G[f[2]]),nIn('g_'+f[1],f[0]))).join('')}
+   ${regRow('สะพาน (กม.)',km3(G.bridge_len_acct)+' · '+(G.bridges_acct||0)+' แห่ง','<span class="rg-n">คิดจากรายการสะพานในสาย — แก้ที่ “สะพานในสาย”</span>')}
+   ${regRow('บรรจุเมื่อ',G.since?esc(G.since):none,'<input class="inp" id="g_since" placeholder="วัน/เดือน/ปี หรือ ปี พ.ศ." aria-label="บรรจุเมื่อ ค่าที่เสนอ">',!G.since)}
+   ${regRow('ที่มาของสาย',G.origin?esc(G.origin):none,originCtl('g_origin','— ไม่แก้ —'),!G.origin)}
+   </div><div class="rgsum" id="regSum" role="status"></div></div>`;
+}
+function regBrHtml(G){
+  if(!REGB) return '<div class="fsec"><div class="ck bad" id="regState" data-st="err" role="alert"><span class="ic">✕</span><div class="tx"><b>ยังดูสะพานในสายไม่ได้ — ไฟล์ข้อมูลไม่มีรายการสะพานในสาย</b><small>ลองโหลดหน้าใหม่ ถ้ายังไม่ได้แจ้งผู้ดูแลระบบ</small></div></div></div>';
+  const B=regBridges(G.code), dash=v=>v?esc(v):'—';
+  const row=b=>`<div class="brr${BRSEL===b.i?' sel':''}" role="listitem"><span class="br-km">${b.m!=null?staM(b.m):'—'}</span><span class="br-nm">${dash(b.name)}</span><span class="br-rv">${dash(b.river)}</span><span class="n br-ln"><span class="mlab">ยาว </span>${b.len!=null?numTxt(b.len):'—'}<span class="mlab"> ม.</span></span><span class="n br-wd"><span class="mlab">กว้าง </span>${b.width!=null?numTxt(b.width):'—'}<span class="mlab"> ม.</span></span><span class="br-bt">${b.m!=null&&!b.dup?`<button type="button" class="btn sm" data-bred="${b.i}" aria-label="แก้สะพาน กม. ${staM(b.m)}">แก้</button>`:''}</span>${b.m==null?'<span class="br-no">ไม่มีตำแหน่ง กม. ในทะเบียน จึงเสนอแก้จากหน้านี้ไม่ได้ — แจ้งผู้ดูแลระบบ</span>':b.dup?'<span class="br-no">ในทะเบียนมีสะพานมากกว่า 1 แห่งที่ กม. นี้ จึงเสนอแก้จากหน้านี้ไม่ได้ — แจ้งผู้ดูแลระบบ</span>':''}</div>`;
+  const list=B.length?`<div class="brl" id="brList" data-st="rows" role="list"><div class="brk"><span>กม.</span><span>ชื่อสะพาน</span><span>ลำน้ำ</span><span class="n">ยาว (ม.)</span><span class="n">กว้าง (ม.)</span><span></span></div>${B.map(row).join('')}</div>`
+    :'<div class="empty" id="brList" data-st="empty" role="status">สายนี้ยังไม่มีสะพานในทะเบียน</div>';
+  const nIn=(id,ph,lab)=>`<input class="inp num" id="${id}" inputmode="decimal" placeholder="${ph}"${lab?` aria-label="${lab}"`:''}>`;
+  let form='<div class="fsec"><div class="empty" id="brPick" data-st="empty" role="status">กด “＋ เพิ่มสะพาน” หรือ “แก้” ที่แถวสะพาน เพื่อเริ่มเสนอ</div></div>';
+  if(BRSEL==='add') form=`<div class="fsec"><div class="ft">เพิ่มสะพาน <button type="button" class="btn sm" id="brCancel">ยกเลิก</button></div><div class="fgrid">
+     ${fld('ตำแหน่ง กม. <i>*</i>','<input class="inp num" id="b_pos" placeholder="0+000">')}
+     ${fld('ชื่อสะพาน <i>*</i>','<input class="inp" id="b_name">')}
+     ${fld('ลำน้ำ','<input class="inp" id="b_river">')}
+     ${fld('ความยาว (ม.) <i>*</i>',nIn('b_len','0'))}
+     ${fld('ความกว้าง (ม.) <i>*</i>',nIn('b_wid','0'))}</div><div id="brEffect"></div></div>`;
+  else if(BRSEL!=null){ const b=B[BRSEL];
+    if(b&&b.m!=null&&!b.dup) form=`<div class="fsec"><div class="ft">แก้สะพาน กม. ${staM(b.m)} <span style="font-weight:400;color:var(--muted)">กรอกเฉพาะช่องที่ต้องการแก้</span> <button type="button" class="btn sm" id="brCancel">ยกเลิก</button></div>
+     <div class="rgt" id="brTbl"><div class="rgh"><span>ช่อง</span><span>ในทะเบียนตอนนี้</span><span>ค่าที่เสนอ</span></div>
+     ${regRow('ตำแหน่ง กม.',staM(b.m),'<input class="inp num" id="b_pos" placeholder="ไม่แก้" aria-label="ตำแหน่ง กม. ค่าที่เสนอ">')}
+     ${regRow('ชื่อสะพาน',dash(b.name),'<input class="inp" id="b_name" placeholder="ไม่แก้" aria-label="ชื่อสะพาน ค่าที่เสนอ">',b.noname)}
+     ${regRow('ลำน้ำ',dash(b.river),'<input class="inp" id="b_river" placeholder="ไม่แก้" aria-label="ลำน้ำ ค่าที่เสนอ">',!b.river)}
+     ${regRow('ความยาว (ม.)',b.len!=null?numTxt(b.len):'—',nIn('b_len','ไม่แก้','ความยาว (ม.) ค่าที่เสนอ'),b.len==null)}
+     ${regRow('ความกว้าง (ม.)',b.width!=null?numTxt(b.width):'—',nIn('b_wid','ไม่แก้','ความกว้าง (ม.) ค่าที่เสนอ'),b.width==null)}
+     </div><div id="brEffect"></div></div>`;
+  }
+  return `<div class="fsec"><div class="ft">สะพานในสายนี้ <span style="font-weight:400;color:var(--muted)">ในทะเบียนตอนนี้ ${B.length} แห่ง</span></div>${list}
+   <div class="wkf"><button type="button" class="btn sm" id="brAdd">＋ เพิ่มสะพาน</button><span>แก้สะพานเดิม กด “แก้” ที่แถวนั้น</span></div></div>${form}`;
+}
+function regNewHtml(){
+  const nIn=id=>`<input class="inp num" id="${id}" inputmode="decimal" placeholder="0.000">`;
+  return `<div class="fsec"><div class="ft">สายใหม่</div><div class="fgrid">
+   ${fld('รหัสสายทาง <i>*</i>','<input class="inp" id="n_code" placeholder="เช่น ขก.4003" autocomplete="off">','ตัวย่อจังหวัด จุด เลข 4 หลัก')}
+   ${fld('หมวด <i>*</i>',muadSel('n_muad','— เลือก —'))}
+   ${fld('ชื่อสายทาง <i>*</i>','<input class="inp" id="n_name" placeholder="เช่น แยกทางหลวงหมายเลข … - บ้าน …">','','w2')}
+   ${fld('อำเภอ <i>*</i>','<input class="inp" id="n_amp">')}
+   ${fld('ระยะทาง (กม.) <i>*</i>',nIn('n_len'))}
+   ${fld('ลูกรัง (กม.)',nIn('n_luk'))}
+   ${fld('ลาดยาง (กม.)',nIn('n_lat'))}
+   ${fld('คอนกรีต (กม.)',nIn('n_con'))}
+   ${fld('บรรจุเมื่อ','<input class="inp" id="n_since" placeholder="วัน/เดือน/ปี หรือ ปี พ.ศ.">')}
+   ${fld('ที่มาของสาย <i>*</i>',originCtl('n_origin','— เลือก —'))}
+   </div><div class="rgsum" id="regSum" role="status"></div></div>`;
+}
+/* วาดส่วนกลางของฟอร์มทะเบียนตามเรื่องย่อยและสายที่เลือก — เปลี่ยนสาย = ค่าที่เสนอของสายเดิมถูกล้าง (ค่าเดิมในตารางเป็นของสายใหม่) */
+function drawRegBody(){
+  const el=$('#regBody'); if(!el) return;
+  if(REGM==='new'){ REG_ROAD=''; el.innerHTML=regNewHtml(); return; }
+  const code=roadOf(), G=REGR[code]; REG_ROAD=code;
+  if(!G){ el.innerHTML='<div class="fsec"><div class="empty" id="regState" data-st="empty" role="status">'+(code?'ไม่พบรหัส '+esc(code)+' ในทะเบียนสายทาง':'เลือกสายทางก่อน — ข้อมูลในทะเบียนของสายจะขึ้นที่นี่')+'</div></div>'; return; }
+  el.innerHTML=REGM==='edit'?regEditHtml(G):regBrHtml(G);
+}
+function regRestore(){
+  if(!REG_KEEP) return; const k=REG_KEEP; REG_KEEP=null;
+  [['f_road',REGM==='new'?'':k.road],['f_why',k.why],['f_by',k.by],['f_msg',k.msg]].forEach(x=>{ const e=$('#'+x[0]); if(e&&x[1]) e.value=x[1]; });
+}
+/* เหตุการณ์ของฟอร์มทะเบียน (เรียกจาก wire) — คืน true = จัดการแล้ว ไม่ต้องทำต่อ */
+function regInput(e){
+  const t=e.target;
+  if(t.id==='f_road'&&REGM!=='new'&&roadOf()!==REG_ROAD){ BRSEL=null; drawRegBody(); }
+  if(/_origin$/.test(t.id||'')){ const x=$('#'+t.id+'_x'); if(x){ x.hidden=t.value!==REG_OTHER; if(x.hidden) x.value=''; } }
+}
+function regClick(e){
+  const rm=e.target.closest('[data-regm]');
+  if(rm){ if(rm.dataset.regm!==REGM){ const g=id=>(($('#'+id)||{}).value||''); REG_KEEP={road:g('f_road'),why:g('f_why'),by:g('f_by'),msg:g('f_msg')}; REGM=rm.dataset.regm; BRSEL=null; buildForm(false); const b=document.querySelector('#regSeg button.on'); if(b) b.focus(); } return true; }
+  if(e.target.id==='brAdd'){ BRSEL='add'; drawRegBody(); run(); const p=$('#b_pos'); if(p) p.focus(); return true; }
+  const be=e.target.closest('[data-bred]'); if(be){ BRSEL=+be.dataset.bred; drawRegBody(); run(); const p=$('#b_pos'); if(p) p.focus(); return true; }
+  if(e.target.id==='brCancel'){ BRSEL=null; drawRegBody(); run(); const a=$('#brAdd'); if(a) a.focus(); return true; }
+  return false;
+}
+function collectReg(){
+  const g=id=>{const e=$('#'+id);return e?e.value.trim():'';};
+  const r={kind:REGM==='edit'?'regedit':REGM==='br'?'regbr':'regnew',code:REGM==='new'?g('n_code'):roadOf(),by:g('f_by'),msg:g('f_msg'),why:g('f_why'),ranges:[],act:[],prop:{},seen:{}};
+  const p=REGM==='br'?'b_':REGM==='new'?'n_':'g_';
+  r.raw={}; ['name','muad','amp','len','luk','lat','con','since','origin','origin_x','pos','river','wid'].forEach(k=>r.raw[k]=g(p+k));
+  if(REGM==='br'){ r.sel=BRSEL; r.bact=BRSEL==='add'?'เพิ่ม':BRSEL!=null?'แก้':''; }
+  return r;
+}
+/* ที่มาของสาย → ค่าที่ส่ง · เลือก อื่น ๆ ต้องระบุ ส่งเป็น "อื่น ๆ: ข้อความ" · คืน null = ไม่ได้เลือก · {e} = ต้องแก้ */
+function regOriginVal(P){
+  if(!P.origin) return null;
+  if(P.origin===REG_OTHER) return P.origin_x?{v:REG_OTHER+': '+P.origin_x}:{e:1};
+  return {v:P.origin};
+}
+/* เทียบกับคำขอที่ค้างอยู่: รายการรอส่งของหน้านี้ · คำขอที่ส่งจากหน้านี้ · รายการ "คำขอที่ส่งเข้ามา" ของทุกคน — same(คำขอ) บอกว่าเป็นเรื่องเดียวกันไหม */
+function regPending(r,warn,ok,info,same,sameQ,what){
+  let hit=0;
+  if(BASKET.some(x=>x.r.kind===r.kind&&same(x.r))){ hit++; warn.push(['มี'+what+'ในรายการรอส่งของคุณแล้ว','']); }
+  MINE.filter(m=>m.status==='รอตรวจ'&&m.items.some(i=>i.r.kind===r.kind&&same(i.r))).forEach(m=>{ hit++; warn.push(['มี'+what+'ที่ส่งไปแล้ว รอผู้ดูแลตรวจ',m.id]); });
+  const q=BQ.rows.filter(q=>BQ_KEY[q.k]===r.kind&&q.c===r.code&&sameQ(q));
+  if(q.length&&!MINE.some(m=>m.status==='รอตรวจ'&&m.items.some(i=>i.r.kind===r.kind&&same(i.r)))){ hit++; warn.push(['มี'+what+'ส่งเข้ามาแล้ว',q.map(bqLine).join(' | ')]); }
+  if(hit||BQ.st!=='ok') return;
+  /* บรรทัดเขียวขึ้นเฉพาะเมื่อตู้รับบอกว่าแสดงคำขอชุดนี้ และรายการมาครบ (ม.5 ไม่อ้างสิ่งที่ไม่รู้) */
+  if(!BQ.kinds||!BQ.kinds.includes(REG_SET[r.kind])) info.push(['ยังเทียบกับคำขอทะเบียนของคนอื่นไม่ได้','รายการ “คำขอที่ส่งเข้ามา” ยังไม่แสดงคำขอชุดนี้ — ส่งได้ตามปกติ']);
+  else if(BQ.more||BQ.partial) info.push(['เทียบกับคำขอที่ส่งเข้ามาได้บางส่วน','รายการในแถบท้ายหน้ายังมาไม่ครบ — '+BQ.rows.length+' รายการที่เห็นไม่มี'+what+' แต่ยังบอกไม่ได้ว่ารายการที่เหลือไม่มี']);
+  /* คำของบรรทัดเขียวบอกขอบเขตที่หน้านี้รู้จริง: แถบเห็นเฉพาะคำขอที่รอตรวจ + ที่ผู้ดูแลรับไปไม่เกิน BQ.days วัน และไม่รู้ผลอนุมัติ — ไม่ใช้คำว่า "ไม่มีคำขอค้าง" (ผู้ตรวจอิสระ 12 พ.ย. 69) */
+  else ok.push(['ไม่ซ้ำกับคำขอที่ส่งเข้ามา','ไม่พบ'+what+' · เทียบ '+BQ.rows.length+' รายการ (รอตรวจทุกรายการ · ผู้ดูแลรับแล้วย้อนหลัง '+BQ.days+' วัน)']);
+}
+/* ข้อความที่พิมพ์เอง: ตัวตรวจตอนรับคำขอไม่รับ ข้อความขึ้นต้นด้วย = (สูตร) · เครื่องหมาย < ตามด้วยตัวอักษร (รูปโค้ดหน้าเว็บ) · อักขระควบคุม · ยาวเกิน 2,000 ตัว → หน้าบอกให้แก้ก่อนส่ง (ผู้ตรวจอิสระ 12 พ.ย. 69) */
+function regTextBad(lab,v,id,bad,badIds){
+  v=String(v==null?'':v); if(!v) return;
+  const why=/^\s*=/.test(v)?'ขึ้นต้นด้วยเครื่องหมาย = ไม่ได้':/<\s*[A-Za-z\/!?]/.test(v)?'มีเครื่องหมาย < ตามด้วยตัวอักษรไม่ได้':(/[\x00-\x08\x0b\x0c\x0e-\x1f]/.test(v)||(v.isWellFormed&&!v.isWellFormed()))?'มีอักขระที่มองไม่เห็นปนมา':v.length>2000?'ยาวเกิน 2,000 ตัวอักษร':'';
+  if(why){ bad.push([lab+' '+why,'พิมพ์เป็นข้อความธรรมดา'+(v.length>2000?' ให้สั้นลง':'')]); if(id) badIds.push(id); }
+}
+function checkReg(r){
+  const bad=[],warn=[],ok=[],info=[],note=[],badIds=[], P=r.raw, prop=r.prop={}, seen=r.seen={};
+  const c={bad,warn,ok,info,note,rows:null,R:null,good:[],reg:1,prop,sum:null,eff:'',badIds};
+  if(!REGD){ bad.push(['เปิดส่วนทะเบียนสายทางไม่ได้','ไฟล์ข้อมูลไม่มีส่วนทะเบียน']); return c; }
+  const G=r.kind==='regnew'?null:REGR[r.code];
+  const pre=r.kind==='regbr'?'b_':r.kind==='regnew'?'n_':'g_';
+  const sumTxt=(v,br)=>'ลูกรัง '+km3(v.luk)+' + ลาดยาง '+km3(v.lat)+' + คอนกรีต '+km3(v.con)+(br==null?'':' + สะพาน '+km3(br))+' = '+km3(v.luk+v.lat+v.con+(br||0))+' กม.';
+  const gapTxt=(s,t)=>'แต่ระยะทาง '+km3(t)+' กม. ('+(s>t?'เกิน ':'ขาด ')+km3(Math.abs(s-t))+' กม.)';
+  if(r.kind!=='regnew'){
+    if(!r.code) bad.push(['ยังไม่ได้เลือกรหัสสายทาง','']);
+    else if(!G) bad.push(['ไม่พบรหัส '+r.code+' ในทะเบียนสายทาง','ตรวจตัวสะกด · ถ้าเป็นสายที่ยังไม่มีในทะเบียน ใช้ “เสนอสายใหม่”']);
+    else { c.R=ROAD[r.code]||null; ok.push(['สายทางมีในทะเบียน',G.name+' · '+km3(G.len_acct)+' กม.']); }
+  }
+  if(r.kind==='regedit'&&G){
+    let given=0, kmGiven=0, kmBad=0; const same=[], val={};
+    const put=(h,v,cur,eq)=>{ given++; if(eq) same.push(h); else { prop[h]=v; seen[h]=cur; } };
+    if(P.name) put('ชื่อสายทาง',P.name,G.name||'',P.name===(G.name||''));
+    if(P.muad) put('หมวด',P.muad,G.muad||'',P.muad===(G.muad||''));
+    REG_KMF.forEach(f=>{ const h=f[0], k=f[1], cur=G[f[2]], n=regNum(P[k]); val[k]=+cur||0; if(n===null) return;
+      if(isNaN(n)){ given++; kmBad++; badIds.push(pre+k); bad.push([h+' ต้องเป็นตัวเลขล้วน','ได้ “'+P[k]+'” — ใส่เป็นกิโลเมตร เช่น 7.300 (ไม่มีจุลภาคหรือหน่วย)']); return; }
+      kmGiven++; val[k]=n; put(h,n,cur==null?null:+cur,Math.abs(n-(+cur||0))<5e-7); });
+    const nl=regNum(P.len);
+    if(nl!==null&&!isNaN(nl)&&nl<=0){ badIds.push('g_len'); bad.push(['ระยะทางต้องมากกว่า 0','']); }
+    if(P.since){ const s=regSince(P.since);
+      if(s.e){ given++; badIds.push('g_since'); bad.push(['บรรจุเมื่อ: อ่านไม่ได้ “'+P.since+'”',s.e]); }
+      else { const c0=G.since?regSince(G.since):null; put('บรรจุเมื่อ',s.t,G.since||null,!!G.since&&((c0&&c0.t)||G.since)===s.t); } }
+    const ov=regOriginVal(P);
+    if(ov){ if(ov.e){ given++; badIds.push('g_origin_x'); bad.push(['ที่มาของสาย “'+REG_OTHER+'” ต้องระบุรายละเอียด','พิมพ์ในช่อง “ระบุที่มา” ใต้ตัวเลือก']); } else put('ที่มาของสาย',ov.v,G.origin||null,ov.v===(G.origin||'')); }
+    const nP=Object.keys(prop).length;
+    if(!given) bad.push(['ยังไม่ได้เสนอค่าที่จะแก้','กรอกค่าใหม่ในช่อง “ค่าที่เสนอ” อย่างน้อย 1 ช่อง']);
+    else if(!nP&&given===same.length) bad.push(['ค่าที่เสนอเท่ากับในทะเบียนทุกช่อง','ไม่มีอะไรให้แก้ — '+same.join(' · ')]);
+    if(nP) ok.push(['เสนอแก้ '+nP+' ช่อง',Object.keys(prop).map(h=>h.replace(' (กม.)','')+' '+(seen[h]==null||seen[h]===''?'(ว่าง)':typeof seen[h]==='number'?km3(seen[h]):seen[h])+' → '+(typeof prop[h]==='number'?km3(prop[h]):prop[h])).join(' · ')]);
+    if(nP&&same.length) info.push(['ช่องที่เท่ากับในทะเบียนจะไม่ถูกส่ง',same.join(' · ')]);
+    const br=+G.bridge_len_acct||0, s=val.luk+val.lat+val.con+br;
+    if(kmBad) c.sum={bad:1};
+    else { const fine=Math.abs(s-val.len)<=SUM_TOL+1e-9; c.sum={ok:fine,txt:sumTxt(val,br)+(fine?'':' '+gapTxt(s,val.len))};
+      if(kmGiven){ if(fine) ok.push(['ผลรวมผิวทาง + สะพาน เท่ากับระยะทาง',km3(val.len)+' กม.']); else bad.push(['ผลรวมผิวทาง + สะพาน ไม่เท่าระยะทาง',sumTxt(val,br)+' '+gapTxt(s,val.len)]); } }
+    /* ไฟล์ข้อมูลไม่มีรายการสะพานในสาย = ตรวจระยะทางกับตำแหน่งสะพานไม่ได้ → ยังเสนอแก้ระยะทางไม่ได้ (ช่องอื่นยังเสนอได้) ไม่ปล่อยผ่านทั้งที่ไม่ได้ตรวจ */
+    if(nl!==null&&!isNaN(nl)&&nl>0&&!REGB){ badIds.push('g_len'); bad.push(['ยังเสนอแก้ระยะทางไม่ได้ — ตรวจกับตำแหน่งสะพานในสายไม่ได้','ไฟล์ข้อมูลไม่มีรายการสะพานในสาย ลองโหลดหน้าใหม่ ถ้ายังไม่ได้แจ้งผู้ดูแลระบบ']); }
+    if(nl!==null&&!isNaN(nl)&&nl>0){
+      const newL=Math.round(nl*1000), L0=Math.round((+G.len_acct||0)*1000), far=regBridges(r.code).filter(b=>b.m!=null&&newL+REG_OVER_M<b.m&&b.m<=L0+REG_OVER_M);
+      if(far.length){ badIds.push('g_len'); bad.push(['ระยะทางที่เสนอ '+km3(nl)+' กม. สั้นกว่าตำแหน่งสะพานในสาย '+far.length+' แห่ง','เช่น กม. '+staM(far[0].m)+' — แก้ตำแหน่งสะพานก่อน หรือเสนอระยะทางที่ครอบสะพาน']); }
+      if(nl>LEN_ODD_KM) warn.push(['ระยะทาง '+km3(nl)+' กม. ยาวผิดปกติ (เกิน '+LEN_ODD_KM+' กม.)','ตรวจว่าหน่วยเป็นกิโลเมตร']);
+    }
+    regPending(r,warn,ok,info,x=>x.code===r.code,()=>true,'คำขอแก้ข้อมูลสายนี้');
+  }
+  if(r.kind==='regnew'){
+    const cd=r.code;
+    if(!cd){ badIds.push('n_code'); bad.push(['ยังไม่ได้ใส่รหัสสายทาง','แบบ ขก.4003']); }
+    else if(/[๐-๙]/.test(cd)){ badIds.push('n_code'); bad.push(['รหัสสายทางต้องใช้เลขอารบิก (0–9)','ได้ “'+cd+'”']); }
+    else if(!NEW_CODE.test(cd)){ badIds.push('n_code'); bad.push(['รหัสสายทาง “'+cd+'” ไม่เข้ารูป','แบบ ขก.4003 — ตัวย่อจังหวัด (ขก · กส · ชย · รอ) จุด เลข 4 หลัก']); }
+    else if(REGR[cd]){ badIds.push('n_code'); bad.push(['รหัส '+cd+' มีในทะเบียนแล้ว',(REGR[cd].name||'')+' — ถ้าจะแก้ข้อมูลสายนี้ใช้ “แก้ข้อมูลสาย”']); }
+    else ok.push(['รหัสสายทางเข้ารูป และยังไม่มีในทะเบียน',cd]);
+    if(!P.name) bad.push(['ยังไม่ได้ใส่ชื่อสายทาง','']); else prop['ชื่อสายทาง']=P.name;
+    if(!P.muad) bad.push(['ยังไม่ได้เลือกหมวด','']); else prop['หมวด']=P.muad;
+    if(!P.amp) bad.push(['ยังไม่ได้ใส่อำเภอ','']); else prop['อำเภอ']=P.amp;
+    const val={}; let kmBad=0;
+    REG_KMF.forEach(f=>{ const h=f[0], k=f[1], n=regNum(P[k]); val[k]=0; if(n===null) return;
+      if(isNaN(n)){ kmBad++; badIds.push(pre+k); bad.push([h+' ต้องเป็นตัวเลขล้วน','ได้ “'+P[k]+'” — ใส่เป็นกิโลเมตร เช่น 7.300 (ไม่มีจุลภาคหรือหน่วย)']); return; }
+      val[k]=n; prop[h]=n; });
+    const nl=regNum(P.len);
+    if(nl===null) bad.push(['ยังไม่ได้ใส่ระยะทาง','']);
+    else if(!isNaN(nl)&&nl<=0){ badIds.push('n_len'); bad.push(['ระยะทางต้องมากกว่า 0','']); }
+    else if(!isNaN(nl)){
+      if(kmBad) c.sum={bad:1};
+      else { const s=val.luk+val.lat+val.con, fine=Math.abs(s-nl)<=SUM_TOL+1e-9; c.sum={ok:fine,txt:sumTxt(val,null)+(fine?'':' '+gapTxt(s,nl))};
+        if(fine) ok.push(['ผลรวมผิวทาง เท่ากับระยะทาง',km3(nl)+' กม.']); else bad.push(['ผลรวมผิวทาง ไม่เท่าระยะทาง',sumTxt(val,null)+' '+gapTxt(s,nl)+' · สายใหม่ยังไม่มีสะพาน']); }
+      if(nl>LEN_ODD_KM) warn.push(['ระยะทาง '+km3(nl)+' กม. ยาวผิดปกติ (เกิน '+LEN_ODD_KM+' กม.)','ตรวจว่าหน่วยเป็นกิโลเมตร']);
+    }
+    if(P.since){ const s=regSince(P.since); if(s.e){ badIds.push('n_since'); bad.push(['บรรจุเมื่อ: อ่านไม่ได้ “'+P.since+'”',s.e]); } else prop['บรรจุเมื่อ']=s.t; }
+    const ov=regOriginVal(P);
+    if(!regOrigin()) bad.push(['ยังเสนอสายใหม่ไม่ได้ — เลือกที่มาของสายไม่ได้','ไฟล์ข้อมูลยังไม่มีตัวเลือกที่มาของสาย แจ้งผู้ดูแลระบบ']);
+    else if(!ov) bad.push(['ยังไม่ได้เลือกที่มาของสาย','']);
+    else if(ov.e){ badIds.push('n_origin_x'); bad.push(['ที่มาของสาย “'+REG_OTHER+'” ต้องระบุรายละเอียด','พิมพ์ในช่อง “ระบุที่มา” ใต้ตัวเลือก']); }
+    else prop['ที่มาของสาย']=ov.v;
+    if(P.name){ const dup=Object.values(REGR).filter(x=>x.name===P.name).map(x=>x.code); if(dup.length) warn.push(['ชื่อสายทางซ้ำกับสายในทะเบียน',dup.slice(0,6).join(', ')]); }
+    if(cd&&NEW_CODE.test(cd)&&!REGR[cd]) regPending(r,warn,ok,info,x=>x.code===cd,()=>true,'คำขอเสนอสายใหม่รหัสนี้');
+  }
+  if(r.kind==='regbr'&&G){
+    if(!REGB){ bad.push(['ยังดูสะพานในสายไม่ได้','ไฟล์ข้อมูลไม่มีรายการสะพานในสาย']); return c; }
+    const B=regBridges(r.code), L=Math.round((+G.len_acct||0)*1000);
+    const target=(r.bact==='แก้')?B[r.sel]:null;
+    if(!r.bact||(r.bact==='แก้'&&(!target||target.m==null||target.dup))){ bad.push(['ยังไม่ได้เลือกว่าจะเพิ่มหรือแก้สะพาน','กด “＋ เพิ่มสะพาน” หรือ “แก้” ที่แถวสะพาน']); }
+    else {
+      const add=r.bact==='เพิ่ม'; let given=0, pm=null, moved=false, ln=null, wd=null; const same=[];
+      const put=(h,v,cur,eq,keep)=>{ given++; if(!add&&eq){ same.push(h); return; } prop[h]=v; if(!add&&keep!==false) seen[h]=cur; };
+      r.om=add?null:target.m;
+      if(P.pos){ const k=parseKm(P.pos);
+        if(k==null||isNaN(k)){ given++; badIds.push('b_pos'); bad.push(['รูปแบบตำแหน่ง กม. ไม่ถูก','ใช้แบบ 5+120 หรือ 5.120']); }
+        else { pm=Math.round(k*1000); put('ตำแหน่ง กม.',staM(pm),add?null:staM(target.m),!add&&pm===target.m); moved=add||pm!==target.m; } }
+      if(P.name) put('ชื่อสะพาน',P.name,add?null:target.name,!add&&P.name===target.name,!add&&!target.noname);
+      if(P.river) put('ลำน้ำ',P.river,add?null:target.river,!add&&P.river===target.river);
+      [['len','ความยาว (ม.)','ความยาวสะพาน'],['wid','ความกว้าง (ม.)','ความกว้างสะพาน']].forEach(f=>{ const n=regNum(P[f[0]]), cur=add?null:(f[0]==='len'?target.len:target.width); if(n===null) return;
+        if(isNaN(n)){ given++; badIds.push('b_'+f[0]); bad.push([f[1]+' ต้องเป็นตัวเลขล้วน','ได้ “'+P[f[0]]+'” — หน่วยเป็นเมตร (ไม่มีจุลภาคหรือหน่วย)']); return; }
+        if(n===0){ given++; badIds.push('b_'+f[0]); bad.push([f[2]+'ต้องมากกว่า 0','']); return; }
+        if(f[0]==='len') ln=n; else wd=n;
+        put(f[1],n,cur,!add&&cur!=null&&Math.abs(n-cur)<1e-6); });
+      r.pm=pm;
+      if(add){ const miss=[['pos','ตำแหน่ง กม.'],['name','ชื่อสะพาน'],['len','ความยาว (ม.)'],['wid','ความกว้าง (ม.)']].filter(f=>!P[f[0]]).map(f=>f[1]);
+        if(miss.length) bad.push(['เพิ่มสะพาน: ยังไม่ได้ใส่ '+miss.join(' · '),'']);
+        if(pm!=null){ const there=B.filter(b=>b.m===pm); if(there.length){ badIds.push('b_pos'); bad.push(['สาย '+r.code+' มีสะพานที่ กม. '+staM(pm)+' ในทะเบียนแล้ว',(there[0].name||'ไม่มีชื่อ')+' — ถ้าจะแก้ กด “แก้” ที่แถวนั้น']); } }
+      } else {
+        const nP=Object.keys(prop).length;
+        if(!given) bad.push(['ยังไม่ได้เสนอค่าที่จะแก้','กรอกค่าใหม่ในช่อง “ค่าที่เสนอ” อย่างน้อย 1 ช่อง']);
+        else if(!nP&&given===same.length) bad.push(['ค่าที่เสนอเท่ากับในทะเบียนทุกช่อง','ไม่มีอะไรให้แก้ — '+same.join(' · ')]);
+        if(nP) ok.push(['เสนอแก้สะพาน กม. '+staM(target.m)+' '+nP+' ช่อง',Object.keys(prop).map(h=>h+' → '+prop[h]).join(' · ')]);
+        if(nP&&same.length) info.push(['ช่องที่เท่ากับในทะเบียนจะไม่ถูกส่ง',same.join(' · ')]);
+        if(moved&&pm!=null&&B.some(b=>b!==target&&b.m===pm)){ badIds.push('b_pos'); bad.push(['สาย '+r.code+' มีสะพานอีกแห่งที่ กม. '+staM(pm)+' อยู่แล้ว','']); }
+      }
+      const rest=B.filter(b=>b!==target&&b.m!=null);
+      let nearB=null;
+      if(moved&&pm!=null){
+        if(pm>L+REG_OVER_M){ const over=rest.filter(b=>b.m>L+REG_OVER_M);
+          if(over.length) warn.push(['ตำแหน่ง กม. '+staM(pm)+' เกินระยะทางตามทะเบียน ('+staM(L)+')','สายนี้มีสะพานเดิมที่เกินระยะอยู่แล้ว '+over.length+' แห่ง — ตรวจจุดเริ่มนับ กม.']);
+          else { badIds.push('b_pos'); bad.push(['เกินระยะตามบัญชี',staM(pm)+' > '+staM(L)+' ('+r.code+')']); } }
+        else ok.push(['ตำแหน่ง กม. อยู่ในบัญชี',staM(pm)+' · '+r.code+' ยาว '+km3(G.len_acct)+' กม.']);
+        const cand=rest.filter(b=>b.m!==pm); cand.forEach(b=>{ if(!nearB||Math.abs(b.m-pm)<Math.abs(nearB.m-pm)) nearB=b; });
+        if(nearB&&Math.abs(nearB.m-pm)<=REG_NEAR_M) warn.push(['ใกล้สะพานเดิม กม. '+staM(nearB.m)+' ห่าง '+Math.abs(nearB.m-pm)+' ม.',(nearB.name||'ไม่มีชื่อ')+' — ตรวจว่าไม่ใช่สะพานเดียวกัน']);
+        else if(nearB&&!B.some(b=>b!==target&&b.m===pm)) ok.push(['ไม่ซ้ำกับสะพานเดิมในสายนี้','สะพานที่ใกล้ที่สุด กม. '+staM(nearB.m)+(nearB.name?' · '+nearB.name:'')]);
+      }
+      if(ln!=null&&ln<2) warn.push(['ความยาวสะพาน '+numTxt(ln)+' ม. สั้นผิดปกติ','ช่องนี้หน่วยเป็นเมตร ไม่ใช่กิโลเมตร']);
+      if(ln!=null&&ln>1000) warn.push(['ความยาวสะพาน '+numTxt(ln)+' ม. ยาวผิดปกติ','ตรวจหน่วย (เมตร)']);
+      if(wd!=null&&wd>40) warn.push(['ความกว้างสะพาน '+numTxt(wd)+' ม. กว้างผิดปกติ','ตรวจหน่วย (เมตร)']);
+      /* ระยะสะพานของสายเปลี่ยน → แถบเหลือง ไม่บล็อก ไม่ต้องติ๊กรับทราบ: ผู้ดูแล ปรับผิวทางของสายก่อนอนุมัติ */
+      const delta=ln==null?0:(add?ln:ln-(target.len||0));
+      if(Math.abs(delta)>1e-9&&G.len_acct!=null){ const br0=+G.bridge_len_acct||0, br1=+(br0+delta/1000).toFixed(6), n0=G.bridges_acct||0, s=(+G.lukrang||0)+(+G.latyang||0)+(+G.concrete||0)+br1;
+        if(Math.abs(s-(+G.len_acct))>SUM_TOL+1e-9){ c.eff='สะพาน '+km3(br0)+' → '+km3(br1)+' กม.'+(add?' · จำนวนสะพาน '+n0+' → '+(n0+1)+' แห่ง':'')+' · ผลรวมผิวทาง + สะพาน จะไม่เท่าระยะทาง '+km3(G.len_acct)+' กม. — ผู้ดูแลปรับผิวทางของสายก่อนอนุมัติ';
+          note.push(['ผลรวมผิวทาง + สะพาน จะไม่เท่าระยะทาง ถ้าอนุมัติรายการนี้',c.eff]); } }
+      const keys=x=>[x.pm,x.om].filter(v=>v!=null), mine=keys(r);
+      if(mine.length) regPending(r,warn,ok,info,x=>x.code===r.code&&keys(x).some(v=>mine.includes(v)),q=>q.r.some(y=>mine.includes(Math.round(y[0]*1000))),'คำขอสะพานที่ กม. เดียวกันของสายนี้');
+      const at=pm!=null?pm:(target?target.m:null);   /* แก้สะพานโดยไม่ย้าย = แสดงที่ตำแหน่งเดิม */
+      c.rows=[['รายการนี้',at!=null?[{a:at/1000,b:at/1000,lab:'',me:1}]:[]],['สะพานเดิม',rest.map(b=>({a:b.m/1000,b:b.m/1000,lab:b.name||'ไม่มีชื่อ',hit:!!(moved&&pm!=null&&Math.abs(b.m-pm)<=REG_NEAR_M)}))]];
+    }
+  }
+  [[r.kind==='regbr'?'ชื่อสะพาน':'ชื่อสายทาง',P.name,pre+'name'],['อำเภอ',P.amp,pre+'amp'],['ลำน้ำ',P.river,pre+'river'],['ช่องระบุที่มา',P.origin_x?REG_OTHER+': '+P.origin_x:'',pre+'origin_x'],['เหตุผล / หลักฐาน',r.why,'f_why'],['ชื่อผู้ส่ง',r.by,'f_by'],['ช่องถึงผู้อนุมัติ',r.msg,'f_msg']].forEach(x=>regTextBad(x[0],x[1],x[2],bad,badIds));
+  if(!r.why) bad.push(['ยังไม่ได้ใส่เหตุผล / หลักฐานที่ขอแก้','']);
+  if(!r.by) bad.push(['ยังไม่ได้ใส่ชื่อผู้ส่ง','']);
+  return c;
+}
+/* หลังตรวจ: แต้มแถวที่เสนอแก้ · ช่องที่ต้องแก้ · บรรทัดผลรวม · แถบเหลืองผลกับทะเบียนสาย (ไม่วาดฟอร์มใหม่ ไม่เสียโฟกัส) */
+function regAfter(c){
+  document.querySelectorAll('#regBody .rgr').forEach(x=>x.classList.toggle('chg',!!(c.prop&&Object.prototype.hasOwnProperty.call(c.prop,x.dataset.rk))));
+  document.querySelectorAll('#regBody .inp').forEach(x=>x.classList.toggle('bad',(c.badIds||[]).includes(x.id)));
+  const sm=$('#regSum'), s=c.sum;
+  if(sm) sm.innerHTML=!s?'':s.bad?'<span class="pill bad">✕ ยังคิดผลรวมไม่ได้</span><span>มีช่องระยะที่ไม่ใช่ตัวเลข</span>':`<span class="pill ${s.ok?'ok':'bad'}">${s.ok?'✓ ผลรวมเท่าระยะทาง':'✕ ผลรวมไม่เท่าระยะทาง'}</span><span>${esc(s.txt)}</span>`;
+  const ef=$('#brEffect');
+  if(ef) ef.innerHTML=c.eff?`<div class="ck warn" id="brEff" role="status" style="margin-top:10px"><span class="ic">!</span><div class="tx"><b>ผลกับทะเบียนสาย</b><small>${esc(c.eff)}</small></div></div>`:'';
+}
+/* ข้อมูลของรายการชุดทะเบียนในไฟล์คำขอ */
+function regData(r){
+  const d={kind:r.kind,code:r.code,by:r.by,msg:r.msg,why:r.why};
+  if(r.kind==='regbr'){ d.act=r.bact; d.old_km=(r.bact==='แก้'&&r.om!=null)?+(r.om/1000).toFixed(3):null; }
+  d['เสนอ']=r.prop; if(r.kind!=='regnew') d['เดิม']=r.seen;
+  return d;
+}
+const regWhat=r=>r.kind==='regedit'?'เสนอแก้ '+Object.keys(r.prop).length+' ช่อง: '+Object.keys(r.prop).map(h=>h.replace(' (กม.)','')).join(', ')
+  :r.kind==='regnew'?'สายใหม่ · '+(r.prop['ชื่อสายทาง']||'')+' · '+km3(r.prop['ระยะทาง (กม.)'])+' กม.'
+  :(r.bact==='เพิ่ม'?'เพิ่มสะพาน · '+(r.prop['ชื่อสะพาน']||''):'แก้สะพาน: '+Object.keys(r.prop).join(', '));
+const regKm=r=>r.kind==='regbr'?(r.pm!=null?staM(r.pm):r.om!=null?staM(r.om):'—'):r.kind==='regedit'?'ข้อมูลสาย':'สายใหม่';
 let LAST=null;
-const tabOf=r=>r.kind==='hist'?'Y_'+String(r.year).slice(2):r.kind==='zb'?'Z_'+String(r.year).slice(2):r.kind==='cond'?'สภาพสายทาง':((ROAD[r.code]||{}).muad||'—');
+const tabOf=r=>r.kind==='regbr'?'สะพานในสายทาง':REGK(r.kind)?'สายทาง':r.kind==='hist'?'Y_'+String(r.year).slice(2):r.kind==='zb'?'Z_'+String(r.year).slice(2):r.kind==='cond'?'สภาพสายทาง':((ROAD[r.code]||{}).muad||'—');
 function run(){
   const r=collect(); const c=check(r); LAST={r,c};
   if($('#tabName')) $('#tabName').textContent=tabOf(r);
-  const R=c.R; $('#roadCard').innerHTML=R?`<div class="roadcard"><b>${esc(R.code)}</b><span>${esc(R.name)}</span><span>ระยะ ${R.len.toFixed(3)} กม.</span><span>หมวด${esc(R.muad)}</span><span>อ.${esc(R.amp)}</span></div>`:'';
+  const R=c.R, rc=$('#roadCard'); if(rc) rc.innerHTML=R?`<div class="roadcard"><b>${esc(R.code)}</b><span>${esc(R.name)}</span><span>ระยะ ${R.len.toFixed(3)} กม.</span><span>หมวด${esc(R.muad)}</span><span>อ.${esc(R.amp)}</span></div>`:'';
   if($('#f_muad')) $('#f_muad').value=R?R.muad:'';
   document.querySelectorAll('#rngBox input[data-f="a"],#rngBox input[data-f="b"]').forEach(e=>{const v=parseKm(e.value); e.classList.toggle('bad',!!e.value&&(isNaN(v)||(R&&v>R.len+0.005)));});
   if($('#f_no')) $('#f_no').classList.toggle('warn',c.warn.some(w=>/สัญญาซ้ำ/.test(w[0])));
   // แผงผลตรวจ
   const item=(cls,ic,t,s)=>`<div class="ck ${cls}"><span class="ic">${ic}</span><div class="tx"><b>${esc(t)}</b>${s?`<small>${esc(s)}</small>`:''}</div></div>`;
   $('#checkCard').innerHTML=`<h3>ผลตรวจ <span class="sub">ตรวจทุกครั้งที่พิมพ์</span></h3>
-    <div class="sum">${c.bad.length?`<span class="sp bad">✕ ต้องแก้ ${c.bad.length}</span>`:''}${c.warn.length?`<span class="sp warn">⚠ ซ้ำ/ทับ ${c.warn.length}</span>`:''}${!c.bad.length&&!c.warn.length?'<span class="sp ok">✓ ผ่าน ส่งได้</span>':''}</div>
-    ${c.bad.map(b=>item('bad','✕',b[0],b[1])).join('')}${c.warn.map(w=>item('warn','!',w[0],w[1])).join('')}${c.ok.map(o=>item('ok','✓',o[0],o[1])).join('')}
+    <div class="sum">${c.bad.length?`<span class="sp bad">✕ ต้องแก้ ${c.bad.length}</span>`:''}${c.warn.length?`<span class="sp warn">${c.reg?'⚠ เตือน':'⚠ ซ้ำ/ทับ'} ${c.warn.length}</span>`:''}${(c.note||[]).length?`<span class="sp warn" id="noteChip">! ให้ผู้ดูแลปรับ ${c.note.length}</span>`:''}${!c.bad.length&&!c.warn.length?'<span class="sp ok">✓ ผ่าน ส่งได้</span>':''}</div>
+    ${c.bad.map(b=>item('bad','✕',b[0],b[1])).join('')}${c.warn.map(w=>item('warn','!',w[0],w[1])).join('')}${(c.note||[]).map(w=>item('warn','!',w[0],w[1])).join('')}${(c.info||[]).map(o=>item('info','i',o[0],o[1])).join('')}${c.ok.map(o=>item('ok','✓',o[0],o[1])).join('')}
     ${strip(c)}
-    ${NEWK(kind)||REAL?'':`<div class="yrs"><label for="nYears">ย้อนดูงานที่ทับ</label><input class="inp num" id="nYears" type="number" min="0" max="10" value="${N_YEARS}"><span>ปี (ค่านี้รอ ผู้ดูแล ตัดสิน)</span></div>`}`;
+    ${NEWK(kind)||REAL||c.reg?'':`<div class="yrs"><label for="nYears">ย้อนดูงานที่ทับ</label><input class="inp num" id="nYears" type="number" min="0" max="10" value="${N_YEARS}"><span>ปี (ค่านี้รอ ผู้ดูแล ตัดสิน)</span></div>`}`;
   if($('#nYears')) $('#nYears').onchange=e=>{N_YEARS=Math.max(0,Math.min(10,+e.target.value||0)); run();};
   const hint=$('#footHint'), add=$('#btnAdd');
+  if(c.reg) regAfter(c);
+  if(!add||!hint) return;   /* แท็บทะเบียนเปิดไม่ได้ (ไฟล์ข้อมูลไม่มีส่วนทะเบียน) = ไม่มีปุ่มเพิ่ม */
   add.disabled=c.bad.length>0;
-  hint.textContent=c.bad.length?'แก้ช่องสีแดงก่อน จึงเพิ่มลงรายการได้':c.warn.length?'มีของซ้ำ/ทับ — ส่งได้ แต่ต้องติ๊กรับทราบและบอกเหตุผล ผู้ดูแล จะเห็นแถบเหลืองนี้ตอนตรวจ':'ผ่านทุกด่าน';
+  hint.textContent=c.bad.length?'แก้ช่องสีแดงก่อน จึงเพิ่มลงรายการได้':c.warn.length?(c.reg?'มีข้อเตือน':'มีของซ้ำ/ทับ')+' — ส่งได้ แต่ต้องติ๊กรับทราบและบอกเหตุผล ผู้ดูแล จะเห็นแถบเหลืองนี้ตอนตรวจ':'ผ่านทุกด่าน';
   const ack=$('#ackBox');
-  if(c.warn.length&&!c.bad.length){ if(!$('#ackChk')) ack.innerHTML=`<div class="ck warn" style="margin-top:10px"><span class="ic">!</span><div class="tx"><label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer"><input type="checkbox" id="ackChk"><span><b>รับทราบว่าซ้ำ/ทับ ส่งให้ ผู้ดูแล ตัดสิน</b><small>บอกเหตุผลสั้น ๆ เช่น “ซ่อมซ้ำจุดเดิมเพราะชำรุดใหม่” หรือ “สัญญาเดิมแก้ไขวงเงิน”</small></span></label><input class="inp" id="ackWhy" placeholder="เหตุผล" style="margin-top:6px"></div></div>`;
-    add.disabled=!($('#ackChk').checked&&$('#ackWhy').value.trim()); if(add.disabled) hint.textContent='ติ๊กรับทราบและใส่เหตุผลก่อน'; }
+  if(c.warn.length&&!c.bad.length){ if(!$('#ackChk')) ack.innerHTML=`<div class="ck warn" style="margin-top:10px"><span class="ic">!</span><div class="tx"><label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer"><input type="checkbox" id="ackChk"><span><b>${c.reg?'รับทราบข้อเตือน':'รับทราบว่าซ้ำ/ทับ'} ส่งให้ ผู้ดูแล ตัดสิน</b><small>${c.reg?'บอกเหตุผลสั้น ๆ เช่น “คนละเรื่องกับคำขอเดิม” หรือ “วัดจริงได้เท่านี้”':'บอกเหตุผลสั้น ๆ เช่น “ซ่อมซ้ำจุดเดิมเพราะชำรุดใหม่” หรือ “สัญญาเดิมแก้ไขวงเงิน”'}</small></span></label><input class="inp" id="ackWhy" placeholder="เหตุผล" maxlength="2000" style="margin-top:6px"></div></div>`;
+    const aw=$('#ackWhy').value, awBad=aw.length>2000?'เหตุผลที่รับทราบยาวเกิน 2,000 ตัวอักษร — ให้สั้นลง':(/[\x00-\x08\x0b\x0c\x0e-\x1f]/.test(aw)||(aw.isWellFormed&&!aw.isWellFormed()))?'เหตุผลที่รับทราบมีอักขระที่มองไม่เห็นปนมา — พิมพ์ใหม่':'';
+    add.disabled=!($('#ackChk').checked&&aw.trim())||!!awBad; if(add.disabled) hint.textContent=awBad||'ติ๊กรับทราบและใส่เหตุผลก่อน'; }
   else ack.innerHTML='';
+  if(((c.R||{}).code||'')!==BQ.road){ BQ.f='all'; renderBoard(); }   /* 1.6: สายในฟอร์มเปลี่ยน → แถบท้ายหน้าเรียงใหม่ */
 }
 function strip(c){
+  if(c.reg&&!c.rows) return '';   /* แท็บทะเบียน: มีแผนภาพเฉพาะเรื่องสะพาน (ตำแหน่งที่เสนอเทียบสะพานเดิม) */
   if(!c.R) return '<div class="strip"><div class="empty">เลือกสายทางเพื่อดูแผนภาพแนวสาย</div></div>';
   const L=c.R.len, W=460, G=70, x=k=>G+(Math.max(0,Math.min(L,k))/L)*(W-G-10);
   const rows=c.rows;
@@ -1373,25 +2038,25 @@ function strip(c){
     arr.forEach(b=>{const col=b.me?'var(--teal)':b.hit?'var(--gold)':'var(--tint-grp)'; const st=b.hit?'var(--warn-ink)':b.me?'var(--teal-ink)':'var(--grid)';
       s+=`<rect x="${x(b.a)}" y="${y}" width="${Math.max(3,x(b.b)-x(b.a))}" height="16" rx="3" fill="${col}" stroke="${st}" stroke-width="1"><title>${esc((b.y?b.y+' · ':'')+(b.lab||'')+' '+fmtKm(b.a)+'–'+fmtKm(b.b))}</title></rect>`;});});
   s+='</svg>';
-  return `<div class="strip">${s}<div class="lg"><span><i style="background:var(--teal)"></i>รายการนี้</span><span><i style="background:var(--gold)"></i>ทับกัน</span><span><i style="background:var(--tint-grp);border:1px solid var(--grid)"></i>${NEWK(kind)?'รายการชนิดเดียวกันที่รอส่ง/รอตรวจ':'งานอื่นบนสาย'}</span><span>${esc(c.R.code)} 0 – ${c.R.len.toFixed(3)} กม.</span></div></div>`;
+  return `<div class="strip">${s}<div class="lg"><span><i style="background:var(--teal)"></i>รายการนี้</span><span><i style="background:var(--gold)"></i>${c.reg?'ใกล้กัน':'ทับกัน'}</span><span><i style="background:var(--tint-grp);border:1px solid var(--grid)"></i>${c.reg?'สะพานเดิมในสาย':NEWK(kind)?'รายการชนิดเดียวกันที่รอส่ง/รอตรวจ':'งานอื่นบนสาย'}</span><span>${esc(c.R.code)} 0 – ${c.R.len.toFixed(3)} กม.</span></div></div>`;
 }
 /* ───── รายการรอส่ง + ส่งเข้า OneDrive ───── */
 function addToBasket(){
   if(!LAST||LAST.c.bad.length) return;
-  BASKET.push({r:LAST.r,warn:LAST.c.warn.map(w=>w[0]+(w[1]?' — '+w[1]:'')),why:($('#ackWhy')||{}).value||''});
+  BASKET.push({r:LAST.r,warn:LAST.c.warn.concat(LAST.c.note||[]).map(w=>w[0]+(w[1]?' — '+w[1]:'')),why:($('#ackWhy')||{}).value||''});
   BYNAME=LAST.r.by||BYNAME;
-  toast('เพิ่มลงรายการส่งแล้ว ('+BASKET.length+' รายการ)'); renderBasket(); buildForm(false);
+  toast('เพิ่มลงรายการส่งแล้ว ('+BASKET.length+' รายการ)'); renderBasket(); BRSEL=null; buildForm(false);
 }
-const KN={hist:'ประวัติ',zb:'Zerobase',cond:'สภาพสายทาง',eq:'อุปกรณ์'};
-const FILE={hist:'BD_02',zb:'BD_04',cond:'BD_07',eq:'BD_05'};
-const rngTxt=r=>r.ranges.filter(x=>x.a!=null&&!isNaN(x.a)).map(x=>fmtKm(x.a)+(x.b!=null&&!isNaN(x.b)?'–'+fmtKm(x.b):'')).join(', ')||'ทั้งสาย';
-const what=r=>r.kind==='hist'?(r.no+' · '+(r.work||'')+' · '+r.act.join(', ')):r.kind==='zb'?r.act.join(', '):r.kind==='cond'?
+const KN={hist:'ประวัติ',zb:'Zerobase',cond:'สภาพสายทาง',eq:'อุปกรณ์',regedit:'ทะเบียนสาย',regbr:'สะพานในสาย',regnew:'สายใหม่'};
+const FILE={hist:'BD_02',zb:'BD_04',cond:'BD_07',eq:'BD_05',regedit:'BD_01',regbr:'BD_01',regnew:'BD_01'};
+const rngTxt=r=>REGK(r.kind)?regKm(r):r.ranges.filter(x=>x.a!=null&&!isNaN(x.a)).map(x=>fmtKm(x.a)+(x.b!=null&&!isNaN(x.b)?'–'+fmtKm(x.b):'')).join(', ')||'ทั้งสาย';
+const what=r=>REGK(r.kind)?regWhat(r):r.kind==='hist'?(r.no+' · '+(r.work||'')+' · '+r.act.join(', ')):r.kind==='zb'?r.act.join(', '):r.kind==='cond'?
   ['สภาพ '+(r.row['สภาพปัจจุบัน']||'—'),r.row['ชนิดผิวทาง'],r.row['วันเดือนปีสำรวจ']?'สำรวจ '+r.row['วันเดือนปีสำรวจ']:''].filter(Boolean).join(' · '):
   [r.row['ประเภทอุปกรณ์'],r.row['ชนิด'],r.row['ชนิดระบบระบายน้ำ'],r.row['จำนวน']!==''?'× '+r.row['จำนวน']:''].filter(Boolean).join(' · ');
 function renderBasket(){
   $('#basketCard').innerHTML=`<h3>รายการรอส่ง <span class="sub">ส่งครั้งเดียวได้หลายรายการ หลายชนิดปนกันได้ · ส่งแล้วแก้ไม่ได้ ต้องส่งคำขอแก้ใหม่</span></h3>`+
    (BASKET.length?`<div class="tw"><table class="t"><thead><tr><th>#</th><th>${REAL?'ชนิด':'ชนิด → ไฟล์ · แท็บ'}</th><th>สาย</th><th>ช่วง กม.</th><th>รายละเอียด</th><th class="n">บาท</th><th>ผลตรวจ</th><th></th></tr></thead><tbody>${
-     BASKET.map((x,i)=>`<tr><td>${i+1}</td><td>${REAL?KN[x.r.kind]:KN[x.r.kind]+' → '+FILE[x.r.kind]+' · '+esc(tabOf(x.r))}</td><td>${esc(x.r.code)}</td><td>${rngTxt(x.r)}</td><td>${esc(what(x.r))}</td><td class="n">${x.r.amt?fmt(x.r.amt):'—'}</td><td>${x.warn.length?`<span class="pill warn" title="${esc(x.warn.join(' | '))}">⚠ ซ้ำ/ทับ ${x.warn.length}</span>`:'<span class="pill ok">✓ ผ่าน</span>'}</td><td><button type="button" class="btn sm" data-rm="${i}" aria-label="เอาออก">✕</button></td></tr>`).join('')
+     BASKET.map((x,i)=>`<tr><td>${i+1}</td><td>${REAL?KN[x.r.kind]:KN[x.r.kind]+' → '+FILE[x.r.kind]+' · '+esc(tabOf(x.r))}</td><td>${esc(x.r.code)}</td><td>${rngTxt(x.r)}</td><td>${esc(what(x.r))}</td><td class="n">${x.r.amt?fmt(x.r.amt):'—'}</td><td>${x.warn.length?`<span class="pill warn" title="${esc(x.warn.join(' | '))}">${REGK(x.r.kind)?'⚠ เตือน':'⚠ ซ้ำ/ทับ'} ${x.warn.length}</span>`:'<span class="pill ok">✓ ผ่าน</span>'}</td><td><button type="button" class="btn sm" data-rm="${i}" aria-label="เอาออก">✕</button></td></tr>`).join('')
    }</tbody></table></div><div class="actions"><span class="grow">${REAL?'ส่งแล้วรอผู้ดูแลตรวจและอนุมัติก่อนขึ้นแดชบอร์ด':'ไฟล์คำขอ 1 ไฟล์ต่อการส่ง ชื่อไม่ซ้ำ (เวลา + เลขคำขอ) · ชื่อผู้ส่งไม่ขึ้นเว็บ'}</span><button type="button" class="btn pri" id="btnSend">⤴ ส่ง (${BASKET.length} รายการ)</button></div>`
    :'<div class="empty">ยังไม่มีรายการ — กรอกฟอร์มด้านบนแล้วกด “＋ เพิ่มลงรายการส่ง”</div>');
   const bc=$('#basketCard'); bc.onclick=e=>{const d=e.target.closest('[data-rm]'); if(d){BASKET.splice(+d.dataset.rm,1); renderBasket(); run();} if(e.target.id==='btnSend') openSend();};
@@ -1418,7 +2083,7 @@ function openSendOnline(payload,json){
       if(!o||!o.ok){ say('ส่งไม่สำเร็จ: '+((o&&o.error)||'ไม่ทราบสาเหตุ')+' — รายการยังอยู่ครบ แก้แล้วกดส่งใหม่ได้',1); btn.disabled=false; return; }
       try{ sessionStorage.setItem('p6_team_code',c); }catch(e){}
       MINE.unshift({id:o.id,at:new Date().toISOString(),items:BASKET.splice(0),status:'รอตรวจ',ex:false}); seq++;
-      $('#modal').hidden=true; renderBasket(); run(); toast('ส่งแล้ว เลขคำขอ '+o.id+' — รอ ผู้ดูแล ตรวจ'); show('mine');
+      $('#modal').hidden=true; renderBasket(); run(); toast('ส่งแล้ว เลขคำขอ '+o.id+' — รอ ผู้ดูแล ตรวจ'); show('mine'); loadBoard();
     }catch(e){ say('ส่งไม่ได้ — ต่อตู้รับไม่ได้ (เน็ตหลุด หรือหน้านี้ถูกเปิดในที่ที่ส่งออกไม่ได้) · รายการยังอยู่ครบ ลองใหม่ได้',1); btn.disabled=false; }
   };
   btn.onclick=go; $('#mCode').onkeydown=e=>{ if(e.key==='Enter') go(); };
@@ -1426,7 +2091,7 @@ function openSendOnline(payload,json){
 function reqId(){const d=new Date(); return 'RQ-'+String(d.getFullYear()+543).slice(2)+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'-'+String(seq).padStart(3,'0');}
 /* ข้อมูลของรายการในไฟล์คำขอ: ประวัติ/Zerobase = ช่องทั้งหมดของฟอร์ม (เหมือนรอบ 3 · ช่องแหล่งงบคีย์ "แหล่งงบ")
    สภาพสายทาง/อุปกรณ์ = หัวคอลัมน์ Master ตรงตัวครบทุกหัว + kind · by · msg (by/msg = ผู้ส่ง ไม่ลง Master) */
-const dataOf=r=>NEWK(r.kind)?Object.assign({},r.row,{kind:r.kind,by:r.by,msg:r.msg}):r.kind==='zb'?(({year,...o})=>o)(r):r;
+const dataOf=r=>REGK(r.kind)?regData(r):NEWK(r.kind)?Object.assign({},r.row,{kind:r.kind,by:r.by,msg:r.msg}):r.kind==='zb'?(({year,...o})=>o)(r):r;
 function openSend(){
   const id=reqId(), d=new Date(), fn='คำขอ_'+(d.getFullYear()+543)+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'_'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0')+'_'+id+'.json';
   /* ไฟล์คำขอ = ข้อมูลครบทุกช่องที่กรอก (ตัวดึง bd_intake.py อ่านไฟล์นี้) · รูปแบบ bd-request/1 (คีย์ระดับบนคงเดิม) */
@@ -1482,6 +2147,7 @@ function track(st){const at={'รอตรวจ':2,'อนุมัติแล
   return '<div class="trk">'+STEPS.map((s,i)=>`<span class="${st==='ตีกลับ'&&i===2?'no':i<at?'done':i===at?'now':''}">${st==='ตีกลับ'&&i===2?'ตีกลับ':s}</span>`).join('<em>›</em>')+'</div>';}
 const stPill=s=>({'รอตรวจ':'<span class="pill wait">⧗ รอ ผู้ดูแล ตรวจ</span>','อนุมัติแล้ว':'<span class="pill ok">✓ อนุมัติ</span>','ขึ้นแดชบอร์ดแล้ว':'<span class="pill ok">✓ ขึ้นแดชบอร์ดแล้ว</span>','ตีกลับ':'<span class="pill bad">↩ ตีกลับ</span>'}[s]);
 function renderMine(){
+  if(!MINE.length){ $('#mineTbl').innerHTML='<div class="empty" id="mineEmpty">ยังไม่มีคำขอที่ส่งจากหน้านี้ — คำขอที่ส่งแล้วจะขึ้นที่นี่จนกว่าจะปิดหรือโหลดหน้านี้ใหม่ · รายการที่ทุกคนส่งเข้ามาดูได้ที่แถบ “คำขอที่ส่งเข้ามา” ท้ายหน้ากรอกข้อมูล</div>'; return; }
   $('#mineTbl').innerHTML=`<div class="tw"><table class="t"><thead><tr><th>เลขคำขอ</th><th>ส่งเมื่อ</th><th>รายการ</th><th>สถานะ</th><th>ความคืบหน้า</th></tr></thead><tbody>${MINE.map(m=>`<tr><td class="mono">${esc(m.id)} ${m.ex?'<span class="pill ex">ตัวอย่าง</span>':''}</td><td>${thDate(m.at)}</td><td>${m.items.map(i=>KN[i.r.kind]+' · '+esc(i.r.code)+' · '+rngTxt(i.r)+(i.warn.length?' <span class="pill warn">⚠</span>':'')).join('<br>')}</td><td>${stPill(m.status)}${m.why?`<div style="font-size:11.5px;color:var(--tint-bad-ink);margin-top:4px">เหตุผล: ${esc(m.why)}</div>`:''}</td><td>${track(m.status)}</td></tr>`).join('')}</tbody></table></div>`;
 }
 /* ───── หน้าตา Excel รออนุมัติ: แท็บแยกตาม 4 ชนิดรายการ (คอลัมน์ต่างกันตามชนิด) ───── */
@@ -1573,14 +2239,26 @@ function renderFlow(){
   ].map(x=>`<li>${Q}<span><b>${x[0]}</b> — ${x[1]}</span></li>`).join('');
 }
 /* ───── เริ่ม ───── */
-$('#kindTabs').addEventListener('click',e=>{const b=e.target.closest('button'); if(!b) return; kind=b.dataset.k; $('#kindTabs').querySelectorAll('button').forEach(x=>{x.classList.toggle('on',x===b);x.setAttribute('aria-selected',x===b);}); buildForm(!REAL);});
+/* 1.4 (ผู้ดูแล 11 พ.ย. 69 "ปิดแถบสภาพสายทางกับอุปกรณ์ไปก่อน คือโชว์แต่พอคลิ้กก็มีแจ้งว่ายังไม่เปิดให้กรอก"): หน้าจริงยังเห็น 2 แท็บนี้ แต่กดแล้วขึ้นข้อความ ไม่เปิดฟอร์ม · ต้นแบบยังเปิดได้ */
+const CLOSED=REAL?['cond','eq']:[];
+$('#kindTabs').querySelectorAll('button').forEach(x=>{ if(CLOSED.includes(x.dataset.k)){ x.classList.add('off'); x.title='ยังไม่เปิดให้กรอก'; } });
+$('#kindTabs').addEventListener('click',e=>{const b=e.target.closest('button'); if(!b) return; const kn=$('#kindNote');
+  if(CLOSED.includes(b.dataset.k)){ kn.innerHTML='<span>🔒</span><div><b>'+esc(b.textContent.trim())+' ยังไม่เปิดให้กรอก</b> — ตอนนี้กรอกได้เฉพาะ ทะเบียนสายทาง ประวัติโครงการ และ Zerobase</div>'; kn.hidden=false; return; }
+  kn.hidden=true; kn.innerHTML='';
+  if(b.dataset.k===kind) return;   /* แท็บที่เปิดอยู่แล้ว: แค่ปิดข้อความ ไม่สร้างฟอร์มใหม่ (ค่าที่กรอกค้างไม่หาย) */
+  kind=b.dataset.k; $('#kindTabs').querySelectorAll('button').forEach(x=>{x.classList.toggle('on',x===b);x.setAttribute('aria-selected',x===b);}); buildForm(!REAL);});
+$('#kindTabs').querySelectorAll('button').forEach(x=>{ x.classList.toggle('on',x.dataset.k===kind); x.setAttribute('aria-selected',x.dataset.k===kind); });
 if(REAL){ MINE=[]; const pb=document.querySelector('.proto'); if(pb) pb.remove();
   /* 1.2 (ผู้ดูแล 11 พ.ย. 69 "ถ้าโชว์จริงเอาออก"): หน้า รายการมาตรฐาน ของหน้าจริงไม่มีคำหลังบ้าน — พาธไฟล์ ชื่อรอบงาน หมายเหตุของผู้ทำระบบ */
   const lp=document.querySelector('#v-lists .proto'); if(lp) lp.innerHTML='<span>🔒</span><div><b>ผู้กรอกเลือกได้อย่างเดียว เพิ่มเองไม่ได้</b> — ต้องการเพิ่มหรือแก้ตัวเลือก แจ้งผู้ดูแลระบบ · ชื่อกิจกรรมใช้ชุดเดียวกันทั้งประวัติโครงการและ Zerobase</div>'; const hp=$('#phP .hpill'); if(hp) hp.remove();
   $('#phP').insertAdjacentHTML('beforeend','<span class="hpill">ข้อมูลตรวจซ้ำ ณ '+esc(thDate(SNAP.built))+'</span>'); }   /* หน้าจริง: ไม่มีคำขอตัวอย่าง ไม่มีแถบ/ป้ายต้นแบบ ฟอร์มเริ่มว่าง */
-buildForm(!REAL); renderBasket();
+buildForm(!REAL); renderBasket(); loadBoard();
 try{ $('#phIco').innerHTML=KitShell.systems.bd.icon; }catch(e){}
-KitShell.init({system:'bd',key:'p6proto',version:REAL?'หน้ากรอก 1.3':'ต้นแบบ P6 รอบ 4.5',notes:(REAL&&['ใช้บนมือถือได้แล้ว ·กรอกแล้วกดส่ง รอผู้ดูแลตรวจและอนุมัติก่อนขึ้นแดชบอร์ด'])||['รอบ 4.5 (ผู้ดูแล 10 พ.ย. 69): Zerobase เลือกกิจกรรมของช่วงจากรายการครบทุกชื่อ แบบเดียวกับประวัติ','รอบ 4.4 (ผู้ดูแล 10 พ.ย. 69): ข้อมูลสัญญา (วันที่ · ผู้รับจ้าง · ผู้ควบคุมงาน) ขึ้นไปอยู่กับเลขที่สัญญา · แต่ละช่วงเลือกกิจกรรมได้ครบทุกชื่อ · Zerobase: ลักษณะงานเพิ่มเติม ไม่มีช่องหมวดเดิม','รอบ 4.3 (ผู้ดูแล 10 พ.ย. 69): กดส่งครั้งเดียวเข้าตู้รับคำขอ (ใส่รหัสทีม) แทนดาวน์โหลดแล้วอัปไฟล์','รอบ 4.2 (ผู้ดูแล 10 พ.ย. 69): ตัดคำอธิบายเชิงผู้พัฒนาใต้ช่อง · จำนวนเสาไฟ/กล้องย้ายเข้าแถวช่วงดำเนินการ · Zerobase ไม่ถามปีงบ · ถอดช่อง แผน/ผล/แผนเบิกจ่าย ออกจากฟอร์มประวัติ','รอบ 4 (ผู้ดูแล 10 พ.ย. 69): ตัดคำของบออก (ผู้ดูแล กรอกใน Master เอง) · เพิ่มฟอร์มสภาพสายทาง + อุปกรณ์','กิจกรรมใช้ชื่อชุดเดิม (รอบ 3) ตรงกับ Master · “ชนิดงบ” เปลี่ยนเป็น “แหล่งงบ”']});
+KitShell.init({system:'bd',key:'p6proto',version:REAL?'หน้ากรอก 1.7':'ต้นแบบ P6 รอบ 4.5',notes:(REAL&&['ใหม่: หัวข้อ “ทะเบียนสายทาง” — เสนอแก้ข้อมูลสาย เพิ่มหรือแก้สะพานในสาย และเสนอสายใหม่ ส่งแล้วรอผู้ดูแลอนุมัติ ทะเบียนจึงเปลี่ยน','แถบ “คำขอที่ส่งเข้ามา” ท้ายหน้ากรอก — เห็นว่ามีคำขอสายไหน ช่วงไหน ส่งเข้ามาแล้ว (ไม่แสดงชื่อผู้ส่ง) และเตือนเมื่อช่วงที่กำลังกรอกทับกัน','ส่วนกิจกรรมและช่วงที่ทำเป็นตารางเดียว: 1 แถว = 1 กิจกรรมใน 1 ช่วง','ช่องรหัสสายทางกดเลือกใหม่ได้เลย · สภาพสายทางและอุปกรณ์ยังไม่เปิดให้กรอก','กรอกแล้วกดส่ง รอผู้ดูแลตรวจและอนุมัติก่อนขึ้นแดชบอร์ด'])||['รอบ 4.5 (ผู้ดูแล 10 พ.ย. 69): Zerobase เลือกกิจกรรมของช่วงจากรายการครบทุกชื่อ แบบเดียวกับประวัติ','รอบ 4.4 (ผู้ดูแล 10 พ.ย. 69): ข้อมูลสัญญา (วันที่ · ผู้รับจ้าง · ผู้ควบคุมงาน) ขึ้นไปอยู่กับเลขที่สัญญา · แต่ละช่วงเลือกกิจกรรมได้ครบทุกชื่อ · Zerobase: ลักษณะงานเพิ่มเติม ไม่มีช่องหมวดเดิม','รอบ 4.3 (ผู้ดูแล 10 พ.ย. 69): กดส่งครั้งเดียวเข้าตู้รับคำขอ (ใส่รหัสทีม) แทนดาวน์โหลดแล้วอัปไฟล์','รอบ 4.2 (ผู้ดูแล 10 พ.ย. 69): ตัดคำอธิบายเชิงผู้พัฒนาใต้ช่อง · จำนวนเสาไฟ/กล้องย้ายเข้าแถวช่วงดำเนินการ · Zerobase ไม่ถามปีงบ · ถอดช่อง แผน/ผล/แผนเบิกจ่าย ออกจากฟอร์มประวัติ','รอบ 4 (ผู้ดูแล 10 พ.ย. 69): ตัดคำของบออก (ผู้ดูแล กรอกใน Master เอง) · เพิ่มฟอร์มสภาพสายทาง + อุปกรณ์','กิจกรรมใช้ชื่อชุดเดิม (รอบ 3) ตรงกับ Master · “ชนิดงบ” เปลี่ยนเป็น “แหล่งงบ”']});
+/* โครงหน้ากลาง L2 (11 พ.ย. 69): จอ ≤ 860px ไม่มีแถบข้าง ใช้ด็อกลอย — เมนูชุดเดียวกับแถบข้าง (เรียกหลัง KitShell.init ตามคู่มือโครงหน้ากลาง ข้อ 9) */
+if(typeof L2!=='undefined'){ const sv=d=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+d+'</svg>';
+  const L2ICO={entry:sv('<path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/>'),mine:sv('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'),approve:sv('<path d="M5 12.5l4.5 4.5L19 7.5"/>'),lists:sv('<path d="M8 7h11M8 12h11M8 17h11"/><path d="M4.5 7h.01M4.5 12h.01M4.5 17h.01"/>'),flow:sv('<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/>')};
+  L2.init({name:'ระบบกรอกข้อมูล',pages:NEW.map(n=>[n[2],n[1],L2ICO[n[2]]]),dock:NEW.slice(0,4).map(n=>n[2]),go:id=>{ show(id); window.scrollTo(0,0); }}); }
 const h0=(location.hash||'').slice(1); show(['entry','mine','approve','lists','flow'].includes(h0)?h0:'entry');
 })();
 </script>
